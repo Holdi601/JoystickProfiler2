@@ -61,8 +61,8 @@ WARDOGS, Arma Reforger) cannot tell several vJoy devices apart: keep such games 
 
 ### vJoy devices in imports (2.5.0)
 
-vJoy devices are imported and exported like any other device: a user may feed one on purpose (VoiceAttack, his own
-feeder) and bind it in the game; no default ignore list leaves them out. Only the vJoy device JoyPro tunnels into is
+vJoy devices are imported and exported like any other device: a user may feed one on purpose (VoiceAttack, a feeder of their
+own) and bind it in the game; no default ignore list leaves them out. Only the vJoy device JoyPro tunnels into is
 JoyPro's own: Settings "vJoy device JoyPro tunnels into" (instance 1-16, default none) passes `--vjoy-tunnel <n>` to
 every import and scan (`engine dcs|il2|starcitizen import|scan`, `engine <game> import|scan`). The engine finds that instance's device the way the virtual mode does (the
 HID collection `&col0n` against the configured vJoy devices, `EngineVJoy.ScanDevices`) and adds its `vJoy Device
@@ -106,6 +106,16 @@ device, export the virtual games again (the slots move to the new device). Not c
 only the devices the profile uses and passes no tunnel; the nuke of IL-2, Star Citizen and the registry games' exports
 clears binds on every connected device it does not write, the tunnel device included (only DCS keeps it).
 
+### The page for pad-only players (2.7.0)
+
+When every virtual game is on the Xbox pad (ACE COMBAT 8 ...), the page is the pretend controller's: the bar button
+and title say "Pretend controller", the status says "The pretend controller needs the free helper ViGEmBus. Install it
+in the card below." and "<game>: 12 inputs are on the pretend controller. Everything fits." (the game's name, never its
+id), Test and Start speak of the pretend controller. vJoy, HidHide, the HidHide session, the forwarding rate, the
+tunnel, the pad's technical notes, the mode lists, "What this page needs" and **Refresh** show only under **Show
+details for experts (vJoy, HidHide, modes)** (`ui-settings.json` `virtualJoystickDetails`, kept over a restart). The
+ViGEmBus card is translated and uses the same term. Tests: `ThirdNoviceReviewTests`, `VirtualJoystickTests`.
+
 ### Virtual Xbox pad (mode "xbox", ViGEmBus)
 
 For games that only read Xbox controllers (XInput) or only one device, a game can use a **virtual Xbox 360 pad**
@@ -114,8 +124,26 @@ instead of vJoy: `engine vjoy mode <game> xbox` (GUI: "Xbox pad"). It needs the 
 the official ViGEmBus 1.22.0 on the user's click and consent (docs/components.md). The engine never installs drivers,
 and no test touches the driver.
 
-- **Per game its own table** (`VJoySettings.XboxSlots[game]`, in the profile, stable like the vJoy table), because an
-  XInput game takes one pad and has its own layout.
+- **On the pad by itself** (2.7.0): a game that reads no generic joystick at all, only Xbox controllers
+  (`IGameDeviceLimit` with `MaxJoysticks` 0 and `SuggestedMode` xbox, and `engine vjoy limits` "reads no joystick":
+  ACE COMBAT 8, Hell Let Loose: Vietnam), uses the Xbox pad when the user has chosen no mode for it
+  (`VJoySettings.ModeOf`: the stored choice, else xbox for such a game, else native). That effective mode counts
+  everywhere: status (`Mode`, `AutoMode`, `ReadsOnlyXbox`), plan/map, forwarder-config, HidHide, the GUI's auto start and
+  the export's scope. An explicit `engine vjoy mode <game> native|virtual|xbox` wins and is stored (`native` as a word
+  only for such a game). The GUI says "On the Xbox pad by itself: the game reads only Xbox controllers" and lists the
+  game only when the profile uses it; without ViGEmBus the Games card says so with the one-click install.
+- **Per game its own table** (`VJoySettings.XboxSlots[game]`, in the profile), because an XInput game takes one pad and
+  has its own layout. Unlike vJoy slots (which stay so exported binds never move), a pad slot that no relation of the
+  game feeds any more goes at the next map (no `--reset` needed): the pad's games get no binds from JoyPro, and a stale
+  slot would still drive its control.
+- **Several games on the pad** (2.7.0): each keeps its own table; one pad table is live at a time. The forwarder uses
+  `--xbox-game` (the GUI passes the game whose process runs, with auto start and with Start/Test), else the user's pick
+  (`engine vjoy settings --xbox-pad-game <game>`, the page's "Xbox pad table for Start and Test"), else the first game
+  with something to forward. forwarder-config names the others as `xboxWaiting`; nothing is dropped.
+- **A hat direction on a pad button**: a relation bound to one hat direction (`JOY_BTN_POV2_R`) whose action the game
+  has on a button (Change target -> Y) gets that direction as its own input (slot input = the bind token, forwarder
+  kind `hatdir`). A whole hat still goes to the D-pad; directions that a button slot or a function reads are left out
+  of it (`skip`), so one hat direction never drives two controls.
 - **The game's layout first**: when the game's catalog knows the default gamepad key of an action (5th column of
   `DB\<Game>\actions.tsv`, an Unreal FKey name such as `Gamepad_LeftX`, `Gamepad_LeftTriggerAxis`,
   `Gamepad_FaceButton_Bottom`, `Gamepad_LeftStick_Up`), the physical input of that relation is pinned to that control.
@@ -129,12 +157,27 @@ and no test touches the driver.
 - **One axis on both triggers** (`XB_TRIGGERS`): when one physical axis drives two actions of a relation that the layout
   puts on LT and RT (a collective on "ascend" and "descend"), the forwarder splits it at the axis centre: above it RT,
   below it LT, both up at the centre.
-- **Reversed axes**: *Invert* on the relation's bind reverses the pad axis (target suffix `~`, e.g. `XB_RX~`,
-  `XB_TRIGGERS~`).
+- **Reversed axes**: the invert of the game's curve reverses the pad axis (target suffix `~`, e.g. `XB_RX~`,
+  `XB_TRIGGERS~`; with a curve the curve carries it). It is the game's own scope (game, family, aircraft) when there is
+  one, else the game's pad convention (`IGamePadConventions.PadInvertDefault`), never DCS's base invert
+  (`EngineVJoy.PadBaseInvert` in `BindTuning.ResolveWithoutDetent`): a throttle inverted for DCS still gives RT when
+  pushed forward on the pad. ACE COMBAT 8's `Pad_Pitch` is reversed by default: with the game's default "Pitch
+  Controls" the pad stick pushed up pitches the nose up (checked in game, 2026-11-14), so a HOTAS pushed forward must give the
+  pad stick down. Who sets "Pitch Controls: Inverted" in the game unticks Invert for ACE COMBAT 8 alone (Axis response,
+  Applies to: ACE COMBAT 8; DCS keeps its own).
+- **Axis curves on the pad** (2.7.0): the pad's games get no export, so nobody else would apply the relation's axis
+  tuning. forwarder-config sends each axis slot of the live pad game its curve (`curve`: 1025 outputs for stick
+  positions -1..1, `AxisModels.Sample` of `BindTuning.Resolve(bind, game)`: the game's own scope, else the base (the **Default curve**), with
+  the game's model), the same formula the Binds page previews; the invert is part of the curve then (no `~`). ACE COMBAT
+  8 and Hell Let Loose: Vietnam have the model `xboxpad` (dead zone, saturation X/Y, curvature or 11-point user curve,
+  slider, invert; evaluated like the base curve). JoyPro.VJoy builds a lookup table per slot once (raw value in, bent
+  raw value out; a straight line keeps 1:1) and applies it without allocating (`JoyPro.VJoy bench --xbox-curves`).
+  vJoy games stay 1:1: the game applies the exported curve. The Binds page's axis panel says "JoyPro applies this curve
+  itself on the virtual Xbox pad" for those games (`binds tuning show` lists them as `XboxPadGames`).
 - **Layout chosen in the game**: a game can give its gamepad layout itself (`IGameGamepadLayout`): Hell Let Loose:
   Vietnam reads the layout A/B/C picked in the game's settings, and `engine vjoy map` moves the pins when it changes.
-- **Forwarding**: `engine vjoy forwarder-config --xbox-game <game>` writes that game's table (the GUI passes the game that
-  started; without it the first Xbox game). `JoyPro.VJoy run --xbox-sink vigem` creates the pad for the run (neutral at
+- **Forwarding**: `engine vjoy forwarder-config --xbox-game <game>` writes that game's table (see "Several games on
+  the pad"). `JoyPro.VJoy run --xbox-sink vigem` creates the pad for the run (neutral at
   start and end, disconnected afterwards); `--xbox-sink dry` (default, tests, the GUI's Test button) writes nothing.
   The report is computed from the last state of every physical device: two buttons on one control combine, a pressed
   button on a stick half wins over the axis on that stick, triggers take the larger value; stick Y follows XInput (up
@@ -152,7 +195,55 @@ and no test touches the driver.
   Vietnam) keep their layout; JoyPro's table follows it, so nothing has to be written.
 - **HidHide**: as for vJoy - the physical devices of the Xbox games' tables are hidden from those games only. (An
   XInput-only game ignores DirectInput devices anyway; hiding keeps a real Xbox pad or a stick that pretends to be one
-  out of the way.)
+  out of the way.) Games that read only Xbox controllers (ACE COMBAT 8, Hell Let Loose: Vietnam) get no HidHide step at
+  all (see HidHide below).
+
+#### Auto setup on the Xbox pad (2.7.0)
+
+What the ACE COMBAT 8 live test of 2026-11-14 found is JoyPro's default for every profile (`EngineVJoy.PadAutoSetup`,
+engine/VJoy/XboxPadAutoSetup.cs; deterministic, made again at every plan; JoyPro's own functions have ids starting with
+`auto-pad-` and go when nothing asks for them any more; a function the user made on the same input wins):
+
+1. **Throttle split**: when the game accelerates on RT and decelerates on LT, the axis of the throttle relation (the one
+   with the accelerate action) drives both triggers (`XB_TRIGGERS`: forward RT, back LT, centre neutral), also when the
+   decelerate action sits in another relation (a toe brake relation); that other axis gets no trigger (a note says so).
+2. **Yaw on pad buttons** (LB/RB): an "Axis ends to buttons" function with an end zone of 0.35 (it presses at about
+   30 % deflection). The axis is the one the relations put on the yaw actions, else the user's stick twist (an axis
+   relation of the function map's `yaw` on a device that is not pedals), else the rudder pedals.
+3. **Chords** (`IGamePadChords.PadChords`): ACE COMBAT 8's flares are L3 + R3 pressed together (**not confirmed in
+   game yet**). A macro with "pressed together" (`together` = 1: every step starts at once and is held its own time,
+   here 120 ms) fed by the user's relation of `flare`, else `cms_switch:fwd`, else `cm_dispense`.
+4. **Menu D-pad** (`IGamePadChords.DPadFunctions`): ACE COMBAT gives wingman orders on the D-pad. "Buttons to hat" from
+   the user's relations of `wingman`, `comm_menu` or `comm_switch` on one device (hat directions, or buttons with a
+   direction), when the table leaves the D-pad free and the inputs serve nothing else of the game.
+5. **Holds** (`IGamePadConventions.PadHolds`): ACE COMBAT's High-G turn is both triggers fully pressed. A button
+   relation named "High-G", else the relation holding DCS's ASC Direct Control (the "Cobra button" of the Su-27,
+   Su-33, J-11A; not F-16 MPO or the Mirage switches), becomes a remap to `XB_LT` + `XB_RT`; a button output on a trigger adds to the table's
+   trigger (`VfRuntime.XboxAxisAdds`, the larger value wins), so the throttle split keeps working. Without such a
+   relation the plan says how (and pad-check counts it as missing).
+6. **One input, one job**: a table input that a function of the game reads leaves the table (a shift function keeps
+   its slot); the hat directions such functions read are left out of a whole-hat D-pad.
+7. **Look on a free hat** (`IGamePadConventions.PadLookActions`: the right stick
+   for looking around, on the topmost hat of the stick): when no relation of the game reaches the look actions
+   (ACE COMBAT 8 `Pad_CameraYaw` / `Pad_CameraPitch` on the right stick) and no function of the user writes that stick,
+   a "Hat to axes" function (`hat-axes`: each direction holds the stick out while held, a diagonal both) reads a hat
+   nothing of the game uses. The hats are those the profile binds somewhere (any game, or a modifier) and those the
+   connected devices really have (their device catalog entry, else what DirectInput reports), so a profile with ACE
+   COMBAT 8 alone finds the stick's free hat too. Best first: a hat of a look / view / camera relation of another game, then the hats of the devices of the
+   game's must-haves in their order (pitch, roll, gun: the stick and its grip), per device the lowest hat (POV1 is the
+   top hat on most sticks). The function runs only while that game's pad runs, so the hat keeps its job elsewhere
+   (trim in DCS). An axis relation on the look actions (a free ministick) always wins. The Setup wizard places that axis
+   relation itself where a centring axis is free: on a single-hat HOTAS (T.Flight HOTAS 4 / X / One, the stick's only
+   hat holds the target switch, flares and weapon change, which come first) look left / right goes on the throttle's
+   spring-return rudder rocker (catalog axis type `centring`); look up / down stays without a control there.
+   **Known limitation:** a device with one hat and no free axis has no place for look around; pad-check then reports
+   look as `n/a (hardware limit)` instead of a miss.
+
+`engine vjoy pad-check [--game <game>]` reports per pad game what the profile reaches there (the game's must-haves
+`IGamePadConventions.PadEssentials`: ACE COMBAT 8 pitch, roll, gun, missile, target; the throttle split, yaw, each chord,
+the hold, the menu D-pad, look around) with a score 0..1 for a setup harness (the pad persona's gates leave look out:
+it is no flight control). The function map puts ACE COMBAT 8's `Pad_ThrottleDown`
+("Throttle down (brake)") under throttle, not wheel brakes, so `relations suggest` offers it to the throttle relation.
 
 Games of this class and how to add more: docs/games/one-device-games.md.
 
@@ -189,7 +280,7 @@ maximum: the table and the virtual functions use buttons 1-128; what the configu
 on the Overview, shown while a device has less, asks first) gives every vJoy device JoyPro uses
 `vJoyConfig <n> -f -a x y z rx ry rz sl0 sl1 -b 128 -p 4` (force feedback kept; an axis a virtual game must not see,
 Battlefield's Rx/Ry, stays out unless the table uses it). **Windows must restart** before a vJoyConfig change takes
-effect (vJoy asks for it; on the development PC every change needed a restart); JoyPro never restarts Windows and the
+effect (vJoy asks for it; often every change needs a restart); JoyPro never restarts Windows and the
 result says so. `engine vjoy status` reports `AtMaximum` per vJoy device. Tests only ever run the dry run.
 
 ### What a game reads of one joystick
@@ -215,14 +306,14 @@ function outputs take the lowest free one), so such games keep working while the
 | MSFS 2020/2024 | ? | 8 | 1 (4-way) | documented | more than 32 in the sim, SimConnect add-ons see 0-31; JoyPro writes one hat |
 | X-Plane 11/12 | 160 | 25 | 1 | verified | further hats become buttons |
 | ACE COMBAT 7 | 32 | 8 | 4 (4-way) | documented | the game's Input.ini help |
-| Arma 2 / OA | 32 | 8 | 1 | verified | DIJOYSTATE, reverse engineered |
-| X4: Foundations | 64 | 8 | 1 | verified | from the game binary |
+| Arma 2 / OA | 32 | 8 | 1 | verified | DIJOYSTATE |
+| X4: Foundations | 64 | 8 | 1 | verified | the game's input tables |
 | G-Rebels | 96 | 24 | 0 | documented | Unreal's Raw Input plugin |
 | VTOL VR (BYOJoystick) | 128 | 8 | 4 (4-way) | verified | |
 | ACE COMBAT 8, Hell Let Loose: Vietnam | - | - | - | documented | XInput only: virtual Xbox pad |
 
 Not known (no warning): Star Citizen (sources conflict), War Thunder, Arma 3, Arma Reforger, Battlefield 6/2042 (the
-enum has 36 buttons, players see about 18), Elite Dangerous (players report 32, Joy_41 worked on the development PC),
+enum has 36 buttons, players see about 18), Elite Dangerous (players report 32, Joy_41 works),
 IL-2 Korea, WARDOGS, the Rewired games (Nuclear Option, Tiny Combat Arena).
 
 ### HidHide
@@ -257,7 +348,7 @@ nothing changed. A journal whose "previous" lacks the inverse mode never has the
 Program entries HidHide itself cannot name: `HidHideCLI --app-list` prints an entry whose stored image path lies on a
 volume that is not mounted any more (volume numbers change when drives are added) as `--app-reg ""`, elevated or not.
 Such entries are part of a complete answer (2.6.0; before, they made the program list "unknown" and no session could
-start - the development PC has five): JoyPro counts them (`UnnamedApps` in the status JSON, "(+N HidHide cannot
+start - a PC can have several): JoyPro counts them (`UnnamedApps` in the status JSON, "(+N HidHide cannot
 name)" in the text), leaves them as they are (they cannot be removed or added by path and name no program on a drive of
 this PC), says so in the plan, and checks after apply and restore that their number is the same.
 
@@ -271,6 +362,29 @@ start time). After the call it reads HidHide back and compares. Restore undoes e
 the configuration found then (entries the user added meanwhile stay), cloaking off first, and moves the journal to
 `history\`. Order on apply: lists first, cloaking last; on restore: cloaking off first - so nothing is hidden while the
 lists are half done.
+
+HidHideCLI refuses a whole call silently (2.7; it showed as a UAC prompt every 2 minutes): it checks
+every command before it runs it and stops at the first it refuses, prints the reason on stderr, applies **nothing** of
+the call (`CommandInterpreter::Start` returns before `ApplyConfigurationChanges`) and still exits with 0. Its checks
+(HidHideCLI source, `Commands.cpp`, `Utils.cpp`, `Volume.cpp`): a program path must be fully qualified, end in exactly
+`.exe`, `.com` or `.bin` (case sensitive), and start with a volume mount point **in its exact case** ("The file name
+should be located on a storage volume (volume is case sensitive)."): Steam's own spelling
+`c:\program files (x86)\steam\...` is refused, and with it cloaking, the hidden devices and every other program of the
+call. JoyPro therefore sends program paths with an upper-case drive letter, leaves out (with a note) any path or device
+HidHideCLI would refuse (`HidHideCliRules`), treats exit code 0 with text on stderr as "refused" (`HidHideCli.Rejected`,
+the reason in the result), and when the read-back shows that nothing changed it leaves no session behind (no journal,
+no restore, no recover prompt later). The fake CLI of the tests refuses exactly like the real one.
+
+Prompts, at most one per explicit action: no HidHide step for games that read only Xbox controllers
+(`ReadsOnlyXbox`, e.g. ACE COMBAT 8, Hell Let Loose: Vietnam: they never see the physical sticks) - with only such games
+in virtual mode `apply-hidhide` says "HidHide is not needed" and starts nothing elevated; no prompt when HidHide, read
+without administrator rights, already is as needed (`apply-hidhide`) or already has its previous configuration
+(`restore-hidhide`, `recover`: only the session record goes). When the read without the rights is not complete, the
+elevated step decides as before. In the GUI a failed start (declined prompt, refused call, mapping not ready) is never
+repeated by itself: auto start gets one try per game start and then waits until the game has ended, the page shows the
+reason and **Try again**. A partial HidHide result does not stop forwarding (the page warns that the game may also see
+the physical devices); only a result that leaves a vJoy device hidden from the games with cloaking on (`Blocking`)
+restores HidHide and starts nothing.
 
 Crash safety: a journal whose owner process is gone is **stale**. The GUI checks the journal when it starts and
 restores a stale session at once (`engine vjoy recover`, one prompt); `apply-hidhide` refuses while a stale session
@@ -297,6 +411,7 @@ the physical inputs and the virtual outputs - Joystick Gremlin-like features ins
 | `axis-buttons` | ⇔ Axis ends to buttons | in | low, high (hold / enter / leave / both) | end zone, hysteresis, pulse length |
 | `axes-hat` | ✛ Axes to hat | x, y | hat | deflection, 4 or 8 ways |
 | `buttons-axis` | ± Buttons to axis | up, down, centre (opt.) | out (axis) | speed (travel/s), start, spring back speed |
+| `hat-axes` | ⊹ Hat to axes | hat | x, y (axes, opt.) | deflection (a direction holds its axis out while held, a diagonal both) |
 | `encoder` | ⟳ Axis to encoder pulses | in | up, down | step, pulse, gap, queue |
 | `turbo` | » Turbo (repeat) | in | out | pressed for, released for, while held or press on/press off |
 | `macro` | ▶ Macro | trigger | out1..outN, keys | steps (after ms: tap/press/release an output or key, hold ms), once or repeat while held |
@@ -445,7 +560,7 @@ What a Gremlin user does in JoyPro: set the game to vJoy, import the profile, bi
 outputs (or keep the game's binds where they are: the outputs are the same vJoy buttons and axes), Start. HidHide and
 the forwarder replace Gremlin's own device hiding and its running in the background.
 
-**Performance** (`JoyPro.VJoy bench`, release build, development PC, 4 synthetic sources changing every pass, 50
+**Performance** (`JoyPro.VJoy bench`, release build, 4 synthetic sources changing every pass, 50
 functions of all types): 144 Hz: 9.7 us per pass on average (p99 29 us), 0.47 % of one core (table only: 0.31 %);
 240 Hz: 8.5 us average (p99 31 us), 0.31 % of one core; 0 bytes allocated in the loop. The GUI test
 `LoopBenchmarkWithFiftyFunctions` measures the same pass without the timer (about 4 us per pass).
@@ -468,22 +583,21 @@ JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4]   (t
   exact, 144 Hz = 6.94 ms, a one-shot high-resolution waitable timer armed after every pass). A DirectInput change event
   that comes a period or more after the last pass runs a pass at once (a button goes out at once). A pass that found a
   change stops watching the change events until one period after it; the pass at the end of that period takes
-  everything that came meanwhile. So a device that reports all the time - real sticks do while nobody touches them (on
-  the development PC the VPC stick and throttle send 180 and 300 reports a second with changing values, the Crosswind
+  everything that came meanwhile. So a device that reports all the time - real sticks do while nobody touches them (for
+  example a VPC stick and throttle send 180 and 300 reports a second with changing values, the Crosswind
   250 and the WinWing panel 100 identical ones, a Rhino force feedback base up to 1000) - costs one pass and one
   wake-up per period, not one per report, and a button on another device waits at most one period. `--mode poll` uses
   the timer only.
 - **A pass reads only the devices whose event fired** (and DirectInput polled devices, `DIDC_POLLEDDEVICE`, which are
   also the only ones `Poll()` is called for). Every 100 ms a pass reads every device as a safety net for a missed
-  event; a change found that way is counted in the stats line (`missed=`; 0 with the six real devices of the
-  development PC).
+  event; a change found that way is counted in the stats line (`missed=`; 0 with six real devices).
 - **Rests when nothing happens**: when every device signals its changes, the last pass found no change and no virtual
   function needs the clock, the timer waits 100 ms (a safety poll); the next change event wakes the loop at once. A
   virtual function that waits for a time (a pulse end, the next turbo phase, a long press or double-press window, a
   macro step, a diagonal settle: `VfRuntime.NextDueUs`) sets the timer to that time instead of running every period;
   only a moving incremental axis, an encoder queue and a mode change need the very next pass. A resting setup costs
   10 passes a second. `--mode poll` never rests.
-- **Performance (2.6.0 budgets, `ForwarderSoakTests`)**: the real JoyPro.VJoy (release build, development PC, 144 Hz,
+- **Performance (2.6.0 budgets, `ForwarderSoakTests`)**: the real JoyPro.VJoy (release build, 144 Hz,
   dry sink, 4 synthetic devices, 52 virtual functions of every type incl. a chain and two modes), CPU from the
   process's cycle counter (`cycles-ms=`; Windows' process times, `cpu-ms=`, are sampled at the clock tick and charge a
   loop that runs for microseconds at random: 0.000 % or 0.5 % over 20 s): **resting** (nothing changes) 0.19 % of one
@@ -493,7 +607,7 @@ JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4]   (t
   the loop in every phase (30 s per phase, after a 12 s warm-up). Budgets: resting 0.5 %, streaming 1.5 % of one core,
   memory growth at most 1 MB, handles at most +5, no loop allocation after warm-up, at most one pass per period and,
   noisy, one wake-up per pass.
-- **Real devices** (2026-11-01, the six connected devices of the development PC, the vJoy live test's table: 6 button
+- **Real devices** (2026-11-01, six connected devices, the vJoy live test's table: 6 button
   slots, 23 virtual functions incl. a running turbo, a mode cycle and a moving incremental axis, 144 Hz, nobody
   touching anything, DCS not running): before the fix the event wake-ups of the noisy devices gave ~292 passes, ~580
   wake-ups and ~268 vJoy writes a second, every pass reading all six devices: 3.3 % of one core with the real vJoy sink, of which the loop thread 1.2 %. Now 144 passes, ~150

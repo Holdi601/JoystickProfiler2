@@ -15,14 +15,10 @@ the games when you export ([[page:flows/export.html|Export to your games]]).
 
 ```mermaid
 flowchart LR
-  L["Relation list<br/>(left)"] -->|select| S["Selected bind<br/>(right)"]
-  S --> R["Record input<br/>press the button"]
-  S --> P["Bind on the picture"]
-  S --> H["Pick the input by hand"]
-  R & P & H --> E["engine binds set<br/>(profile, one undo step)"]
-  E --> M["Modifiers on this bind<br/>engine binds modifier add"]
-  E --> C["Axis response for the ticked games / aircraft<br/>engine binds tuning set"]
-  E -.Export.-> G["Game control files"]
+  L["Pick a relation<br/>in the list"] --> R["Record input<br/>(or on the picture)"]
+  R --> S["Saved at once:<br/>Input 1, with its own<br/>modifiers and curve"]
+  S -.-> A["Record another input:<br/>Input 2, with its own<br/>modifiers and curve"]
+%% caption: Solid: every bind. Dotted: only when you want a second input, for example a second stick. Export then writes the binds into your games.
 ```
 
 :::layer beginner
@@ -31,7 +27,8 @@ flowchart LR
 1. **Pick a relation on the left.** Each card shows the relation's name, its button ("Throttle - HOTAS Warthog ·
    BTN 22") and a **not bound** chip when it has none yet.
 2. **Press Record input** on the right, then press the button (or move the axis) on your stick. JoyPro waits up to
-   6 seconds, takes the first input that changes and binds it at once. The card on the left now shows the new input.
+   6 seconds, takes the first input that changes and binds it at once. The card on the left now shows the new input,
+and the line under the buttons names the device as the list does (your name for it, if you gave it one).
 3. Optional: a **modifier** (a shift button held at the same time, so one button does two jobs) and, for an axis, its
    **curve** (dead zone, how soft or sharp the stick feels).
 4. When everything is bound, go to **Export** and write it into your games.
@@ -115,19 +112,26 @@ everywhere (advanced)**: free one physical input in the whole profile.
 
 ![The axis response panel: Applies to, curve, parameters](shot:binds-axis-tuning)
 
-A curve for all games, one per game, or one for the aircraft you tick. An aircraft with its own curve uses it; the
-others use their game's curve, else the one for all games. **Applies to** lists them with checkboxes:
+One default curve, one per game, or one for the aircraft you tick. An aircraft uses its own curve, else its game's
+curve, else the default curve. **Applies to** lists them with checkboxes:
 
 | Row | Example | Used for |
 |---|---|---|
-| All games | | every game and aircraft without its own curve |
-| A game | DCS, IL-2 Korea | every aircraft of that game without its own curve |
+| Default curve | | every game and aircraft without its own curve (up to 2.6.5 this row was called "All games") |
+| A game | DCS, IL-2 Korea | every aircraft of that game in this relation without its own curve |
 | An aircraft (DCS) | AH-64D BLK.II CPG | that aircraft only |
 | A game family | MSFS family (MSFS 2024, MSFS 2020) | both games together; shown only when the relation has two of them (or a curve for the family is stored) |
 
 Next to each row stands what it uses today: **own curve**, **same as ...** (aircraft whose own curves are identical),
-**uses DCS** / **uses All games** (no curve of its own; a change there changes it too). Its tooltip says the same in a
-sentence. Only DCS has a row per aircraft: it is the only game whose curves are written per aircraft.
+**uses DCS** / **uses the default curve** (no curve of its own; a change there changes it too). Its tooltip says the
+same in a sentence. Only DCS has a row per aircraft: it is the only game whose curves are written per aircraft. The DCS
+row means this relation's DCS aircraft listed under it, not all of DCS; with a curve of its own it says **own curve, for
+the aircraft below without one**.
+
+**Games on the virtual Xbox pad** (ACE COMBAT 8, Hell Let Loose: Vietnam, any game set to Xbox pad on the
+[[gui:vjoy|Virtual Joystick]] page) get no export, so JoyPro applies their curve itself on the pad; the panel says so
+in bold. Their invert never comes from DCS: it is the game's own (tick only that game and save), else the game's pad
+convention (ACE COMBAT 8's pitch is reversed by default).
 
 **What is ticked when you open a relation:** the aircraft that use DCS's curve (for a fresh relation: all of them).
 Aircraft with their own curve stay unticked, so a save does not overwrite them by accident. The rows you last saved
@@ -135,23 +139,25 @@ for this relation come back instead, also after a restart, with their curve show
 
 **What Save does** is written above the buttons:
 
-- all the aircraft that use DCS's curve ticked (the default): "Save stores it for DCS, all its aircraft (5)." The curve
-  is stored once for DCS, not once per aircraft, so these aircraft keep following DCS's curve later;
+- all the aircraft that use DCS's curve ticked (the default): "Save stores it for DCS: all 5 aircraft listed here." The
+  curve is stored once for DCS, not once per aircraft, so these aircraft keep following DCS's curve later;
 - some of them: "Save stores it for these aircraft (3 of 5): ...". Each ticked aircraft gets this curve as its own,
   in one step;
 - an aircraft that has its own curve ticked as well: a line in orange says "This replaces the own curve of ...". With
   DCS's curve it then follows DCS again; ticked among a few aircraft it gets the curve shown;
-- all games, a game without aircraft rows, a family: that one row.
+- the default curve, a game without aircraft rows, a family: that one row.
 
-Several aircraft can be ticked together; any other row is ticked alone. When the ticked aircraft have different
+Several aircraft can be ticked together; any other row is ticked alone. Ticking aircraft one by one never ticks DCS by
+itself while one of them is left out: one aircraft ticked gets its own curve, even when it is the only one that used
+DCS's curve. Only when you tick all of them does the DCS row tick too. When the ticked aircraft have different
 curves today, the line above says so and shows the first ticked one's curve; nothing is merged. **Curves now (click to
 tick)** groups the aircraft by the curve they share ("AH-64D BLK.II CPG, AH-64D BLK.II Pilot, Ka-50 III: same curve",
 "SA342 Copilot, SA342 Pilot: uses DCS"); a click ticks that group.
 
-The panel shows the curve in blue and the one for all games as a dashed orange line while the curve shown is not its
+The panel shows the curve in blue and the default curve as a dashed orange line while the curve shown is not its
 own. Each game has its own kind of curve (DCS: dead zone, saturation X/Y, curvature or an 11-point user curve; IL-2:
 its own sensitivity and dead zones; X-Plane: free curve points), so the sliders on the right change with the row. When
-a game falls back to the curve for all games, JoyPro fits that game's parameters to it as closely as the game can
+a game falls back to the default curve, JoyPro fits that game's parameters to it as closely as the game can
 express it.
 
 Drag the white points to shape the curve, or use the sliders. Every setting also has a number box with its range
@@ -168,7 +174,12 @@ and so on.
 
 Edits preview at once (also with the live position of your stick as a dot); **Save** stores them for the ticked rows,
 in one step (one Ctrl+Z). **Use the game's curve again** removes the own curve of the ticked aircraft (for a game:
-**Use the curve for all games again**), also in one step. **Reload** reads them again.
+**Use the default curve again**), also in one step. **Reload** reads them again.
+
+**In detent mode** the curve of an aircraft that detent mode bends ("uses the default curve, bent at the detent") is
+shown as the game gets it, and it cannot be changed or saved here: a curve saved for it would win over detent mode and
+switch it off for that aircraft. To change it, tick **Default curve** (the curve detent mode bends) or change the detent
+settings below.
 
 **Copy to another axis...** puts the same settings on another bound axis in one step, e.g. Thrust Left to Thrust
 Right: pick the axis, tick **Copy invert too** only if both should invert alike, then **Copy**. It goes to the same
@@ -193,8 +204,11 @@ below the afterburner; pushing over it lights it.
 1. **Calibrate detent...**: move the throttle to idle, then to the detent, then fully forward, then (optional) behind
    the idle detent (cut-off). **Confirm** each position; JoyPro reads the axis live. **Save calibration**.
 2. Tick **Detent mode on**.
-3. Already have one throttle relation per aircraft? **Merge my throttle relations...** shows a plan per device axis;
-   **Merge** joins them into one relation in detent mode; **Undo merge** takes it back.
+3. Already have one throttle relation per aircraft? **Merge my throttle relations...** shows a plan per device axis
+   with every throttle relation of that axis ticked. Untick the ones to keep apart (a helicopter collective, a
+   propeller aircraft): they stay as they are, with their own curve and their own detent settings, and the plan is
+   made again for the ticked ones. **Merge** joins the ticked ones into one relation in detent mode; **Undo merge**
+   takes it back.
 
 The aircraft groups below show where each group's afterburner starts and where that number comes from; type your
 own value and **Set**, or **Game data** to go back.
@@ -214,11 +228,11 @@ aircraft get what most of the relation's aircraft need, and the export lists the
 - The same button on two relations is allowed; the [[gui:check|Check]] tells you where that means two jobs in one
   aircraft.
 
-## More inputs (experimental)
+## More inputs
 
-With **Settings > Experimental > Several inputs per relation** on, a relation can be on more than one input, each with
-its own device, modifiers and axis curve (the same grip on two bases, a second fire button). The card shows **+1**, and
-the selected relation gets the panel **More inputs (experimental)**:
+A relation can be on more than one input, each with its own device, modifiers and axis curve (the same grip on two
+bases, a second fire button). The card shows **+1** (the other inputs in its tooltip), and the selected relation has the
+panel **More inputs**:
 
 - **Record another input** / **Add the input picked by hand**: one more input of this relation.
 - **Make main**: that input becomes the main input (games that keep one input per action get the main input).
@@ -228,7 +242,14 @@ the selected relation gets the panel **More inputs (experimental)**:
   first device keeps its binds.
 
 Exports write every input where the game can hold several per action and name the relations where it cannot
-([[page:flows/export.html|Export]]). Details and the table per game: docs/multi-bind.md. Off, everything is as before.
+([[page:flows/export.html|Export]]). Details and the table per game: docs/multi-bind.md. A relation with one input is
+exactly as before; there is no setting to switch on (until 2.6.5 it was Settings > Experimental).
+
+Every page finds a relation by any of its inputs: **Follow input** and the HUD on a press of the second stick, the
+Layout page's picture and tables, the **Devices** filter of this page and of the Relations page, the search with the scope
+**Everything** ("MOZA" finds the relations with an input on it), the Check page and Replace/Remove device. For an axis with several inputs the
+section **Axis response** has an **Input** list at the top: each input has its own curve, dead zone and saturation; pick
+the one to tune (the main input is input 1).
 :::
 
 :::layer technical
@@ -241,20 +262,16 @@ View model: `MainWindowViewModel.cs` (bind list, record, set/clear, modifiers), 
 and `MainWindowViewModel.VisualAssign.cs` (bind on the picture), `MainWindowViewModel.LiveInput.cs` (follow input),
 `MainWindowViewModel.BindPeek.cs` (What it does), `MainWindowViewModel.MoveAction.cs`.
 
-```mermaid
-sequenceDiagram
-  participant U as You
-  participant G as Binds page
-  participant C as Capture service (DirectInput)
-  participant E as engine
-  U->>G: Record input
-  G->>C: CaptureNextAsync (axis or button mode, timeout, warm-up, threshold)
-  U->>C: press button / move axis
-  C-->>G: device + input (e.g. JOY_BTN22)
-  G->>E: binds set "Gear Up/Down" --device ... --input JOY_BTN22
-  E-->>G: saved (profile autosave, history version)
-  G->>E: binds list (refresh the cards)
-```
+**Record input** from the click to the saved bind:
+
+| # | Who | What happens |
+|---|---|---|
+| 1 | You | Press **Record input**. |
+| 2 | Binds page | Starts the capture service (DirectInput, `CaptureNextAsync`): axis or button mode, time limit, warm-up, threshold. |
+| 3 | You | Press a button or move an axis. |
+| 4 | Capture service | Reports the device and the input (for example `JOY_BTN22`). |
+| 5 | Engine | `binds set "Gear Up/Down" --device ... --input JOY_BTN22` saves the bind (profile autosave, history version). |
+| 6 | Binds page | `binds list` refreshes the cards. |
 
 - **Capture**: `Services/JoystickCaptureService.cs` polls DirectInput; `Services/RecordButtonTracker.cs` takes only
   transitions, never a button that was already pressed when recording started (unless "Also take a button that rests
@@ -347,9 +364,10 @@ any more (`engine binds clear`). The marker turns grey ("free"). In the game: th
 next export (with Replace on my devices).
 
 <!-- entry: RecordNextInputCommand -->
-Waits for the next input on any device (6 s by default) and binds it to the selected relation at once
-(`engine binds set`). An axis relation takes only an axis moved past the threshold (30 %), a button relation only a
-button or hat that changes state. If you selected another relation while it waited, the input is kept in the fields
+<!-- easy: Pick a game control first. Then click this, and press a stick button. -->
+Shows once a game control is picked in the list: it waits for the next input on any device (6 s by default) and binds it to the selected relation at once
+(`engine binds set`). Press one button; for a stick axis, move it all the way. An axis relation takes only an axis
+moved past the threshold (30 %), a button relation only a button or hat that changes state. If you selected another relation while it waited, the input is kept in the fields
 and **Set Bind** applies it. In the game: after the export that button does the relation's actions.
 
 <!-- entry: CancelRecordInputCommand -->
@@ -360,8 +378,8 @@ Removes every modifier from the selected bind (`engine binds modifier remove --a
 the button then works without holding a shift button.
 
 <!-- entry: SetSelectedBindCommand -->
-Binds the selected relation to the device and input chosen by hand (and the behaviour flags of **Bind behavior**)
-with `engine binds set`. One undo step.
+Binds the selected relation to the device and input chosen by hand, with the behaviour flags of **Bind behavior**
+(`engine binds set`). One undo step.
 
 <!-- entry: RefreshQuickBindOptionsCommand -->
 Reads the connected devices and their inputs again (`engine devices list`, `engine devices inputs`) and refills the
@@ -417,15 +435,17 @@ axis's invert and slider settings of that game.
 
 <!-- entry: SaveAxisTuningCommand -->
 Stores the curve shown for the ticked rows, in one engine run (one Ctrl+Z): the line above the button says what it does.
+Not while detent mode makes the curve of the ticked aircraft (the button is off then).
 All the aircraft that use DCS's curve ticked: DCS's curve (`engine binds tuning set --scope game:DCS`, ticked aircraft
 with an own curve lose it in the same run with `--clear-scope`); some of them: a curve per aircraft (`--scope` once
-each). For all games it also updates the bind's own axis values. The ticks are remembered for the relation. In the game:
+each). For the default curve it also updates the bind's own axis values. The ticks are remembered for the relation. In the game:
 the next export writes this curve into the game's axis settings for those aircraft, that game or family.
 
 <!-- entry: bind:IsChecked -->
 Axis response, **Applies to**: ticks where the curve shown is saved. Several aircraft of a game can be ticked together;
-the game's row ticks the aircraft that use its curve (aircraft with an own curve stay unticked); any other row is ticked
-alone. The text next to it says what the row uses today; nothing is stored until **Save**.
+the game's row ticks the aircraft that use its curve (aircraft with an own curve stay unticked); ticking aircraft one by
+one ticks the game's row only when all its aircraft are ticked; any other row is ticked alone. In the detent merge
+helper the same checkboxes pick the relations to merge. The text next to it says what the row uses today; nothing is stored until **Save**.
 
 <!-- entry: TickAxisTuningGroupCommand -->
 Axis response, **Curves now**: ticks the aircraft that share this curve (or the ones that use the game's curve) and
@@ -457,7 +477,8 @@ Calibration: back to the previous step to take that position again.
 Closes the calibration without saving; the old calibration stays.
 
 <!-- entry: ApplyDetentMergeCommand -->
-Merges the throttle relations of this proposal into one relation in detent mode (`engine binds detent merge --apply`):
+Merges the ticked throttle relations of this proposal into one relation in detent mode (`engine binds detent merge
+--relations ... --apply`); unticked ones stay apart:
 the first relation keeps its bind and curve, gets the other relations' aircraft (each with its old afterburner point)
 and the others are removed. One history version.
 
@@ -521,6 +542,7 @@ Opens or closes **Lay out with AI** on the Binds page and reads the preferences 
 and vJoy before anything is applied.
 
 <!-- entry: OpenSetupWizardCommand -->
+<!-- easy: Sets up your stick, and you can choose every step. -->
 Opens the [[gui:setup-wizard|Setup wizard]]: relations and binds for the games you watch in one go (device roles,
 aircraft priorities, modifiers, how real), reviewed before anything changes. A wizard you closed before **Apply**
 comes back as you left it.
@@ -656,9 +678,9 @@ Curve points: adds a stop in the middle of the widest gap, between its two neigh
 **Save**.
 
 <!-- entry: ClearAxisTuningCommand -->
-**Use the game's curve again** (for a game: **Use the curve for all games again**) removes the own curve of the ticked
-rows without a question, all in one step: an aircraft then uses its game's curve, a game its family's or the one for
-all games. Not for all games. Ctrl+Z undoes it. Engine: [[cli:binds tuning clear]] with `--scope` per row. In the game:
+**Use the game's curve again** (for a game: **Use the default curve again**) removes the own curve of the ticked
+rows without a question, all in one step: an aircraft then uses its game's curve, a game its family's or the default
+curve. Not for the default curve itself. Ctrl+Z undoes it. Engine: [[cli:binds tuning clear]] with `--scope` per row. In the game:
 the next export writes the curve they use then.
 
 <!-- entry: bind:DetentNoAbFull -->
@@ -673,7 +695,7 @@ reads the throttle axis live. Needs the relation bound to a device axis. Nothing
 
 <!-- entry: OpenDetentMergeCommand -->
 **Merge my throttle relations...** looks for per-aircraft throttle relations on one device axis and shows a merge plan
-per axis. Nothing changes until **Merge**; **Undo merge** takes it back. Engine: [[cli:binds detent merge]].
+per axis. Untick relations to keep them apart. Nothing changes until **Merge**; **Undo merge** takes it back. Engine: [[cli:binds detent merge]].
 
 <!-- entry: SetDetentGroupAbCommand -->
 Detent mode, an aircraft group: **Set** gives every aircraft of the group the afterburner start you typed, in % of the
@@ -701,22 +723,27 @@ the user curve, slider and the game's own settings) to the same games or aircraf
 there); on, it gets this axis's invert as well.
 
 <!-- entry: MakeExtraBindMainCommand -->
-**Make main** (More inputs, experimental): this input becomes the relation's main input and the old main input becomes
+**Make main** (More inputs): this input becomes the relation's main input and the old main input becomes
 an extra one. Games that keep only one input per action get the main input, so this decides which one they use. One
 Ctrl+Z takes it back.
 
 <!-- entry: RemoveExtraBindCommand -->
-**Remove** (More inputs, experimental): takes this extra input off the relation, with its modifiers and its axis curve.
+**Remove** (More inputs): takes this extra input off the relation, with its modifiers and its axis curve.
 The main input and the relation's actions stay. One Ctrl+Z puts it back.
 
 <!-- entry: RecordExtraInputCommand -->
-**Record another input** (More inputs, experimental): press or move the input on any device; it becomes one more input
+**Record another input** (More inputs): press or move the input on any device; it becomes one more input
 of the selected relation, next to the main one. If that input already carries another relation, the Check page lists it
 as an input that does two things.
 
 <!-- entry: AddPickedExtraInputCommand -->
-**Add the input picked by hand** (More inputs, experimental): adds the device and input chosen in the pickers above as
+**Add the input picked by hand** (More inputs): adds the device and input chosen in the pickers above as
 one more input of the selected relation, for an input that is hard to record (a detent, a very light axis).
+
+<!-- entry: bind:SelectedAxisTuningInput -->
+**Input** (Axis response, shown for an axis relation with more than one input): which input the curve, dead zone and
+saturation below belong to. Input 1 is the main input; each other input has its own curve per game and aircraft
+(engine [[cli:binds tuning set]] with `--bind <n>`). Save, Clear and Reload act on the input picked here.
 
 <!-- entry: RefreshCopyDevicesCommand -->
 **Refresh Options** (Copy every bind of a device to another device): builds the two device lists again from the devices

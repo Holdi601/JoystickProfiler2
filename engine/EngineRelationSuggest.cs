@@ -66,6 +66,16 @@ namespace JoyPro.Engine
             public string MapFunctionId = string.Empty;
             public string MapReference = string.Empty;
             public string MapTerm = string.Empty;
+            // The same command in a sister game (EngineSisterGames): the relation's own action it comes from.
+            public readonly SortedSet<string> SisterPlanes = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+            public string SisterFrom = string.Empty;
+            // Your style per game: the function the relation is in two or more other games.
+            public readonly SortedSet<string> GameStylePlanes = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+            public string GameStyleFunction = string.Empty;
+            public string GameStyleFrom = string.Empty;
+            // A game without the relation's direction: its toggle stands in (non-DCS games only).
+            public bool ToggleStandIn;
+            public string StandInFor = string.Empty;
 
             public List<string> Reasons()
             {
@@ -83,6 +93,12 @@ namespace JoyPro.Engine
                     reasons.Add("Closest available function to '" + SlotName + "' in " + Join(SubstitutePlanes) + " (catalog substitute, the aircraft has no exact one).");
                 if (SameIdPlanes.Count > 0)
                     reasons.Add("Same DCS command id in " + Join(SameIdPlanes) + SameIdNote);
+                if (SisterPlanes.Count > 0)
+                    reasons.Add("Same command as " + SisterFrom + " in this relation; " + Join(SisterPlanes) + " has it too (same simulator family).");
+                if (GameStylePlanes.Count > 0)
+                    reasons.Add("Your style: in " + GameStyleFrom + " this relation is '" + GameStyleFunction + "'; '" + Title + "' is that in " + Join(GameStylePlanes) + ".");
+                if (ToggleStandIn)
+                    reasons.Add(Join(MapPlanes) + " has no '" + StandInFor + "' of its own; its toggle does it.");
                 if (TitleReference.Length > 0)
                     reasons.Add("Title matches '" + TitleReference + "' (" + TitleScore.ToString(CultureInfo.InvariantCulture) + "% of the words).");
                 return reasons;
@@ -93,6 +109,12 @@ namespace JoyPro.Engine
             {
                 if (CatalogPlanes.Count > 0)
                     return Reference.Length > 0 ? "Same function as " + Reference : "Function '" + SlotName + "' (catalog)";
+                if (SisterPlanes.Count > 0 && Source == "sister game")
+                    return "Same command as " + SisterFrom;
+                if (ToggleStandIn && Source == "toggle stand-in")
+                    return "Toggle: the game has no '" + StandInFor + "'";
+                if (GameStylePlanes.Count > 0 && Source == "your style per game")
+                    return "Your style: '" + GameStyleFunction + "' in " + GameStyleFrom;
                 if (HabitPlanes.Count > 0)
                     return "Your style: '" + HabitFrom + "' where '" + SlotName + "' is missing";
                 if (MapPlanes.Count > 0 && Source == "function map")
@@ -131,6 +153,12 @@ namespace JoyPro.Engine
         }
 
         private static List<Command> index;
+
+        // Directions a game's toggle may stand in for when the game has no action of its own for it.
+        private static readonly HashSet<string> ToggleStandInDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "on", "off", "open", "close", "start", "stop", "extend", "retract", "up", "down", "arm", "safe", "lock", "unlock"
+        };
 
         private static readonly HashSet<string> StopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -239,12 +267,39 @@ namespace JoyPro.Engine
             return result;
         }
 
+        private static readonly string[][] OppositeDirs =
+        {
+            new[] { "on", "off" }, new[] { "start", "stop" }, new[] { "up", "down" }, new[] { "in", "out" }, new[] { "open", "close" }, new[] { "extend", "retract" },
+            new[] { "increase", "decrease" }, new[] { "inc", "dec" }, new[] { "left", "right" }, new[] { "fwd", "aft" }, new[] { "arm", "safe" }, new[] { "lock", "unlock" }
+        };
+
+        // The candidate does the opposite of the relation's own direction (on / off, start / stop, up / down ...), whatever
+        // rule suggests it (a toggle stand-in or your style too): never into the same relation.
+        private static bool OppositeDirection(Candidate candidate, Context context)
+        {
+            EngineFunctionMap.Entry entry;
+            if (context.Map == null || !context.Map.ByKey.TryGetValue(candidate.Game + "|" + candidate.Id + "|" + (candidate.Game == "DCS" ? candidate.Planes.FirstOrDefault() ?? string.Empty : candidate.Game), out entry))
+                return false;
+            foreach (MapMeaning meaning in (context.LastMapMeanings ?? new List<MapMeaning>()).Where(m => m.Weight >= 0.99 && m.Dir.Length > 0))
+            {
+                EngineFunctionMap.Assignment a = entry.Of(meaning.Function.Id);
+                if (a == null || a.Weight < 0.9 || a.Dir.Length == 0)
+                    continue;
+                string x = a.Dir.ToLowerInvariant(), y = meaning.Dir.ToLowerInvariant();
+                if (OppositeDirs.Any(p => (p[0] == x && p[1] == y) || (p[1] == x && p[0] == y)) &&
+                    !context.LastMapMeanings.Any(m => m.Weight >= 0.99 && m.Function == meaning.Function && string.Equals(m.Dir, a.Dir, StringComparison.OrdinalIgnoreCase)))
+                    return true;
+            }
+            return false;
+        }
+
         // The candidate is the relation's function in another direction (the relation's main meaning has one).
         private static bool OtherDirection(Candidate candidate, Context context, out string wanted)
         {
             wanted = string.Empty;
-            // The manual-checked function catalog decides itself.
-            if (candidate.CatalogPlanes.Count > 0)
+            // The manual-checked function catalog decides itself; a toggle that stands in for a missing direction, the
+            // same command as a sister game's and your style per game are meant.
+            if (candidate.CatalogPlanes.Count > 0 || candidate.ToggleStandIn || candidate.SisterPlanes.Count > 0 || candidate.GameStylePlanes.Count > 0)
                 return false;
             MapMeaning meaning = (context.LastMapMeanings ?? new List<MapMeaning>()).FirstOrDefault(m => m.Weight >= 0.99 && m.Dir.Length > 0);
             EngineFunctionMap.Entry entry;
@@ -253,6 +308,10 @@ namespace JoyPro.Engine
                 return false;
             EngineFunctionMap.Assignment a = entry.Of(meaning.Function.Id);
             if (a == null || a.Dir.Length == 0 || a.Weight < 0.9 || string.Equals(a.Dir, meaning.Dir, StringComparison.OrdinalIgnoreCase))
+                return false;
+            // Another full meaning of the same function has this direction ("Gear Emergency Extend": down by its name, a
+            // toggle by its first action).
+            if (context.LastMapMeanings.Any(m => m.Weight >= 0.99 && m.Function == meaning.Function && string.Equals(m.Dir, a.Dir, StringComparison.OrdinalIgnoreCase)))
                 return false;
             wanted = EngineFunctionMap.Describe(meaning.Function, meaning.Dir, false).ToLowerInvariant();
             return true;
@@ -364,19 +423,31 @@ namespace JoyPro.Engine
         // relations suggest --all --missing: per relation what it lacks (games and aircraft it has no action for yet),
         // only actions no other relation uses; the ones another relation uses are counted (UsedElsewhere). The fast
         // sources only (function catalog, same id, your style), like the summary.
-        public static EngineRelationSuggestResult Missing(string minConfidence, int perRelation)
+        // games: only these games (GameKey; the GUI passes the installed ones, so a user with one game gets no list of
+        // games he does not have); null or empty = all.
+        public static EngineRelationSuggestResult Missing(string minConfidence, int perRelation, ICollection<string> games = null)
         {
             EngineRelationSuggestResult result = new EngineRelationSuggestResult();
             Context context = Context.Load(result.Warnings);
             int min = Rank(minConfidence);
+            HashSet<string> gameFilter = new HashSet<string>((games ?? new List<string>()).Select(GameKey).Where(g => g.Length > 0), StringComparer.OrdinalIgnoreCase);
+            // A relation already bound to an input keeps the auto setup's rules for it (EngineBindGuard).
+            EngineBindGuard guard = EngineBindGuard.Load(result.Warnings, context.Map);
             foreach (Relation relation in InternalDataManagement.AllRelations.Values.Where(r => r != null && r.NODES != null && r.NODES.Count > 0)
                          .OrderBy(r => r.NAME, StringComparer.OrdinalIgnoreCase))
             {
                 Coverage coverage = Coverage.Of(relation);
                 List<EngineRelationSuggestion> free = new List<EngineRelationSuggestion>();
                 int elsewhere = 0;
-                foreach (Candidate candidate in Build(relation, context, false).Where(c => Rank(Confidence(c.Score)) >= min))
+                foreach (Candidate candidate in Build(relation, context, false).Where(c => Rank(Confidence(c.Score)) >= min && (gameFilter.Count == 0 || gameFilter.Contains(c.Game))))
                 {
+                    // Fill all never puts the other direction of the relation's function into it (gear up into Gear Down,
+                    // lights off into Lights On, engine stop into Engine Start): one input would do both.
+                    string wantedDirection;
+                    if (!relation.ISAXIS && (OtherDirection(candidate, context, out wantedDirection) || OppositeDirection(candidate, context)))
+                        continue;
+                    if (guard != null && candidate.Planes.DefaultIfEmpty(candidate.Game).Any(plane => guard.Veto(relation, candidate.Game, candidate.Id, plane).Length > 0))
+                        continue;
                     EngineRelationSuggestion suggestion = new EngineRelationSuggestion
                     {
                         Game = candidate.Game,
@@ -926,11 +997,30 @@ namespace JoyPro.Engine
             // game and aircraft, also the ones the catalog does not know; same direction, same kind (axis / button).
             List<MapMeaning> mapMeanings = verdict.NoFunction ? new List<MapMeaning>() : context.MapMeaningsOf(relation, mine);
             context.LastMapMeanings = mapMeanings;
+            // The games (not DCS) the relation already has a switched-on action of.
+            HashSet<string> coveredGames = new HashSet<string>((relation.NODES ?? new List<RelationItem>())
+                .Where(n => n != null && GameKey(n.Game ?? string.Empty) != "DCS" && (n.AIRCRAFT == null || n.AIRCRAFT.Count == 0 || n.AIRCRAFT.Values.Any(v => v)))
+                .Select(n => GameKey(n.Game)), StringComparer.OrdinalIgnoreCase);
             foreach (MapMeaning meaning in mapMeanings)
             {
                 List<EngineFunctionMap.Entry> entries;
                 if (!context.Map.ByFunction.TryGetValue(meaning.Function.Id, out entries))
                     continue;
+                // A game (not DCS) that has no action of this direction: its toggle of the function stands in (learned
+                // 2026-11-04: Cliffs of Dover's canopy toggle in "Canopy close", IL-2 1946's and Tiny Combat Arena's
+                // engine toggle in "LEFT engine START"). DCS aircraft keep their toggles in the toggle relation (the
+                // Ka-50 gear toggle was moved out of GearIn the same day).
+                bool standInDir = !relation.ISAXIS && meaning.Weight >= 0.99 && ToggleStandInDirs.Contains(meaning.Dir);
+                HashSet<string> withDir = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                if (standInDir)
+                {
+                    foreach (EngineFunctionMap.Entry e in entries.Where(e => e.Command.Game != "DCS" && !e.Command.IsAxis))
+                    {
+                        EngineFunctionMap.Assignment x = e.Of(meaning.Function.Id);
+                        if (x != null && x.Weight >= 0.45 && string.Equals(x.Dir, meaning.Dir, StringComparison.OrdinalIgnoreCase))
+                            withDir.Add(e.Command.Game);
+                    }
+                }
                 foreach (EngineFunctionMap.Entry entry in entries)
                 {
                     Command command = entry.Command;
@@ -939,13 +1029,27 @@ namespace JoyPro.Engine
                     EngineFunctionMap.Assignment a = entry.Of(meaning.Function.Id);
                     if (EngineIdMeanings.CatalogAgainstTitle(entry, a))
                         continue;
-                    if (a == null || a.Weight < 0.45 || !EngineFunctionMap.DirCompatible(a.Dir, meaning.Dir, command.IsAxis))
+                    if (a == null || a.Weight < 0.45)
                         continue;
+                    bool standIn = false;
+                    if (!EngineFunctionMap.DirCompatible(a.Dir, meaning.Dir, command.IsAxis))
+                    {
+                        standIn = standInDir && command.Game != "DCS" && a.Weight >= 0.9 && (a.Dir == "toggle" || a.Dir.Length == 0) &&
+                                  !withDir.Contains(command.Game) && !coveredGames.Contains(command.Game) &&
+                                  !mapMeanings.Any(m => m.Function == meaning.Function && EngineFunctionMap.DirCompatible(a.Dir, m.Dir, false));
+                        if (!standIn)
+                            continue;
+                    }
                     // Full agreement of a title that names the function is high; a game term, a side reading or a
                     // second function of the action is medium.
                     double strength = meaning.Weight * a.Weight;
-                    int score = (int)Math.Round(50 + 30 * strength + (a.InTitle || a.Source == "catalog" ? 5 : 0));
-                    Candidate candidate = Get(candidates, command, score, "function map");
+                    int score = standIn ? 62 : (int)Math.Round(50 + 30 * strength + (a.InTitle || a.Source == "catalog" ? 5 : 0));
+                    Candidate candidate = Get(candidates, command, score, standIn ? "toggle stand-in" : "function map");
+                    if (standIn)
+                    {
+                        candidate.ToggleStandIn = true;
+                        candidate.StandInFor = EngineFunctionMap.Describe(meaning.Function, meaning.Dir, false).ToLowerInvariant();
+                    }
                     candidate.Planes.Add(command.Plane);
                     candidate.MapPlanes.Add(Display(command.Game, command.Plane));
                     if (candidate.MapFunction.Length == 0 || score >= candidate.Score)
@@ -954,6 +1058,109 @@ namespace JoyPro.Engine
                         candidate.MapFunctionId = meaning.Function.Id;
                         candidate.MapReference = meaning.Reference;
                         candidate.MapTerm = a.Term;
+                    }
+                }
+            }
+
+            // 4b. The same command in a sister game (EngineSisterGames: MSFS 2020/2024 and FSX/Prepar3D share the SimConnect
+            // events, X-Plane 11/12, IL-2 Great Battles/Korea, Cliffs of Dover/Blitz, Arma 2/OA/3, Battlefield 2042/6).
+            // Learned 2026-11-04: every MSFS action of the reworked profile went into FSX/Prepar3D, every X-Plane 12 one into 11.
+            // A sister game that has another action in the relation already gets it as medium only.
+            // (not from a catalog substitute: MSFS's smoke toggle stands in on the CMS forward switch by design; the
+            // sister games' smoke system is no countermeasure - review 5 M5)
+            foreach (Command own in mine.Where(m => m.Game != "DCS" && !(context.LastSlot != null && context.IsSubstitute(context.LastSlot.Id, m.Game, m.Id, m.Plane))))
+            {
+                foreach (string sister in EngineSisterGames.Of(own.Game))
+                {
+                    foreach (string id in EngineSisterGames.Ids(own.Game, own.Id, sister))
+                    {
+                        Command command = context.Find(sister, id, sister);
+                        if (command == null)
+                            continue;
+                        if (command.IsAxis != relation.ISAXIS || present.Contains(sister + "|" + NodeId(sister, command.Id) + "|" + sister) || !allowed(sister, sister))
+                            break;
+                        Candidate candidate = Get(candidates, command, coveredGames.Contains(sister) ? 70 : 90, "sister game");
+                        candidate.Planes.Add(sister);
+                        candidate.SisterPlanes.Add(sister);
+                        if (candidate.SisterFrom.Length == 0)
+                            candidate.SisterFrom = EngineGameWords.Label(own.Game) + " '" + own.Title + "'";
+                        break;
+                    }
+                }
+            }
+
+            // 4c. Your style per game: the function the relation is in two or more other games (not DCS; the relation's
+            // main function is step 4) goes for a game the relation lacks. Learned 2026-11-04: "RPM Increase" holds the
+            // throttle-up button of VTOL VR and X4, so Arma's "Collective up" and Tiny Combat Arena's "Throttle Up" fit
+            // too; "TMS Right" holds MSFS's heading bug right, so X-Plane's "Autopilot heading up" fits.
+            if (!verdict.NoFunction && context.Map != null)
+            {
+                Dictionary<string, SortedSet<string>> styleGames = new Dictionary<string, SortedSet<string>>(StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, EngineFunctionMap.Assignment> styleKeys = new Dictionary<string, EngineFunctionMap.Assignment>(StringComparer.OrdinalIgnoreCase);
+                foreach (Command own in mine.Where(m => m.Game != "DCS"))
+                {
+                    EngineFunctionMap.Entry entry;
+                    if (!context.Map.ByKey.TryGetValue(own.Game + "|" + own.Id + "|" + own.Plane, out entry))
+                        continue;
+                    foreach (EngineFunctionMap.Assignment a in entry.Functions.Where(f => f.Weight >= 0.5))
+                    {
+                        string key = a.Function.Id + "|" + a.Dir;
+                        SortedSet<string> games;
+                        if (!styleGames.TryGetValue(key, out games))
+                            styleGames[key] = games = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+                        games.Add(own.Game);
+                        styleKeys[key] = a;
+                    }
+                }
+                HashSet<string> mainKeys = new HashSet<string>(mapMeanings.Where(m => m.Weight >= 0.5).Select(m => m.Function.Id + "|" + m.Dir), StringComparer.OrdinalIgnoreCase);
+                // Games that have the relation's own function: they get that (step 4), not a stand-in of your style.
+                HashSet<string> haveMain = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (MapMeaning m in mapMeanings.Where(x => x.Weight >= 0.99))
+                {
+                    List<EngineFunctionMap.Entry> own;
+                    if (!context.Map.ByFunction.TryGetValue(m.Function.Id, out own))
+                        continue;
+                    foreach (EngineFunctionMap.Entry e in own.Where(e => e.Command.Game != "DCS" && e.Command.IsAxis == relation.ISAXIS))
+                    {
+                        EngineFunctionMap.Assignment x = e.Of(m.Function.Id);
+                        if (x != null && x.Weight >= 0.9 && EngineFunctionMap.DirCompatible(x.Dir, m.Dir, e.Command.IsAxis))
+                            haveMain.Add(e.Command.Game);
+                    }
+                }
+                // The relation's own kinds of function (the map's categories): a stand-in of another kind is only a low lead.
+                HashSet<string> mainCategories = new HashSet<string>(mapMeanings.Where(m => m.Weight >= 0.5).Select(m => m.Function.Category ?? string.Empty), StringComparer.OrdinalIgnoreCase);
+                foreach (KeyValuePair<string, SortedSet<string>> style in styleGames.Where(g => g.Value.Count >= 2 && !mainKeys.Contains(g.Key)))
+                {
+                    EngineFunctionMap.Assignment from = styleKeys[style.Key];
+                    EngineFunctionMap.Function f = from.Function;
+                    // Your style counts once per simulator family (MSFS 2020 and 2024 are one sim, Arma 2 and Arma 2 OA too):
+                    // a stand-in seen in one family only, or of another kind than the relation's own function, is offered
+                    // as a low lead (Fill all takes medium and up): 'NS430 LBD' is no wheel brake, 'AI menu up' no Esc menu.
+                    bool strong = style.Value.Select(EngineSisterGames.Family).Distinct(StringComparer.OrdinalIgnoreCase).Count() >= 2 &&
+                                  (mainCategories.Count == 0 || mainCategories.Contains(f.Category ?? string.Empty));
+                    if ((f.Only == "axis" && !relation.ISAXIS) || (f.Only == "button" && relation.ISAXIS))
+                        continue;
+                    List<EngineFunctionMap.Entry> entries;
+                    if (!context.Map.ByFunction.TryGetValue(f.Id, out entries))
+                        continue;
+                    string label = string.Join(", ", style.Value.Select(EngineGameWords.Label).Distinct());
+                    foreach (EngineFunctionMap.Entry entry in entries)
+                    {
+                        Command command = entry.Command;
+                        if (command.Game == "DCS" || coveredGames.Contains(command.Game) || haveMain.Contains(command.Game) || command.IsAxis != relation.ISAXIS ||
+                            present.Contains(command.Game + "|" + command.Id + "|" + command.Plane) || !allowed(command.Game, command.Plane))
+                            continue;
+                        EngineFunctionMap.Assignment a = entry.Of(f.Id);
+                        if (a == null || a.Weight < 0.9 || !(EngineFunctionMap.DirCompatible(a.Dir, from.Dir, command.IsAxis) || (!command.IsAxis && a.Dir.Length == 0)))
+                            continue;
+                        Candidate candidate = Get(candidates, command, strong ? 72 : 40, "your style per game");
+                        candidate.Planes.Add(command.Plane);
+                        candidate.GameStylePlanes.Add(Display(command.Game, command.Plane));
+                        if (candidate.GameStyleFunction.Length == 0)
+                        {
+                            candidate.GameStyleFunction = EngineFunctionMap.Describe(f, from.Dir, command.IsAxis);
+                            candidate.GameStyleFrom = label;
+                        }
                     }
                 }
             }
@@ -1002,7 +1209,32 @@ namespace JoyPro.Engine
                 }
                 kept.Add(candidate);
             }
+            // With head tracking or VR (the profile's wizard answer): nothing for looking around in the sims that support
+            // it, neither into a look relation nor a look command into another one (the recenter stays).
+            if (EngineSetupWizard.ProfileHeadTrackingAnswer() == "yes")
+            {
+                bool lookRelation = (context.LastSlot != null && JoyPro.Setup.SetupPlanner.HeadTrackingLook.IsMatch(context.LastSlot.Id)) ||
+                                    (context.LastMapMeanings ?? new List<MapMeaning>()).Any(m => m.Weight >= 0.99 && (m.Function.Id == "view_look" || m.Function.Id == "view_padlock"));
+                kept.RemoveAll(c => JoyPro.Setup.SetupPlanner.HeadTrackingGame(c.Game) && (lookRelation || LookCommand(context, c)));
+            }
             return kept;
+        }
+
+        // A look-around command (snap view, look axis: function map "view_look"), not the recenter.
+        private static bool LookCommand(Context context, Candidate candidate)
+        {
+            if (context.Map == null)
+                return false;
+            foreach (string plane in candidate.Game == "DCS" ? candidate.Planes.ToList() : new List<string> { candidate.Game })
+            {
+                EngineFunctionMap.Entry entry;
+                if (!context.Map.ByKey.TryGetValue(candidate.Game + "|" + candidate.Id + "|" + plane, out entry))
+                    continue;
+                EngineFunctionMap.Assignment look = entry.Of("view_look") ?? entry.Of("view_padlock");
+                if (look != null && look.Weight >= 0.5 && entry.Of("view_center") == null)
+                    return true;
+            }
+            return false;
         }
 
         // The catalog files this command under a function only by its slot, while its own title names another function
@@ -1556,9 +1788,26 @@ namespace JoyPro.Engine
                         // A function the name only "describes" (a stray number: "A10" ~ "F10 map") does not count when
                         // the name names a function by its own words ("DMS").
                         bool named = u.Functions.Any(x => !x.Related && !x.Described);
-                        foreach (EngineFunctionMap.Resolved r in u.Functions.Where(x => !x.Related && !(named && x.Described)))
+                        // What the commands are wins over a word of the name of another kind: "Mode - A2A - CAS" is a master
+                        // mode relation (close air support), not the CAS of a flight control system.
+                        // Every function one of the relation's commands is (also where too few agree to cover it): a name
+                        // word of another kind ("UFC COMM1" is no HOTAS comm switch, "Radar Frequency Down" no radio
+                        // channel) is no lead then.
+                        List<EngineFunctionMap.Function> byCommands = keys.Values.Select(k => k.Key).Distinct().ToList();
+                        List<EngineFunctionMap.Resolved> named2 = u.Functions.Where(x => !x.Related && !(named && x.Described)).ToList();
+                        // Without a lead from the commands, a name that reads as functions of different kinds keeps the
+                        // one that takes most of its words ("Radar Prev Mode F1": the radar mode, not F1 = cockpit view).
+                        int mostWords = named2.Count == 0 ? 0 : named2.Max(x => x.Covered);
+                        foreach (EngineFunctionMap.Resolved r in named2)
                         {
                             if ((r.Function.Only == "axis" && !relation.ISAXIS) || (r.Function.Only == "button" && relation.ISAXIS))
+                                continue;
+                            if (byCommands.Count == 0 && r.Covered < mostWords &&
+                                !named2.Any(x => x.Covered == mostWords && string.Equals(x.Function.Category, r.Function.Category, StringComparison.OrdinalIgnoreCase)))
+                                continue;
+                            if (byCommands.Count > 0 && !byCommands.Any(f => f == r.Function || string.Equals(f.Category, r.Function.Category, StringComparison.OrdinalIgnoreCase) ||
+                                                                             f.Related.Contains(r.Function.Id, StringComparer.OrdinalIgnoreCase) ||
+                                                                             r.Function.Related.Contains(f.Id, StringComparer.OrdinalIgnoreCase)))
                                 continue;
                             string dir = relation.ISAXIS && !r.Function.AxisDirs ? string.Empty : r.Dir;
                             string key = r.Function.Id + "|" + dir;
@@ -1808,6 +2057,64 @@ namespace JoyPro.Engine
             foreach (string error in result.Errors)
                 sb.AppendLine("Error: " + error);
             return sb.ToString();
+        }
+    }
+
+    // Games that share their command ids: one simulator's other edition or engine, where the same id is the same command.
+    // MSFS 2020/2024 send the SimConnect events of FSX/Prepar3D with a "KEY_" in front (KEY_AP_MASTER = AP_MASTER).
+    internal static class EngineSisterGames
+    {
+        private static readonly string[][] Families =
+        {
+            new[] { "MSFS2020", "MSFS2024", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6" },
+            new[] { "XPlane11", "XPlane12" },
+            new[] { "IL2Game", "IL2Korea" },
+            new[] { "IL2CoD", "IL2CoDBlitz" },
+            new[] { "Arma2", "Arma2OA", "Arma3" },
+            new[] { "Battlefield2042", "Battlefield6" }
+        };
+
+        // The family a game belongs to (its first member), or the game itself.
+        public static string Family(string game)
+        {
+            foreach (string[] family in Families)
+            {
+                if (family.Contains(game ?? string.Empty, StringComparer.OrdinalIgnoreCase))
+                    return family[0];
+            }
+            return game ?? string.Empty;
+        }
+
+        public static IEnumerable<string> Of(string game)
+        {
+            foreach (string[] family in Families)
+            {
+                if (family.Contains(game ?? string.Empty, StringComparer.OrdinalIgnoreCase))
+                    return family.Where(g => !string.Equals(g, game, StringComparison.OrdinalIgnoreCase));
+            }
+            return Enumerable.Empty<string>();
+        }
+
+        private static bool IsMsfs(string game)
+        {
+            return (game ?? string.Empty).StartsWith("MSFS", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // The id the command has in the sister game, most likely first.
+        public static IEnumerable<string> Ids(string fromGame, string id, string toGame)
+        {
+            id = id ?? string.Empty;
+            if (IsMsfs(fromGame) && !IsMsfs(toGame))
+            {
+                if (id.StartsWith("KEY_", StringComparison.OrdinalIgnoreCase))
+                    yield return id.Substring(4);
+                else
+                    yield return id;
+                yield break;
+            }
+            if (!IsMsfs(fromGame) && IsMsfs(toGame))
+                yield return "KEY_" + id;
+            yield return id;
         }
     }
 

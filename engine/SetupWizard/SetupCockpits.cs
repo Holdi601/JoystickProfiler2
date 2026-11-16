@@ -197,6 +197,71 @@ namespace JoyPro.Setup
             return added;
         }
 
+        // Aircraft-specific HOTAS positions and the generic F-16C / A-10C II position they correspond to
+        // (DB\Functions\hotas-equivalence.json, from ED's own HOTAS Warthog default profile of each module): the F/A-18's
+        // sensor control switch is where the F-16's TMS is, so a device control that stands in for the TMS is also the
+        // Hornet's SCS. Each position gets its generic name next to its own; a key with a direction (or a full name) wins
+        // over a shorter prefix key. Returns the positions added.
+        public int AddEquivalence(string json, List<string> warnings)
+        {
+            object root;
+            try
+            {
+                root = MiniJson.Parse(json ?? string.Empty);
+            }
+            catch (Exception ex)
+            {
+                if (warnings != null)
+                    warnings.Add("hotas-equivalence.json could not be read: " + ex.Message);
+                return 0;
+            }
+            IDictionary<string, object> planes = Get(root as IDictionary<string, object> ?? new Dictionary<string, object>(), "aircraft") as IDictionary<string, object>;
+            if (planes == null)
+                return 0;
+            int added = 0;
+            foreach (KeyValuePair<string, object> plane in planes)
+            {
+                IDictionary<string, object> pairs = plane.Value as IDictionary<string, object>;
+                Dictionary<string, List<string>> map;
+                if (pairs == null || !byAircraft.TryGetValue(plane.Key, out map))
+                    continue;
+                List<KeyValuePair<string, string>> keys = pairs.Select(p => new KeyValuePair<string, string>(p.Key.Trim(), Convert.ToString(p.Value, CultureInfo.InvariantCulture).Trim()))
+                    .Where(p => p.Key.Length > 0 && p.Value.Length > 0).OrderByDescending(p => p.Key.Length).ToList();
+                foreach (List<string> controls in map.Values)
+                {
+                    foreach (string control in controls.ToList())
+                    {
+                        string generic = Generic(control, keys);
+                        if (generic.Length > 0 && !controls.Contains(generic, StringComparer.OrdinalIgnoreCase))
+                        {
+                            controls.Add(generic);
+                            added++;
+                        }
+                    }
+                }
+            }
+            return added;
+        }
+
+        internal static string Generic(string control, List<KeyValuePair<string, string>> keys)
+        {
+            foreach (KeyValuePair<string, string> key in keys)
+            {
+                if (string.Equals(control, key.Key, StringComparison.OrdinalIgnoreCase))
+                    return key.Value;
+                if (control.StartsWith(key.Key + ".", StringComparison.OrdinalIgnoreCase))
+                    return key.Value + control.Substring(key.Key.Length);
+            }
+            return string.Empty;
+        }
+
+        // The equivalence file next to the function catalog (missing: nothing added).
+        public int AddEquivalenceFile(string functionsFolder, List<string> warnings)
+        {
+            string path = System.IO.Path.Combine(functionsFolder ?? string.Empty, "hotas-equivalence.json");
+            return System.IO.File.Exists(path) ? AddEquivalence(System.IO.File.ReadAllText(path, System.Text.Encoding.UTF8), warnings) : 0;
+        }
+
         private static object Get(IDictionary<string, object> item, string key)
         {
             foreach (KeyValuePair<string, object> pair in item)

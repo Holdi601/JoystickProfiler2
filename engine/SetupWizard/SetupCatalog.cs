@@ -58,7 +58,8 @@ namespace JoyPro.Setup
                         Type = Text(value, "type"),
                         Era = Text(value, "era"),
                         Role = Text(value, "role"),
-                        VariantOf = Text(value, "variant_of")
+                        VariantOf = Text(value, "variant_of"),
+                        Module = Text(value, "module")
                     };
                 }
 
@@ -117,7 +118,8 @@ namespace JoyPro.Setup
                             Action = parts[2],
                             Status = parts[3],
                             Hotas = parts.Length > 4 ? parts[4].Trim() : string.Empty,
-                            Frequency = parts.Length > 5 ? parts[5].Trim() : string.Empty
+                            Frequency = parts.Length > 5 ? parts[5].Trim() : string.Empty,
+                            Control = parts.Length > 6 ? parts[6].Trim() : string.Empty
                         });
                     }
                 }
@@ -154,6 +156,7 @@ namespace JoyPro.Setup
                         {
                             function.MapFunction = Text(item, "id");
                             function.MapCategory = Text(item, "category");
+                            function.MapDir = Text((IDictionary<string, object>)slots, slot);
                         }
                     }
                 }

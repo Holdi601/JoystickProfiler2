@@ -68,6 +68,7 @@ public partial class MainWindow : Window
             e.Container.Classes.Set("groupHeader", (e.Container as ContentControl)?.Content is JoyPro.Gui.Models.RelationNodeOthersHeader);
         AttachNavPagesDrag();
         AttachNavigationHistory();
+        AttachHelpKeys();
         AttachContextMenuLog();
         AttachMarkerAssistantPlace();
         notificationManager = new WindowNotificationManager(this)
@@ -311,6 +312,24 @@ public partial class MainWindow : Window
         vm.LayoutExportPath = path;
     }
 
+    private async void BrowseKneeboardFolderClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm)
+            return;
+
+        IReadOnlyList<IStorageFolder> folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = T("Select the kneeboard folder"),
+            AllowMultiple = false
+        });
+        if (folders.Count == 0)
+            return;
+
+        string? path = GetLocalPath(folders[0]);
+        if (!string.IsNullOrWhiteSpace(path))
+            vm.KneeboardFolder = path;
+    }
+
     private static readonly FilePickerFileType JsonFileType = new("JSON") { Patterns = ["*.json"] };
 
     private async Task<string?> PickJsonToOpenAsync(string title)
@@ -430,6 +449,9 @@ public partial class MainWindow : Window
             // background clean-up starts.
             Dispatcher.UIThread.Post(() => _ = startupVm.AutoOpenLastProfileOnStartupAsync(), DispatcherPriority.Background);
             startupVm.StartHistoryMaintenance();
+            // The layout window was open when JoyPro closed: it comes back on its monitor.
+            if (startupVm.ReopenLayoutWindow)
+                Dispatcher.UIThread.Post(() => startupVm.OpenLayoutWindowCommand.Execute(null), DispatcherPriority.Background);
         }
 
         if (ShouldUseDefaultLayout())
@@ -513,6 +535,9 @@ public partial class MainWindow : Window
             return;
         }
 
+        // The layout window is a window of its own: it closes with JoyPro (and opens again with the next start).
+        closingApp = true;
+        layoutWindow?.Close();
         // The overlay window would keep the app alive.
         (DataContext as MainWindowViewModel)?.StopOverlayForShutdown();
         (DataContext as MainWindowViewModel)?.StopGameConfigWatcher();
@@ -550,6 +575,11 @@ public partial class MainWindow : Window
             UpdateEngineOutputCompactLayout();
     }
 
+    // The view model's confirm handler before this window attached, and this window's own (one delegate, so the detach
+    // can tell it apart).
+    private Func<ConfirmRequest, Task<bool>>? confirmHandlerBefore;
+    private Func<ConfirmRequest, Task<bool>>? ownConfirmHandler;
+
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
         ObserveAppearance(observedViewModel, DataContext as MainWindowViewModel);
@@ -564,6 +594,8 @@ public partial class MainWindow : Window
             observedViewModel.GameSetupRequested -= OnGameSetupRequested;
             observedViewModel.ReplaceDeviceDialogRequested -= OnReplaceDeviceDialogRequested;
             observedViewModel.SetupWizardRequested -= OnSetupWizardRequested;
+            HelpLayer.Detach();
+            observedViewModel.LayoutWindowRequested -= OnLayoutWindowRequested;
             observedViewModel.NewRelationFormRequested -= OnNewRelationFormRequested;
             observedViewModel.AssistantFocusRequested -= OnAssistantFocusRequested;
             observedViewModel.SettingsSectionFocusRequested -= OnSettingsSectionFocusRequested;
@@ -571,12 +603,19 @@ public partial class MainWindow : Window
             observedViewModel.FollowInputActivity -= OnFollowInputActivity;
             observedViewModel.FollowInputJumped -= OnFollowInputActivity;
             observedViewModel.RelationNodeScrollRequested -= OnRelationNodeScrollRequested;
+            observedViewModel.RelationNodeSelectAllRequested -= OnRelationNodeSelectAllRequested;
+            observedViewModel.RelationNodeSelectionClearRequested -= OnRelationNodeSelectionClearRequested;
             observedViewModel.MultiViewRedraw -= OnMultiViewRedraw;
             observedViewModel.NavBarChanged -= OnNavBarChanged;
             observedViewModel.RelationFilter.PropertyChanged -= OnRelationSearchChanged;
             observedViewModel.BindFilter.PropertyChanged -= OnBindSearchChanged;
             observedViewModel.TextInputFocusProbe = null;
-            observedViewModel.ConfirmHandler = null;
+            // The handler the view model had before this window took it over comes back (a test's recording handler
+            // stays in place across a render; null only when there was none): a question is never answered "yes"
+            // silently because a window let go of the model.
+            if (observedViewModel.ConfirmHandler == ownConfirmHandler)
+                observedViewModel.ConfirmHandler = confirmHandlerBefore;
+            confirmHandlerBefore = null;
             if (ReferenceEquals(observedViewModel.NavigationScrollHost, this))
                 observedViewModel.NavigationScrollHost = null;
             CancelPendingScrollRestore();
@@ -601,6 +640,8 @@ public partial class MainWindow : Window
             observedViewModel.GameSetupRequested += OnGameSetupRequested;
             observedViewModel.ReplaceDeviceDialogRequested += OnReplaceDeviceDialogRequested;
             observedViewModel.SetupWizardRequested += OnSetupWizardRequested;
+            AttachHelpLayer(observedViewModel);
+            observedViewModel.LayoutWindowRequested += OnLayoutWindowRequested;
             observedViewModel.NewRelationFormRequested += OnNewRelationFormRequested;
             observedViewModel.AssistantFocusRequested += OnAssistantFocusRequested;
             observedViewModel.SettingsSectionFocusRequested += OnSettingsSectionFocusRequested;
@@ -609,8 +650,14 @@ public partial class MainWindow : Window
             // Every jump arms the tooltip hold (again), whatever input caused it.
             observedViewModel.FollowInputJumped += OnFollowInputActivity;
             observedViewModel.RelationNodeScrollRequested += OnRelationNodeScrollRequested;
+            observedViewModel.RelationNodeSelectAllRequested += OnRelationNodeSelectAllRequested;
+            observedViewModel.RelationNodeSelectionClearRequested += OnRelationNodeSelectionClearRequested;
             observedViewModel.TextInputFocusProbe = TextBoxHasFocus;
-            observedViewModel.ConfirmHandler = AskConfirmationAsync;
+            // A handler set before (a test's recording one) stays: this window only answers questions nobody else does.
+            confirmHandlerBefore = observedViewModel.ConfirmHandler;
+            ownConfirmHandler ??= AskConfirmationAsync;
+            if (confirmHandlerBefore == null)
+                observedViewModel.ConfirmHandler = ownConfirmHandler;
             // Back / Forward keep the scroll positions of the page's lists.
             observedViewModel.NavigationScrollHost = this;
             // The output panel's place follows the view model (hidden when closed) from the first layout on.
@@ -815,13 +862,52 @@ public partial class MainWindow : Window
             return;
         if (setupWizardWindow != null)
         {
+            // A new wizard (the quick setup picked again): the open window shows it, never an old one.
+            if (!ReferenceEquals(setupWizardWindow.DataContext, vm.SetupWizard))
+                setupWizardWindow.DataContext = vm.SetupWizard;
             setupWizardWindow.Activate();
             return;
         }
         setupWizardWindow = new SetupWizardWindow { DataContext = vm.SetupWizard };
-        setupWizardWindow.Closed += (_, _) => setupWizardWindow = null;
+        setupWizardWindow.Closed += (_, _) =>
+        {
+            setupWizardWindow = null;
+            // A tour card that waits for this window goes on (or shows its step again).
+            (DataContext as MainWindowViewModel)?.OnSetupWizardWindowClosed();
+        };
         WindowFit.ToScreen(setupWizardWindow, this);
         setupWizardWindow.Show(this);
+    }
+
+    private LayoutWindow? layoutWindow;
+    private bool closingApp;
+
+    // The layout window (docs/setup-wizard.md#layout-window): one window of its own (not owned, so it can stay on a second
+    // monitor and stays when the main window is minimized), brought to the front on every further request.
+    private void OnLayoutWindowRequested()
+    {
+        if (DataContext is not MainWindowViewModel vm || vm.LayoutWindow == null)
+            return;
+        if (layoutWindow != null)
+        {
+            if (layoutWindow.WindowState == WindowState.Minimized)
+                layoutWindow.WindowState = WindowState.Normal;
+            layoutWindow.Activate();
+            return;
+        }
+        layoutWindow = new LayoutWindow { DataContext = vm.LayoutWindow, SettingsSaved = vm.SaveLayoutWindowSettings };
+        layoutWindow.Restore(this);
+        layoutWindow.Closed += (_, _) =>
+        {
+            layoutWindow = null;
+            // JoyPro closing: the window opens again with the next start.
+            if (!closingApp)
+                vm.LayoutWindowOpenChanged(false);
+            else
+                vm.SaveLayoutWindowSettings();
+        };
+        layoutWindow.Show();
+        vm.LayoutWindowOpenChanged(true);
     }
 
     // Yes/no before an action that changes game files or the profile (MainWindowViewModel.ConfirmAsync).
@@ -902,15 +988,34 @@ public partial class MainWindow : Window
         vm.SetRelationMassSelection(listBox.SelectedItems.OfType<RelationListItem>());
     }
 
-    // A click on an action of the open relation (not on its remove button) opens or closes its aircraft.
+    // A click on an action of the open relation (not on its remove button) opens or closes its aircraft; Ctrl/Shift+click
+    // only selects (several actions: MainWindowViewModel.RelationMultiSelect.cs).
     private void RelationNodeHeaderTapped(object? sender, TappedEventArgs e)
     {
         if (DataContext is not MainWindowViewModel vm || sender is not Control { DataContext: RelationNodeItem node })
+            return;
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Shift))
             return;
         if (e.Source is Visual source && source.GetSelfAndVisualAncestors().TakeWhile(v => !ReferenceEquals(v, sender)).Any(v => v is Button))
             return;
         vm.ToggleNodeAircraftCommand.Execute(node);
     }
+
+    // The editor's selected actions (the fold header "Other aircraft" is no action).
+    private void RelationNodeListSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm || sender is not ListBox listBox)
+            return;
+        vm.SetRelationNodeSelection(listBox.SelectedItems?.OfType<RelationNodeItem>() ?? []);
+    }
+
+    private void OnRelationNodeSelectAllRequested(object? sender, EventArgs e)
+    {
+        RelationNodeList.SelectAll();
+        RelationNodeList.Focus();
+    }
+
+    private void OnRelationNodeSelectionClearRequested(object? sender, EventArgs e) => RelationNodeList.SelectedItems?.Clear();
 
     // ---- The order of the open relation's actions: drag by the grip, drop above or below another card; Alt+Up/Down.
 
@@ -1016,10 +1121,38 @@ public partial class MainWindow : Window
         return place > from ? place - 1 : place;
     }
 
-    // Alt+Up / Alt+Down: the selected action one place up or down.
+    // Alt+Up / Alt+Down: the selected action one place up or down. Ctrl+A selects every action, Ctrl+C copies the selected
+    // ones, Ctrl+V pastes copied actions, Del removes the selected ones (asks first).
     private async void RelationNodeListKeyDown(object? sender, KeyEventArgs e)
     {
-        if (DataContext is not MainWindowViewModel vm || !e.KeyModifiers.HasFlag(KeyModifiers.Alt) || vm.SelectedRelationNode == null || e.Source is TextBox)
+        if (DataContext is not MainWindowViewModel vm || e.Source is TextBox)
+            return;
+        bool ctrl = e.KeyModifiers.HasFlag(KeyModifiers.Control);
+        if (ctrl && e.Key == Key.A)
+        {
+            e.Handled = true;
+            RelationNodeList.SelectAll();
+            return;
+        }
+        if (ctrl && e.Key == Key.C && vm.RelationNodeSelectionCount > 0)
+        {
+            e.Handled = true;
+            vm.CopySelectedRelationNodesCommand.Execute(null);
+            return;
+        }
+        if (ctrl && e.Key == Key.V && vm.CanPasteRelationNodes)
+        {
+            e.Handled = true;
+            await vm.PasteRelationNodesCommand.ExecuteAsync(null);
+            return;
+        }
+        if (e.Key == Key.Delete && e.KeyModifiers == KeyModifiers.None && vm.RelationNodeSelectionCount > 0)
+        {
+            e.Handled = true;
+            await vm.DeleteSelectedRelationNodesCommand.ExecuteAsync(null);
+            return;
+        }
+        if (!e.KeyModifiers.HasFlag(KeyModifiers.Alt) || vm.SelectedRelationNode == null)
             return;
         if (e.Key == Key.Up)
         {

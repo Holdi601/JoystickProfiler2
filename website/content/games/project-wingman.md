@@ -17,17 +17,23 @@ gamepad and hats stay as the game has them.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E["engine pw export"]
-  D["Connected devices<br/>(their place in the list)"] --> E
-  E --> I["Input.ini<br/>ActionMappings /<br/>AxisMappings"]
-  E --> S["savegame.sav<br/>curve + dead zone<br/>per axis"]
-  I --> G["Project Wingman: Controls<br/>KEY / AXIS BINDINGS"]
-  S --> C["CURVES + DEADZONES"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep Project Wingman closed
+:::
+
+**Before**: start the game once, then close it. Switch **Steam Input** off for the game.
+
+**Then**: your binds are in the game's **Controls**. Added or removed a controller? Export again.
+
+Did you bind buttons in Project Wingman before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Project Wingman
 
 - **Import**: every joystick bind of the flight actions (pitch, roll, yaw, thrust, the two view axes and the buttons)
@@ -53,9 +59,9 @@ two things in the game.
 ## Export to Project Wingman
 
 1. **Close Project Wingman.** JoyPro refuses to write while it runs.
-2. Open **Export** and tick the Project Wingman tile.
+2. Open **Export** and tick the Project Wingman card.
 3. Keep **Replace on my devices** with **Also clear my other devices**, or pick **Update, keep the game's binds** if
-   you also bind in the game. Press **Export now** on the tile.
+   you also bind in the game. Press **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -133,6 +139,17 @@ are not connected stay.
 
 :::layer technical
 ## Inside the Project Wingman integration
+
+```mermaid
+%% caption: The game numbers a device by its place in its list. Export again after you add or remove a controller.
+flowchart LR
+  P["Your profile<br/>(relations + binds)"] --> E["engine pw export"]
+  D["Connected devices<br/>(their place in the list)"] --> E
+  E --> I["Input.ini<br/>ActionMappings /<br/>AxisMappings"]
+  E --> S["savegame.sav<br/>curve + dead zone<br/>per axis"]
+  I --> G["Project Wingman: Controls<br/>KEY / AXIS BINDINGS"]
+  S --> C["CURVES + DEADZONES"]
+```
 
 Code: `engine\Games\ProjectWingmanIntegration.cs`, `engine\Games\ProjectWingmanSaveGame.cs`,
 `engine\AxisModels\ProjectWingman.cs` (axis model `projectwingman`).

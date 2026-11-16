@@ -72,7 +72,7 @@ DirectInput order. Before 2.4.3 the DirectInput order came first, so an export c
 game had on js1 to another slot. One physical device takes one slot whatever it is called (2.6.0): the game's
 `name  {PIDVID}` in the file, the connected instance `name {instance GUID}` and a stale second entry of the same stick in
 the file are merged before the free slots are filled. Before, a stick the file had on js1 took a second slot under its
-instance name, the 8 slots ran out and devices with binds (the author's Rhino) got none unless
+instance name, the 8 slots ran out and devices with binds (a VPforce Rhino) got none unless
 `--prefer-local-order false`. Two connected devices of one product stay apart.
 
 ## Axis settings (axis model `starcitizen`, `engine\AxisModels\StarCitizen.cs`)

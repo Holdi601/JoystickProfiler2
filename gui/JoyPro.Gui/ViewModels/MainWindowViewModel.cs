@@ -1118,6 +1118,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         InitializeFfbTelemetry(loadPersistedUiSettings);
         InitializeTelemetryRecording(loadPersistedUiSettings);
+        InitializeTours();
         InitializeVirtualJoystick(loadPersistedUiSettings);
         InitializeDesign();
         InitializeProfileHistory();
@@ -1133,6 +1134,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         BusyProgress.OnStartPage = value == UiStage.Start;
         if (value != UiStage.Start)
             OnStartPageLeft();
+        else
+            RequestAutoSetupStatus();
         OnPropertyChanged(nameof(IsRelationsStage));
         if (value == UiStage.Relations)
             BuilderOnScreen();
@@ -2363,6 +2366,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             try
             {
                 // The last profile opened at start leaves the Start page in front; opening a profile by hand shows it.
+                // The aircraft check of the Relations page waits until the profile is open (a notice: it came first
+                // and held the relation list back).
+                loadingProfile = true;
                 if (!openingAtStartup)
                     CurrentStage = UiStage.Relations;
                 await RefreshRelationsAsync();
@@ -2378,7 +2384,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             finally
             {
                 suppressStageAutoRefresh = previousSuppress;
+                loadingProfile = false;
             }
+            if (IsRelationsStage)
+                _ = RefreshAircraftCheckAsync();
         }
     }
 
@@ -4202,9 +4211,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     SaturationX = GetJsonNullableDouble(bindEl, "SaturationX"),
                     SaturationY = GetJsonNullableDouble(bindEl, "SaturationY"),
                     CurvatureCsv = string.Join(",", curvature.Select(v => v.ToString(CultureInfo.InvariantCulture))),
-                    // Experimental multi-bind: the relation's other inputs (MainWindowViewModel.MultiBind.cs).
-                    ExtraBinds = ParseExtraBinds(bindEl, relationName.Trim(), isAxis),
-                    ShowExtraBinds = MultiBindEnabled
+                    // Multi-bind: the relation's other inputs (MainWindowViewModel.MultiBind.cs).
+                    ExtraBinds = ParseExtraBinds(bindEl, relationName.Trim(), isAxis)
                 });
             }
 
@@ -5816,29 +5824,32 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             BindInputValue = capture.Input;
             UpdateRecordTargetContext();
             string captured = capture.Device + " :: " + capture.Input;
+            // What the page says: the device's name as the list shows it (its alias), not the name with the instance GUID
+            // (2.6.5 report); the log keeps the full name.
+            string capturedShown = DeviceLabelForStatus(capture.Device) + " " + capture.Input;
 
             // Record binds: the input goes straight to the relation, as the page promises. When the selection moved
             // on while recording, the fields hold the input and Set Bind applies it.
             string selectedNow = (SelectedBind?.RelationName ?? SelectedRelation?.Name ?? string.Empty).Trim();
             if (!string.Equals(selectedNow, target, StringComparison.OrdinalIgnoreCase))
             {
-                RecordStatusText = T("Captured: {0} (not bound: the selection changed to '{1}'; press Set Bind to use it there).", captured, selectedNow);
+                RecordStatusText = T("Captured: {0} (not bound: the selection changed to '{1}'; press Set Bind to use it there).", capturedShown, selectedNow);
                 StatusText = T("Input captured.");
                 JoyProLog.Info("Record", "Captured " + captured + " for '" + target + "' but the selection changed to '" + selectedNow + "'; not bound");
                 return;
             }
 
-            RecordStatusText = T("Captured: {0}. Binding...", captured);
+            RecordStatusText = T("Captured: {0}. Binding...", capturedShown);
             bool bound = await SetBindFromEditorAsync(target);
             if (bound)
             {
-                RecordStatusText = T("Bound '{0}' to {1}.", target, captured);
-                StatusText = T("Bound {0} to {1}.", target, capture.Input);
+                RecordStatusText = T("Bound '{0}' to {1}.", target, capturedShown);
+                StatusText = T("Bound {0} to {1}.", target, capturedShown);
                 JoyProLog.Info("Record", "Bound '" + target + "' to " + captured);
             }
             else
             {
-                RecordStatusText = T("Captured: {0}, but binding failed: {1}", captured, StatusText);
+                RecordStatusText = T("Captured: {0}, but binding failed: {1}", capturedShown, StatusText);
                 JoyProLog.Warn("Record", "Captured " + captured + " for '" + target + "' but binds set failed: " + StatusText);
             }
         }
@@ -5908,7 +5919,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
             ModifierCreateDevice = capture.Device;
             ModifierCreateInput = capture.Input;
-            RecordStatusText = "Modifier captured: " + capture.Device + " :: " + capture.Input;
+            RecordStatusText = "Modifier captured: " + DeviceLabelForStatus(capture.Device) + " " + capture.Input;
             if (!string.IsNullOrWhiteSpace(captureDiagnostics))
                 RecordStatusText += " | " + captureDiagnostics;
             StatusText = T("Modifier input captured and ready to create.");
@@ -5926,7 +5937,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     ? string.Empty
                     : T(" in relation '{0}'", duplicate.Value.Relation);
                 StatusText = T("Warning: input already used by modifier '{0}'{1}.", duplicate.Value.Name, relationSuffix);
-                RecordStatusText = "Modifier captured: " + capture.Device + " :: " + capture.Input +
+                RecordStatusText = "Modifier captured: " + DeviceLabelForStatus(capture.Device) + " " + capture.Input +
                                    " | Duplicate detected: " + duplicate.Value.Reformer;
                 WarningRequested?.Invoke(StatusText);
             }
@@ -7126,7 +7137,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task ExportDcsAsync() => await RunDcsExportAsync(null);
 
-    // planes: only these aircraft (the ticked ones of the DCS export tile); null = all.
+    // planes: only these aircraft (the ticked ones of the DCS export card); null = all.
     private async Task<EngineCommandResult?> RunDcsExportAsync(IReadOnlyList<string>? planes)
     {
         List<string> args = ["dcs", "export"];
@@ -7316,7 +7327,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         int errorCount = data.ErrorCount, warningCount = data.WarningCount;
         ValidationSummary = errorCount == 0 && warningCount == 0
             ? T("Check done: no problems found.")
-            : T("Check done: {0} errors, {1} warnings.", errorCount, warningCount);
+            : T("Check done: {0}, {1}.", Plural("{0} error", "{0} errors", errorCount), Plural("{0} warning", "{0} warnings", warningCount));
         allValidationIssues.Clear();
         allValidationIssues.AddRange(data.Issues);
         plainCheckCards.Clear();
@@ -7406,6 +7417,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         RebuildLayoutDeviceOptions(BuildLayoutDeviceCandidates());
         UpdateLayoutMapInputFromRememberedMappings(BuildEffectiveLayoutDeviceFilter());
         SeedDcsFfbDeviceSettingsFromKnownDevices();
+        OnAutoSetupDevicesChanged();
     }
 
     [RelayCommand]
@@ -8139,7 +8151,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         bool isCustomCommand = false,
         bool background = false,
         string? historyNote = null,
-        Func<bool>? stillWanted = null)
+        Func<bool>? stillWanted = null,
+        bool countsAsBusy = true)
     {
         List<string> commandList = commandArgs as List<string> ?? commandArgs.ToList();
         // Virtual mode writes into the vJoy device JoyPro tunnels into (Settings): every engine vjoy command gets it, so
@@ -8257,13 +8270,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.Add("--usage-style");
             args.Add("off");
         }
-        // Experimental: several inputs per relation (Settings > Experimental, docs/multi-bind.md). Off: nothing is passed
-        // and the engine uses the main binds only, as before.
-        if (MultiBindEnabled)
-        {
-            args.Add("--multi-bind");
-            args.Add("on");
-        }
+        // Several inputs per relation (docs/multi-bind.md) are on in the engine by default: nothing to pass.
 
         // Parsers need text output; the "Use Text Output" toggle only applies to hand-typed commands.
         if (isCustomCommand ? UseTextOutput : forceText)
@@ -8273,8 +8280,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         // Queue engine calls instead of dropping them: background refreshes started by selection or stage
         // changes would otherwise swallow the user's next click without any feedback.
-        pendingEngineCalls++;
-        IsBusy = true;
+        // A notice nobody waits for (countsAsBusy false) takes its turn in the queue but shows no busy state.
+        if (countsAsBusy)
+        {
+            pendingEngineCalls++;
+            IsBusy = true;
+        }
         await engineCallGate.WaitAsync();
         // An engine command that uses the local AI model holds its idle stop until it ends (docs/natural-language-grouping.md).
         using IDisposable? aiWork = IsAiWorkCommand(commandList) ? llmServerMonitor.BeginWork() : null;
@@ -8369,8 +8380,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         finally
         {
             engineCallGate.Release();
-            pendingEngineCalls--;
-            if (pendingEngineCalls <= 0)
+            if (countsAsBusy)
+                pendingEngineCalls--;
+            if (countsAsBusy && pendingEngineCalls <= 0)
             {
                 pendingEngineCalls = 0;
                 IsBusy = false;
@@ -8408,7 +8420,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     // wizard shows all of it, e.g. every folder an MSFS import searched.
     private string lastEngineFailureReason = string.Empty;
 
-    // "Failed: " in the user's language (the export tiles take the reason out again).
+    // "Failed: " in the user's language (the export cards take the reason out again).
     internal static string FailedPrefix => T("Failed: {0}", string.Empty);
 
     private static string BuildFailureStatus(EngineCommandResult result)
@@ -11104,9 +11116,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         target.SaturationX = source.SaturationX;
         target.SaturationY = source.SaturationY;
         target.CurvatureCsv = source.CurvatureCsv;
-        // Experimental multi-bind: the relation's other inputs and whether they show.
+        // Multi-bind: the relation's other inputs.
         target.ExtraBinds = source.ExtraBinds;
-        target.ShowExtraBinds = source.ShowExtraBinds;
     }
 
     private IEnumerable<BindListItem> ApplyBindSorting(IEnumerable<BindListItem> source)
@@ -11137,7 +11148,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 inputs.Add(relationInput.Trim());
         }
 
-        foreach (BindListItem bind in allBinds)
+        foreach (BindListItem bind in allBinds.SelectMany(b => b.AllInputs()))
         {
             if (!string.IsNullOrWhiteSpace(bind.Device) && !bind.Device.Equals("<unbound>", StringComparison.OrdinalIgnoreCase))
                 devices.Add(bind.Device.Trim());
@@ -12306,12 +12317,17 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 LastProfilePath = state.LastProfilePath.Trim();
             LoadLastProfileOnStartup = state.AutoOpenLastProfile ?? true;
             gameSetupDone = state.GameSetupDone;
+            toursState = state.Tours ?? new ToursSettings();
+            ToursEveryFeature = toursState.EveryFeature;
+            EasyWords = toursState.EasyWords;
             WatchGameConfigs = state.WatchGameConfigs;
             gameWatchChoices = new JoyPro.Watch.GameWatchChoices(state.WatchedGames);
             StartWithWindows = state.StartWithWindows;
             CloseToTray = state.CloseToTray;
             ReadWarThunderArchives = state.ReadWarThunderArchives;
+            VirtualJoystickShowDetails = state.VirtualJoystickDetails;
             FollowInputOnBinds = state.FollowInputOnBinds;
+            SuggestInstalledGamesOnly = state.SuggestInstalledGamesOnly;
             ShowFollowInputNote = state.ShowFollowJumpNote;
             axisInputOptIns.Clear();
             foreach (string device in state.AxisInputDevices ?? [])
@@ -12347,6 +12363,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             if (state.LlmIdleMinutes is double idleMinutes && idleMinutes > 0)
                 LlmIdleMinutes = IsOldLlmIdleDefault(state) ? DefaultLlmIdleMinutes : Math.Clamp((decimal)idleMinutes, 0.5m, 120m);
             ApplyAutoPlacement(state.AutoPlacement);
+            layoutWindowSettings = state.LayoutWindow ?? new LayoutWindowSettings();
             ApplySettingsLayout(state.SettingsSectionOrder, state.SettingsSectionsOpen);
             ApplyNavPageLayout(state.NavPageOrder, state.HiddenNavPages);
             ApplyLayoutUiSettings(state.Layout);
@@ -12354,7 +12371,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 SetDcsStripSkipUiLayerQuietly(keepUiLayer);
             ShowStatisticsPage = state.ShowStatisticsPage;
             UseUsageStyle = state.UsageStyle ?? true;
-            MultiBindEnabled = state.MultiBind ?? false;
             SupportIncludeProfile = state.SupportIncludeProfile ?? true;
             BuilderShowSameMeaning = state.AddActionsSameMeaning ?? true;
             builderChosenGames.Clear();
@@ -12396,12 +12412,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 LastProfilePath = LastProfilePath,
                 AutoOpenLastProfile = LoadLastProfileOnStartup,
                 GameSetupDone = gameSetupDone,
+                Tours = toursState,
                 WatchGameConfigs = WatchGameConfigs,
                 WatchedGames = new Dictionary<string, bool>(gameWatchChoices.Choices),
                 StartWithWindows = StartWithWindows,
                 CloseToTray = CloseToTray,
                 ReadWarThunderArchives = ReadWarThunderArchives,
+                VirtualJoystickDetails = VirtualJoystickShowDetails,
                 FollowInputOnBinds = FollowInputOnBinds,
+                SuggestInstalledGamesOnly = SuggestInstalledGamesOnly,
                 ShowFollowJumpNote = ShowFollowInputNote,
                 AxisInputDevices = axisInputOptIns.OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList(),
                 RecordReleaseOfHeldButtons = RecordReleaseOfHeldButtons,
@@ -12434,13 +12453,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 SettingsSectionOrder = SettingsSectionOrderForSave(),
                 SettingsSectionsOpen = OpenSettingsSectionsForSave(),
                 AutoPlacement = AutoPlacementForSave(),
+                LayoutWindow = layoutWindowSettings,
                 NavPageOrder = NavPageOrderForSave(),
                 HiddenNavPages = HiddenNavPagesForSave(),
                 Layout = LayoutUiSettingsForSave(),
                 DcsStripSkipUiLayer = DcsStripSkipUiLayer,
                 ShowStatisticsPage = ShowStatisticsPage,
                 UsageStyle = UseUsageStyle,
-                MultiBind = MultiBindEnabled,
                 SupportIncludeProfile = SupportIncludeProfile,
                 AddActionsSameMeaning = BuilderShowSameMeaning,
                 AddActionsGames = builderChosenGames.ToList(),
@@ -12601,6 +12620,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         // The first-start game setup was shown (Settings > Games > Run setup again shows it again).
         public bool GameSetupDone { get; set; }
+
+        // The welcome and the tours (MainWindowViewModel.Tours.cs): answered once, seen tours, the tour in progress.
+        public ToursSettings? Tours { get; set; }
         public bool WatchGameConfigs { get; set; } = true;
 
         // The Start page's "Watch for changes" ticks, only the explicit ones (game id -> watched; JoyPro.Watch
@@ -12617,8 +12639,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         // so the old opt-in "AllowWarThunderArchives" = false of earlier builds is not taken as the user turning it off).
         public bool ReadWarThunderArchives { get; set; } = true;
 
+        // Virtual Joystick page, for players whose games are all on the pretend controller: the expert parts (vJoy,
+        // HidHide, the forwarding rate, the modes) shown under "Show details".
+        public bool VirtualJoystickDetails { get; set; }
+
         // Binds page: pressing a button selects its relation (on by default).
         public bool FollowInputOnBinds { get; set; } = true;
+
+        // Suggest missing / Fill all: only the games installed on this PC (on by default).
+        public bool SuggestInstalledGamesOnly { get; set; } = true;
 
         // The note over the list after a follow-input jump: off by default since 2.2.2 (users took the note that pops up
         // at every press for a tooltip). A new key, so the "showFollowInputNote" = true every earlier build saved does
@@ -12698,6 +12727,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         // Auto Assign, the Setup wizard and Lay out with AI (MainWindowViewModel.AutoPlacementSettings.cs).
         public AutoPlacementSettings? AutoPlacement { get; set; }
+        public LayoutWindowSettings? LayoutWindow { get; set; }
 
         // The default when the file was written (null: written by JoyPro 2.2.17 or older, when the default was 2 minutes and every
         // save wrote it): a 2 there was JoyPro's default, not the user's choice, and becomes the new default.
@@ -12718,9 +12748,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public bool ShowStatisticsPage { get; set; }
 
         public bool? UsageStyle { get; set; }
-
-    // Settings > Experimental "Several inputs per relation" (docs/multi-bind.md; off by default).
-    public bool? MultiBind { get; set; }
 
         // Settings > Report a problem: the support file holds the open profile, its history and the games' bind files
         // (null: on).

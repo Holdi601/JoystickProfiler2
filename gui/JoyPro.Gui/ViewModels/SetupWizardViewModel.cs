@@ -56,11 +56,12 @@ public sealed partial class SetupWizardViewModel : ObservableObject
     public ObservableCollection<SetupStepItem> Steps { get; } = [];
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsGamesStep), nameof(IsDevicesStep), nameof(IsPrioritiesStep), nameof(IsPlanStep), nameof(IsReviewStep), nameof(CanGoBack), nameof(NextText), nameof(StepHeading))]
+    [NotifyPropertyChangedFor(nameof(IsGamesStep), nameof(IsDevicesStep), nameof(IsPrioritiesStep), nameof(IsPlanStep), nameof(IsReviewStep), nameof(CanGoBack), nameof(NextText), nameof(StepHeading),
+        nameof(ShowsGamesStep), nameof(ShowsDevicesStep), nameof(ShowsPrioritiesStep), nameof(ShowsPlanStep), nameof(ShowsNext), nameof(ShowsBack), nameof(ShowsQuickHeadTracking))]
     private int currentStep;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanGoBack), nameof(CanGoNext))]
+    [NotifyPropertyChangedFor(nameof(CanGoBack), nameof(CanGoNext), nameof(CanApply))]
     private bool isWorking;
 
     [ObservableProperty]
@@ -75,7 +76,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
     public bool CanGoNext => !IsWorking && CurrentStep < StepTitles.Length - 1;
     public string NextText => CurrentStep == 2 ? T("Make the plan") : CurrentStep == 3 ? T("Review") : T("Next");
 
-    public string StepHeading => CurrentStep switch
+    public string StepHeading => QuickMode ? QuickHeading : CurrentStep switch
     {
         0 => T("1. Which games should JoyPro set up?"),
         1 => T("2. Your devices and what each one is for"),
@@ -84,7 +85,39 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         _ => T("5. Review: what goes where")
     };
 
-    partial void OnCurrentStepChanged(int value) => UpdateSteps();
+    // The quick path shows no step strip and no step numbers: one plain heading for what is on the screen.
+    private string QuickHeading => IsReviewStep && !QuickStuck ? T("Look: what goes where")
+        : QuickAsksAircraft ? (Easy ? T("Which planes do you fly?") : T("Which aircraft do you fly?"))
+        : QuickPadWorks ? T("Your controller already works")
+        : QuickStuck ? T("One thing first")
+        : T("Setting it up for you...");
+
+    // The wizard's steps; the quick path shows only its card and the review (never a device list, a Next of the wizard or
+    // a step number).
+    public bool ShowsGamesStep => IsGamesStep && !QuickMode;
+
+    public bool ShowsDevicesStep => IsDevicesStep && !QuickMode;
+
+    public bool ShowsPrioritiesStep => IsPrioritiesStep && !QuickMode;
+
+    public bool ShowsPlanStep => IsPlanStep && !QuickMode;
+
+    public bool ShowsNext => !QuickMode && !IsReviewStep;
+
+    // The quick review goes back to its aircraft question (when it asked one); the wizard goes back a step.
+    public bool ShowsBack => !QuickMode || (IsReviewStep && hadAircraftQuestion && !Applied);
+
+    // The main window's Easy words (German "du", the shortest texts) for the quick path's sentences.
+    public Func<bool>? EasyWordsSource { get; set; }
+
+    private bool Easy => EasyWordsSource?.Invoke() == true;
+
+    partial void OnCurrentStepChanged(int value)
+    {
+        UpdateSteps();
+        OnPropertyChanged(nameof(AsksHeadTracking));
+        OnPropertyChanged(nameof(ShowsQuickHeadTracking));
+    }
 
     private void UpdateSteps()
     {
@@ -98,6 +131,13 @@ public sealed partial class SetupWizardViewModel : ObservableObject
     [RelayCommand]
     private void Back()
     {
+        if (QuickMode)
+        {
+            // The quick review: back to "Which aircraft do you fly?" (a new answer makes the setup again).
+            if (IsReviewStep && hadAircraftQuestion && !Applied)
+                AskAircraft();
+            return;
+        }
         if (CurrentStep > 0)
             CurrentStep--;
     }
@@ -188,11 +228,18 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         InvalidatePlan();
     }
 
+    // The rules in English (the quick path picks its notes from them) and as shown, in the language shown.
+    private readonly List<string> englishRules = [];
+
     private void UpdateRules()
     {
         Rules.Clear();
+        englishRules.Clear();
         foreach (string rule in SetupRoles.Rules(Devices.Select(d => d.Device).ToList()))
-            Rules.Add(rule);
+        {
+            englishRules.Add(rule);
+            Rules.Add(EngineText.Tr(rule));
+        }
         InvalidatePlan();
     }
 
@@ -246,10 +293,10 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         : T("{0}. More only when your devices have too few buttons for the most important functions.", (PreferFewer ? T("Up to {0}, as few as possible", Modifiers) : T("Up to {0}, used where they help", Modifiers)));
 
     public string RealismText => Realism < 34
-        ? T("Group by function: the same function is on the same button in every aircraft.")
+        ? T("Same button for the same job: a function is on the same button in every aircraft.")
         : Realism < 67
-            ? T("Balanced: functions grouped, but aircraft with a very different real stick get their own buttons.")
-            : T("Like the real aircraft: each button does what the real aircraft's button at that place does.");
+            ? T("In between: the same button for the same job, but aircraft with a very different real stick get their own buttons.")
+            : T("Where the real aircraft has it: each button does what the real aircraft's button at that place does.");
 
     partial void OnAircraftFilterChanged(string value) => FilterAircraft();
 
@@ -275,6 +322,56 @@ public sealed partial class SetupWizardViewModel : ObservableObject
 
     partial void OnPhaseLayersChanged(string value) => ChoiceChanged();
 
+    // "Do you use head tracking or VR?" (docs/setup-wizard.md#head-tracking): asked for the sims that support it; yes = no
+    // buttons for looking around there (only the view recenter), no = looking around on a grip hat. "yes", "no" or empty
+    // (not asked yet: planned like no).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HeadTrackingYes))]
+    [NotifyPropertyChangedFor(nameof(HeadTrackingNo))]
+    private string headTrackingAnswer = string.Empty;
+
+    public bool HeadTrackingYes
+    {
+        get => HeadTrackingAnswer == HeadTrackingChoice.Yes;
+        set
+        {
+            if (value)
+                HeadTrackingAnswer = HeadTrackingChoice.Yes;
+        }
+    }
+
+    public bool HeadTrackingNo
+    {
+        get => HeadTrackingAnswer == HeadTrackingChoice.No;
+        set
+        {
+            if (value)
+                HeadTrackingAnswer = HeadTrackingChoice.No;
+        }
+    }
+
+    // The question shows when a chosen game is one of those sims.
+    public bool AsksHeadTracking => ChosenGames.Any(HeadTrackingChoice.Concerns);
+
+    partial void OnHeadTrackingAnswerChanged(string value)
+    {
+        ChoiceChanged();
+        // (the quick path makes its plan again with the answer)
+        if (QuickMode && !IsWorking && CurrentStep >= 3 && !Applied)
+            _ = RemakeQuickPlanAsync();
+    }
+
+    private async Task RemakeQuickPlanAsync()
+    {
+        headTrackingChangedInReview = true;
+        await MakePlanAsync();
+        if (Plan != null)
+        {
+            await BuildReviewAsync();
+            UpdateQuickSummary();
+        }
+    }
+
     private Action<SetupWizardViewModel>? settingsChanged;
 
     // The choices of the last wizard (kept in the settings); later changes are reported back.
@@ -285,6 +382,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         PreferFewer = settings.WizardPreferFewer;
         Realism = Math.Clamp(settings.WizardRealism, 0, 100);
         PhaseLayers = PhaseLayerChoice.FromArgument(settings.WizardPhaseLayers);
+        HeadTrackingAnswer = HeadTrackingChoice.Normalize(settings.WizardHeadTracking);
         settingsChanged = changed;
     }
 
@@ -307,7 +405,13 @@ public sealed partial class SetupWizardViewModel : ObservableObject
             using JsonDocument doc = JsonDocument.Parse(MainWindowViewModel.ExtractJsonPayload(result.StandardOutput));
             allAircraft.Clear();
             foreach (JsonElement item in Array(doc.RootElement, "Aircraft"))
-                allAircraft.Add(new SetupAircraftItem(Text(item, "Key"), Text(item, "Game"), Text(item, "ClassTitle")));
+            {
+                string key = Text(item, "Key"), game = Text(item, "Game");
+                // A game's own entry is the game, by the name the Start page shows.
+                string name = key == game ? Games.FirstOrDefault(g => string.Equals(g.GameId, game, StringComparison.OrdinalIgnoreCase))?.Name ?? Text(item, "Name") : Text(item, "Name");
+                allAircraft.Add(new SetupAircraftItem(key, game, Text(item, "ClassTitle"), name, Text(item, "Module"), Bool(item, "Installed"),
+                    item.TryGetProperty("Popular", out JsonElement popular) && popular.ValueKind == JsonValueKind.Number ? popular.GetInt32() : -1, Bool(item, "Seat")));
+            }
         }
         catch (JsonException)
         {
@@ -337,6 +441,41 @@ public sealed partial class SetupWizardViewModel : ObservableObject
 
     public string CockpitLayoutText => cockpitLayout == null ? string.Empty
         : T("Cockpit layout: {0} {1} (from the Cockpits page). Its aircraft comes first and the plan places its functions as in this cockpit.", cockpitLayout.AircraftName, cockpitLayout.VariantName);
+
+    // The layout preview window (LayoutPreviewViewModel): the main window opens it with a plan file (null: the profile).
+    public Action<string?>? OpenPreview { get; set; }
+
+    private int previewFiles;
+
+    // The plan as it is now (with the review's changes) for the layout preview window; null without a plan.
+    public string? WritePreviewPlan()
+    {
+        if (Plan == null)
+            return null;
+        Directory.CreateDirectory(workFolder);
+        string file = Path.Combine(workFolder, "plan-preview-" + (++previewFiles).ToString(CultureInfo.InvariantCulture) + ".json");
+        File.WriteAllText(file, SetupPlanJson.Write(Plan, false), new UTF8Encoding(false));
+        return file;
+    }
+
+    // "Where is what?": every device of the plan (after Apply: of the profile) for one game and aircraft at a time.
+    [RelayCommand]
+    private void ShowLayoutPreview()
+    {
+        OpenPreview?.Invoke(Applied ? null : WritePreviewPlan());
+    }
+
+    // The Start page's auto setup asked for these games (an open wizard): they are ticked, the others not, and the wizard
+    // starts again at its first step.
+    public void ChooseGames(IReadOnlyCollection<string> gameIds)
+    {
+        if (gameIds.Count == 0)
+            return;
+        foreach (SetupGameChoice game in Games)
+            game.IsChosen = gameIds.Contains(game.GameId, StringComparer.OrdinalIgnoreCase);
+        InvalidatePlan();
+        CurrentStep = 0;
+    }
 
     // The variant picked on the Cockpits page: its aircraft goes to the top of the priority list (once the aircraft of
     // the chosen games are read) and the plan reads that variant's stick and throttle layout (engine cockpits get
@@ -389,8 +528,8 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         string filter = AircraftFilter.Trim();
         Aircraft.Clear();
         foreach (SetupAircraftItem plane in allAircraft.Where(a => !listed.Contains(a.Key) &&
-                     (filter.Length == 0 || a.Key.Contains(filter, StringComparison.OrdinalIgnoreCase) || a.Game.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                      a.ClassTitle.Contains(filter, StringComparison.OrdinalIgnoreCase))))
+                     (filter.Length == 0 || a.Key.Contains(filter, StringComparison.OrdinalIgnoreCase) || a.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                      a.Game.Contains(filter, StringComparison.OrdinalIgnoreCase) || a.ClassTitle.Contains(filter, StringComparison.OrdinalIgnoreCase))))
             Aircraft.Add(plane);
     }
 
@@ -575,13 +714,36 @@ public sealed partial class SetupWizardViewModel : ObservableObject
             if (Plan == null)
                 return T("No plan yet.");
             int placed = Plan.Placed.Count(r => !r.Kept);
+            // The quick path: plain and calm. What did not fit is shown under "Change something", the important ones first.
+            if (QuickMode)
+            {
+                // "Important, no room" only for an essential nothing else covers: not a wheel brake axis next to the
+                // wheel brake button, not a lever the devices do not have (propeller, mixture, a second engine).
+                bool essentials = !NotPlaced.Any(r => r.IsImportantGap);
+                if (NotPlaced.Count == 0)
+                    return T("All {0} game controls are set.", placed);
+                return essentials
+                    ? T("All important buttons are set. Some rare extras had no room ({0}). That is OK.", NotPlaced.Count)
+                    : Easy
+                        ? T("{0} game controls are on your stick. A few important ones did not fit. Click Change something to see them.", placed)
+                        : T("{0} game controls are on your stick. A few important ones had no room: Change something shows them.", placed);
+            }
             int kept = Plan.Relations.Count(r => r.Kept);
             return T("{0} functions placed{1}, {2} not placed, {3}.", placed, (kept > 0 ? T(", {0} of your binds kept", kept) : string.Empty), Plan.NotPlaced.Count, (Plan.Modifiers.Count == 0 ? T("no modifier") : Plural("{0} modifier", "{0} modifiers", Plan.Modifiers.Count)));
         }
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanApply), nameof(ShowsBack))]
     private bool applied;
+
+    // One main button at a time: after "Use these buttons" the quick path's next button is the only blue one.
+    public bool CanApply => !IsWorking && !(QuickMode && Applied);
+
+    // The window closes itself (the quick path after "Write to my game" or "Set up the pretend controller").
+    public event Action? CloseRequested;
+
+    public void RequestClose() => CloseRequested?.Invoke();
 
     public string PlanFile => Path.Combine(workFolder, "plan.json");
 
@@ -601,6 +763,11 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         List<string> args = ["setup", "plan", "--games", string.Join(",", ChosenGames), "--modifiers", Modifiers.ToString(CultureInfo.InvariantCulture),
             PreferFewer ? "--prefer-fewer" : "--use-all-modifiers", "--realism", (Realism / 100.0).ToString("0.###", CultureInfo.InvariantCulture),
             "--phase-layers", PhaseLayerChoice.ToArgument(PhaseLayers)];
+        if (HeadTrackingAnswer.Length > 0)
+            args.AddRange(["--head-tracking", HeadTrackingAnswer]);
+        // The quick path: only the aircraft the user said they fly (their seats come with them).
+        if (QuickMode && QuickAircraft.Count > 0 && ChosenAircraftKeys().Count > 0)
+            args.AddRange(["--only-aircraft", string.Join(",", ChosenAircraftKeys())]);
         string priorities = PriorityArgument();
         if (priorities.Length > 0)
             args.AddRange(["--priorities", priorities]);
@@ -660,7 +827,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         sheets.Clear();
         PlanNotes.Clear();
         foreach (string note in made.Notes.Concat(made.Warnings))
-            PlanNotes.Add(EngineText.Tr(note));
+            PlanNotes.Add(WithGameNames(EngineText.Tr(note)));
         Quality.Clear();
         foreach (SetupQuality quality in made.Quality)
             Quality.Add(new SetupQualityRow(quality));
@@ -676,13 +843,27 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         OnPropertyChanged(nameof(PlanHeadline));
     }
 
+    // "... of IL2Game" -> "... of IL-2 Sturmovik: Great Battles": the plan's notes name the games as the Start page does.
+    private string WithGameNames(string text)
+    {
+        foreach (SetupGameChoice game in Games.Where(g => g.Name.Length > 0 && g.Name != g.GameId))
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"(?<![\w-])" + System.Text.RegularExpressions.Regex.Escape(game.GameId) + @"(?![\w-])", game.Name.Replace("$", "$$"));
+        return text;
+    }
+
     private void RefreshNotPlaced()
     {
         NotPlaced.Clear();
         if (Plan != null)
         {
             foreach (SetupNotPlaced item in Plan.NotPlaced.OrderByDescending(n => n.Importance))
-                NotPlaced.Add(new SetupNotPlacedRow(item));
+            {
+                // Quick path: an alternative the plan covers (ThrottleLeft / ThrottleRight while the throttle is placed)
+                // is no gap for the user.
+                if (QuickMode && SetupNotPlacedRow.CoveredByPlan(Plan, item))
+                    continue;
+                NotPlaced.Add(new SetupNotPlacedRow(item, QuickMode));
+            }
         }
         OnPropertyChanged(nameof(HasNotPlaced));
         OnPropertyChanged(nameof(PlanHeadline));
@@ -717,6 +898,10 @@ public sealed partial class SetupWizardViewModel : ObservableObject
     public ObservableCollection<SetupRoleOption> ReviewDevices { get; } = [];
 
     public ObservableCollection<SetupRoleOption> ReviewAircraft { get; } = [];
+
+    // A game with one setup for all of it (ACE COMBAT, IL-2) has nothing to pick: "All aircraft together" and the game
+    // itself show the same; the choice shows only with two aircraft or more.
+    public bool ShowsAircraftChoice => ReviewAircraft.Count > 2;
 
     public ObservableCollection<SetupReviewRow> ReviewRows { get; } = [];
 
@@ -763,14 +948,37 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         string? device = SelectedReviewDevice?.Id;
         string? aircraft = SelectedReviewAircraft?.Id;
         ReviewDevices.Clear();
+        // The quick path: short names, a gamepad is a controller held with both hands (not "Main stick (right hand)").
         foreach (SetupDevice d in Plan.Devices.Where(d => SetupRoles.Binds(d.Role)))
-            ReviewDevices.Add(new SetupRoleOption(d.Device, SetupRoles.Short(d) + " (" + EngineText.Tr(SetupRoles.Title(d.Role)) + ")"));
+            ReviewDevices.Add(new SetupRoleOption(d.Device, QuickMode
+                ? QuickDeviceName(d) + " (" + (IsGamepad(d) ? T("Controller") : EngineText.Tr(SetupRoles.Title(d.Role))) + ")"
+                : SetupRoles.Short(d) + " (" + EngineText.Tr(SetupRoles.Title(d.Role)) + ")"));
         ReviewAircraft.Clear();
-        ReviewAircraft.Add(new SetupRoleOption(AllAircraft, T("All aircraft (relation names)")));
-        foreach (SetupQuality quality in Plan.Quality.OrderBy(q => q.Tier < 0 ? int.MaxValue : q.Tier).ThenBy(q => q.Aircraft, StringComparer.OrdinalIgnoreCase))
-            ReviewAircraft.Add(new SetupRoleOption(quality.Aircraft, quality.Aircraft + (quality.Tier >= 0 ? T(" (priority {0})", (quality.Tier + 1)) : string.Empty)));
+        reviewPickKeys.Clear();
+        List<SetupAircraftPick> chosen = QuickMode ? QuickAircraft.Where(a => a.IsChosen).ToList() : [];
+        if (chosen.Count > 0)
+        {
+            // The quick path: only the aircraft the user chose, by the names a person reads (the first one shown first).
+            if (chosen.Count > 1)
+                ReviewAircraft.Add(new SetupRoleOption(AllAircraft, T("All aircraft together")));
+            foreach (SetupAircraftPick pick in chosen)
+            {
+                ReviewAircraft.Add(new SetupRoleOption(PickPrefix + pick.Name, pick.Name));
+                reviewPickKeys[PickPrefix + pick.Name] = new HashSet<string>(pick.Keys, StringComparer.OrdinalIgnoreCase);
+            }
+        }
+        else
+        {
+            // The quick path speaks no JoyPro words ("relation").
+            ReviewAircraft.Add(new SetupRoleOption(AllAircraft, QuickMode ? T("All aircraft together") : T("All aircraft (relation names)")));
+            foreach (SetupQuality quality in Plan.Quality.OrderBy(q => q.Tier < 0 ? int.MaxValue : q.Tier).ThenBy(q => q.Aircraft, StringComparer.OrdinalIgnoreCase))
+                ReviewAircraft.Add(new SetupRoleOption(quality.Aircraft, AircraftName(quality.Aircraft) + (quality.Tier >= 0 ? T(" (priority {0})", (quality.Tier + 1)) : string.Empty)));
+        }
+        OnPropertyChanged(nameof(ShowsAircraftChoice));
         SelectedReviewDevice = ReviewDevices.FirstOrDefault(d => d.Id == device) ?? ReviewDevices.FirstOrDefault();
-        SelectedReviewAircraft = ReviewAircraft.FirstOrDefault(a => a.Id == aircraft) ?? (ReviewAircraft.Count > 1 && Plan.Priorities.Count > 0 ? ReviewAircraft[1] : ReviewAircraft.FirstOrDefault());
+        SelectedReviewAircraft = ReviewAircraft.FirstOrDefault(a => a.Id == aircraft)
+                                 ?? (chosen.Count > 0 ? ReviewAircraft.FirstOrDefault(a => a.Id.StartsWith(PickPrefix, StringComparison.Ordinal)) : null)
+                                 ?? (ReviewAircraft.Count > 1 && Plan.Priorities.Count > 0 ? ReviewAircraft[1] : ReviewAircraft.FirstOrDefault());
         RefreshReviewRows();
         await ShowSheetAsync();
     }
@@ -803,12 +1011,52 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         if (Plan == null || SelectedReviewDevice == null)
             return;
         string aircraft = SelectedReviewAircraft?.Id ?? AllAircraft;
-        foreach (SetupPlanRelation relation in Plan.Relations.Where(r => r.Device == SelectedReviewDevice.Id && r.Input.Length > 0 &&
-                                                                         (aircraft.Length == 0 || r.Aircraft.Contains(aircraft, StringComparer.OrdinalIgnoreCase) || r.Overlap.Contains(aircraft, StringComparer.OrdinalIgnoreCase)))
-                     .OrderBy(r => r.Modifier, StringComparer.Ordinal).ThenBy(r => InputOrder(r.Input)).ThenBy(r => r.Input, StringComparer.Ordinal).ThenBy(r => r.Name, StringComparer.OrdinalIgnoreCase))
-            ReviewRows.Add(new SetupReviewRow(relation));
+        List<SetupPlanRelation> rows;
+        if (QuickMode && reviewPickKeys.Count > 0)
+        {
+            // The quick path: the chosen aircraft (one, or all of them together). A relation of a shared DCS layer (Default,
+            // the ground units) shows only when the aircraft has no relation of that function of its own.
+            HashSet<string> keys = aircraft.Length > 0 && reviewPickKeys.TryGetValue(aircraft, out HashSet<string>? picked)
+                ? picked
+                : reviewPickKeys.Values.SelectMany(k => k).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> known = allAircraft.Select(a => a.Key).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            List<SetupPlanRelation> onDevice = Plan.Relations.Where(r => r.Device == SelectedReviewDevice.Id && r.Input.Length > 0).ToList();
+            List<SetupPlanRelation> own = onDevice.Where(r => r.Aircraft.Any(keys.Contains)).ToList();
+            HashSet<string> ownFunctions = own.Select(r => r.Function).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            rows = own.Concat(onDevice.Where(r => !own.Contains(r) && r.Aircraft.All(a => !known.Contains(a)) && r.Overlap.Any(keys.Contains) && !ownFunctions.Contains(r.Function))).ToList();
+            // The flight controls and weapons first, then the rest; the most important first.
+            rows = rows.OrderBy(r => r.Modifier, StringComparer.Ordinal).ThenBy(r => CategoryOrder(r.Category)).ThenByDescending(r => r.Importance).ThenBy(r => InputOrder(r.Input)).ThenBy(r => r.Input, StringComparer.Ordinal)
+                .ThenBy(r => r.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+        else
+        {
+            rows = Plan.Relations.Where(r => r.Device == SelectedReviewDevice.Id && r.Input.Length > 0 &&
+                                             (aircraft.Length == 0 || r.Aircraft.Contains(aircraft, StringComparer.OrdinalIgnoreCase) || r.Overlap.Contains(aircraft, StringComparer.OrdinalIgnoreCase)))
+                .OrderBy(r => r.Modifier, StringComparer.Ordinal).ThenBy(r => QuickMode ? CategoryOrder(r.Category) : 0).ThenBy(r => InputOrder(r.Input)).ThenBy(r => r.Input, StringComparer.Ordinal)
+                .ThenBy(r => r.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+        // An aircraft's only throttle lever is "Throttle" (the F-16's lever is the slot "ThrottleRight").
+        List<SetupPlanRelation> levers = QuickMode ? Plan.Relations.Where(r => r.Device.Length > 0 && r.IsAxis && FunctionNames.IsThrottleLever(r.Function) && rows.Contains(r)).ToList() : [];
+        foreach (SetupPlanRelation relation in rows)
+            ReviewRows.Add(new SetupReviewRow(relation, QuickMode, levers.Count == 1 && levers[0] == relation ? FunctionNames.Translate("Throttle") : string.Empty)); // nonloc
         OnPropertyChanged(nameof(HasNotPlaced));
     }
+
+    // The aircraft keys of a quick review choice ("pick:F-16C bl.50").
+    private readonly Dictionary<string, HashSet<string>> reviewPickKeys = new(StringComparer.Ordinal);
+
+    private const string PickPrefix = "pick:"; // nonloc
+
+    private static int CategoryOrder(string category) => category switch
+    {
+        SetupImportance.Flight => 0,
+        SetupImportance.Weapons => 1,
+        _ => 2
+    };
+
+    // The name a person reads for an aircraft key (the full wizard's review): the engine's name, else the key.
+    private string AircraftName(string key) =>
+        allAircraft.FirstOrDefault(a => string.Equals(a.Key, key, StringComparison.OrdinalIgnoreCase)) is { } plane ? plane.Display : key;
 
     private void RefreshTargets(SetupPlanRelation? relation)
     {
@@ -886,6 +1134,8 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         planVersion++;
         RefreshNotPlaced();
         RefreshReviewRows();
+        if (QuickMode)
+            UpdateQuickSummary();
         _ = ShowSheetAsync();
     }
 
@@ -927,16 +1177,30 @@ public sealed partial class SetupWizardViewModel : ObservableObject
             SheetNote = T("No drawing of this device: the table lists what goes where.");
             return;
         }
-        try
+        // A sheet the engine just wrote can be held by another reader for a moment (a virus scanner, the folder sync):
+        // read again a few times instead of showing an empty panel.
+        for (int attempt = 0; ; attempt++)
         {
-            SheetImage = new Bitmap(sheet.File);
-            SheetFile = sheet.File;
-            SheetNote = string.Empty;
-        }
-        catch (Exception)
-        {
-            SheetImage = null;
-            SheetNote = T("The sheet could not be shown.");
+            try
+            {
+                SheetImage = new Bitmap(sheet.File);
+                SheetFile = sheet.File;
+                SheetNote = string.Empty;
+                return;
+            }
+            catch (Exception) when (attempt < 4)
+            {
+                await Task.Delay(150 * (attempt + 1));
+                if (version != planVersion || SelectedReviewDevice?.Id != device)
+                    return;
+            }
+            catch (Exception)
+            {
+                SheetImage = null;
+                SheetFile = sheet.File;
+                SheetNote = T("No picture this time: the list shows what goes where.");
+                return;
+            }
         }
     }
 
@@ -987,13 +1251,415 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         if (result == null || result.ExitCode != 0)
             return;
         Applied = true;
-        Status = T("Done: the relations and binds are in your profile (one step: Undo takes all of it back). Export writes them to your games.");
+        Status = !QuickMode
+            ? T("Done: the relations and binds are in your profile (one step: Undo takes all of it back). Export writes them to your games.")
+            : PadGamesOnly
+                ? T("Saved in JoyPro. Now set up the pretend controller: press \"Set up the pretend controller\".")
+                : T("Saved in JoyPro. {0} does not know it yet: press \"Write to my game\".", ChosenGameNames);
         if (onApplied != null)
             await onApplied();
     }
 
     [RelayCommand]
     private void Export() => onExport?.Invoke();
+
+    // ---- the quick path ("Just give me binds, quickly") ----
+
+    // The first start's quick path and the Start page's quick button: JoyPro runs the steps by itself with its defaults
+    // (the devices it found and their roles, every aircraft equal, no modifier) and stops at the review. The words stay
+    // plain: what is set up, what JoyPro does not know, then "Use these binds" and "Write to my game".
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ApplyText), nameof(ApplyTip), nameof(ExportText), nameof(ExportTip), nameof(CanApply), nameof(ShowsChangeTools),
+        nameof(ShowsSheetPanel), nameof(ReviewListColumn), nameof(ReviewListSpan), nameof(ReviewListRowSpan), nameof(OpenSheetText), nameof(StepHeading),
+        nameof(ShowsGamesStep), nameof(ShowsDevicesStep), nameof(ShowsPrioritiesStep), nameof(ShowsPlanStep), nameof(ShowsNext), nameof(ShowsBack), nameof(ShowsQuickHeadTracking))]
+    private bool quickMode;
+
+    // The quick path's games only take an Xbox pad (ACE COMBAT ...): they get no export; "Set up the pretend controller" goes on to the
+    // Virtual Joystick page instead of "Write to my game".
+    public bool PadGamesOnly => ChosenGames.Count > 0 && ChosenGames.All(g => JoyPro.Gui.Services.Help.TourCatalog.PadGames.Contains(g));
+
+    // The quick review keeps the tools to change the plan (move, swap, remove, the reasons, what did not fit) behind
+    // "Change something"; the full wizard always shows them.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsChangeTools), nameof(ChangeSomethingText), nameof(ReviewListRowSpan))]
+    private bool changeSomething;
+
+    public bool ShowsChangeTools => !QuickMode || ChangeSomething;
+
+    public string ChangeSomethingText => ChangeSomething ? T("Hide the change tools") : T("Change something");
+
+    [RelayCommand]
+    private void ToggleChangeSomething() => ChangeSomething = !ChangeSomething;
+
+    // The small device sheet: only in the full wizard. The quick review shows the list full width and opens the picture
+    // big on request (a sheet squeezed beside the list cannot be read).
+    public bool ShowsSheetPanel => !QuickMode;
+
+    public int ReviewListColumn => QuickMode ? 0 : 1;
+
+    public int ReviewListSpan => QuickMode ? 2 : 1;
+
+    // The quick review's list takes the whole height while the change tools are hidden.
+    public int ReviewListRowSpan => ShowsChangeTools ? 1 : 3;
+
+    public string OpenSheetText => QuickMode ? T("Show the picture big") : T("Open the sheet");
+
+    [ObservableProperty]
+    private string quickSummary = string.Empty;
+
+    public ObservableCollection<string> QuickNotes { get; } = [];
+
+    public bool HasQuickNotes => QuickNotes.Count > 0;
+
+    public string ApplyText => QuickMode ? T("Use these buttons") : T("Apply to my profile");
+
+    public string ApplyTip => !QuickMode
+        ? T("Writes the relations and binds into your profile in one step (Undo takes all of it back)")
+        : PadGamesOnly
+            ? T("Puts these buttons into JoyPro (Undo takes them back). Then \"Set up the pretend controller\" sends them to the game.")
+            : T("Puts these buttons into JoyPro (Undo takes them back). Your game changes only when you press \"Write to my game\".");
+
+    public string ExportText => !QuickMode ? T("Export to my games") : PadGamesOnly ? T("Set up the pretend controller") : T("Write to my game");
+
+    public string ExportTip => !QuickMode
+        ? T("Opens the Export page, where you write the binds into your games")
+        : PadGamesOnly
+            ? T("Opens the Virtual Joystick page: the pretend controller that sends your stick to the game")
+            : T("Writes these buttons into the game. JoyPro keeps a backup, so you can undo it.");
+
+    public string ChosenGameNames => JoinNames(Games.Where(g => g.IsChosen).Select(g => g.Name).ToList());
+
+    // "A", "A and B", "A, B and C" in the language shown.
+    private static string JoinNames(IReadOnlyList<string> names) => JoinAnd(names);
+
+    // The quick path stopped before its review (no game, no stick, no plan): it says why, and offers "Try again" and
+    // "Set it up step by step" (the usual steps), never a dead end.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StepHeading), nameof(ShowsQuickHeadTracking))]
+    private bool quickStuck;
+
+    [RelayCommand]
+    private Task QuickTryAgainAsync() => RunQuickAsync();
+
+    [RelayCommand]
+    private void QuickStepByStep()
+    {
+        QuickMode = false;
+        QuickStuck = false;
+        QuickPadWorks = false;
+        QuickAsksAircraft = false;
+        QuickLines.Clear();
+        Status = string.Empty;
+        CurrentStep = 0;
+    }
+
+    // ---- the quick path: only a gamepad and only pad games (ACE COMBAT): the controller already works ----
+
+    // The only device is an Xbox controller and every chosen game reads it: nothing to set up. The window says so; the
+    // pad remap (other buttons, stick curves through the pretend controller) stays an optional extra.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StepHeading), nameof(ShowsQuickHeadTracking))]
+    private bool quickPadWorks;
+
+    // "Make it feel better (optional)": the user wants the pad remap anyway.
+    private bool padExtrasWanted;
+
+    // "Close and play": the window closes; the main window ends a pad tour that waits for it.
+    public Action? PlayAsIs { get; set; }
+
+    [RelayCommand]
+    private void QuickPlayAsIs()
+    {
+        PlayAsIs?.Invoke();
+        RequestClose();
+    }
+
+    [RelayCommand]
+    private Task QuickPadExtrasAsync()
+    {
+        padExtrasWanted = true;
+        return RunQuickAsync();
+    }
+
+    // ---- the quick path: "Which aircraft do you fly?" (DCS: one answer per plane, by the names a person reads) ----
+
+    public ObservableCollection<SetupAircraftPick> QuickAircraft { get; } = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StepHeading), nameof(ShowsQuickHeadTracking))]
+    private bool quickAsksAircraft;
+
+    private bool aircraftAnswered;
+    private bool hadAircraftQuestion;
+
+    // The keys of the chosen aircraft and their seats, for engine setup plan --only-aircraft.
+    private List<string> ChosenAircraftKeys() => QuickAircraft.Where(a => a.IsChosen).SelectMany(a => a.Keys).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+    // One answer per plane of the chosen games that has several (DCS): by the name a person reads, its seats and
+    // same-named variants with it; the ones on this PC first, the most popular first. Ticked: the ones on this PC, else
+    // the most popular one. An earlier answer stays.
+    private void BuildAircraftPicks()
+    {
+        HashSet<string> before = QuickAircraft.Where(a => a.IsChosen).Select(a => a.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        bool answeredBefore = QuickAircraft.Count > 0;
+        QuickAircraft.Clear();
+        // (the aircraft the engine names: a game's own aircraft list, today DCS)
+        List<SetupAircraftItem> planes = allAircraft.Where(a => a.Game != a.Key && a.Name.Length > 0).ToList();
+        foreach (IGrouping<string, SetupAircraftItem> group in planes.Where(a => !a.Seat).GroupBy(a => a.Display, StringComparer.OrdinalIgnoreCase))
+        {
+            HashSet<string> modules = group.Select(a => a.Module).Where(m => m.Length > 0).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            List<string> keys = group.Select(a => a.Key).Concat(planes.Where(a => a.Seat && modules.Contains(a.Module)).Select(a => a.Key)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            int popular = group.Where(a => a.Popular >= 0).Select(a => a.Popular).DefaultIfEmpty(int.MaxValue).Min();
+            QuickAircraft.Add(new SetupAircraftPick(group.Key, keys, group.Any(a => a.Installed), popular));
+        }
+        List<SetupAircraftPick> ordered = QuickAircraft.OrderByDescending(a => a.Installed).ThenBy(a => a.Popular).ThenBy(a => a.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
+        QuickAircraft.Clear();
+        bool anyInstalled = ordered.Any(a => a.Installed);
+        foreach (SetupAircraftPick pick in ordered)
+        {
+            pick.IsChosen = answeredBefore ? before.Contains(pick.Name) : anyInstalled ? pick.Installed : ReferenceEquals(pick, ordered[0]);
+            pick.Changed = InvalidatePlan;
+            QuickAircraft.Add(pick);
+        }
+    }
+
+    private void AskAircraft()
+    {
+        QuickAsksAircraft = true;
+        QuickLines.Clear();
+        QuickWarnings.Clear();
+        OnPropertyChanged(nameof(HasQuickWarnings));
+        CurrentStep = 2;
+        Status = string.Empty;
+        bool installed = QuickAircraft.Any(a => a.Installed);
+        QuickSummary = Easy
+            ? T("Tick the planes you fly. Then click Next.")
+            : installed
+                ? T("Tick the aircraft you fly, and JoyPro sets up their buttons. The ones on this PC are ticked.")
+                : T("Tick the aircraft you fly, and JoyPro sets up their buttons. The most popular one is ticked.");
+        OnPropertyChanged(nameof(ShowsBack));
+    }
+
+    [RelayCommand]
+    private async Task QuickAircraftNextAsync()
+    {
+        if (!QuickAircraft.Any(a => a.IsChosen))
+        {
+            Status = Easy ? T("Tick one plane first.") : T("Tick at least one aircraft.");
+            return;
+        }
+        aircraftAnswered = true;
+        hadAircraftQuestion = true;
+        QuickAsksAircraft = false;
+        await FinishQuickAsync();
+    }
+
+    // ---- the quick review's lines: what the head-tracking answer changed, which real button the shift is ----
+
+    public ObservableCollection<string> QuickLines { get; } = [];
+
+    public bool HasQuickLines => QuickLines.Count > 0;
+
+    // What must not be missed on the quick review (independent review 7 B11): the flares or the weapon release behind a
+    // shift button, no button left for the flares. Shown in the warning colour right under the summary.
+    public ObservableCollection<string> QuickWarnings { get; } = [];
+
+    public bool HasQuickWarnings => QuickWarnings.Count > 0;
+
+    private bool headTrackingChangedInReview;
+
+    // The head-tracking question on the quick review (not on its question and error screens).
+    public bool ShowsQuickHeadTracking => QuickMode && AsksHeadTracking && IsReviewStep && !QuickStuck && !QuickAsksAircraft && !QuickPadWorks;
+
+    // The question with Easy words ("du" in German) or the full one.
+    public string HeadTrackingQuestion => Easy ? T("Do you look around by moving your head (VR or a head tracker)?") : T("Do you use head tracking or VR?");
+
+    public string HeadTrackingYesText => Easy ? T("Yes") : T("Yes – I use head tracking, face tracking, Tobii or VR, or I plan to (no view buttons on the HOTAS)");
+
+    public string HeadTrackingNoText => Easy ? T("No, I use a button") : T("No – put looking around on a hat of my stick or throttle");
+
+    // The quick summary again from the plan (after the head-tracking answer and every change): one count everywhere.
+    internal void UpdateQuickSummary()
+    {
+        if (Plan == null)
+            return;
+        List<SetupDevice> used = Plan.Devices.Where(d => SetupRoles.Binds(d.Role)).ToList();
+        int placed = Plan.Placed.Count(r => !r.Kept);
+        string devices = JoinNames(used.Select(QuickDeviceName).ToList());
+        // Short sentences, the blue button named by its colour: the list is what to look at (the picture opens big).
+        QuickSummary = Easy
+            ? T("JoyPro put {1} game controls on your {0}. Look at the list. Then click the blue button.", devices, placed)
+            : T("JoyPro put {2} game controls for {1} on your {0}. Look at the list. Then press the blue button.", devices, ChosenGameNames, placed);
+        QuickLines.Clear();
+        if (headTrackingChangedInReview && AsksHeadTracking)
+        {
+            if (HeadTrackingYes)
+            {
+                SetupPlanRelation? center = Plan.Placed.FirstOrDefault(r => string.Equals(r.Function, "view_center", StringComparison.OrdinalIgnoreCase)); // nonloc
+                QuickLines.Add(center != null
+                    ? T("Head tracking: the look-around buttons are gone. Re-centre the view with {0}.", PlaceOf(center))
+                    : T("Head tracking: the look-around buttons are gone. Re-centre the view with your head tracker's own key."));
+            }
+            else
+                QuickLines.Add(T("No head tracking: looking around is on a hat of your stick or throttle."));
+        }
+        foreach (SetupPlanModifier modifier in Plan.Modifiers.Where(m => Plan.Placed.Any(r => r.Modifier == m.Name)))
+            QuickLines.Add(T("Shift button: {0}. Hold it, and other buttons do a second job. The list calls it \"{1}\".", ButtonPlace(modifier.Device, modifier.Input, modifier.Control), modifier.Name));
+        AddPlanNotes();
+        OnPropertyChanged(nameof(HasQuickLines));
+        OnPropertyChanged(nameof(HasQuickWarnings));
+    }
+
+    // The plan's notes a beginner needs, in plain words (the full wizard shows them all on its Plan step): no button for
+    // the flares, no button to re-centre the view, nothing left for looking around; and every survival function (flares,
+    // chaff, weapon release, gun) that sits behind a shift button.
+    private void AddPlanNotes()
+    {
+        QuickWarnings.Clear();
+        if (Plan == null)
+            return;
+        foreach (string note in Plan.Notes.Concat(Plan.Warnings).Distinct(StringComparer.Ordinal))
+        {
+            if (note.StartsWith("Countermeasures:", StringComparison.Ordinal)) // nonloc
+                QuickWarnings.Add(T("Important: no button was left for the flares. Click Change something and give them a button: flares keep you alive."));
+            else if (note.StartsWith("Head tracking: no input", StringComparison.Ordinal) && !QuickLines.Contains(T("Head tracking: the look-around buttons are gone. Re-centre the view with your head tracker's own key."))) // nonloc
+                QuickLines.Add(T("Head tracking: no button was left to re-centre the view. Use the re-centre key of your head tracker."));
+            else if (note.StartsWith("Looking around: no free hat", StringComparison.Ordinal)) // nonloc
+                QuickLines.Add(T("Looking around: no hat was left for it. Use the mouse, the game's view keys or head tracking."));
+            else if (note.StartsWith("Looking around in ", StringComparison.Ordinal)) // nonloc
+                QuickLines.Add(WithGameNames(EngineText.Tr(note)));
+        }
+        foreach (SetupPlanRelation relation in Plan.Placed.Where(r => !r.Kept && r.Modifier.Length > 0 && (IsSurvival(r.Function) || r.Reason.StartsWith("survival-critical", StringComparison.Ordinal))) // nonloc
+                     .OrderByDescending(r => r.Importance))
+        {
+            string text = T("Important: {0} is behind the shift button. Press {1}.", FunctionNames.Plain(relation.Name, relation.Function), PlaceOf(relation));
+            if (!QuickWarnings.Contains(text))
+                QuickWarnings.Add(text);
+        }
+    }
+
+    // Flares, chaff, the weapon release and the gun: what keeps a pilot alive in a fight.
+    private static bool IsSurvival(string function)
+    {
+        string id = (function ?? string.Empty).ToLowerInvariant();
+        return id.StartsWith("cms_fwd", StringComparison.Ordinal) || id.StartsWith("cms_aft", StringComparison.Ordinal) || id.Contains("flare") || id.Contains("chaff") ||
+               id.Contains("countermeasure") || id is "launchweapon" or "trigger2ndstage"; // nonloc
+    }
+
+    // "Button 23 on your stick while you hold Button 21 (Pinky switch) on your stick".
+    private string PlaceOf(SetupPlanRelation relation)
+    {
+        string where = ButtonPlace(relation.Device, relation.Input, relation.Control, relation.Label);
+        SetupPlanModifier? shift = Plan?.Modifiers.FirstOrDefault(m => m.Name == relation.Modifier);
+        return shift == null || relation.Modifier.Length == 0 ? where : T("{0} while you hold {1}", where, ButtonPlace(shift.Device, shift.Input, shift.Control));
+    }
+
+    // A button by its printed name or position, and the device it is on.
+    private string ButtonPlace(string device, string input, string control, string label = "")
+    {
+        if (label.Length == 0 && Plan?.Inputs.FirstOrDefault(i => i.Device == device && string.Equals(i.Input, input, StringComparison.OrdinalIgnoreCase)) is { } known)
+            label = known.Label;
+        string where = ReadableNames.Where(input, control, label);
+        SetupDevice? owner = Plan?.Devices.FirstOrDefault(d => d.Device == device);
+        if (owner == null || Plan!.Devices.Count(d => SetupRoles.Binds(d.Role)) < 2)
+            return where;
+        return owner.Role is SetupRoles.Throttle or SetupRoles.Collective ? T("{0} on your throttle", where)
+            : owner.Role is SetupRoles.MainStick or SetupRoles.HeliStick or SetupRoles.LeftStick ? T("{0} on your stick", where)
+            : T("{0} on {1}", where, QuickDeviceName(owner));
+    }
+
+    // A device as the quick path names it: an Xbox controller is an Xbox controller, a long catalog name loses its
+    // bracket ("WinCtrl URSA MINOR Combat Throttle (Metal / EX)" -> "WinCtrl URSA MINOR Combat Throttle").
+    internal static string QuickDeviceName(SetupDevice device)
+    {
+        if (IsGamepad(device) && (device.ModelId.Contains("xbox", StringComparison.OrdinalIgnoreCase) || device.Model.Contains("Xbox", StringComparison.OrdinalIgnoreCase)))
+            return T("Xbox controller");
+        string name = SetupRoles.Short(device);
+        if (name.Length > 32)
+        {
+            string shorter = System.Text.RegularExpressions.Regex.Replace(name, @"\s*\([^()]*\)\s*$", string.Empty).Trim();
+            if (shorter.Length > 0)
+                name = shorter;
+        }
+        return name;
+    }
+
+    internal static bool IsGamepad(SetupDevice device) => string.Equals(device.Kind, "gamepad", StringComparison.OrdinalIgnoreCase); // nonloc
+
+    public async Task RunQuickAsync()
+    {
+        QuickMode = true;
+        QuickStuck = false;
+        QuickPadWorks = false;
+        QuickAsksAircraft = false;
+        headTrackingChangedInReview = false;
+        QuickNotes.Clear();
+        QuickLines.Clear();
+        QuickWarnings.Clear();
+        OnPropertyChanged(nameof(HasQuickNotes));
+        OnPropertyChanged(nameof(HasQuickLines));
+        OnPropertyChanged(nameof(HasQuickWarnings));
+        OnPropertyChanged(nameof(HeadTrackingQuestion));
+        OnPropertyChanged(nameof(HeadTrackingYesText));
+        OnPropertyChanged(nameof(HeadTrackingNoText));
+        if (ChosenGames.Count == 0)
+        {
+            QuickSummary = T("JoyPro found no game it can set up. Start your game once (so it makes its control files), then try again.");
+            QuickStuck = true;
+            return;
+        }
+        CurrentStep = 1;
+        await DetectDevicesAsync();
+        List<SetupDeviceItem> used = Devices.Where(d => SetupRoles.Binds(d.Device.Role)).ToList();
+        if (used.Count == 0)
+        {
+            // One plain sentence, one blue button (Try again); no device list, no question, no step number.
+            QuickSummary = T("JoyPro can't see a stick yet. Plug it in (USB), wait 5 seconds, then click Try again.");
+            QuickStuck = true;
+            Status = string.Empty;
+            return;
+        }
+        // Only an Xbox controller and only games that read it: it already works, nothing to set up.
+        if (!padExtrasWanted && PadGamesOnly && used.All(d => IsGamepad(d.Device)))
+        {
+            QuickSummary = Easy
+                ? T("Good news! Your controller already works in {0}. Just start the game and play.", ChosenGameNames)
+                : T("Good news: your controller already works in {0}. Just start the game and play. JoyPro is for flight sticks and throttles; your controller needs nothing from it.", ChosenGameNames);
+            QuickPadWorks = true;
+            Status = string.Empty;
+            return;
+        }
+        // What JoyPro does not know is said first: it is set up anyway, like a usual device of its kind.
+        foreach (string rule in englishRules.Where(r => r.StartsWith("JoyPro does not know", StringComparison.Ordinal) || r.StartsWith("Button numbers not published", StringComparison.Ordinal)))
+            QuickNotes.Add(EngineText.Tr(rule));
+        OnPropertyChanged(nameof(HasQuickNotes));
+        CurrentStep = 2;
+        await LoadAircraftAsync();
+        BuildAircraftPicks();
+        // A game with many aircraft (DCS): which ones does the user fly?
+        if (QuickAircraft.Count > 1 && !aircraftAnswered)
+        {
+            AskAircraft();
+            return;
+        }
+        await FinishQuickAsync();
+    }
+
+    private async Task FinishQuickAsync()
+    {
+        CurrentStep = 3;
+        await MakePlanAsync();
+        if (Plan == null)
+        {
+            QuickSummary = T("JoyPro could not make the setup; see the message below.");
+            QuickStuck = true;
+            return;
+        }
+        CurrentStep = 4;
+        await BuildReviewAsync();
+        UpdateQuickSummary();
+        OnPropertyChanged(nameof(ShowsBack));
+    }
 
     // ---- helpers ----
 

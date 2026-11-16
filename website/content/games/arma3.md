@@ -17,18 +17,23 @@ and physical axis in Arma, so one curve counts for every vehicle.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  D["Your device<br/>(instance GUID)"] --> J{"JoysticksList<br/>in the profile"}
-  J -->|"seen by Arma:<br/>offset 256, 512 ..."| C["Codes with<br/>that offset"]
-  J -->|"not seen yet"| S["Skipped:<br/>start Arma once with it"]
-  P["Your profile"] --> E["engine arma3 export"]
-  C --> E
-  E --> L["key&lt;Action&gt; lines<br/>(aircraft + helicopter)"]
-  E --> A["Device arrays:<br/>sensitivity, dead zone, steepness"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep Arma 3 closed
+:::
+
+**Before**: start Arma 3 once with every device connected, then quit.
+
+**Then**: your binds are in **Options > Controls**.
+
+Did you bind buttons in Arma 3 before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Arma 3
 
 - **Import**: the aircraft and helicopter binds on your sticks, throttles and pedals come into your profile, with the
@@ -57,9 +62,9 @@ and on a helicopter action is no conflict; two plane actions on one button are.
 
 1. **Close Arma 3.** The game saves the profile when it quits and when you change settings, so JoyPro refuses to write
    while it runs.
-2. Open **Export** and tick the Arma 3 tile.
+2. Open **Export** and tick the Arma 3 card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 :::ingame What you see in Arma 3
 Start the game and open **Options > Controls** in the main menu. Your binds are on the aircraft and helicopter
@@ -146,6 +151,18 @@ always stay.
 
 :::layer technical
 ## Inside the Arma 3 integration
+
+```mermaid
+%% caption: Arma must have seen a device once (its instance GUID in JoysticksList of the profile). Each device it saw gets its own range of codes (offset 256, 512 ...); a device not seen yet is skipped: start Arma once with it. Export writes the key lines of the aircraft and helicopter actions and the device arrays (sensitivity, dead zone, steepness).
+flowchart LR
+  D["Your device"] --> J["JoysticksList"]
+  J --> C["Seen: codes<br/>with an offset"]
+  J --> S["Not seen:<br/>skipped"]
+  P["Your profile"] --> E["engine arma3 export"]
+  C --> E
+  E --> L["Key lines"]
+  E --> A["Device arrays"]
+```
 
 Code: `engine\Games\Arma3Integration.cs` on the Arma profile code shared with Arma 2 (`ArmaProfileIntegration.cs`,
 `ArmaGameData.cs`), the axis model `engine\AxisModels\Arma3.cs` and the settings model `engine\FfbModels\Arma3.cs`.

@@ -289,7 +289,17 @@
   "mining": ["mine asteroids", "salvage wrecks", "mining throttle up", "rock cracking", "Bergbau", "Bergbaulaser"],
   "hardpoints": ["deploy the weapons", "gimbal the guns", "guns out", "extend weapons", "get my weapons ready", "Waffen ausfahren", "Waffenaufhängungen"],
   "circuit_breaker": ["pull a breaker", "reset a fuse", "pull circuit breaker", "reset breaker", "push in breaker", "Sicherungsautomat", "Sicherung ziehen"],
-  "switch_cover": ["lift the guard", "open the switch cover", "lift switch guard", "open cover", "red cover", "close the guard", "Schalterabdeckung", "Schutzkappe öffnen"]
+  "switch_cover": ["lift the guard", "open the switch cover", "lift switch guard", "open cover", "red cover", "close the guard", "Schalterabdeckung", "Schutzkappe öffnen"],
+  "toga": ["take off go around", "full power for a go around", "abort the landing and climb away", "TOGA Taste", "Durchstarten"],
+  "ap_vertical_speed": ["autopilot vertical speed", "set the vertical speed", "vertical speed hold", "Vertikalgeschwindigkeit", "Steigrate"],
+  "ap_back_course": ["fly the localizer backwards", "back course approach mode", "Rueckkurs"],
+  "autobrake": ["automatic brakes on landing", "brakes by itself after touchdown", "autobrake setting up or down", "Autobremse"],
+  "gear_emergency": ["lower the gear when the hydraulics fail", "drop the wheels when the hydraulics are gone", "hydraulics gone gear emergency", "emergency gear extension", "Notausfahren Fahrwerk"],
+  "tow_release": ["drop the tow rope", "release the glider from the tow plane", "Schleppseil ausklinken"],
+  "rotor_governor": ["keep the rotor rpm automatically", "keeps the rotor speed steady", "rotor speed governor switch", "governor on off", "Drehzahlregler"],
+  "rotor_clutch": ["couple the rotor to its drive", "rotor clutch engage", "Rotorkupplung"],
+  "radio_swap": ["swap active and standby frequency", "flip flop radio", "Frequenz tauschen"],
+  "pfd_softkey": ["button below the primary flight display", "G1000 PFD soft key", "PFD Softkey"]
  },
  "_plain": "What a player says in everyday words about each function (the phrase set's descriptions, engine/tests/fixtures/phrases/phrases.json): words of the function's search document only, never matched as a phrase or in an action title.",
  "plain": {
@@ -480,7 +490,17 @@
   "mining": ["shoot the beam that breaks rocks for ore", "switch to the tool that scraps wrecks"],
   "hardpoints": ["fold out my ship's guns so I can fight", "change how my guns aim, fixed or following the target"],
   "circuit_breaker": ["pull the little fuse button to cut power to one system", "push the popped fuse back in"],
-  "switch_cover": ["flip up the little lid over the important switch", "open the red cap so I can press the button under it"]
+  "switch_cover": ["flip up the little lid over the important switch", "open the red cap so I can press the button under it"],
+  "toga": ["the button that gives full power to go around"],
+  "ap_vertical_speed": ["set how fast the autopilot goes up or down"],
+  "ap_back_course": ["let the autopilot follow the localizer from the other side"],
+  "autobrake": ["choose how hard the plane brakes by itself after landing"],
+  "gear_emergency": ["drop the wheels by hand when the normal gear lever does not work"],
+  "tow_release": ["let go of the rope that pulls my glider"],
+  "rotor_governor": ["the switch that keeps the helicopter rotor at the right speed"],
+  "rotor_clutch": ["couple the rotor so it starts turning"],
+  "radio_swap": ["swap the radio frequency I set up with the one I am using"],
+  "pfd_softkey": ["the buttons along the bottom of the left glass cockpit screen"]
  },
  "classes": {
   "heli": {"planes": ["AH-64", "CH-47", "Ka-50", "ka-50", "Mi-8", "mi-8", "Mi-24", "OH-58", "SA342", "UH-1", "UH-60", "Mi-28", "Mi-26", "Gazelle", "Bo-105", "Huey"], "words": ["helicopter", "heli", "rotorcraft"]},
@@ -535,7 +555,7 @@
    "slots": {"trimreset": ""}},
 
   {"id": "trim_set", "name": "Force trim / trim set", "category": "flight", "kind": "button", "only": "button",
-   "synonyms": ["force trim", "trim release", "trimmer", "trimmer button", "trim set", "trim button", "trim aircraft", "trim helicopter", "trim save", "trimmers fixation", "magnetic brake", "trim on", "trim off", "force trim release", "trimmer switch", "cyclic trim release", "trim hold"],
+   "synonyms": ["force trim", "trim release", "trimmer", "trimmer button", "trim set", "trim button", "trim aircraft", "trim helicopter", "trim save", "trimmers fixation", "magnetic brake", "trim on", "trim off", "force trim release", "trimmer switch", "cyclic trim release", "trim hold", "quick trim"],
    "not": ["reset", "nose", "wing", "rudder", "left", "right", "up", "down", "forward", "backward", "beep"],
    "dirs": {"on": ["on"], "off": ["off"]},
    "slots": {"trimmerset": ""}},
@@ -559,15 +579,25 @@
   {"id": "gear", "name": "Landing gear", "category": "flight", "kind": "button",
    "synonyms": ["gear", "landing gear", "undercarriage", "gear lever", "gear handle", "ldg gear", "landing gear lever", "landing gear handle", "gear up", "gear down", "lg handle", "gear control"],
    "terms": {"StarCitizen": ["landing system", "deploy landing gear"]},
-   "not": ["horn", "steering", "light", "lamp", "indicator", "test", "door", "doors", "pin", "pins", "brake", "warning", "emergency release", "alternate release", "downlock", "uplock", "silence", "lock override", "pump", "tail wheel", "tailwheel", "nose wheel", "nosewheel", "gear ratio", "landing gear knob", "camera", "supercharger", "superchargers", "blower", "higher gear", "lower gear", "gearbox", "high gear", "low gear", "hydraulic"],
+   "not": ["horn", "steering", "light", "lamp", "indicator", "test", "door", "doors", "pin", "pins", "brake", "warning", "emergency release", "alternate release", "downlock", "uplock", "silence", "lock override", "pump", "tail wheel", "tailwheel", "nose wheel", "nosewheel", "gear ratio", "landing gear knob", "camera", "supercharger", "superchargers", "blower", "higher gear", "lower gear", "gearbox", "high gear", "low gear", "hydraulic", "emergency", "emer"],
    "dirs": {"up": ["up", "retract", "raise", "in", "raised"], "down": ["down", "extend", "lower", "out", "deploy"], "toggle": ["toggle", "up down", "up/down", "deploy retract"]},
    "slots": {"gearin": "up", "gearout": "down", "gear_toggle": "toggle", "space_gear_up": "up", "space_gear_down": "down"}},
 
+  {"id": "gear_emergency", "name": "Emergency gear", "category": "flight", "kind": "button", "only": "button",
+   "synonyms": ["emergency gear", "gear emergency", "emergency gear extension", "gear emergency handle", "landing gear emergency", "emergency landing gear", "landing gear emergency override", "gear emergency extend", "emergency gear release", "alternate gear", "alternate gear release", "gear alternate release", "emergency gear handle", "gear emer"],
+   "not": ["light", "test", "indicator", "horn", "warning"],
+   "dirs": {"down": ["down", "extend", "on", "release"], "off": ["off", "reset"], "toggle": ["toggle"]}},
+
   {"id": "wheel_brakes", "name": "Wheel brakes", "category": "flight", "kind": "axis", "sided": "true",
    "synonyms": ["wheel brake", "wheel brakes", "toe brake", "toe brakes", "brake", "brakes", "brake pedal", "brake pedals", "brake axis", "differential brake", "brakes momentary", "left brake", "right brake", "wheel brake left", "wheel brake right", "brake lever", "apply brakes", "brakes toggle", "wheels brake", "heli brake", "heli wheels brake"],
-   "not": ["parking", "park", "rotor", "air", "speed", "dive", "space", "hand", "chute", "parachute", "prop", "propeller", "collective", "antiskid", "anti skid", "emergency", "pressure", "indicator", "gauge", "light", "accumulator", "camera", "brake chute", "magnetic", "engine brake", "motor brake", "trim"],
+   "not": ["parking", "park", "rotor", "air", "speed", "dive", "space", "hand", "chute", "parachute", "prop", "propeller", "collective", "antiskid", "anti skid", "emergency", "pressure", "indicator", "gauge", "light", "accumulator", "camera", "brake chute", "magnetic", "engine brake", "motor brake", "trim", "auto brake", "auto brakes", "autobrake", "autobrakes"],
    "dirs": {"left": ["left"], "right": ["right"], "toggle": ["toggle"]},
-   "slots": {"wheelbrakeleftanalog": "left", "wheelbrakerightanalog": "right", "wheelbrakeleftanaloginv": "left", "wheelbrakerightanaloginv": "right"}},
+   "slots": {"wheelbrakeleftanalog": "left", "wheelbrakerightanalog": "right", "wheelbrakeleftanaloginv": "left", "wheelbrakerightanaloginv": "right", "wheelbrakes_button": ""}},
+
+  {"id": "autobrake", "name": "Autobrake", "category": "flight", "kind": "button", "only": "button",
+   "synonyms": ["autobrake", "auto brake", "auto brakes", "autobrakes", "autobrake control", "auto brake control", "autobrake setting", "autobrake selector", "rto brake"],
+   "not": ["light", "test", "indicator", "disarm light"],
+   "dirs": {"increase": ["increase", "inc", "up", "plus", "more"], "decrease": ["decrease", "dec", "down", "minus", "less", "dn"], "off": ["off", "disarm"], "toggle": ["toggle"]}},
 
   {"id": "parking_brake", "name": "Parking brake", "category": "flight", "kind": "button",
    "synonyms": ["parking brake", "park brake", "parking break", "park break", "handbrake", "hand brake", "parking brake handle", "parking brake lever"],
@@ -664,7 +694,7 @@
 
   {"id": "throttle_cutoff", "name": "Throttle cutoff / idle", "category": "engine", "kind": "button", "only": "button",
    "synonyms": ["throttle cutoff", "throttle cut off", "cutoff", "cut off", "idle cutoff", "fuel cutoff", "fuel cut off", "throttle idle", "idle", "stop detent", "throttle to stop", "throttle off", "idle detent", "throttle stop", "throttle to idle", "cut off position", "idle stop", "throttle cut", "instantly zero throttle", "throttle to off", "idle off", "throttle to start", "throttle start", "idle cutoff detent", "cutoff idle", "finger lift", "finger lifts", "throttle finger lift", "power lever finger lift"],
-   "not": ["test", "light", "warning", "lights", "valve", "relay", "indicator", "descent", "rpm", "speed", "frequency"],
+   "not": ["test", "light", "warning", "lights", "valve", "relay", "indicator", "descent", "rpm", "speed", "frequency", "decrease", "collective"],
    "dirs": {"cutoff": ["cutoff", "cut off", "off", "stop", "cut"], "idle": ["idle", "start", "on"], "toggle": ["toggle"]}},
 
   {"id": "afterburner", "name": "Afterburner / boost", "category": "engine", "kind": "button",
@@ -701,9 +731,19 @@
 
   {"id": "prop_pitch", "name": "Propeller pitch / RPM", "category": "engine", "kind": "axis", "sided": "true",
    "synonyms": ["propeller pitch", "prop pitch", "propeller", "prop", "rpm", "prop rpm", "propeller rpm", "prop lever", "propeller lever", "propeller levers", "prop levers", "governor", "rotor rpm", "rpm lever", "rpm control", "propeller control", "pitch prop", "engine rpm", "rpm beep", "beep", "nr beep", "rotor speed", "prop speed", "propeller speed", "rpm switch", "governor control", "turbine rpm", "rpm set", "prop control", "propeller governor"],
-   "not": ["indicator", "gauge", "tachometer", "feather", "feathering", "reverse", "auto", "brake", "de ice", "anti ice", "deice", "heat", "warning", "light", "limiter", "overspeed", "test", "turbocharger", "trim", "sync", "synchronizer", "camera", "view"],
+   "not": ["indicator", "gauge", "tachometer", "feather", "feathering", "reverse", "auto", "brake", "de ice", "anti ice", "deice", "heat", "warning", "light", "limiter", "overspeed", "test", "turbocharger", "trim", "sync", "synchronizer", "camera", "view", "rotor governor", "governor switch", "throttle governor", "engine gov", "gov switch", "governor toggle", "rotor gov"],
    "dirs": {"increase": ["increase", "up", "inc", "fine", "forward", "more", "plus", "high"], "decrease": ["decrease", "down", "dec", "coarse", "back", "less", "minus", "low"]},
    "slots": {"rpm_control": "", "rpm_increase": "increase", "rpm_decrease": "decrease"}},
+
+  {"id": "rotor_governor", "name": "Engine / rotor governor", "category": "engine", "kind": "button", "only": "button",
+   "synonyms": ["rotor governor", "governor switch", "engine governor", "throttle governor", "gov switch", "rotor gov", "governor toggle", "engine gov", "rotor governor switch", "engine gov switch", "rotor gov switch", "governor on off"],
+   "not": ["light", "test", "indicator", "rpm", "beep"],
+   "dirs": {"on": ["on"], "off": ["off"], "toggle": ["toggle", "on off"]}},
+
+  {"id": "rotor_clutch", "name": "Rotor clutch", "category": "engine", "kind": "button", "only": "button",
+   "synonyms": ["clutch", "rotor clutch", "clutch switch", "rotor clutch switch", "engage clutch", "clutch toggle", "clutch engage", "rotor clutch toggle"],
+   "not": ["light", "test", "indicator", "pedal"],
+   "dirs": {"on": ["on", "engage"], "off": ["off", "disengage"], "toggle": ["toggle"]}},
 
   {"id": "prop_feather", "name": "Propeller feather", "category": "engine", "kind": "button",
    "synonyms": ["feather", "feathering", "prop feathering", "propeller feathering", "prop feather", "propeller feather", "feather propeller"],
@@ -775,8 +815,15 @@
 
   {"id": "autothrottle", "name": "Autothrottle", "category": "nav", "kind": "button",
    "synonyms": ["autothrottle", "auto throttle", "autothrust", "auto thrust", "a thr", "athr", "approach power compensator", "apc", "auto throttle mode", "atc engage", "atc engage disengage", "autothrottle disconnect", "autothrottle mode", "atcs", "speed hold", "auto throttle control"],
-   "not": ["light", "indicator", "test", "request", "docking", "air traffic"],
-   "slots": {"atc_engage": "@0.6"}},
+   "not": ["light", "indicator", "test", "request", "docking", "air traffic", "go around", "to ga", "toga"],
+   "slots": {"atc_engage": "@0.6"},
+   "dirs": {"on": ["on", "engage"], "off": ["off", "disconnect", "disengage", "disarm", "dis arm"], "toggle": ["toggle", "on off"], "hold": ["hold"], "arm": ["arm"]}},
+
+  {"id": "toga", "name": "Take-off / go-around (TOGA)", "category": "nav", "kind": "button", "only": "button",
+   "synonyms": ["toga", "take off go around", "takeoff go around", "take off go around mode", "go around", "auto throttle to ga", "autothrottle to ga", "autopilot take off go around", "to ga button", "toga button"],
+   "terms": {"MSFS2020": ["ga", "throttle to ga"], "MSFS2024": ["ga", "throttle to ga"]},
+   "not": ["light", "test", "indicator"],
+   "dirs": {}},
 
   {"id": "nozzle", "name": "Nozzle / thrust vector", "category": "engine", "kind": "axis",
    "synonyms": ["nozzle", "nozzles", "nozzle angle", "nozzle lever", "thrust vector", "thrust vectoring", "vtol nozzle", "vtol vectoring", "vtol", "vtol raise nozzle", "vtol lower nozzle", "vtol nozzle axis", "switch thrust vectoring", "nozzle control", "vector thrust", "vectoring", "vtol mode", "hover nozzle"],
@@ -812,7 +859,7 @@
 
   {"id": "weapon_select", "name": "Weapon select", "category": "weapons", "kind": "button",
    "synonyms": ["weapon select", "select weapon", "next weapon", "previous weapon", "weapon selector", "cycle weapon", "cycle weapons", "switch weapons", "switch weapon", "switch primary weapons", "switch secondary weapons", "weapon group", "weapon groups", "fire group", "fire groups", "cycle fire group", "weapon wheel", "weapon selection", "stores select", "station select", "select next weapon", "select previous weapon", "weapon selector switch", "visual weapon selector", "primary weapon group", "secondary weapon group", "weapons selector", "change weapon", "weapon change", "weapon cycle", "missile cycle", "cycle missile", "select missile", "missile select", "weapon station", "stores selector", "armament selector", "weapon type", "next weapon group", "previous weapon group", "missile mode", "missile increase", "missile decrease", "arm missiles", "missile arming"],
-   "terms": {"StarCitizen": ["cycle missile", "missile type", "toggle missile"]},
+   "terms": {"StarCitizen": ["cycle missile", "missile type", "toggle missile", "weapon presets", "set guns group", "guns group"], "ProjectWingman": ["weapon"], "Battlefield2042": ["dynamic gadget", "switch to dynamic gadget"], "Battlefield6": ["dynamic gadget", "switch to dynamic gadget"]},
    "not": ["light", "indicator", "test", "jettison", "release"],
    "dirs": {"next": ["next", "cycle", "increase", "forward", "up", "inc"], "prev": ["previous", "prev", "decrease", "back", "down", "dec"], "1": ["1"], "2": ["2"], "3": ["3"], "4": ["4"]},
    "slots": {"weaponselector1": "1", "weaponselector2": "2", "weaponselector3": "3", "weaponselector4": "4", "weaponselector5_ground_gun": "5", "space_missile_cycle": "next", "space_missile_increase": "next", "space_missile_decrease": "prev", "space_missile_mode": "toggle"}},
@@ -1038,9 +1085,9 @@
    "slots": {"radar_unlock": ""}},
 
   {"id": "target_cycle", "name": "Next / previous target", "category": "sensors", "kind": "button", "only": "button",
-   "synonyms": ["next target", "previous target", "cycle target", "cycle targets", "target next", "target previous", "select target", "cycle next ship", "cycle previous ship", "target object", "target ahead", "select target ahead", "target cycle", "select radar irst target to lock", "select radar target to lock on", "target select", "cycle next target", "cycle previous target", "target selection", "change target", "next contact", "target pin", "pin target", "pin selected", "unpin selected", "target pinned", "cycle pinned"],
+   "synonyms": ["next target", "previous target", "cycle target", "cycle targets", "target next", "target previous", "select target", "cycle next ship", "cycle previous ship", "target object", "target ahead", "select target ahead", "target cycle", "select radar irst target to lock", "select radar target to lock on", "target select", "cycle next target", "cycle previous target", "target selection", "change target", "switch target", "next contact", "target pin", "pin target", "pin selected", "unpin selected", "target pinned", "cycle pinned"],
    "not": ["hostile", "enemy", "threat", "subsystem", "subcomponent", "wingman", "route", "system", "camera", "view", "light", "nav", "waypoint", "elevation", "knob", "mfd"],
-   "dirs": {"next": ["next", "cycle", "forward"], "prev": ["previous", "prev", "back"], "pin": ["pin"], "unpin": ["unpin"]},
+   "dirs": {"next": ["next", "cycle", "forward", "change", "switch"], "prev": ["previous", "prev", "back"], "pin": ["pin"], "unpin": ["unpin"]},
    "slots": {"space_pin_selected": "pin", "space_unpin_selected": "unpin"}},
 
   {"id": "target_hostile", "name": "Target nearest hostile", "category": "sensors", "kind": "button", "only": "button",
@@ -1079,7 +1126,12 @@
 
   {"id": "mfd_button", "name": "MFD button (OSB)", "category": "sensors", "kind": "button", "only": "button", "keyed": "number",
    "synonyms": ["mfd", "mfcd", "mpcd", "mpd", "ddi", "osb", "mfd button", "mfd osb", "mfcd button", "ddi button", "mpcd button", "mfd pb", "pushbutton", "push button", "mfd pushbutton", "lmfd", "rmfd", "mmfd", "lmfcd", "rmfcd", "lddi", "rddi", "amplifier display", "display button", "bezel button", "mfk", "mfd key", "switch mfd 1 mode", "switch mfd 2 mode", "switch mfd 3 mode", "switch mfd 4 mode"],
-   "not": ["brightness", "brt", "contrast", "gain", "sym", "symbology", "light", "power", "on off", "rocker", "camera zoom", "day night", "con", "intensity", "dimmer", "cursor", "slew", "tdc"]},
+   "not": ["brightness", "brt", "contrast", "gain", "sym", "symbology", "light", "power", "on off", "rocker", "camera zoom", "day night", "con", "intensity", "dimmer", "cursor", "slew", "tdc"],
+   "terms": {"XPlane11": ["copilot pfd softkey", "copilot pfd"], "XPlane12": ["copilot pfd softkey", "copilot pfd"]}},
+
+  {"id": "pfd_softkey", "name": "PFD softkey (G1000)", "category": "nav", "kind": "button", "only": "button", "keyed": "number",
+   "synonyms": ["pfd softkey", "pfd soft key", "pfd softkeys", "g1000 pfd softkey", "pilot pfd softkey", "pfd key", "pfd button"],
+   "not": ["copilot", "light", "brightness", "power"]},
 
   {"id": "display_brightness", "name": "Display brightness / contrast", "category": "sensors", "kind": "both",
    "synonyms": ["brightness", "contrast", "brt", "symbology brightness", "display brightness", "mfd brightness", "hud brightness", "hmd brightness", "mfcd brightness", "ddi brightness", "screen brightness", "display contrast", "mfd contrast", "symbol brightness", "symbology intensity", "display gain", "mfd gain", "sym", "con", "day night", "display intensity", "video brightness", "video contrast"],
@@ -1097,9 +1149,9 @@
    "slots": {"ufc_mastercaution": ""}},
 
   {"id": "kneeboard", "name": "Kneeboard", "category": "systems", "kind": "button",
-   "synonyms": ["kneeboard", "knee board", "kneepad", "knee pad", "kneeboard toggle", "kneeboard on off", "kneeboard next page", "kneeboard previous page", "kneeboard glance view", "kneeboard current position mark point"],
+   "synonyms": ["kneeboard", "knee board", "kneepad", "knee pad", "kneeboard toggle", "kneeboard on off", "kneeboard next page", "kneeboard previous page", "kneeboard glance view", "kneeboard current position mark point", "electronic flight bag", "efb", "efb toggle", "toggle electronic flight bag"],
    "not": ["shortcut", "make shortcut"],
-   "dirs": {"toggle": ["toggle", "on off", "on/off", "show"], "next": ["next", "next page"], "prev": ["previous", "previous page", "prev"], "glance": ["glance"], "mark": ["mark", "mark point"]},
+   "dirs": {"toggle": ["toggle", "on off", "on/off", "show"], "next": ["next", "next page", "next tab"], "prev": ["previous", "previous page", "prev", "previous tab"], "glance": ["glance"], "mark": ["mark", "mark point"]},
    "slots": {"kneeboard_toggle": "toggle", "kneeboard_next_pg": "next", "kneeboard_previous_pg": "prev"}},
 
   {"id": "battery", "name": "Battery", "category": "systems", "kind": "button",
@@ -1122,12 +1174,13 @@
   {"id": "master_power", "name": "Master power / flight ready", "category": "systems", "kind": "button",
    "synonyms": ["master switch", "master power", "electrical master", "main power", "power master", "elec master", "systems power", "master electrical", "master electric", "electric power", "electrical power", "flight ready", "ship power", "all electric power", "systems on", "systems off"],
    "terms": {"StarCitizen": ["flight ready", "power toggle", "power on", "power off", "thrusters on", "thrusters off", "toggle thrusters", "power toggle all"]},
-   "not": ["light", "test", "indicator", "radar", "radio", "transmit", "laser", "avionics", "external", "ground", "apu", "engine", "engines", "weapons", "shields", "shield", "systems power", "divert", "balance", "triangle", "distribution", "mining", "tractor", "salvage", "hmd", "nvg", "mfd", "jammer", "ecm", "pod", "hud", "inverter", "fuel", "pump", "heater", "heat"],
+   "not": ["light", "test", "indicator", "radar", "radio", "transmit", "laser", "avionics", "external", "ground", "apu", "engine", "engines", "weapons", "weapon", "armament", "arm", "gun", "shields", "shield", "systems power", "divert", "balance", "triangle", "distribution", "mining", "tractor", "salvage", "hmd", "nvg", "mfd", "jammer", "ecm", "pod", "hud", "inverter", "fuel", "pump", "heater", "heat"],
    "slots": {"space_power_on": "on", "space_power_off": "off", "space_flight_ready": "on", "space_thrusters_on": "on@0.5", "space_thrusters_off": "off@0.5"}},
 
   {"id": "pitot_heat", "name": "Pitot heat", "category": "systems", "kind": "button",
    "synonyms": ["pitot heat", "pitot", "probe heat", "pitot heater", "pitot static heat", "pitot heating", "pitot tube heat", "air data heat", "probes heat", "pitot heat switch", "aoa heat", "pitot anti ice"],
-   "not": ["light", "test", "indicator", "pressure", "static selector", "alternate static"]},
+   "not": ["light", "test", "indicator", "pressure", "static selector", "alternate static"],
+   "dirs": {"on": ["on"], "off": ["off"], "toggle": ["toggle", "on off"]}},
 
   {"id": "anti_ice", "name": "Anti-ice / de-ice", "category": "systems", "kind": "button",
    "synonyms": ["anti ice", "anti icing", "de ice", "deice", "de icing", "deicing", "engine anti ice", "wing anti ice", "windshield heat", "ice protection", "anti icing system", "window heat", "windshield anti ice", "windscreen heat", "windshield defog", "defog", "defrost", "demist", "anti fog", "rotor de ice", "prop de ice", "propeller de ice", "inlet heat", "engine heat", "intake heat", "nacelle anti ice", "canopy defog", "windscreen de ice", "ice detector", "tks", "rain removal", "wiper", "wipers", "windshield wiper"],
@@ -1147,7 +1200,11 @@
 
   {"id": "sling_load", "name": "Cargo hook / sling / hoist", "category": "systems", "kind": "button",
    "synonyms": ["sling load", "sling", "cargo hook", "rope", "fast rope", "winch", "hoist", "cargo release", "sling load manager", "rope action", "cargo hook release", "hook release", "external cargo", "rescue hoist", "hoist up", "hoist down", "slingload", "sling load release", "cargo hook arm", "hook arm"],
-   "not": ["tail hook", "tailhook", "arresting", "arrestor", "light", "test"]},
+   "not": ["tail hook", "tailhook", "arresting", "arrestor", "light", "test", "tow", "tow plane", "glider"]},
+
+  {"id": "tow_release", "name": "Tow release", "category": "systems", "kind": "button", "only": "button",
+   "synonyms": ["tow release", "release tow", "tow plane release", "glider tow release", "release tow plane", "tow cable release", "release tow plane cable", "winch release", "tow hook release", "tow rope release", "release tow rope", "release winch", "tow plane winch release"],
+   "not": ["light", "test", "request", "take me"]},
 
   {"id": "doors", "name": "Doors / ramp", "category": "systems", "kind": "button",
    "synonyms": ["door", "doors", "ramp", "cargo ramp", "cargo door", "cabin door", "side door", "rear door", "close all doors", "open all doors", "lock doors", "unlock doors", "lock all doors", "unlock all doors", "hatch", "entrance door", "crew door", "loading ramp", "ramp door", "cockpit door", "cargo bay", "cargo bay doors", "hangar door", "toggle doors"],
@@ -1186,16 +1243,17 @@
    "slots": {"lights_ext_on": "on", "lights_ext_off": "off", "space_light": "toggle", "lights_ext_aar_2": "increase@0.6", "lights_ext_aar": "decrease@0.6"}},
 
   {"id": "lights_instrument", "name": "Instrument / cockpit lights", "category": "lights", "kind": "both",
-   "synonyms": ["instrument light", "instrument lights", "instrument lighting", "panel light", "panel lights", "panel lighting", "console light", "console lights", "console lighting", "cockpit light", "cockpit lights", "cockpit lighting", "backlight", "backlighting", "instrument panel lights", "instruments lights", "uv light", "uv lights", "ultraviolet", "red lights", "instrument lights axis", "primary console lights", "panel lamps", "cockpit lamp", "cockpit lamps", "instrument lamp", "instrument lamps", "warning lights dimmer", "indexer brightness", "chart light", "chart lights", "lamp brightness", "lamps brightness", "indicator lamp brightness", "reading light", "reading lights", "utility light", "compass light", "map light", "map lights"],
+   "synonyms": ["instrument light", "instrument lights", "instrument lighting", "panel light", "panel lights", "panel lighting", "console light", "console lights", "console lighting", "cockpit light", "cockpit lights", "cockpit lighting", "backlight", "backlighting", "instrument panel lights", "instruments lights", "uv light", "uv lights", "ultraviolet", "red lights", "instrument lights axis", "primary console lights", "panel lamps", "cockpit lamp", "cockpit lamps", "instrument lamp", "instrument lamps", "warning lights dimmer", "indexer brightness", "chart light", "chart lights", "lamp brightness", "lamps brightness", "indicator lamp brightness", "reading light", "reading lights", "utility light", "compass light", "map light", "map lights", "pedestal light", "pedestal lights", "pedestral lights"],
    "not": ["test", "warning test", "flood", "floods", "floodlight", "dome"],
    "dirs": {"increase": ["increase", "brighter", "up", "inc", "plus", "bright", "cw"], "decrease": ["decrease", "dimmer", "down", "dec", "minus", "dim", "ccw"], "toggle": ["toggle", "on off", "on/off"], "on": ["on"], "off": ["off"]},
    "slots": {"lights_in_instrument_2": "increase", "lights_in_instrument": "decrease", "lights_in_instrument1_2": "increase", "lights_in_instrument1": "decrease", "lights_in_instrument2_2": "increase", "lights_in_instrument2": "decrease", "lights_in_instrument3_2": "increase", "lights_in_instrument3": "decrease", "instrumentlightsaxis1": "", "instrumentlightsaxis2": "", "instrumentlightsaxis3": ""}},
 
   {"id": "lights_flood", "name": "Flood lights", "category": "lights", "kind": "both",
-   "synonyms": ["flood light", "flood lights", "floodlight", "floodlights", "flood", "floods", "dome light", "dome lights", "flood lighting", "white flood", "red flood", "console flood", "instrument flood", "cockpit flood", "storm light", "storm lights", "thunderstorm light", "thunderstorm lights", "flood lamp", "flood lamps", "interior light", "interior lights", "cabin light", "cabin lights", "cargo light", "cargo lights"],
+   "synonyms": ["flood light", "flood lights", "floodlight", "floodlights", "flood", "floods", "dome light", "dome lights", "flood lighting", "white flood", "red flood", "console flood", "instrument flood", "cockpit flood", "storm light", "storm lights", "thunderstorm light", "thunderstorm lights", "flood lamp", "flood lamps", "interior light", "interior lights", "cabin light", "cabin lights", "cargo light", "cargo lights", "glareshield light", "glareshield lights", "glare shield lights"],
    "not": ["test", "landing", "landing floodlight", "searchlight"],
    "dirs": {"increase": ["increase", "brighter", "up", "inc", "plus", "bright", "cw"], "decrease": ["decrease", "dimmer", "down", "dec", "minus", "dim", "ccw"], "toggle": ["toggle", "on off", "on/off"], "on": ["on"], "off": ["off"]},
-   "slots": {"lights_in_flood_2": "increase", "lights_in_flood": "decrease", "lights_in_flood1_2": "increase", "lights_in_flood1": "decrease", "lights_in_flood2_2": "increase", "lights_in_flood2": "decrease"}},
+   "slots": {"lights_in_flood_2": "increase", "lights_in_flood": "decrease", "lights_in_flood1_2": "increase", "lights_in_flood1": "decrease", "lights_in_flood2_2": "increase", "lights_in_flood2": "decrease"},
+   "terms": {"XPlane11": ["panel brightness", "instrument brightness"], "XPlane12": ["panel brightness", "instrument brightness"]}},
 
   {"id": "flashlight", "name": "Flashlight", "category": "lights", "kind": "button",
    "synonyms": ["flashlight", "flash light", "torch", "helmet light", "pocket light", "headlamp", "head lamp"],
@@ -1209,9 +1267,10 @@
 
   {"id": "autopilot", "name": "Autopilot on / off", "category": "nav", "kind": "button",
    "synonyms": ["autopilot", "auto pilot", "ap", "a p", "afcs", "autopilot engage", "autopilot mode", "toggle auto pilot", "toggle autopilot", "autopilot master", "ap master", "autopilot switch", "ap engage", "autopilot on", "autopilot off", "flight director", "fd", "sas autopilot", "auto pilot mode", "autopilot button", "ap button", "autopilot channels", "autopilot pitch", "autopilot roll", "autopilot yaw", "pitch channel", "roll channel", "yaw channel", "autopilot pitch channel", "autopilot roll channel", "autopilot yaw channel", "auto flight", "automatic flight control", "ap on", "ap off", "autopilot toggle"],
-   "not": ["disconnect", "disengage", "disc", "paddle", "altitude", "alt", "heading", "hdg", "attitude", "att", "route", "nav", "hover", "course", "speed", "light", "test", "autothrottle", "auto throttle", "vertical speed", "vs", "flc", "approach", "app", "loc", "glideslope", "gs", "bank", "trim", "camera", "barometric", "radio altitude", "level", "climb", "descent", "track", "vnav", "lnav", "ias", "mach", "director cue", "fd bars", "ammo", "he", "weather", "radar", "api"],
+   "not": ["disconnect", "disengage", "disc", "paddle", "altitude", "alt", "heading", "hdg", "attitude", "att", "route", "nav", "hover", "course", "speed", "light", "test", "autothrottle", "auto throttle", "vertical speed", "vs", "flc", "approach", "app", "loc", "glideslope", "gs", "bank", "trim", "camera", "barometric", "radio altitude", "level", "climb", "descent", "track", "vnav", "lnav", "ias", "mach", "director cue", "fd bars", "ammo", "he", "weather", "radar", "api", "vvi", "back course", "backcourse", "go around", "take off", "toga"],
    "dirs": {"on": ["on", "engage", "enable"], "off": ["off", "disengage", "disable"], "toggle": ["toggle", "on off", "on/off"]},
-   "slots": {"autopilot_on": "on", "autopilot_off": "off@0.6", "autopilot_pitch_on": "on@0.6", "autopilot_pitch_off": "off@0.6", "autopilot_roll_on": "on@0.6", "autopilot_roll_off": "off@0.6", "autopilot_yaw_on": "on@0.6", "autopilot_yaw_off": "off@0.6"}},
+   "slots": {"autopilot_on": "on", "autopilot_off": "off@0.6", "autopilot_pitch_on": "on@0.6", "autopilot_pitch_off": "off@0.6", "autopilot_roll_on": "on@0.6", "autopilot_roll_off": "off@0.6", "autopilot_yaw_on": "on@0.6", "autopilot_yaw_off": "off@0.6"},
+   "terms": {"XPlane11": ["servos", "servos toggle"], "XPlane12": ["servos", "servos toggle"]}},
 
   {"id": "ap_disconnect", "name": "Autopilot disconnect", "category": "nav", "kind": "button", "only": "button",
    "synonyms": ["autopilot disconnect", "ap disconnect", "ap disc", "autopilot disc", "paddle switch", "paddle", "autopilot disengage", "a p disconnect", "autopilot release", "ap release", "autopilot cutout", "ap cutout", "autopilot emergency disconnect", "emergency disconnect", "nws disc", "ap disengage", "a p disc", "afcs disconnect", "autopilot interrupt", "ap off button", "control wheel steering"],
@@ -1227,8 +1286,18 @@
 
   {"id": "ap_heading", "name": "Heading hold", "category": "nav", "kind": "button",
    "synonyms": ["heading hold", "hdg hold", "heading mode", "hdg sel", "heading select", "hdg mode", "autopilot heading", "ap heading", "ap hdg", "heading hold mode", "course hold", "crs hold", "hdg", "lnav", "nav hold"],
-   "not": ["light", "test", "indicator", "bug", "knob", "heading bug", "set knob", "sync", "set", "indicator", "hsi"],
+   "not": ["light", "test", "indicator", "bug", "knob", "heading bug", "set knob", "sync", "set", "indicator", "hsi", "up", "down", "back course", "backcourse"],
    "dirs": {"on": ["on", "engage"], "off": ["off"], "toggle": ["toggle", "on off"]}},
+
+  {"id": "ap_vertical_speed", "name": "Vertical speed (autopilot)", "category": "nav", "kind": "button",
+   "synonyms": ["vertical speed", "vs", "vvi", "reference vs", "vs hold", "vertical speed hold", "ap vs", "autopilot vs", "autopilot vvi", "selected vertical speed", "vertical speed mode", "vs mode", "autopilot vertical speed", "vs var", "vs bug", "vertical speed bug", "rate of climb hold"],
+   "not": ["light", "test", "indicator", "gauge", "warning", "versus", "vs ai"],
+   "dirs": {"increase": ["increase", "inc", "up", "plus"], "decrease": ["decrease", "dec", "down", "minus"], "hold": ["hold", "on", "engage"], "off": ["off"], "toggle": ["toggle"]}},
+
+  {"id": "ap_back_course", "name": "Back course (autopilot)", "category": "nav", "kind": "button", "only": "button",
+   "synonyms": ["back course", "backcourse", "bc hold", "back course hold", "autopilot back course", "autopilot backcourse", "backcourse hold", "back course mode", "bc mode"],
+   "not": ["light", "test", "indicator"],
+   "dirs": {"on": ["on"], "off": ["off"], "toggle": ["toggle"]}},
 
   {"id": "ap_attitude", "name": "Attitude hold", "category": "nav", "kind": "button",
    "synonyms": ["attitude hold", "att hold", "attitude mode", "pitch roll hold", "autopilot attitude", "ap attitude", "attitude hold mode", "pitch hold", "roll hold", "bank hold", "attitude stabilization"],
@@ -1291,8 +1360,8 @@
    "dirs": {"increase": ["increase", "inc", "up", "plus", "cw"], "decrease": ["decrease", "dec", "down", "minus", "ccw"], "toggle": ["toggle", "on off"]}},
 
   {"id": "heading_course", "name": "Heading bug / course select", "category": "nav", "kind": "both",
-   "synonyms": ["heading bug", "hdg bug", "heading knob", "heading set", "course", "crs", "obs", "course select", "course set", "course knob", "heading select knob", "set heading", "set course", "course selector", "hdg set", "heading sync", "hdg sync", "course arrow", "heading selector", "hsi course", "hsi heading", "desired course", "omni bearing"],
-   "not": ["light", "test", "hold", "mode"],
+   "synonyms": ["heading bug", "hdg bug", "heading knob", "heading set", "course", "crs", "obs", "course select", "course set", "course knob", "heading select knob", "set heading", "set course", "course selector", "hdg set", "heading sync", "hdg sync", "course arrow", "heading selector", "hsi course", "hsi heading", "desired course", "omni bearing", "heading up", "heading down", "autopilot heading up", "autopilot heading down"],
+   "not": ["light", "test", "hold", "mode", "back course", "backcourse"],
    "dirs": {"increase": ["increase", "inc", "up", "plus", "cw", "right"], "decrease": ["decrease", "dec", "down", "minus", "ccw", "left"], "sync": ["sync", "push", "press"]}},
 
   {"id": "clock", "name": "Clock / stopwatch", "category": "systems", "kind": "button",
@@ -1311,7 +1380,7 @@
 
   {"id": "comm_switch", "name": "Comm switch (HOTAS)", "category": "hotas", "kind": "button", "only": "button",
    "synonyms": ["comm switch", "comm hat", "communication switch", "comm sw", "comms switch", "comm 1", "comm 2", "comm1", "comm2", "communication hat", "comm button", "comm selector switch", "comms hat"],
-   "not": ["light", "test", "volume", "mode", "panel", "frequency", "channel", "preset", "squelch"],
+   "not": ["light", "test", "volume", "mode", "panel", "frequency", "channel", "preset", "squelch", "ufc", "autoswitch", "knob", "pull"],
    "dirs": {"up": ["up", "fwd", "forward", "1", "uhf", "comm 1"], "down": ["down", "aft", "back", "2", "vhf", "comm 2"], "left": ["left"], "right": ["right"], "press": ["press", "depress", "push"]},
    "slots": {"comm1_up": "up", "comm2_down": "down", "comm3_aft_ics": "aft", "comm4_fwd_iff": "fwd"}},
 
@@ -1334,15 +1403,20 @@
 
   {"id": "radio_channel", "name": "Radio channel / frequency", "category": "comms", "kind": "both",
    "synonyms": ["channel", "preset", "radio channel", "frequency", "freq", "channel select", "preset channel", "channel selector", "frequency selector", "radio frequency", "radio preset", "channel up", "channel down", "frequency up", "frequency down", "uhf channel", "vhf channel", "uhf frequency", "vhf frequency", "uhf preset", "vhf preset", "comm channel", "radio tune", "tune", "manual frequency", "frequency knob", "channel knob", "mhz", "khz", "guard", "squelch", "radio mode", "uhf", "vhf", "fm radio", "am radio", "radio", "transmitter", "transmitter select"],
-   "not": ["light", "test", "tacan", "ils", "vor", "adf", "ndb", "dme", "radar", "volume", "transponder", "iff", "datalink", "radar frequency", "beacon", "rsbn", "ark", "arn", "nav radio", "radio compass", "radio altimeter", "radio altitude", "menu", "transmit", "ptt", "push to talk", "voip", "fss", "elint"],
+   "not": ["weapon", "weapons", "guns group", "light", "test", "tacan", "ils", "vor", "adf", "ndb", "dme", "radar", "volume", "transponder", "iff", "datalink", "radar frequency", "beacon", "rsbn", "ark", "arn", "nav radio", "radio compass", "radio altimeter", "radio altitude", "menu", "transmit", "ptt", "push to talk", "voip", "fss", "elint", "swap", "flip", "standby flip", "flip standby"],
    "dirs": {"increase": ["increase", "inc", "up", "next", "plus", "cw"], "decrease": ["decrease", "dec", "down", "prev", "previous", "minus", "ccw"], "on": ["on"], "off": ["off"], "toggle": ["toggle"]}},
+
+  {"id": "radio_swap", "name": "Radio standby swap (COM / NAV)", "category": "comms", "kind": "button", "only": "button",
+   "synonyms": ["com swap", "com1 swap", "com 1 swap", "nav swap", "nav1 swap", "nav 1 swap", "radio swap", "flip standby", "standby flip", "com flip", "nav flip", "swap frequencies", "frequency swap", "frequency transfer", "standby swap", "com stby radio swap", "com radio swap", "nav radio swap", "com flip standby", "nav flip standby", "active standby swap", "flip flop"],
+   "not": ["light", "test", "indicator", "adf"],
+   "dirs": {"com": ["com", "comm", "vhf"], "nav": ["nav", "vor"]}},
 
   {"id": "atc_request", "name": "ATC / docking request", "category": "comms", "kind": "button", "only": "button",
    "synonyms": ["atc", "atc request", "request atc", "request landing", "request docking", "request dock", "docking request", "air traffic control", "request takeoff", "request taxi", "request startup", "request landing clearance", "inbound", "request clearance", "landing request", "fighter request dock", "call tower", "contact tower"],
    "terms": {"StarCitizen": ["atc request"]},
    "not": ["engage", "disengage", "autothrottle", "auto throttle", "atc engage", "atcs", "light", "test"],
    "dirs": {},
-   "slots": {"atc_engage": "@0.5"}},
+   "slots": {"space_invoke_docking": "@0.5"}},
 
   {"id": "wingman", "name": "Wingman / crew orders", "category": "comms", "kind": "button", "only": "button",
    "synonyms": ["wingman", "wingmen", "flight attack", "cover me", "attack my target", "join up formation", "join up", "rejoin", "engage bandits", "fighter attack target", "fighter defend", "fighter follow", "fighter hold fire", "fighter hold position", "fighter engage at will", "crew orders", "open crew orders", "squad attack target", "wing attack my target", "wing resume assignment", "return to base", "rtb", "flight rtb", "flight attack air defenses", "flight attack ground targets", "flight complete mission", "toggle formation", "formation", "attack target", "hold fire", "hold position", "engage at will", "follow me", "wingman nav lock", "select wingman", "wingman target", "request awacs", "awacs", "bogey dope", "request bogey dope", "picture", "request picture", "ai give consent", "give consent"],
@@ -1367,20 +1441,21 @@
    "slots": {"zoom": "", "fov_toggle_china_hat_fwd": "toggle@0.8", "reset_curser_fov_out_lss_china_aft": "out@0.8", "sensor_select_depress_fov_zoom_out": "out@0.8"}},
 
   {"id": "view_center", "name": "Recenter view / VR", "category": "view", "kind": "button", "only": "button",
-   "synonyms": ["view center", "center view", "centre view", "reset view", "recenter", "re center", "recentre", "view reset", "center camera", "reset camera view", "camera center", "center camera view", "reset headlook", "reset head tracking", "recenter vr", "vr recenter", "reset vr", "vr reset", "trackir center", "center trackir", "reload trackir", "head tracking reset", "reset seated position", "reset camera", "return camera", "return camera base", "camera alternative center", "cockpit camera move center", "recenter headset", "center headset", "reset hmd", "reset view direction", "default view", "center the view", "center mouse joystick", "centre mouse joystick", "reset radar irst direction to boresight", "galaxy map home"],
+   "synonyms": ["view center", "center view", "centre view", "reset view", "recenter", "re center", "recentre", "view reset", "center camera", "reset camera view", "camera center", "center camera view", "reset headlook", "reset head tracking", "recenter vr", "vr recenter", "reset vr", "vr reset", "trackir center", "center trackir", "reload trackir", "head tracking reset", "reset seated position", "reset camera", "return camera", "return camera base", "camera alternative center", "cockpit camera move center", "recenter headset", "center headset", "reset hmd", "reset view direction", "default view", "center the view", "center mouse joystick", "centre mouse joystick", "reset radar irst direction to boresight", "galaxy map home", "reset cockpit view", "reset cockpit", "cockpit reset", "pan reset", "snap position center", "pilot head snap position center", "head snap position center"],
    "not": ["map", "galaxy", "fss", "dss", "light"],
    "dirs": {}},
 
   {"id": "view_look", "name": "Look / pan view", "category": "view", "kind": "both", "axisDirs": "true",
-   "synonyms": ["look", "look up", "look down", "look left", "look right", "look back", "view up", "view down", "view left", "view right", "glance", "glance up", "glance down", "glance left", "glance right", "snap view", "head look", "headlook", "camera horizontal", "camera vertical", "view in battle", "camera left", "camera right", "camera up", "camera down", "pan view", "tilt view", "look up down", "look left right", "camera view up", "camera view down", "camera view left", "camera view right", "free look", "mouse look", "camera mouse look", "head movement", "camera snap view", "custom snap view", "view axis", "view horizontal", "view vertical", "camera pan", "camera tilt", "pan", "tilt", "headlook toggle", "head tracking", "trackir", "toggle head tracking", "natural head movement", "head shift movement", "camera move", "cockpit camera move", "look at", "head position", "camera transpose", "camera horizontal view", "camera vertical view", "absolute camera horizontal view", "absolute camera vertical view", "pitch camera", "yaw camera", "camera pitch", "camera yaw", "look up down axis", "look left right axis", "camera alternative", "view x axis", "view y axis", "vertical view", "horizontal view"],
+   "synonyms": ["look", "look up", "look down", "look left", "look right", "look back", "view up", "view down", "view left", "view right", "glance", "glance up", "glance down", "glance left", "glance right", "snap view", "head look", "headlook", "camera horizontal", "camera vertical", "view in battle", "camera left", "camera right", "camera up", "camera down", "pan view", "tilt view", "look up down", "look left right", "camera view up", "camera view down", "camera view left", "camera view right", "free look", "mouse look", "camera mouse look", "head movement", "camera snap view", "custom snap view", "view axis", "view horizontal", "view vertical", "camera pan", "camera tilt", "pan", "tilt", "headlook toggle", "head tracking", "trackir", "toggle head tracking", "natural head movement", "head shift movement", "camera move", "cockpit camera move", "look at", "head position", "camera transpose", "camera horizontal view", "camera vertical view", "absolute camera horizontal view", "absolute camera vertical view", "pitch camera", "yaw camera", "camera pitch", "camera yaw", "look up down axis", "look left right axis", "camera alternative", "view x axis", "view y axis", "vertical view", "horizontal view", "view yaw axis", "view pitch axis", "cockpit view yaw axis", "cockpit view pitch axis", "external view yaw axis", "external view pitch axis", "turn pilot head", "bow pilot head", "pilot head horizontally", "pilot head vertically", "freelook"],
    "terms": {"WarThunder": ["view in battle air x axis", "view in battle air y axis", "view in battle x axis", "view in battle y axis", "camx", "camy"]},
    "not": ["map", "galaxy", "photo", "radial menu", "mfd", "fss", "dss", "zoom", "fov", "center", "centre", "reset", "recenter", "kneeboard", "padlock", "rate", "speed", "keyboard", "mouse rate", "mode toggle", "jiggle", "save", "bookmark", "clipboard", "label", "labels", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "lock", "target", "external", "enemy", "spectate", "tgp", "pod", "flir", "radar", "sensor", "sight", "missile", "weapon", "turret", "tdc", "cursor", "slew", "lookahead", "look ahead", "translate"],
-   "dirs": {"x": ["horizontal", "x", "left right", "x axis", "pan", "yaw", "head movement left right", "lateral"], "y": ["vertical", "y", "up down", "y axis", "tilt", "pitch"], "z": ["forward backward", "longitudinal", "z"], "up": ["up"], "down": ["down"], "left": ["left"], "right": ["right"], "back": ["back", "behind", "rear"], "toggle": ["toggle", "on off"]}},
+   "dirs": {"x": ["horizontal", "horizontally", "x", "left right", "x axis", "pan", "yaw", "head movement left right", "lateral"], "y": ["vertical", "vertically", "y", "up down", "y axis", "tilt", "pitch"], "z": ["forward backward", "longitudinal", "z"], "up": ["up"], "down": ["down"], "left": ["left"], "right": ["right"], "back": ["back", "behind", "rear"], "toggle": ["toggle", "on off"]},
+   "slots": {"view_snap_forward": "@0.6", "view_snap_back": "back", "view_snap_left": "left", "view_snap_right": "right", "view_look_horizontal": "x", "view_look_vertical": "y"}},
 
   {"id": "view_cockpit", "name": "Cockpit view", "category": "view", "kind": "button", "only": "button",
-   "synonyms": ["cockpit view", "f1", "f1 cockpit view", "virtual cockpit", "standard view", "first person", "first person view", "internal view", "cockpit camera", "inside view", "pilot view", "fps view", "interior view", "hud only view", "f1 hud only view"],
+   "synonyms": ["cockpit view", "f1", "f1 cockpit view", "virtual cockpit", "standard view", "first person", "first person view", "internal view", "cockpit camera", "inside view", "pilot view", "fps view", "interior view", "hud only view", "f1 hud only view", "player cockpit", "camera cockpit", "camera player cockpit"],
    "terms": {"TinyCombatArena": ["cockpit"]},
-   "not": ["light", "lights", "lighting", "door", "canopy", "sight", "panel view", "panel", "camera move", "camera mounted", "external", "toggle cockpit sight", "open cockpit", "cockpit mode", "mouse cockpit", "clickable", "kneeboard", "angles", "pressure", "temperature", "heat", "air", "seat", "smoke", "voice", "ui", "head", "natural head", "f1 head"],
+   "not": ["light", "lights", "lighting", "door", "canopy", "sight", "panel view", "panel", "camera move", "camera mounted", "external", "toggle cockpit sight", "open cockpit", "cockpit mode", "mouse cockpit", "clickable", "kneeboard", "angles", "pressure", "temperature", "heat", "air", "seat", "smoke", "voice", "ui", "head", "natural head", "f1 head", "reset", "yaw", "pitch", "axis", "unzoom", "dezoom", "freelook", "lockable"],
    "dirs": {}},
 
   {"id": "view_external", "name": "External / chase view", "category": "view", "kind": "button", "only": "button",
@@ -1389,10 +1464,10 @@
    "dirs": {"next": ["next", "cycle"], "prev": ["previous", "prev"]}},
 
   {"id": "view_cycle", "name": "Toggle / cycle view", "category": "view", "kind": "button", "only": "button",
-   "synonyms": ["toggle view", "switch view", "cycle view", "change camera mode", "camera mode", "change view", "next view", "previous view", "view mode", "toggle camera mode", "toggle camera", "camera toggle", "cycle camera", "cycle camera view", "camera cycle", "view toggle", "camera view toggle", "toggle camera position"],
+   "synonyms": ["toggle view", "switch view", "cycle view", "change camera mode", "camera mode", "change view", "change camera", "switch camera", "next view", "previous view", "view mode", "toggle camera mode", "toggle camera", "camera toggle", "cycle camera", "cycle camera view", "camera cycle", "view toggle", "camera view toggle", "toggle camera position"],
    "terms": {"StarCitizen": ["cycle camera view", "view cycle"]},
    "not": ["map", "galaxy", "mfd", "hud", "light"],
-   "dirs": {"next": ["next", "cycle", "toggle"], "prev": ["previous", "prev"]},
+   "dirs": {"next": ["next", "cycle", "toggle", "change", "switch"], "prev": ["previous", "prev"]},
    "slots": {"space_cycle_camera_view": "next"}},
 
   {"id": "view_padlock", "name": "Padlock / look at target", "category": "view", "kind": "button", "only": "button",

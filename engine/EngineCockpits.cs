@@ -407,7 +407,7 @@ namespace JoyPro.Engine
         // cockpits render <aircraft> [<variant>] --page all|overview|stick|throttle|<device>|panels|panel:<id>|photos|photo|photo:<sha12> [--png <file>]
         // [--pdf <file>] [--style dark|light] [--scale s] [--highlight words] [--pictures picture|drawing|none] [--photos <folder>|none] [--drawing-style ...]: the Cockpits page's
         // manual pages. Several pages with --png: <file>.<page>.png each. --photos: where the verified cockpit photos are
-        // (default: the GUI's downloads in <data>\CockpitPhotos; the maintainer's archive works too); the engine never
+        // (default: the GUI's downloads in <data>\CockpitPhotos; a photo archive works too); the engine never
         // downloads a photo.
         private static int CockpitsRenderPages(CockpitCatalog catalog, List<string> rest, string which, string png, string pdf, bool textOutput)
         {
@@ -418,7 +418,7 @@ namespace JoyPro.Engine
             string pictures = (PopOptionValue(rest, "--pictures") ?? "picture").ToLowerInvariant();
             if (pictures != "picture" && pictures != "drawing" && pictures != "none")
                 return Fail("--pictures is picture, drawing or none.");
-            // Where the verified cockpit photos are on this PC: the GUI's store (default), the maintainer's archive
+            // Where the verified cockpit photos are on this PC: the GUI's store (default), a photo archive
             // (sha256\<hash>.<ext>), or none.
             string photoFolder = PopOptionValue(rest, "--photos") ?? CockpitPhotos.StoreFolder();
             double scale = 1.0;

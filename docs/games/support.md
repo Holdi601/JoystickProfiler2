@@ -50,16 +50,16 @@ Civil and general flight simulators. JoyPro takes over the devices it writes (cl
 
 | Game | Support | Import | Export | Keyboard | Modifiers | List refresh | Watcher | Axis tuning | Game settings | In-game FFB | Telemetry FFB | Telemetry recording | vJoy mode | Xbox pad | Virtual functions | Setup wizard / Auto Assign | Cockpits | Cheat sheet | In-game test |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| [Microsoft Flight Simulator 2024](msfs.md) | native | ✓ | ✓ | ✗ | ◐<sup>1</sup> | ✓ | ✓<sup>2</sup> | ✓ | ✗ | ✗ | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 103 | ✓ 40 | ✓ | ✓ 26/26 |
-| [Microsoft Flight Simulator 2020](msfs.md) | native | ✓ | ✓ | ✗ | ◐<sup>1</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 103 | ✓ 38 | ✓ | ✓ 41/41 |
-| [X-Plane 12](xplane.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓<sup>4</sup> | ✓ | ✓ | ◐<sup>5</sup> | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 114 | ✓ 13 | ✓ | ✓ 33/33 |
-| [X-Plane 11](xplane.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 106 | ✓ 12 | ✓ | ✗ |
-| [Microsoft Flight Simulator X](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✓ 11 | ✓ | ✗ |
-| [Microsoft Flight Simulator X: Steam Edition](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✗ |
-| [Prepar3D v4](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✗ |
-| [Prepar3D v5](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✓ 10 | ✓ | ✗ |
-| [Prepar3D v6](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✗ |
-| [Flyout](flyout.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>8</sup> | — | — | — | — | — | — |
+| [Microsoft Flight Simulator 2024](msfs.md) | native | ✓ | ✓ | ✗ | ◐<sup>1</sup> | ✓ | ✓<sup>2</sup> | ✓ | ✗ | ✗ | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 301 | ✓ 40 | ✓ | ✓ 26/26 |
+| [Microsoft Flight Simulator 2020](msfs.md) | native | ✓ | ✓ | ✗ | ◐<sup>1</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 212 | ✓ 38 | ✓ | ✓ 41/41 |
+| [X-Plane 12](xplane.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓<sup>4</sup> | ✓ | ✓ | ◐<sup>5</sup> | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 236 | ✓ 13 | ✓ | ✓ 33/33 |
+| [X-Plane 11](xplane.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 222 | ✓ 12 | ✓ | ✗ |
+| [Microsoft Flight Simulator X](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 99 | ✓ 11 | ✓ | ✗ |
+| [Microsoft Flight Simulator X: Steam Edition](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 99 | ✗ | ✓ | ✗ |
+| [Prepar3D v4](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 99 | ✗ | ✓ | ✗ |
+| [Prepar3D v5](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 100 | ✓ 10 | ✓ | ✗ |
+| [Prepar3D v6](fsx-p3d.md) | native | ✓ | ✓ | ✓ | ◐<sup>6</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 100 | ✗ | ✓ | ✗ |
+| [Flyout](flyout.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>7</sup> | — | — | — | — | — | — |
 
 ### Combat flight
 
@@ -67,21 +67,21 @@ Combat flight sims and combat flight games that read several joysticks.
 
 | Game | Support | Import | Export | Keyboard | Modifiers | List refresh | Watcher | Axis tuning | Game settings | In-game FFB | Telemetry FFB | Telemetry recording | vJoy mode | Xbox pad | Virtual functions | Setup wizard / Auto Assign | Cockpits | Cheat sheet | In-game test |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| [DCS World](dcs.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓<sup>9</sup> | ✓ | ✗<sup>10</sup> | ✓ | ✓ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 9290 | ✓ 44 | ✓ | ✓ 56/56 |
-| [IL-2 Sturmovik: Great Battles](README.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓<sup>11</sup> | ✓ | ✓ | ✓ | ✓ | ◐<sup>12</sup> | ✓ | ◐<sup>3</sup> | ✓ | ✓ 54 | ✓ 41 | ✓ | ✓ 38/38 |
-| [IL-2 Series: Korea](il2-korea.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓<sup>13</sup> | ✓ | ✓ | ✓ | ✓ | ◐<sup>12</sup> | ✓ | ◐<sup>3</sup> | ✓ | ✓ 50 | ✓ 2 | ✓ | ✓ 49/49 |
-| [IL-2 Sturmovik: 1946](il2-1946.md) | native | ✓ | ✓ | ✓ | ◐<sup>14</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ◐ 29/33<sup>15</sup> |
-| [IL-2 Sturmovik: Cliffs of Dover](il2-cliffs-of-dover.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✗ |
-| [IL-2 Sturmovik: Cliffs of Dover Blitz](il2-cliffs-of-dover.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✗ |
-| [Falcon BMS](falcon-bms.md) | native | ✓ | ✓ | ✗<sup>16</sup> | ◐<sup>17</sup> | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 264 | ✓ 3 | ✓ | ◐ 20/21<sup>18</sup> |
+| [DCS World](dcs.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓<sup>8</sup> | ✓ | ✗<sup>9</sup> | ✓ | ✓ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 10917 | ✓ 44 | ✓ | ✓ 56/56 |
+| [IL-2 Sturmovik: Great Battles](README.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓<sup>10</sup> | ✓ | ✓ | ✓ | ✓ | ◐<sup>11</sup> | ✓ | ◐<sup>3</sup> | ✓ | ✓ 82 | ✓ 41 | ✓ | ✓ 38/38 |
+| [IL-2 Series: Korea](il2-korea.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓<sup>12</sup> | ✓ | ✓ | ✓ | ✓ | ◐<sup>11</sup> | ✓ | ◐<sup>3</sup> | ✓ | ✓ 84 | ✓ 2 | ✓ | ✓ 49/49 |
+| [IL-2 Sturmovik: 1946](il2-1946.md) | native | ✓ | ✓ | ✓ | ◐<sup>13</sup> | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 63 | ✗ | ✓ | ◐ 29/33<sup>14</sup> |
+| [IL-2 Sturmovik: Cliffs of Dover](il2-cliffs-of-dover.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 65 | ✗ | ✓ | ✗ |
+| [IL-2 Sturmovik: Cliffs of Dover Blitz](il2-cliffs-of-dover.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 65 | ✗ | ✓ | ✗ |
+| [Falcon BMS](falcon-bms.md) | native | ✓ | ✓ | ✗<sup>15</sup> | ◐<sup>16</sup> | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 283 | ✓ 3 | ✓ | ◐ 20/21<sup>17</sup> |
 | [Falcon 4.0 / Allied Force](falcon-bms.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
-| [War Thunder](war-thunder.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 124 | ✓ 74 | ✓ | ✓ 29/29 |
-| [VTOL VR (BYOJoystick mod)](vtol-vr.md) | native | ✓ | ✓ | ✓ | ◐<sup>19</sup> | ◐<sup>20</sup> | ✓ | ◐<sup>21</sup> | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 156 | ✓ 6 | ✓ | ✗ |
-| [VTOL VR (native: rudder and brakes)](vtol-vr.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ◐<sup>22</sup> | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 3 | ✗ | ✓ | ✗ |
-| [Nuclear Option](nuclear-option.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓<sup>23</sup> | ✗<sup>24</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 39 | ✓ 13 | ✓ | ✓ 5/5 |
-| [Tiny Combat Arena](tiny-combat-arena.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✗<sup>25</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✓ 1 | ✓ | ✓ 21/21 |
-| [WARDOGS](wardogs.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓<sup>26</sup> | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 10 | ✓ 3 | ✓ | ✓ 36/36 |
-| [G-Rebels](g-rebels.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✗<sup>27</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✓ 18/18 |
+| [War Thunder](war-thunder.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 159 | ✓ 74 | ✓ | ✓ 29/29 |
+| [VTOL VR (BYOJoystick mod)](vtol-vr.md) | native | ✓ | ✓ | ✓ | ◐<sup>18</sup> | ◐<sup>19</sup> | ✓ | ◐<sup>20</sup> | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 173 | ✓ 6 | ✓ | ✗ |
+| [VTOL VR (native: rudder and brakes)](vtol-vr.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ◐<sup>21</sup> | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 3 | ✗ | ✓ | ✗ |
+| [Nuclear Option](nuclear-option.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓<sup>22</sup> | ✗<sup>23</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 55 | ✓ 13 | ✓ | ✓ 5/5 |
+| [Tiny Combat Arena](tiny-combat-arena.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✗<sup>24</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 38 | ✓ 1 | ✓ | ✓ 21/21 |
+| [WARDOGS](wardogs.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓<sup>25</sup> | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 26 | ✓ 3 | ✓ | ✓ 36/36 |
+| [G-Rebels](g-rebels.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✗<sup>26</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 8 | ✗ | ✓ | ✓ 18/18 |
 
 ### Space
 
@@ -89,13 +89,13 @@ Space sims: clean and nuke touch only the cataloged ship actions, on-foot and ve
 
 | Game | Support | Import | Export | Keyboard | Modifiers | List refresh | Watcher | Axis tuning | Game settings | In-game FFB | Telemetry FFB | Telemetry recording | vJoy mode | Xbox pad | Virtual functions | Setup wizard / Auto Assign | Cockpits | Cheat sheet | In-game test |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| [Star Citizen](starcitizen.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 98 | ✓ 12 | ✓ | ✓ 54/54 |
-| [Elite Dangerous](elite-dangerous.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ◐<sup>12</sup> | ✓ | ◐<sup>3</sup> | ✓ | ✓ 57 | ✓ 7 | ✓ | ✓ 23/23 |
-| [X4: Foundations](x4.md) | native | ✓ | ✓ | ✓ | ◐<sup>28</sup> | ✓ | ✓ | ✗<sup>29</sup> | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 44 | ✓ 6 | ✓ | ✓ 36/36 |
-| [No Man's Sky](no-mans-sky.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>30</sup> | — | — | — | — | — |
-| [Kerbal Space Program](kerbal-space-program.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>31</sup> | — | — | — | — | — | — |
-| [Kerbal Space Program 2](kerbal-space-program.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>32</sup> | — | — | — | — | — |
-| [Star Wars: Squadrons](star-wars-squadrons.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>33</sup> | — | — | — | — | — | — |
+| [Star Citizen](starcitizen.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 125 | ✓ 12 | ✓ | ✓ 54/54 |
+| [Elite Dangerous](elite-dangerous.md) | native | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ◐<sup>11</sup> | ✓ | ◐<sup>3</sup> | ✓ | ✓ 75 | ✓ 7 | ✓ | ✓ 23/23 |
+| [X4: Foundations](x4.md) | native | ✓ | ✓ | ✓ | ◐<sup>27</sup> | ✓ | ✓ | ✗<sup>28</sup> | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 60 | ✓ 6 | ✓ | ✓ 36/36 |
+| [No Man's Sky](no-mans-sky.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>29</sup> | — | — | — | — | — |
+| [Kerbal Space Program](kerbal-space-program.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>30</sup> | — | — | — | — | — | — |
+| [Kerbal Space Program 2](kerbal-space-program.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>31</sup> | — | — | — | — | — |
+| [Star Wars: Squadrons](star-wars-squadrons.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>32</sup> | — | — | — | — | — | — |
 | [X Rebirth](x4.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
 | [X3 (Reunion, Terran Conflict, Albion Prelude)](x4.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
 
@@ -105,10 +105,10 @@ Infantry sims with aircraft and helicopters: JoyPro writes only the cataloged ai
 
 | Game | Support | Import | Export | Keyboard | Modifiers | List refresh | Watcher | Axis tuning | Game settings | In-game FFB | Telemetry FFB | Telemetry recording | vJoy mode | Xbox pad | Virtual functions | Setup wizard / Auto Assign | Cockpits | Cheat sheet | In-game test |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| [Arma 3](arma3.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 30 | ✓ 3 | ✓ | ✓ 25/25 |
-| [Arma 2](arma2.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 32 | ✓ 10 | ✓ | ✓ 17/17 |
-| [Arma 2: Operation Arrowhead](arma2.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 34 | ✓ 7 | ✓ | ✓ 17/17 |
-| [Arma Reforger](arma-reforger.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ◐<sup>34</sup> | ✓ | ✓ | ✗ | ✗ | —<sup>35</sup> | ◐<sup>3</sup> | ✓ | ✓ 15 | ✓ 2 | ✓ | ◐<sup>36</sup> |
+| [Arma 3](arma3.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 42 | ✓ 3 | ✓ | ✓ 25/25 |
+| [Arma 2](arma2.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 45 | ✓ 10 | ✓ | ✓ 17/17 |
+| [Arma 2: Operation Arrowhead](arma2.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 48 | ✓ 7 | ✓ | ✓ 17/17 |
+| [Arma Reforger](arma-reforger.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ◐<sup>33</sup> | ✓ | ✓ | ✗ | ✗ | —<sup>34</sup> | ◐<sup>3</sup> | ✓ | ✓ 17 | ✓ 2 | ✓ | ◐<sup>35</sup> |
 | [Squad](one-device-games.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
 | [Hell Let Loose](one-device-games.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
 
@@ -118,23 +118,23 @@ Arcade flight games and shooters that read one joystick, only Xbox pads, or a fi
 
 | Game | Support | Import | Export | Keyboard | Modifiers | List refresh | Watcher | Axis tuning | Game settings | In-game FFB | Telemetry FFB | Telemetry recording | vJoy mode | Xbox pad | Virtual functions | Setup wizard / Auto Assign | Cockpits | Cheat sheet | In-game test |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| [ACE COMBAT 7: Skies Unknown](ace-combat.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✗<sup>37</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✓ 19/19 |
-| [ACE COMBAT 8: Wings of Theve](ace-combat.md) | virtual Xbox pad | ◐<sup>38</sup> | ◐<sup>39</sup> | —<sup>40</sup> | —<sup>40</sup> | ✓ | —<sup>41</sup> | ✗<sup>42</sup> | ✗ | ✗ | ✗ | ✗ | — | ✓ | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✓ 20/20 |
-| [ACE COMBAT Zero (with ACE COMBAT 8)](one-device-games.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>43</sup> | — | — | — | — | — |
-| [ACE COMBAT Assault Horizon Enhanced Edition](one-device-games.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>44</sup> | — | — | — | — | — |
-| [Project Wingman](project-wingman.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ◐ 19/25<sup>45</sup> |
-| [Hell Let Loose: Vietnam](hll-vietnam.md) | virtual Xbox pad | ◐<sup>46</sup> | ◐<sup>46</sup> | ✓ | ✗ | ✓ | ✓ | ✗<sup>42</sup> | ✗ | ✗ | ✗ | ✗ | — | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ 19/19 |
-| [Battlefield 6](battlefield.md) | virtual vJoy | ◐<sup>47</sup> | ◐<sup>47</sup> | ✓ | ✗ | ✓ | ✓ | ✗<sup>48</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✗ |
-| [Battlefield 2042](battlefield.md) | virtual vJoy | ◐<sup>47</sup> | ◐<sup>47</sup> | ✓ | ✗ | ✓ | ✓ | ✗<sup>48</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ◐<sup>7</sup> | ✗ | ✓ | ✗ |
-| [Battlefield V](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>33</sup> | — | — | — | — | — | — |
-| [Battlefield 1](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>33</sup> | — | — | — | — | — | — |
-| [Battlefield 4](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>33</sup> | — | — | — | — | — | — |
-| [Battlefield Hardline](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>33</sup> | — | — | — | — | — | — |
-| [Battlefield 3](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>33</sup> | — | — | — | — | — | — |
-| [Battlefield 2 / 2142](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>33</sup> | — | — | — | — | — | — |
-| [Rising Storm 2: Vietnam](rising-storm-2.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>30</sup> | — | — | — | — | — |
-| [H.A.W.X](hawx.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>49</sup> | — | — | — | — | — | — |
-| [H.A.W.X 2](hawx.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>49</sup> | — | — | — | — | — | — |
+| [ACE COMBAT 7: Skies Unknown](ace-combat.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✗<sup>36</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 18 | ✗ | ✓ | ✓ 19/19 |
+| [ACE COMBAT 8: Wings of Theve](ace-combat.md) | virtual Xbox pad | ◐<sup>37</sup> | ◐<sup>38</sup> | —<sup>39</sup> | —<sup>39</sup> | ✓ | —<sup>40</sup> | ✓<sup>41</sup> | ✗ | ✗ | ✗ | ✗ | — | ✓ | ✓ | ✓ 19 | ✗ | ✓ | ✓ 20/20 |
+| [ACE COMBAT Zero (with ACE COMBAT 8)](one-device-games.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>42</sup> | — | — | — | — | — |
+| [ACE COMBAT Assault Horizon Enhanced Edition](one-device-games.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>43</sup> | — | — | — | — | — |
+| [Project Wingman](project-wingman.md) | native | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 18 | ✗ | ✓ | ◐ 19/25<sup>44</sup> |
+| [Hell Let Loose: Vietnam](hll-vietnam.md) | virtual Xbox pad | ◐<sup>45</sup> | ◐<sup>45</sup> | ✓ | ✗ | ✓ | ✓ | ✓<sup>41</sup> | ✗ | ✗ | ✗ | ✗ | — | ✓ | ✓ | ✓ 15 | ✗ | ✓ | ✓ 19/19 |
+| [Battlefield 6](battlefield.md) | virtual vJoy | ◐<sup>46</sup> | ◐<sup>46</sup> | ✓ | ✗ | ✓ | ✓ | ✗<sup>47</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 24 | ✗ | ✓ | ✗ |
+| [Battlefield 2042](battlefield.md) | virtual vJoy | ◐<sup>46</sup> | ◐<sup>46</sup> | ✓ | ✗ | ✓ | ✓ | ✗<sup>47</sup> | ✗ | ✗ | ✗ | ✗ | ✓ | ◐<sup>3</sup> | ✓ | ✓ 24 | ✗ | ✓ | ✗ |
+| [Battlefield V](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>32</sup> | — | — | — | — | — | — |
+| [Battlefield 1](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>32</sup> | — | — | — | — | — | — |
+| [Battlefield 4](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>32</sup> | — | — | — | — | — | — |
+| [Battlefield Hardline](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>32</sup> | — | — | — | — | — | — |
+| [Battlefield 3](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>32</sup> | — | — | — | — | — | — |
+| [Battlefield 2 / 2142](battlefield.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>32</sup> | — | — | — | — | — | — |
+| [Rising Storm 2: Vietnam](rising-storm-2.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | — | —<sup>29</sup> | — | — | — | — | — |
+| [H.A.W.X](hawx.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>48</sup> | — | — | — | — | — | — |
+| [H.A.W.X 2](hawx.md) | documented only | — | — | — | — | — | — | — | — | — | — | — | —<sup>48</sup> | — | — | — | — | — | — |
 
 ### Notes on the matrix
 
@@ -144,53 +144,52 @@ Arcade flight games and shooters that read one joystick, only Xbox pads, or a fi
 4. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): not run yet: X-Plane 12 was never started on this PC; its first start flies the tutorial and writes no joystick preferences before a quit.
 5. X-Plane 12: only the per-device switch "control-loaded axes" for force feedback sticks; the sim has no stick force feedback effects of its own (plugins only).
 6. FSX and Prepar3D: Ctrl/Shift/Alt on keys; no modifier on joystick binds.
-7. No hand-made function table yet: JoyPro derives one from the function map (the game's own titles and categories).
-8. Recommended once supported: one vJoy device, binds made in the game.
-9. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): a bind made in Options > Controls is offered 3-4 s after DCS closed; Ignore, Take over, the offer at the next start, no dialog without a change and the tray notification with Review checked in the game (38/39).
-10. DCS keeps its force feedback settings per device and aircraft (FF Tune), see In-game FFB; there are no game-wide control settings to manage.
-11. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): a bind made in Key mapping is offered after IL-2 closed; Ignore, Take over and no dialog without a change checked in the game (27/29; the misses were OCR of the dialog title).
-12. The game's telemetry has no world position: recorded and exported as CSV, no Tacview (ACMI) track.
-13. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): not possible yet: the first start shows the user agreement (never accepted by a test), and without a saved key mapping there is no general.actions to export to.
-14. IL-2 1946: one keyboard modifier on a key; joystick binds take no modifier.
-15. IL-2 1946: 29 of 33 steps in game (seat hat, engine 4 throttle); fixed since, one green run pending.
-16. Falcon BMS: the key file stays the one BMS manages.
-17. Falcon BMS: only the one DX shift layer; no modifiers on axes.
-18. Falcon BMS: 20 of 21 steps; entering an active cockpit failed (an earlier settings run: 20/26, trim calibration).
-19. BYOJoystick: one modifier per bind (a joystick button for joystick binds, a key for keyboard binds).
-20. VTOL VR (BYOJoystick): the list is built only when the BYOJoystick mod is installed.
-21. BYOJoystick: one dead zone value per bind (take-over threshold, or a cut for slew and tilt); no curves.
-22. VTOL VR native: invert and axis range only, no curve or dead zone.
-23. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): simulated (stand-in process, the registry maps rewritten as the game stores them): 45/45. The in-game run waited for Steam's launch option question (answered by the kit since).
-24. Nuclear Option: the game's calibration dead zone is not written.
-25. Tiny Combat Arena: Controls.cfg (curves) is not written.
-26. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): simulated (stand-in process, the ini rewritten in the game's format): 45/45. The in-game run stopped at a season-end screen with in-game cash, which the test does not dismiss.
-27. G-Rebels: invert only.
-28. X4: Shift/Ctrl on keyboard binds; joystick binds take no modifier.
-29. X4: only the game-wide dead zone and inverts (Game settings), nothing per bind.
-30. Recommended once supported: the virtual Xbox pad.
-31. A native candidate; vJoy would help against index shifts.
-32. Recommended: the Xbox pad or the Inputbinder mod.
-33. Recommended once supported: one vJoy device.
-34. Arma Reforger: multiplier and invert only; no dead zone or curve (the format is unknown).
-35. Arma Reforger does not see vJoy devices (four starts): the export skips vJoy binds with a warning.
-36. Arma Reforger: the settings menus were explored in game; no scored run, the export is not yet checked in game.
-37. ACE COMBAT 7: invert only (`:R`).
-38. ACE COMBAT 8: only the pad keys set in the game are read (it stores no joystick binds).
-39. ACE COMBAT 8: JoyPro writes nothing (checksummed settings); your binds reach the game through the virtual Xbox pad.
-40. ACE COMBAT 8: nothing is written.
-41. ACE COMBAT 8: nothing is written, so there is nothing to watch.
-42. Virtual pad games: invert happens on the pad axis in JoyPro's forwarder.
-43. Try the virtual Xbox pad of ACE COMBAT 8.
-44. Recommended: the virtual Xbox pad.
-45. Project Wingman: export and import seen in game; one full run of the test is pending (19/25 and 17/24 so far).
-46. Hell Let Loose: Vietnam reads no joystick: JoyPro reads and writes its keyboard keys; the pad layout is the game's.
-47. Battlefield: keyboard keys only until the live survey confirms the game's joystick numbering.
-48. Battlefield: invert only (swapped halves).
-49. Recommended: one vJoy device, binds made in the game.
+7. Recommended once supported: one vJoy device, binds made in the game.
+8. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): a bind made in Options > Controls is offered 3-4 s after DCS closed; Ignore, Take over, the offer at the next start, no dialog without a change and the tray notification with Review checked in the game (38/39).
+9. DCS keeps its force feedback settings per device and aircraft (FF Tune), see In-game FFB; there are no game-wide control settings to manage.
+10. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): a bind made in Key mapping is offered after IL-2 closed; Ignore, Take over and no dialog without a change checked in the game (27/29; the misses were OCR of the dialog title).
+11. The game's telemetry has no world position: recorded and exported as CSV, no Tacview (ACMI) track.
+12. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): not possible yet: the first start shows the user agreement (never accepted by a test), and without a saved key mapping there is no general.actions to export to.
+13. IL-2 1946: one keyboard modifier on a key; joystick binds take no modifier.
+14. IL-2 1946: 29 of 33 steps in game (seat hat, engine 4 throttle); fixed since, one green run pending.
+15. Falcon BMS: the key file stays the one BMS manages.
+16. Falcon BMS: only the one DX shift layer; no modifiers on axes.
+17. Falcon BMS: 20 of 21 steps; entering an active cockpit failed (an earlier settings run: 20/26, trim calibration).
+18. BYOJoystick: one modifier per bind (a joystick button for joystick binds, a key for keyboard binds).
+19. VTOL VR (BYOJoystick): the list is built only when the BYOJoystick mod is installed.
+20. BYOJoystick: one dead zone value per bind (take-over threshold, or a cut for slew and tilt); no curves.
+21. VTOL VR native: invert and axis range only, no curve or dead zone.
+22. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): simulated (stand-in process, the registry maps rewritten as the game stores them): 45/45. The in-game run waited for Steam's launch option question (answered by the kit since).
+23. Nuclear Option: the game's calibration dead zone is not written.
+24. Tiny Combat Arena: Controls.cfg (curves) is not written.
+25. Live watcher test 2026-10-17 (`tools\e2e\games\Watchdog.ps1`): simulated (stand-in process, the ini rewritten in the game's format): 45/45. The in-game run stopped at a season-end screen with in-game cash, which the test does not dismiss.
+26. G-Rebels: invert only.
+27. X4: Shift/Ctrl on keyboard binds; joystick binds take no modifier.
+28. X4: only the game-wide dead zone and inverts (Game settings), nothing per bind.
+29. Recommended once supported: the virtual Xbox pad.
+30. A native candidate; vJoy would help against index shifts.
+31. Recommended: the Xbox pad or the Inputbinder mod.
+32. Recommended once supported: one vJoy device.
+33. Arma Reforger: multiplier and invert only; no dead zone or curve (the format is unknown).
+34. Arma Reforger does not see vJoy devices (four starts): the export skips vJoy binds with a warning.
+35. Arma Reforger: the settings menus were explored in game; no scored run, the export is not yet checked in game.
+36. ACE COMBAT 7: invert only (`:R`).
+37. ACE COMBAT 8: only the pad keys set in the game are read (it stores no joystick binds).
+38. ACE COMBAT 8: JoyPro writes nothing (checksummed settings); your binds reach the game through the virtual Xbox pad.
+39. ACE COMBAT 8: nothing is written.
+40. ACE COMBAT 8: nothing is written, so there is nothing to watch.
+41. Virtual pad games: JoyPro's forwarder applies the axis curve itself on the pad stick or trigger (dead zone, saturation, curvature or user curve, invert; scope game, else all games).
+42. Try the virtual Xbox pad of ACE COMBAT 8.
+43. Recommended: the virtual Xbox pad.
+44. Project Wingman: export and import seen in game; one full run of the test is pending (19/25 and 17/24 so far).
+45. Hell Let Loose: Vietnam reads no joystick: JoyPro reads and writes its keyboard keys; the pad layout is the game's.
+46. Battlefield: keyboard keys only until the live survey confirms the game's joystick numbering.
+47. Battlefield: invert only (swapped halves).
+48. Recommended: one vJoy device, binds made in the game.
 
 ## Details per title
 
-Bind file and command list: where JoyPro reads and writes on your PC and what it builds the game's command list from (list size measured on the development PC, see [README.md](README.md#command-lists-on-a-fresh-install)). Device limits: what the game reads of your devices; the input limits with their confidence (verified = from the game's files or JoyPro's own code, documented = the game's docs, reported = players) warn in the virtual joystick planner ([../virtual-joystick.md](../virtual-joystick.md)).
+Bind file and command list: where JoyPro reads and writes on your PC and what it builds the game's command list from (list size of a full install, see [README.md](README.md#command-lists-on-a-fresh-install)). Device limits: what the game reads of your devices; the input limits with their confidence (verified = from the game's files or JoyPro's own code, documented = the game's docs, reported = players) warn in the virtual joystick planner ([../virtual-joystick.md](../virtual-joystick.md)).
 
 ### Flight simulators
 
@@ -215,12 +214,12 @@ Bind file and command list: where JoyPro reads and writes on your PC and what it
 | [IL-2 Sturmovik: Great Battles](README.md) | native | `engine il2` | `<install>\data\input\*.actions`, `current.responses`, `global.pitch`, `current.devices`; `jp.actions` sidecar | the `data\input\*.actions` files the game writes; size: 376 (the game writes only actions with an input) | clean / nuke: whole devices; axis model `il2`; 1 game setting, 3 force feedback settings | reads 128 buttons, 8 axes, 4 hats per joystick (documented) | none known | in-game e2e: 38/38 (2026-10-11); binds; curves 11/11, files 19/19 | 74 actions without an input are not rebuilt on a fresh install |
 | [IL-2 Series: Korea](il2-korea.md) | native, experimental | `engine il2korea` | `<install>\data\input\general.actions` (JSON) + `known.devices.json`; curves in `general.pitch` / `shared.responses`; settings in `data\NSData\UserData\UserSettings.json` | `general.actions`; titles from IL-2 Great Battles' list or JoyPro's wording; size: 318 | clean / nuke: whole devices; axis model `il2korea`; 1 game setting, 7 force feedback settings | — | none known | in-game e2e: 49/49 (2026-10-11); binds; curves 7/7; settings 23/23 on 2026-10-05 | the game's own texts are in its `.gtp` archives (not read); 60 actions without an input are missing |
 | [IL-2 Sturmovik: 1946](il2-1946.md) | native, experimental | `engine il21946` | `<install>\Users\<pilot>\settings.ini` (`[HotKey ...]`), responses in `conf.ini` | JoyPro's own command list + the commands `Users\default.ini`, `conf.ini` and the pilots' `settings.ini` name; size: 188 | clean / nuke: whole devices; axis model `il21946` | reads 32 buttons, 8 axes, 4 hats per joystick (reported); 4 joysticks (JoystickDevice0..3, by Windows' device order) | none known | in game, partial: 29/33 (2026-10-12); IL-2 1946: 29 of 33 steps in game (seat hat, engine 4 throttle); fixed since, one green run pending. | one green in-game run; the button limit (the game's files allow 128, players report 32) |
-| [IL-2 Sturmovik: Cliffs of Dover](il2-cliffs-of-dover.md) | native, experimental | `engine il2cod` | `Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini` (ini; devices `Joystick`, `Joystick1` ...) | JoyPro's own command list + your and the install's `confUser.ini`; size: 227 | clean / nuke: whole devices; axis model `il2cod` | reads 128 buttons, 8 axes, 1 hat per joystick (documented); 8 devices | none known | installed files only; installed, but the original game does not start on the development PC (its launcher quits); checked against the install's default file | an in-game check on a PC where it starts |
+| [IL-2 Sturmovik: Cliffs of Dover](il2-cliffs-of-dover.md) | native, experimental | `engine il2cod` | `Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini` (ini; devices `Joystick`, `Joystick1` ...) | JoyPro's own command list + your and the install's `confUser.ini`; size: 227 | clean / nuke: whole devices; axis model `il2cod` | reads 128 buttons, 8 axes, 1 hat per joystick (documented); 8 devices | none known | installed files only; installed, but the original game did not start on the checked PC (its launcher quits); checked against the install's default file | an in-game check on a PC where it starts |
 | [IL-2 Sturmovik: Cliffs of Dover Blitz](il2-cliffs-of-dover.md) | native, experimental | `engine il2codblitz` | `confUser.ini` as Cliffs of Dover; devices `<product>-<hash of the HID path>` (changes with the USB port) | as Cliffs of Dover; size: 228 | clean / nuke: whole devices; axis model `il2cod` | reads 128 buttons, 8 axes, 1 hat per joystick (documented); 16 devices (since 5.026) | none known | installed files only; installed and started to the main menu; the live run is pending | the live in-game run; second hat, five throttle values, old device names |
 | [Falcon BMS](falcon-bms.md) | native, experimental | `engine bms` | `<BMS>\User\Config\Setup.v100.<device> {GUID}.xml` (launcher XML) + `User.cfg`, `Feedback.ini`, `.pop` | `BMS - Full.key`; size: 939 | clean / nuke: whole devices; axis model `bms`; 7 game settings, 7 force feedback settings | reads 128 buttons, 8 axes, 2 hats per joystick (documented) | none known | in game, partial: 20/21 (2026-10-09); Falcon BMS: 20 of 21 steps; entering an active cockpit failed (an earlier settings run: 20/26, trim calibration). | a full run including the flight part; the curve formula; custom axis shaping |
 | [Falcon 4.0 / Allied Force](falcon-bms.md) | documented only | — | — | — | — | the primary stick + `joystick.cal` | none | — | small user base, an older key file without a launcher store: use Falcon BMS |
 | [War Thunder](war-thunder.md) | native, experimental | `engine warthunder` | `Documents\My Games\WarThunder\Saves\<uid>\production\machine.blk` (BLK text, a diff against the preset) | `gui.vromfs.bin` / `lang.vromfs.bin` by default; JoyPro's own list with `--no-game-archives` (Settings > Games); size: 290 (116 own) | clean / nuke: flight actions only; axis model `warthunder`; 11 game settings, 2 force feedback settings | 128 buttons, 4 hats per device | BattlEye (`aces_BE`); reading the vromfs archives can be switched off | in-game e2e: 29/29 (2026-10-10); settings and binds; the watcher runs of 2026-10-11 were 32/34 and 31/32 (a WEP-hold change not seen, one sensitivity read back off by one) | a green watcher run; no shipped base-preset table; cloud versions of the file |
-| [VTOL VR (BYOJoystick mod)](vtol-vr.md) | native, experimental | `engine vtolvr` | `<install>\SaveData\BYOJ_<seat>.xml` (XmlSerializer) | the installed mod's `BYOJoystick.dll` (Steam Workshop; GUI: Install BYOJoystick on the VTOL VR card), else your own `BYOJ_*.xml`; size: 433 with the mod; none without it | clean / nuke: whole devices; axis model `byoj`; 8 game settings | reads 128 buttons, 8 axes, 4 hats (4 directions) per joystick (verified) | none known; needs a third-party mod without a license (JoyPro ships nothing of it) | installed files only; the mod is not installed on the development PC; the reader is tested with a stand-in DLL | an in-game run with the mod; compatibility with VTOL VR 1.13.4 |
+| [VTOL VR (BYOJoystick mod)](vtol-vr.md) | native, experimental | `engine vtolvr` | `<install>\SaveData\BYOJ_<seat>.xml` (XmlSerializer) | the installed mod's `BYOJoystick.dll` (Steam Workshop; GUI: Install BYOJoystick on the VTOL VR card), else your own `BYOJ_*.xml`; size: 433 with the mod; none without it | clean / nuke: whole devices; axis model `byoj`; 8 game settings | reads 128 buttons, 8 axes, 4 hats (4 directions) per joystick (verified) | none known; needs a third-party mod (JoyPro ships nothing of it) | installed files only; checked without the mod; the reader is tested with a stand-in DLL | an in-game run with the mod; compatibility with VTOL VR 1.13.4 |
 | [VTOL VR (native: rudder and brakes)](vtol-vr.md) | native, experimental | `engine vtolvr-native` | `%APPDATA%\Boundless Dynamics, LLC\VTOLVR\SaveData\inputbindings.cfg` (ConfigNode + Rewired XML) + `gameSettings.cfg` | `level0` of the game; size: 3 | clean / nuke: whole devices; axis model `vtolnative`; 8 game settings | 3 axes only (rudder, left and right brake); every HID joystick | none known | installed files only; installed, never started | the in-game check; hardware identifiers and element ids; a broken file makes the game drop all binds |
 | [Nuclear Option](nuclear-option.md) | native, experimental | `engine nuclearoption` | registry `HKCU\Software\Shockfront\NuclearOption` (Rewired XML in REG_BINARY values) | `resources.assets` of the game; size: 95 | clean / nuke: flight actions only; no axis model | unknown controllers: 128 buttons, 16 hats (Rewired); slider and hat ids not seen yet | none known; JoyPro writes the registry (backed up) | in-game e2e: 5/5 (2026-10-10); pitch, roll and yaw only, no buttons | buttons and hats in game; devices Rewired recognizes (non-zero GUID) are not handled |
 | [Tiny Combat Arena](tiny-combat-arena.md) | native, experimental | `engine tinycombatarena` | registry `HKCU\Software\TinyCombat\Arena` (Unity PlayerPrefs, Rewired maps per mapper tab) | `sharedassets` of the game (Rewired input manager); size: 97 | clean / nuke: whole devices; no axis model | several | none | in-game e2e: 21/21 (2026-10-11) | devices Rewired recognizes (non-zero GUID); hat diagonals |
@@ -232,7 +231,7 @@ Bind file and command list: where JoyPro reads and writes on your PC and what it
 | Game | Support | Command line | Bind file and format | Command list on your PC | Export clean / nuke, axis model, settings | Device limits | Anti-cheat | Verification | Open points |
 |---|---|---|---|---|---|---|---|---|---|
 | [Star Citizen](starcitizen.md) | native | `engine starcitizen` | `LIVE\user\client\0\Profiles\default\actionmaps.xml` + `attributes.xml` (XML) | `Data.p4k` (defaultProfile.xml) and your profiles; size: 1103 | clean / nuke: flight actions only; axis model `starcitizen`; 21 game settings | 8 joystick slots; the button limit is unknown (sources conflict) | Easy Anti-Cheat | in-game e2e: 54/54 (2026-10-10); main menu: settings, binds and curves; release run 50/50 | placement of `deviceoptions`; curve interpolation and exponent range; vibration versus DirectInput force feedback |
-| [Elite Dangerous](elite-dangerous.md) | native, experimental | `engine elite` | `%LOCALAPPDATA%\Frontier Developments\Elite Dangerous\Options\Bindings\<preset>.4.x.binds` (XML) | the stock and your `.binds`; `DeviceMappings.xml` of the install; size: 201 | clean / nuke: flight actions only; axis model `elite`; 10 game settings | about 32 buttons reported (button 41 worked on the development PC); 4 hats without diagonals | none known | in-game e2e: 23/23 (2026-10-11); settings and config watcher; binds 50/50 | identical devices (DeviceIndex) are skipped; a missing device voids the whole preset in the game |
+| [Elite Dangerous](elite-dangerous.md) | native, experimental | `engine elite` | `%LOCALAPPDATA%\Frontier Developments\Elite Dangerous\Options\Bindings\<preset>.4.x.binds` (XML) | the stock and your `.binds`; `DeviceMappings.xml` of the install; size: 201 | clean / nuke: flight actions only; axis model `elite`; 10 game settings | about 32 buttons reported (button 41 works); 4 hats without diagonals | none known | in-game e2e: 23/23 (2026-10-11); settings and config watcher; binds 50/50 | identical devices (DeviceIndex) are skipped; a missing device voids the whole preset in the game |
 | [X4: Foundations](x4.md) | native, experimental | `engine x4` | `Documents\Egosoft\X4\<id>\inputmap.xml` (XML) + the slots in `config.xml` | `X4.exe` name tables and the `.cat/.dat` archives; size: 128 | clean / nuke: flight actions only; no axis model; 12 game settings | reads 64 buttons, 8 axes, 1 hat per joystick (verified); 8 device slots | none known | in-game e2e: 36/36 (2026-10-11); settings and config watcher; binds 35/35 | slots that are not pinned move; the `custom_modifier` markup is unknown |
 | [No Man's Sky](no-mans-sky.md) | documented only | — | — | — | — | no flight stick; pads through Steam Input | none | — | not installed; the pad binds live in Steam Input (nothing to write); a pad-layout list at most |
 | [Kerbal Space Program](kerbal-space-program.md) | documented only | — | — | — | — | several (Unity: joysticks 1-8, about 20 buttons and 20 axes) | none | — | not installed; needs one real `settings.cfg` (Unity axis numbering) |
@@ -257,11 +256,11 @@ Bind file and command list: where JoyPro reads and writes on your PC and what it
 | Game | Support | Command line | Bind file and format | Command list on your PC | Export clean / nuke, axis model, settings | Device limits | Anti-cheat | Verification | Open points |
 |---|---|---|---|---|---|---|---|---|---|
 | [ACE COMBAT 7: Skies Unknown](ace-combat.md) | native, experimental | `engine ac7` | `%LOCALAPPDATA%\BANDAI NAMCO Entertainment\ACE COMBAT 7\Config\Input.ini` (ini, one section per device model) | the `Input.ini` the game writes (start the game once); size: after the game's first start | clean / nuke: whole devices; no axis model | reads 32 buttons, 8 axes, 4 hats (4 directions) per joystick (documented); any number; devices of the same model share one section (the game averages them) | none | in-game e2e: 19/19 (2026-10-12); without input: the file the game writes and an export that survives its rewrite; menus and flight not yet | menus and a flight in game |
-| [ACE COMBAT 8: Wings of Theve](ace-combat.md) | virtual Xbox pad, experimental | `engine ac8` | `...\ACE COMBAT 8\Saved\SaveGames\System.sav` (GVAS with a checksum): read only | the pad keys in `System.sav` + JoyPro's own stick table; size: 13 | clean / nuke: flight actions only; no axis model | no joystick (XInput only) | Easy Anti-Cheat | in-game e2e: 20/20 (2026-10-11); virtual Xbox pad, menus only | the pad buttons of flares and views; a flight |
+| [ACE COMBAT 8: Wings of Theve](ace-combat.md) | virtual Xbox pad, experimental | `engine ac8` | `...\ACE COMBAT 8\Saved\SaveGames\System.sav` (GVAS with a checksum): read only | the pad keys in `System.sav` + JoyPro's own stick table; size: 13 | clean / nuke: flight actions only; axis model `xboxpad` | no joystick (XInput only) | Easy Anti-Cheat | in-game e2e: 20/20 (2026-10-11); virtual Xbox pad, menus only | the pad buttons of flares and views; a flight |
 | [ACE COMBAT Zero (with ACE COMBAT 8)](one-device-games.md) | documented only | — | — | — | — | — | unknown | — | not researched |
 | [ACE COMBAT Assault Horizon Enhanced Edition](one-device-games.md) | documented only | — | — | — | — | no joystick (XInput only) | none known | — | delisted |
 | [Project Wingman](project-wingman.md) | native | `engine pw` | `%LOCALAPPDATA%\ProjectWingman\Saved\Config\WindowsNoEditor\Input.ini` (Unreal ini, per device name and place) + curves and dead zones in `savegame.sav` | `DefaultInput.ini` of the game's pak + your `Input.ini`; size: from the game's pak | clean / nuke: whole devices; axis model `projectwingman` | several (all connected devices are listed); hats are not bindable | none | in game, partial: 19/25 (2026-10-12); Project Wingman: export and import seen in game; one full run of the test is pending (19/25 and 17/24 so far). | one full in-game run; the device number is the reversed DirectInput order (export again after a hardware change) |
-| [Hell Let Loose: Vietnam](hll-vietnam.md) | virtual Xbox pad, experimental | `engine hllv` | `%LOCALAPPDATA%\HLLVietnam\Saved\SaveGames\EnhancedInputUserSettings.sav` (GVAS; keyboard keys only) | JoyPro's own table of the three pad layouts and the pilot keys; the game's own files only with an Oodle library (another game's after your yes); size: 28 | clean / nuke: flight actions only; no axis model | no joystick (XInput only) | Easy Anti-Cheat | in-game e2e: 19/19 (2026-10-11); virtual Xbox pad, menus only | a flight with the pad; yaw and look overlap in pad layouts A and B |
+| [Hell Let Loose: Vietnam](hll-vietnam.md) | virtual Xbox pad, experimental | `engine hllv` | `%LOCALAPPDATA%\HLLVietnam\Saved\SaveGames\EnhancedInputUserSettings.sav` (GVAS; keyboard keys only) | JoyPro's own table of the three pad layouts and the pilot keys; the game's own files only with an Oodle library (another game's after your yes); size: 28 | clean / nuke: flight actions only; axis model `xboxpad` | no joystick (XInput only) | Easy Anti-Cheat | in-game e2e: 19/19 (2026-10-11); virtual Xbox pad, menus only | a flight with the pad; yaw and look overlap in pad layouts A and B |
 | [Battlefield 6](battlefield.md) | virtual vJoy, experimental | `engine bf6` | `Documents\Battlefield 6\settings\steam\PROFSAVEbf6mp_profile` + `PROFSAVE_profile` (text, `GstKeyBinding`) | your profile; size: 65 | clean / nuke: flight actions only; no axis model | 1 joystick at once; about 18 buttons seen (36 in the game's list); 4-way hats; vJoy without Rx/Ry (the game takes such a device for a pad) | EA Javelin (kernel); HidHide is reportedly seen through: unplug the real devices | installed files only; installed, menus explored; the joystick survey needs a reboot window | the live joystick survey; until then joystick binds are not written |
 | [Battlefield 2042](battlefield.md) | virtual vJoy, experimental | `engine bf2042` | `Documents\Battlefield 2042\settings\PROFSAVE_profile` (text) | your profile | clean / nuke: flight actions only; no axis model | 1 joystick at once; as Battlefield 6 | EA anti-cheat | blind (not installed); not installed | the same survey once it is installed |
 | [Battlefield V](battlefield.md) | documented only | — | — | — | — | one joystick | EA anti-cheat | — | a server-synced `_synced` profile with its own input numbering: needs its own survey |

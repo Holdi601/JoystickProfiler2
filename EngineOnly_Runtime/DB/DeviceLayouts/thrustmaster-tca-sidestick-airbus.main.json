@@ -29,10 +29,9 @@
     },
     "stick.trigger": {
       "type": "trigger",
-      "name": "Trigger",
+      "name": "trigger (single-stage digital trigger)",
       "inputs": [
-        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
-        {"input": "JOY_BTN2", "control": "stick.trigger.stage2"}
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"}
       ],
       "mapping": "high",
       "confidence": "medium",
@@ -194,6 +193,14 @@
       "mapping": "high",
       "confidence": "medium",
       "note": "virtual button on the first 20 % of the throttle lever travel (thrust reverser)"
+    },
+    "stick.button.index.1": {
+      "type": "button",
+      "name": "button 2 above the trigger (front of the head)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.button.index.1"}
+      ],
+      "mapping": "high"
     }
   },
   "unplaced": {
@@ -208,7 +215,8 @@
     "stick.base.button.9": "right base cluster, behind the stick on this photo",
     "stick.base.button.10": "right base cluster, behind the stick on this photo",
     "stick.base.button.11": "right base cluster, behind the stick on this photo",
-    "stick.base.button.12": "right base cluster, behind the stick on this photo"
+    "stick.base.button.12": "right base cluster, behind the stick on this photo",
+    "stick.button.index.1": "upper part of the trigger paddle (the manual draws 2 on the upper, 1 on the lower part), shares the trigger's spot on this photo"
   },
   "candidates": {
     "stick.base.button.1": [0.169, 0.691],
@@ -233,7 +241,7 @@
     "otherY": 918,
     "tables": [
       {"id": "stick.hat.tms", "title": "TMS hat", "parts": ["stick.hat.tms"], "side": "top", "x": 427.5, "y": 16, "width": 300, "modifier": true, "spot": [0.458, 0.067], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.tms"}]},
-      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "left", "x": 16, "y": 288.2, "width": 300, "modifier": true, "spot": [0.39, 0.232], "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger", "stick.button.index.1"], "side": "left", "x": 16, "y": 288.2, "width": 300, "modifier": true, "spot": [0.39, 0.232], "rows": [{"input": "JOY_BTN1", "label": "Trigger", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Button 2 (front of the head)", "icon": "button", "part": "stick.button.index.1"}]},
       {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "left", "x": 16, "y": 378.8, "width": 300, "modifier": true, "spot": [0.47, 0.35], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
       {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 16, "y": 598.4, "width": 300, "modifier": true, "spot": [0.497, 0.636], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
       {"id": "stick.axis.slider", "title": "Slider", "parts": ["stick.axis.slider"], "side": "right", "x": 1132, "y": 696, "width": 300, "modifier": true, "spot": [0.663, 0.778], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "stick.axis.slider"}]},

@@ -8,8 +8,8 @@ All scripted, none needs a person once started:
 
 Auto Assign and Lay out with AI: `AutoAssignMatrixTests` (three device sets and the same plan twice always; the full
 combination matrix with a report via `JOYPRO_AUTOASSIGN_MATRIX=<folder>`, docs/auto-assign.md#combination-matrix),
-`LayoutWithAiTests` (phrases on four device sets, the same phrases through the real engine, the Binds page panel; the
-author's pit on a copy of a real profile via `JOYPRO_LAYOUT_BIG_PROFILE`, pictures via `JOYPRO_LAYOUT_AI_OUT`) and the
+`LayoutWithAiTests` (phrases on four device sets, the same phrases through the real engine, the Binds page panel; a
+large pit on a copy of a real profile via `JOYPRO_LAYOUT_BIG_PROFILE`, pictures via `JOYPRO_LAYOUT_AI_OUT`) and the
 smoke part `engine\tests\smoke\autoassignmatrix.ps1`.
 
 Telemetry force feedback (docs/ffb-telemetry.md) is tested without moving a stick: `dotnet test
@@ -45,7 +45,7 @@ connected devices, import -> clean + nuke -> import round trip, undo byte for by
 installed). A round trip on a copy of real Saved Games: `engine dcs verify-clean --include-disconnected true
 --dump-active <file>` before and after the export lists every bind DCS has active ([DCS](games/dcs.md#import-of-the-default-binds-include-defaults-on-by-default-in-the-gui-since-250)).
 
-The 2.5.0 tester batch: `ContextMenuRowTests` (right-clicks at seven points of every action card and bind card reach
+The 2.5.0 report batch: `ContextMenuRowTests` (right-clicks at seven points of every action card and bind card reach
 the card's menu; a hit test of its own, because the hidden host answers from its last composited frame),
 `TesterBatch250Tests` (the HUD stick element of a grip without X/Y on its base: centred, from the base, a picked axis
 kept over a restart, 10 000 axis reports allocate nothing; the picked Layout picture kept at once and shown again; the
@@ -60,7 +60,7 @@ inc" with and without an aircraft filter through the view model, the real engine
 root: results within 300 ms of the debounce and no UI-thread block over 300 ms, one keystroke up to twice that;
 `JOYPRO_SEARCH_SPEED_REPORT=<file>`). `SearchTagsTests` / `SearchTagsRealEngineTests`: the tag of other relations
 (none, one, several, a name opens the relation, Back returns with the search), actions of the open relation greyed at
-the bottom and not counted, Replace from a Check card, the testers' F-14 "master" / "reset" / "master reset" cases
+the bottom and not counted, Replace from a Check card, users' F-14 "master" / "reset" / "master reset" cases
 through the real engine. Engine side: `engine\tests\smoke\searchliteral.ps1` (titles with every word first, brackets in
 the query, `[Inc]` / `[Dec]` / `[Next]` read right, the F-14 cases, "increase tacan channel").
 
@@ -95,7 +95,7 @@ the export that turns Enable HOTAS on), `ExportDefaultsTests.ExportMarks_NoFreeP
 the shipped list version) and `tools\e2e\SelfTest.ps1` (MSFS 2024's footer phrase, the launch option pick, the page
 recognition of `games\Pages.psm1` on real OCR texts, every game script parses; no game is started).
 
-The 2.6.0 fixes from rebuilding the author's profile: `engine\tests\smoke\rebuild251.ps1` (a `devices exchange` save
+The 2.6.0 fixes from rebuilding a large real profile: `engine\tests\smoke\rebuild251.ps1` (a `devices exchange` save
 keeps the profile's DB fingerprint, vJoy -> vJoy exchange, `relations import` keeps the stored titles, War Thunder's
 throttle and collective on one axis are no conflict), `engine\tests\smoke\autogroupslots.ps1` (needs the development
 game lists: switched off in another relation / dismissed in this one, relations sharing a button, the user's own
@@ -170,8 +170,12 @@ Nothing a person waits for should take more than a few seconds (interactive acti
   from (`DataStamp`: name, size and time of the DB, function and layout catalog files) and answers "stale" when they
   changed, then the app starts a new one. The app also starts a new server after a refresh or another command that can
   change game data. Per-run state (backups, diagnostics, detent warnings, device and install detection) is reset before
-  every command. The server warms up as the app starts, ends with the app (closed stdin, the app's process gone) or after
-  20 idle minutes (`JOYPRO_SERVER_IDLE_MINUTES`). `JOYPRO_ENGINE_SERVER=off` runs every call in a process.
+  every command, and so are the flags an export sets for its own end-of-run save (`EngineSync.ProfileSyncedGamesChanged`,
+  `ExportSkipMarks.Changed`: left set after a served DCS export, every later command saved the profile, 0.4 s per click).
+  3 s after a command the server collects its garbage; its working set goes back to Windows only after 120 s quiet
+  (`JOYPRO_SERVER_TRIM_SECONDS`; after 3 s every click paged it in again). The server warms up as the app starts, ends
+  with the app (closed stdin, the app's process gone) or after 20 idle minutes (`JOYPRO_SERVER_IDLE_MINUTES`).
+  `JOYPRO_ENGINE_SERVER=off` runs every call in a process.
 - **Checks.** `gui\JoyPro.Gui.Tests\EngineServerTests.cs` runs a sequence of 20 commands (add, show, rename, group, bind,
   search, browse, suggest, remove, save) once in processes and once in the server and compares output, exit code and
   the saved profile byte for byte (`JOYPRO_SERVER_TEST_PROFILE=<profile>` also on a copy of a real profile), a game list
@@ -201,6 +205,16 @@ Nothing a person waits for should take more than a few seconds (interactive acti
   the old full search: `JOYPRO_CORRECTION_REFERENCE=1` scores every candidate the old way, and the correction reports
   (`--correction-report`) of both are compared on copies of real profiles (2298 + 228 replacement searches identical;
   the user's March 2025 profile 80 s -> 2 s, the first Lay out with AI preview ~100 s -> under 3 s).
+- **Background looks.** Work nobody waits for must never queue in front of a click. The Start card's look at the games
+  (`setup games`) once sat in the app's engine queue right after the games list and made the engine server start again
+  after every run: the games list took 13-14 s, the catalog overview 3.5-4.6 s (gate 2026-11-14). It now waits for the
+  idle Start page, runs in a process of its own in Windows' background mode (`EngineRunOptions.LowPriority`, engine
+  `JOYPRO_LOW_PRIORITY`), outside the queue and the busy state, ends when the Start page is left (`KillOnCancel`), keeps
+  the server running (`EngineServerCommands.KeepsServer`) and is kept until the games, devices or profile change
+  (`MainWindowViewModel.AutoSetupStart.cs`, `AutoSetupStatusTests`). `--status-only` leaves the control files of games the
+  profile already has binds for unread (20 games: 4.2 s -> 0.3 s on the gate profile), the devices are read once per run,
+  and War Thunder's controls file is read in linear time (`BlkDocument.Children`: 1.8 s -> 0.35 s). The gate's I3 compares
+  the card with the engine's full read of every game and times it ("start card look").
 - **HUD page live check in OBS.** `HudObsLiveTests` (opt-in: `JOYPRO_HUD_LIVE=<folder>`) checks the real stream page
   server started by Start HUD in a sandbox with a fake device stream; `tools\obs_hud_live_check.ps1 -Obs` adds OBS
   (portable copy, a copy of the user's OBS settings, Browser Source picture via obs-websocket, the user's
@@ -215,7 +229,7 @@ Nothing a person waits for should take more than a few seconds (interactive acti
   one core, managed allocations, managed heap and working set growth, HUD updates and page events per second, and one
   frame of the whole HUD drawn in software. Budgets (`HudSoak` in `HudSoakTests.cs`): stream page only < 5 % of one core
   and < 250 KB/s, HUD drawn + stream page < 8 % and < 1500 KB/s, heap growth < 4 MB, working set growth < 40 MB,
-  updates and page events 5 .. 31 a second, a software frame < 12 ms. Measured on the development PC (2026-10-31,
+  updates and page events 5 .. 31 a second, a software frame < 12 ms. Measured (2026-10-31,
   4 minutes, other programs running):
 
   | Measure | baseline | stream page only | HUD drawn + stream page |
@@ -257,11 +271,11 @@ into copies of the game's config or as dry runs, and the real config files are f
 |---|---|
 | I1 | the catalog shows actions for every game and every DCS aircraft (as many as its overview counts); every game chip and DCS aircraft filter of the search shows rows |
 | I2 | no catalog title is empty, the id, a lua key, an encoded/hex id, a snake_case identifier, has an unexplained abbreviation ("Rb pitch", `ActionTexts.UnexplainedAbbreviation`) or is only a word and an axis letter; every action has a category, categories are words (DCS abbreviations are the module's own: a note) |
-| I3 | every game of the Start page and Settings > Games has catalog actions, and a title of its own catalog finds it in the search |
+| I3 | every game of the Start page and Settings > Games has catalog actions, and a title of its own catalog finds it in the search; the Start card names each game's state (nothing assigned / own binds / in the profile) as the engine's full read of the game does |
 | I4 | pitch, roll, throttle, flaps, gear, engine rpm, fire, view, zoom find readable rows (no unexplained abbreviation outside DCS) in every game whose catalog has the word |
 | I5 | suggestions of typical relations (pitch, roll, throttle, gear, flaps over two games) are there after the second game's action and after the profile is opened again |
 | I6 | every relation of the profile shows readable titles in the editor, the binds peek and the layout table; the check's problems show no raw id (the profile's own relation and device names, whole or quoted, are the user's data; a raw id injected next to one is still caught) |
-| I7 | engine server start (a fresh server after the gate's first start; the first start right after the build has its own cold-start budget), profile load, the first Lay out with AI preview after it (rules only), relation open, 200 actions at once, save, suggestions, catalog, search, export per game, the Statistics page's `usage stats` (1 s) stay within the budgets of `QualityGate\Budgets.cs` |
+| I7 | engine server start (a fresh server after the gate's first start; the first start right after the build has its own cold-start budget), profile load, the games list on the Start page (with the Start card's background look beside it), the first Lay out with AI preview after it (rules only), relation open, 200 actions at once, save, suggestions, catalog, search, export per game, the Statistics page's `usage stats` (1 s) stay within the budgets of `QualityGate\Budgets.cs` |
 | I8 | texts of the main pages have at least 3:1 contrast to their background in Light and Dark |
 | I9 | every game the UI names (games list, supported games page, badges, trailer) has an integration, catalog actions and a function map; labels are names, not abbreviations |
 | I10 | every page and the relation editor (empty, normal, large relation) at MinWidth, 1280x720 and 1920x1080, 100 % and 150 %, Light and Dark: no overlapping controls or chips, no text drawn over a control or chip it does not belong to, no cut-off text, no pre-filled search that finds nothing; also at 150 % and 200 % text size (Settings > Appearance) and with a serif and a wide font at 150 % text, each with 150 % Windows scaling, in Dark; the Layout page also with the profile's devices as own layouts (long names, "Your layout · N markers" chips; the header names the picture in words, match at most 100 %) |

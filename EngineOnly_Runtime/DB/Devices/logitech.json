@@ -31,7 +31,8 @@
     "https://github.com/EDCD/EliteCustomButtonNames/tree/main/files/INTO%20Bindings/DeviceButtonMaps/SaitekX56Joystick.buttonMap",
     "https://github.com/EDCD/EliteCustomButtonNames/tree/main/files/INTO%20Bindings/DeviceButtonMaps/SaitekX56Throttle.buttonMap",
     "https://www.sportys.com/media/pdf/buttonconfig.pdf",
-    "https://www.logitech.com/assets/65324/2/x56-hotas.pdf"
+    "https://www.logitech.com/assets/65324/2/x56-hotas.pdf",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/Saitek Pro Flight X-56 Rhino Stick.diff.lua (HOTAS equivalence)"
    ],
    "confidence": "medium",
    "axes": [
@@ -61,13 +62,15 @@
      "input": "JOY_BTN1",
      "control": "stick.trigger.stage1",
      "finger": "index",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["stick.trigger.stage1", "stick.trigger.stage2"]
     },
     {
      "input": "JOY_BTN2",
      "control": "stick.button.thumb.1",
      "finger": "thumb",
      "type": "momentary",
+     "hotas": "stick.weapon_release",
      "label": "A (top of stick)"
     },
     {
@@ -75,6 +78,7 @@
      "control": "stick.button.thumb.2",
      "finger": "thumb",
      "type": "momentary",
+     "hotas": "stick.button.index_lower",
      "label": "B (right side)"
     },
     {
@@ -82,6 +86,7 @@
      "control": "stick.ministick.press",
      "finger": "thumb",
      "type": "momentary",
+     "hotas": "stick.hat.cms.up",
      "label": "C (thumb mini-stick press)"
     },
     {
@@ -102,49 +107,57 @@
      "input": "JOY_BTN7",
      "control": "stick.hat.1.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.trim.up"
     },
     {
      "input": "JOY_BTN8",
      "control": "stick.hat.1.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.trim.right"
     },
     {
      "input": "JOY_BTN9",
      "control": "stick.hat.1.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.trim.down"
     },
     {
      "input": "JOY_BTN10",
      "control": "stick.hat.1.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.trim.left"
     },
     {
      "input": "JOY_BTN11",
      "control": "stick.hat.2.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.up"
     },
     {
      "input": "JOY_BTN12",
      "control": "stick.hat.2.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.right"
     },
     {
      "input": "JOY_BTN13",
      "control": "stick.hat.2.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.down"
     },
     {
      "input": "JOY_BTN14",
      "control": "stick.hat.2.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.left"
     },
     {
      "input": "JOY_BTN_POV1_U",
@@ -197,20 +210,20 @@
     {
      "input": "JOY_BTN15",
      "control": "stick.base.button.1",
-     "type": "latched",
-     "label": "M1"
+     "type": "selector",
+     "label": "MODE M1"
     },
     {
      "input": "JOY_BTN16",
      "control": "stick.base.button.2",
-     "type": "latched",
-     "label": "M2"
+     "type": "selector",
+     "label": "MODE M2"
     },
     {
      "input": "JOY_BTN17",
      "control": "stick.base.button.3",
-     "type": "latched",
-     "label": "S1"
+     "type": "selector",
+     "label": "MODE S1"
     }
    ]
   },
@@ -237,7 +250,8 @@
     "https://github.com/EDCD/EliteCustomButtonNames/tree/main/files/INTO%20Bindings/DeviceButtonMaps/SaitekX56Joystick.buttonMap",
     "https://github.com/EDCD/EliteCustomButtonNames/tree/main/files/INTO%20Bindings/DeviceButtonMaps/SaitekX56Throttle.buttonMap",
     "https://www.sportys.com/media/pdf/buttonconfig.pdf",
-    "https://www.logitech.com/assets/65324/2/x56-hotas.pdf"
+    "https://www.logitech.com/assets/65324/2/x56-hotas.pdf",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/Saitek Pro Flight X-56 Rhino Throttle.diff.lua (HOTAS equivalence)"
    ],
    "confidence": "medium",
    "axes": [
@@ -301,6 +315,7 @@
      "control": "throttle.button.4",
      "finger": "index",
      "type": "momentary",
+     "hotas": "throttle.knob.man_rng.press",
      "label": "I (left button, lever backside)"
     },
     {
@@ -313,110 +328,114 @@
     {
      "input": "JOY_BTN6",
      "control": "throttle.base.toggle.1.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW1"
     },
     {
      "input": "JOY_BTN7",
      "control": "throttle.base.toggle.1.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW2"
     },
     {
      "input": "JOY_BTN8",
      "control": "throttle.base.toggle.2.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW3"
     },
     {
      "input": "JOY_BTN9",
      "control": "throttle.base.toggle.2.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW4"
     },
     {
      "input": "JOY_BTN10",
      "control": "throttle.base.toggle.3.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW5"
     },
     {
      "input": "JOY_BTN11",
      "control": "throttle.base.toggle.3.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW6"
     },
     {
      "input": "JOY_BTN12",
      "control": "throttle.base.toggle.4.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL1 up"
     },
     {
      "input": "JOY_BTN13",
      "control": "throttle.base.toggle.4.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL1 down"
     },
     {
      "input": "JOY_BTN14",
      "control": "throttle.base.toggle.5.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL2 up"
     },
     {
      "input": "JOY_BTN15",
      "control": "throttle.base.toggle.5.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL2 down"
     },
     {
      "input": "JOY_BTN16",
      "control": "throttle.base.toggle.6.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL3 up"
     },
     {
      "input": "JOY_BTN17",
      "control": "throttle.base.toggle.6.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL3 down"
     },
     {
      "input": "JOY_BTN18",
      "control": "throttle.base.toggle.7.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL4 up"
     },
     {
      "input": "JOY_BTN19",
      "control": "throttle.base.toggle.7.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL4 down"
     },
     {
      "input": "JOY_BTN20",
      "control": "throttle.hat.3.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.down"
     },
     {
      "input": "JOY_BTN21",
      "control": "throttle.hat.3.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.speedbrake.fwd"
     },
     {
      "input": "JOY_BTN22",
      "control": "throttle.hat.3.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.up"
     },
     {
      "input": "JOY_BTN23",
      "control": "throttle.hat.3.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.speedbrake.aft"
     },
     {
      "input": "JOY_BTN24",
@@ -428,7 +447,8 @@
      "input": "JOY_BTN25",
      "control": "throttle.hat.4.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.dogfight.in"
     },
     {
      "input": "JOY_BTN26",
@@ -440,7 +460,8 @@
      "input": "JOY_BTN27",
      "control": "throttle.hat.4.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.dogfight.out"
     },
     {
      "input": "JOY_BTN28",
@@ -482,20 +503,20 @@
     {
      "input": "JOY_BTN34",
      "control": "throttle.base.button.1",
-     "type": "latched",
-     "label": "M1"
+     "type": "selector",
+     "label": "MODE M1"
     },
     {
      "input": "JOY_BTN35",
      "control": "throttle.base.button.2",
-     "type": "latched",
-     "label": "M2"
+     "type": "selector",
+     "label": "MODE M2"
     },
     {
      "input": "JOY_BTN36",
      "control": "throttle.base.button.3",
-     "type": "latched",
-     "label": "S1"
+     "type": "selector",
+     "label": "MODE S1"
     }
    ]
   },
@@ -774,19 +795,19 @@
     {
      "input": "JOY_BTN28",
      "control": "throttle.base.button.1",
-     "type": "latched",
+     "type": "selector",
      "label": "MODE 1"
     },
     {
      "input": "JOY_BTN29",
      "control": "throttle.base.button.2",
-     "type": "latched",
+     "type": "selector",
      "label": "MODE 2"
     },
     {
      "input": "JOY_BTN30",
      "control": "throttle.base.button.3",
-     "type": "latched",
+     "type": "selector",
      "label": "MODE 3"
     }
    ]
@@ -810,7 +831,8 @@
    "sources": [
     "http://hacks4ros.github.io/h4r_x52_joyext/doc/doxygen/d3/d14/x52_general.html",
     "https://devicehunt.com/view/type/usb/vendor/06A3",
-    "https://manuals.plus/asin/B000LQ4HTS"
+    "https://manuals.plus/asin/B000LQ4HTS",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/Saitek X52 Pro Flight Control System.lua (HOTAS equivalence; coolie up/down follow this catalog's hat directions)"
    ],
    "confidence": "medium",
    "axes": [
@@ -875,6 +897,7 @@
      "control": "stick.button.thumb.2",
      "finger": "thumb",
      "type": "momentary",
+     "hotas": "stick.pinky.button",
      "label": "B"
     },
     {
@@ -889,6 +912,7 @@
      "control": "stick.pinky.button",
      "finger": "pinky",
      "type": "momentary",
+     "hotas": "stick.button.index_lower",
      "label": "Pinky switch"
     },
     {
@@ -943,25 +967,29 @@
      "input": "JOY_BTN20",
      "control": "stick.hat.dms.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.up"
     },
     {
      "input": "JOY_BTN21",
      "control": "stick.hat.dms.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.right"
     },
     {
      "input": "JOY_BTN22",
      "control": "stick.hat.dms.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.down"
     },
     {
      "input": "JOY_BTN23",
      "control": "stick.hat.dms.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.left"
     },
     {
      "input": "JOY_BTN7",
@@ -1042,42 +1070,46 @@
      "input": "JOY_BTN24",
      "control": "throttle.hat.1.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.coolie.down"
     },
     {
      "input": "JOY_BTN25",
      "control": "throttle.hat.1.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.coolie.right"
     },
     {
      "input": "JOY_BTN26",
      "control": "throttle.hat.1.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.coolie.up"
     },
     {
      "input": "JOY_BTN27",
      "control": "throttle.hat.1.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.coolie.left"
     },
     {
      "input": "JOY_BTN28",
      "control": "throttle.base.button.1",
-     "type": "latched",
+     "type": "selector",
      "label": "MODE 1"
     },
     {
      "input": "JOY_BTN29",
      "control": "throttle.base.button.2",
-     "type": "latched",
+     "type": "selector",
      "label": "MODE 2"
     },
     {
      "input": "JOY_BTN30",
      "control": "throttle.base.button.3",
-     "type": "latched",
+     "type": "selector",
      "label": "MODE 3"
     }
    ]
@@ -1375,19 +1407,19 @@
     {
      "input": "JOY_BTN6",
      "control": "throttle.base.toggle.1.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW1"
     },
     {
      "input": "JOY_BTN8",
      "control": "throttle.base.toggle.2.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW3"
     },
     {
      "input": "JOY_BTN10",
      "control": "throttle.base.toggle.3.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW5"
     },
     {
@@ -1428,67 +1460,67 @@
     {
      "input": "JOY_BTN7",
      "control": "throttle.base.toggle.1.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW2"
     },
     {
      "input": "JOY_BTN9",
      "control": "throttle.base.toggle.2.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW4"
     },
     {
      "input": "JOY_BTN11",
      "control": "throttle.base.toggle.3.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "SW6"
     },
     {
      "input": "JOY_BTN12",
      "control": "throttle.base.toggle.4.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL1 up"
     },
     {
      "input": "JOY_BTN13",
      "control": "throttle.base.toggle.4.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL1 down"
     },
     {
      "input": "JOY_BTN14",
      "control": "throttle.base.toggle.5.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL2 up"
     },
     {
      "input": "JOY_BTN15",
      "control": "throttle.base.toggle.5.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL2 down"
     },
     {
      "input": "JOY_BTN16",
      "control": "throttle.base.toggle.6.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL3 up"
     },
     {
      "input": "JOY_BTN17",
      "control": "throttle.base.toggle.6.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL3 down"
     },
     {
      "input": "JOY_BTN18",
      "control": "throttle.base.toggle.7.up",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL4 up"
     },
     {
      "input": "JOY_BTN19",
      "control": "throttle.base.toggle.7.down",
-     "type": "latched",
+     "type": "momentary",
      "label": "TGL4 down"
     },
     {
@@ -1577,13 +1609,14 @@
      "Saitek X65F",
      "X65F Flight Control System"
     ],
-    "note": "Force-sensing (non-moving) stick with throttle; VID:PID not found. Discontinued."
+    "note": "Force-sensing (non-moving) stick with throttle; VID:PID not found. Discontinued. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "https://en.wikipedia.org/wiki/Saitek_X52"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll"
@@ -1706,7 +1739,7 @@
      "control": "stick.weapon_release",
      "finger": "thumb",
      "type": "momentary",
-     "label": "Launch / fire (top)"
+     "label": "Fire button (top)"
     },
     {
      "input": "JOY_BTN7",
@@ -1836,13 +1869,14 @@
      "X36 Flight Controller",
      "X36F Flightstick"
     ],
-    "note": "Stick + throttle (discontinued). Button numbering not verified."
+    "note": "Stick + throttle (discontinued). Button numbering not verified. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "https://devicehunt.com/view/type/usb/vendor/06A3"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll",
@@ -1898,13 +1932,14 @@
      "Saitek Cyborg evo Wireless",
      "Saitek Cyborg Evo Force"
     ],
-    "note": "Family entry: several models with different button counts. Evo ids per devicehunt: 0464 and 35BE Cyborg Evo, FFB5 Evo Force, 353E Evo Wireless. Trigger = button 1 per the FlightGear Cyborg Evo map; other numbers differ per model."
+    "note": "Family entry: several models with different button counts. Evo ids per devicehunt: 0464 and 35BE Cyborg Evo, FFB5 Evo Force, 353E Evo Wireless. Buttons 1-12 and the POV hat per the FlightGear Cyborg Evo map (written for Saitek Cyborg USB Stick / Cyborg Evo / Evo Wireless / Evo Force; FlightGear index + 1 = DirectInput number): 1 trigger, 2 middle / 3 left / 4 right below the hat, 5 / 6 left / right of the hat, F1 7, F2 8, F3 9, F4 10, left ^ 11, right ^ 12. The older Cyborg 3D Digital / Force / Rumble models of this family entry may number differently (not verified)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "https://devicehunt.com/view/type/usb/vendor/06A3",
     "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Saitek/Cyborg-Evo.xml",
-    "https://github.com/richardbuckle/EDRefCard/blob/dev/bindings/Defaults%203.3/DeviceMappings.xml"
+    "https://github.com/richardbuckle/EDRefCard/blob/dev/bindings/Defaults%203.3/DeviceMappings.xml",
+    "https://gitlab.com/flightgear/fgdata/-/raw/next/Input/Joysticks/Saitek/Cyborg-Evo.xml (button positions in the comments: labelled 2-6 around the hat, F1/F2/^ left, F3/F4/^ right)"
    ],
    "confidence": "low",
    "axes": [
@@ -1933,8 +1968,98 @@
      "type": "momentary"
     },
     {
+     "input": "JOY_BTN_POV1_U",
      "control": "stick.hat.tms.up",
      "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN_POV1_R",
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN_POV1_D",
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN_POV1_L",
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN2",
+     "control": "stick.button.thumb.1",
+     "label": "2 (middle, below the hat)",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN3",
+     "control": "stick.button.thumb.2",
+     "label": "3 (left, below the hat)",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN4",
+     "control": "stick.button.thumb.3",
+     "label": "4 (right, below the hat)",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN5",
+     "control": "stick.button.thumb.4",
+     "label": "5 (left of the hat)",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN6",
+     "control": "stick.button.thumb.5",
+     "label": "6 (right of the hat)",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN7",
+     "control": "stick.base.button.1",
+     "label": "F1 (left side)",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN8",
+     "control": "stick.base.button.2",
+     "label": "F2 (left side)",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN9",
+     "control": "stick.base.button.3",
+     "label": "F3 (right side)",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN10",
+     "control": "stick.base.button.4",
+     "label": "F4 (right side)",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN11",
+     "control": "stick.base.button.5",
+     "label": "^ (left side)",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN12",
+     "control": "stick.base.button.6",
+     "label": "^ (right side)",
      "type": "momentary"
     }
    ]
@@ -2117,13 +2242,14 @@
      "Logitech Attack 3",
      "Attack 3"
     ],
-    "note": "11 buttons, 8-way hat, throttle slider, no twist. VID:PID unverified; numbering not verified."
+    "note": "11 buttons, 8-way hat, throttle slider, no twist. VID:PID unverified; numbering not verified. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "https://www.logitechg.com/en-us/shop/c/simulation"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll",
@@ -2163,13 +2289,14 @@
      "Logitech Freedom 2.4 Cordless Joystick",
      "Freedom 2.4"
     ],
-    "note": "Discontinued wireless stick; VID:PID not found, numbering not verified."
+    "note": "Discontinued wireless stick; VID:PID not found, numbering not verified. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "https://www.logitechg.com/en-us/shop/c/simulation"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll",
@@ -2576,37 +2703,37 @@
     {
      "input": "JOY_BTN15",
      "control": "quadrant.button.1",
-     "type": "latched",
+     "type": "momentary",
      "label": "Quadrant T1"
     },
     {
      "input": "JOY_BTN16",
      "control": "quadrant.button.2",
-     "type": "latched",
+     "type": "momentary",
      "label": "Quadrant T2"
     },
     {
      "input": "JOY_BTN17",
      "control": "quadrant.button.3",
-     "type": "latched",
+     "type": "momentary",
      "label": "Quadrant T3"
     },
     {
      "input": "JOY_BTN18",
      "control": "quadrant.button.4",
-     "type": "latched",
+     "type": "momentary",
      "label": "Quadrant T4"
     },
     {
      "input": "JOY_BTN19",
      "control": "quadrant.button.5",
-     "type": "latched",
+     "type": "momentary",
      "label": "Quadrant T5"
     },
     {
      "input": "JOY_BTN20",
      "control": "quadrant.button.6",
-     "type": "latched",
+     "type": "momentary",
      "label": "Quadrant T6"
     }
    ]
@@ -2624,7 +2751,7 @@
      "Saitek Pro Flight Quadrant",
      "Pro Flight Throttle Quadrant"
     ],
-    "note": "Standalone USB device (06A3:0C2D): levers left to right = X, Y, Z; rockers T1-T6 = buttons 1-6; lever pulled below the detent = buttons 7 (left), 8 (middle), 9 (right) per FlightGear map and an MSFS forum report (button 8 = middle lever full back). CHANGED: earlier this entry used Z/Rx/Ry and buttons 15-20; that is the Logitech manual numbering for the quadrant plugged into the Pro Flight Yoke, now listed on the yoke entry."
+    "note": "Standalone USB device (06A3:0C2D): levers left to right = X, Y, Z; rockers T1-T6 = buttons 1-6 (spring back to the middle: momentary, not latched); lever pulled below the detent = buttons 7 (left), 8 (middle), 9 (right) per FlightGear map and an MSFS forum report (button 8 = middle lever full back). CHANGED: earlier this entry used Z/Rx/Ry and buttons 15-20; that is the Logitech manual numbering for the quadrant plugged into the Pro Flight Yoke, now listed on the yoke entry."
    },
    "productUrl": "https://www.logitechg.com/en-gb/products/flight/flight-simulator-yoke-system.945-000004.html",
    "sources": [
@@ -2651,37 +2778,37 @@
     {
      "input": "JOY_BTN1",
      "control": "quadrant.button.1",
-     "type": "latched",
+     "type": "momentary",
      "label": "T1 rocker"
     },
     {
      "input": "JOY_BTN2",
      "control": "quadrant.button.2",
-     "type": "latched",
+     "type": "momentary",
      "label": "T2 rocker"
     },
     {
      "input": "JOY_BTN3",
      "control": "quadrant.button.3",
-     "type": "latched",
+     "type": "momentary",
      "label": "T3 rocker"
     },
     {
      "input": "JOY_BTN4",
      "control": "quadrant.button.4",
-     "type": "latched",
+     "type": "momentary",
      "label": "T4 rocker"
     },
     {
      "input": "JOY_BTN5",
      "control": "quadrant.button.5",
-     "type": "latched",
+     "type": "momentary",
      "label": "T5 rocker"
     },
     {
      "input": "JOY_BTN6",
      "control": "quadrant.button.6",
-     "type": "latched",
+     "type": "momentary",
      "label": "T6 rocker"
     },
     {
@@ -2715,7 +2842,8 @@
     ],
     "names": [
      "Saitek Pro Flight Switch Panel",
-     "Flight Switch Panel"
+     "Flight Switch Panel",
+     "Logitech Switch Panel"
     ],
     "note": "13 toggle switches + magneto key (OFF/R/L/BOTH/START) + gear lever. Numbering is the commonly used left-to-right order from community maps, not a manufacturer table; each toggle reports one held button when ON (only the ON position is listed). Doubt: forum sources say the Saitek switch/radio/multi panels are not seen as DirectInput game controllers (they need SPAD.neXt or plug-ins); the button numbers here only apply where a tool exposes them as buttons."
    },
@@ -2861,7 +2989,8 @@
     ],
     "names": [
      "Saitek Pro Flight Radio Panel",
-     "Flight Radio Panel"
+     "Flight Radio Panel",
+     "Logitech Radio Panel"
     ],
     "note": "Two LCD rows, two selector knobs (COM1/COM2/NAV1/NAV2/ADF/DME/XPDR), two dual encoders, ACT/STBY buttons. Button numbers not verified. Not a DirectInput game controller: Windows and games do not list it as a joystick; it needs SPAD.neXt, the Saitek/Logitech plug-ins or a sim with native support, so no JOY_ inputs exist."
    },
@@ -2934,7 +3063,8 @@
     ],
     "names": [
      "Saitek Pro Flight Multi Panel",
-     "Flight Multi Panel"
+     "Flight Multi Panel",
+     "Logitech Multi Panel"
     ],
     "note": "Autopilot panel: selector ALT/VS/IAS/HDG/CRS, rotary encoder, AP/HDG/NAV/IAS/ALT/VS/APR/REV buttons, A/T, flaps lever, pitch-trim wheel. Button numbers not verified. Not a DirectInput game controller: Windows and games do not list it as a joystick; it needs SPAD.neXt, the Saitek/Logitech plug-ins or a sim with native support, so no JOY_ inputs exist."
    },
@@ -3206,7 +3336,8 @@
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "https://treexy.com/products/driver-fusion/database/human-interface-devices/saitek/pro-flight-cessna-yoke/",
-    "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Saitek/Pro-Flight-Cessna-Yoke.xml"
+    "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Saitek/Pro-Flight-Cessna-Yoke.xml",
+    "https://gitlab.com/flightgear/fgdata/-/raw/next/Input/Joysticks/Saitek/Pro-Flight-Cessna-Yoke.xml (buttons 22-24 = yoke mode switch left/middle/right)"
    ],
    "confidence": "medium",
    "axes": [
@@ -3291,43 +3422,43 @@
     {
      "input": "JOY_BTN14",
      "control": "quadrant.button.1",
-     "type": "latched",
+     "type": "momentary",
      "label": "T1"
     },
     {
      "input": "JOY_BTN15",
      "control": "quadrant.button.2",
-     "type": "latched",
+     "type": "momentary",
      "label": "T2"
     },
     {
      "input": "JOY_BTN16",
      "control": "quadrant.button.3",
-     "type": "latched",
+     "type": "momentary",
      "label": "T3"
     },
     {
      "input": "JOY_BTN17",
      "control": "quadrant.button.4",
-     "type": "latched",
+     "type": "momentary",
      "label": "T4"
     },
     {
      "input": "JOY_BTN18",
      "control": "quadrant.button.5",
-     "type": "latched",
+     "type": "momentary",
      "label": "T5"
     },
     {
      "input": "JOY_BTN19",
      "control": "quadrant.button.6",
-     "type": "latched",
+     "type": "momentary",
      "label": "T6"
     },
     {
      "input": "JOY_BTN20",
      "control": "quadrant.detent.1",
-     "type": "momentary",
+     "type": "detent",
      "label": "Throttle lever below 0 (reverse zone)"
     },
     {
@@ -3345,19 +3476,19 @@
     {
      "input": "JOY_BTN23",
      "control": "yoke.switch.1.left",
-     "type": "latched",
+     "type": "selector",
      "label": "Mode switch left"
     },
     {
      "input": "JOY_BTN24",
      "control": "yoke.switch.1.center",
-     "type": "latched",
+     "type": "selector",
      "label": "Mode switch middle"
     },
     {
      "input": "JOY_BTN25",
      "control": "yoke.switch.1.right",
-     "type": "latched",
+     "type": "selector",
      "label": "Mode switch right"
     }
    ]
@@ -3762,13 +3893,13 @@
      "control": "stick.base.button.9",
      "input": "JOY_BTN13",
      "label": "Mode switch position 1",
-     "type": "latched"
+     "type": "selector"
     },
     {
      "control": "stick.base.button.10",
      "input": "JOY_BTN14",
      "label": "Mode switch position 2",
-     "type": "latched"
+     "type": "selector"
     },
     {
      "control": "stick.hat.1.up",
@@ -3929,7 +4060,7 @@
     "names": [
      "Saitek ST290"
     ],
-    "note": "VID:PID and name from the vendor driver INF (Saitek_ST290_SD6 on download01.logi.com) and usb.ids. Predecessor of the ST290 Pro; control list only, numbering not documented."
+    "note": "VID:PID and name from the vendor driver INF (Saitek_ST290_SD6 on download01.logi.com) and usb.ids. Predecessor of the ST290 Pro; control list only, numbering not documented. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://support.logi.com/hc/en-us/articles/41853926808215-Saitek-Driver-and-Software-Downloads",
    "sources": [
@@ -3938,6 +4069,7 @@
     "http://www.linux-usb.org/usb.ids"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll"
@@ -4371,17 +4503,17 @@
     {
      "control": "throttle.base.toggle.1.up",
      "label": "Mode switch",
-     "type": "latched"
+     "type": "selector"
     },
     {
      "control": "throttle.base.toggle.1.center",
      "label": "Mode switch",
-     "type": "latched"
+     "type": "selector"
     },
     {
      "control": "throttle.base.toggle.1.down",
      "label": "Mode switch",
-     "type": "latched"
+     "type": "selector"
     }
    ]
   },
@@ -4397,7 +4529,7 @@
     "names": [
      "Logitech G940 Pedals"
     ],
-    "note": "Separate USB device of the G940 system (Elite Dangerous DeviceMappings: LogitechG940Pedals 046D:C2AA). Rudder = Rz per the EDRefCard G940 pedals map; EDRefCard puts the toe brakes on X (right) and Y (left) but marks both unconfirmed, so they have no input here."
+    "note": "Separate USB device of the G940 system (Elite Dangerous DeviceMappings: LogitechG940Pedals 046D:C2AA). Rudder = Rz per the EDRefCard G940 pedals map; Toe brakes X = left, Y = right per DCS's own Scripts/Input/DefaultAssignments.lua ([\"Logitech G940 Pedals\"] = { rudder = 'JOY_RZ', left_wheel_brake = 'JOY_X', right_wheel_brake = 'JOY_Y' }) and a G940 owner on forum.dcs.world (topic 81072: left brake Joy_X, right brake Joy_Y); EDRefCard's opposite note is marked unconfirmed (checked 2026-11-14)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
@@ -4411,9 +4543,11 @@
      "input": "JOY_RZ"
     },
     {
+     "input": "JOY_X",
      "control": "pedals.axis.brake_left"
     },
     {
+     "input": "JOY_Y",
      "control": "pedals.axis.brake_right"
     }
    ],
@@ -4432,12 +4566,14 @@
      "Logitech Force 3D Pro",
      "Logitech Force 3D Pro USB"
     ],
-    "note": "VID:PID 'Force 3D Pro' per usb.ids. FlightGear's force-3d-pro map states its button numbers follow the numbers printed on the stick (button 1 = trigger ... 12); twist and throttle slider exist (FlightGear: Windows axes 3 and 2) but their DirectInput tokens are not documented. Head/base split of 3-12 assumed like the Extreme 3D Pro (same body), not verified."
+    "note": "VID:PID 'Force 3D Pro' per usb.ids. FlightGear's force-3d-pro map states its button numbers follow the numbers printed on the stick (button 1 = trigger ... 12); twist and throttle slider exist (FlightGear: Windows axes 3 and 2) but their DirectInput tokens are not documented. Head/base split of 3-12 assumed like the Extreme 3D Pro (same body), not verified. The 8-way hat (retail spec sheets: 12 programmable buttons, 8-way hat switch) reports as POV1 like every Logitech stick of this body."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Logitech/force-3d-pro.xml",
-    "http://www.linux-usb.org/usb.ids"
+    "http://www.linux-usb.org/usb.ids",
+   "https://www.newegg.com/p/N82E16826104049",
+   "https://icecat.co.uk/us/p/logitech/963352-0120/gaming-controls-Force+3D+Pro-515481.html"
    ],
    "confidence": "medium",
    "axes": [
@@ -4537,24 +4673,28 @@
      "type": "momentary"
     },
     {
+     "input": "JOY_BTN_POV1_U",
      "control": "stick.hat.1.up",
      "label": "Hat",
      "finger": "thumb",
      "type": "momentary"
     },
     {
+     "input": "JOY_BTN_POV1_R",
      "control": "stick.hat.1.right",
      "label": "Hat",
      "finger": "thumb",
      "type": "momentary"
     },
     {
+     "input": "JOY_BTN_POV1_D",
      "control": "stick.hat.1.down",
      "label": "Hat",
      "finger": "thumb",
      "type": "momentary"
     },
     {
+     "input": "JOY_BTN_POV1_L",
      "control": "stick.hat.1.left",
      "label": "Hat",
      "finger": "thumb",
@@ -4681,7 +4821,7 @@
      "Logitech WingMan Extreme Digital 3D (USB)",
      "Logitech Inc. WingMan Extreme Digital 3D"
     ],
-    "note": "Predecessor of the Extreme 3D Pro: 7 buttons, 8-way hat, twist and throttle slider (FlightGear wingman-extreme-digital-3d map). Both ids are 'WingMan Extreme Digital 3D' in usb.ids. Discontinued; numbering not documented."
+    "note": "Predecessor of the Extreme 3D Pro: 7 buttons, 8-way hat, twist and throttle slider (FlightGear wingman-extreme-digital-3d map). Both ids are 'WingMan Extreme Digital 3D' in usb.ids. Discontinued; numbering not documented. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
@@ -4689,6 +4829,7 @@
     "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Logitech/wingman-extreme-digital-3d.xml"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll"
@@ -4750,7 +4891,7 @@
      "Logitech WingMan Force 3D USB",
      "Logitech Inc. WingMan Force 3D"
     ],
-    "note": "Force feedback stick with twist, throttle slider and hat (FlightGear wingman-force-3d map). VID:PID per usb.ids. Discontinued; numbering not documented."
+    "note": "Force feedback stick with twist, throttle slider and hat (FlightGear wingman-force-3d map). VID:PID per usb.ids. Discontinued; numbering not documented. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
@@ -4758,6 +4899,7 @@
     "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Logitech/wingman-force-3d.xml"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll"
@@ -4818,7 +4960,7 @@
     "names": [
      "Logitech WingMan Force"
     ],
-    "note": "Dual-mode serial/USB force feedback stick with throttle slider and hat (FlightGear wingman-force map). VID:PID per usb.ids. Discontinued; numbering not documented."
+    "note": "Dual-mode serial/USB force feedback stick with throttle slider and hat (FlightGear wingman-force map). VID:PID per usb.ids. Discontinued; numbering not documented. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
@@ -4826,6 +4968,7 @@
     "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Logitech/wingman-force.xml"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll"
@@ -4883,13 +5026,14 @@
     "names": [
      "Logitech WingMan Attack 2"
     ],
-    "note": "Budget stick with throttle; VID:PID per usb.ids. Successor of the gameport WingMan Attack. Discontinued; numbering not documented."
+    "note": "Budget stick with throttle; VID:PID per usb.ids. Successor of the gameport WingMan Attack. Discontinued; numbering not documented. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "http://www.linux-usb.org/usb.ids"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll"
@@ -4947,13 +5091,14 @@
     "names": [
      "Logitech WingMan Extreme Joystick with Throttle"
     ],
-    "note": "'WingMan Extreme Joystick with Throttle' per usb.ids (046D:0200 'WingMan Extreme Joystick' is probably the throttle-less variant, not listed). Discontinued; numbering not documented."
+    "note": "'WingMan Extreme Joystick with Throttle' per usb.ids (046D:0200 'WingMan Extreme Joystick' is probably the throttle-less variant, not listed). Discontinued; numbering not documented. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "productUrl": "https://www.logitechg.com/en-us/shop/c/simulation",
    "sources": [
     "http://www.linux-usb.org/usb.ids"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll"

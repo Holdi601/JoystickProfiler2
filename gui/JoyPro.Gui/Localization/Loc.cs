@@ -128,6 +128,19 @@ public static class Loc
         return T(text);
     }
 
+    // A list for a sentence in the language shown: "A", "A and B", "A, B and C" ("A, B und C"). Never string.Join(" and ")
+    // in a user text: the joining word is a word of the language.
+    public static string JoinAnd(IEnumerable<string> items) => JoinList(items, (most, last) => T("{0} and {1}", most, last));
+
+    // The same with "or": "A, B or C".
+    public static string JoinOr(IEnumerable<string> items) => JoinList(items, (most, last) => T("{0} or {1}", most, last));
+
+    private static string JoinList(IEnumerable<string> items, Func<string, string, string> join)
+    {
+        List<string> list = items.Where(i => !string.IsNullOrEmpty(i)).ToList();
+        return list.Count <= 1 ? list.FirstOrDefault() ?? string.Empty : join(string.Join(", ", list.Take(list.Count - 1)), list[^1]);
+    }
+
     // A text with a count: the language's plural form of the count. args: the format's arguments ({0} is the count
     // when none are given). English: singular for 1, plural otherwise.
     public static string Plural(string singular, string plural, long count, params object?[] args)

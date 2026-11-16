@@ -64,7 +64,7 @@ public sealed class GameSetupRenderTests
 
             // One "I have this game" box per game (its content is the game's name), ticked for the found and linked
             // ones; "I don't have it" only under the game JoyPro did not find and the user did not tick (Arma 3).
-            List<CheckBox> boxes = content.GetVisualDescendantsOfType<CheckBox>().Where(b => b.Content is TextBlock).ToList();
+            List<CheckBox> boxes = content.GetVisualDescendantsOfType<CheckBox>().Where(b => b.Content is TextBlock && b.Name != "GameSetupEasyWords").ToList();
             Assert.Equal(vm.GameSetupItems.Count, boxes.Count);
             Assert.Equal(vm.GameSetupItems.Count(i => i.HasGame), boxes.Count(b => b.IsChecked == true));
             List<CheckBox> hideChoices = content.GetVisualDescendantsOfType<CheckBox>().Where(b => b.Content is string && b.IsVisible).ToList();

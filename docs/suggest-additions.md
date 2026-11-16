@@ -25,12 +25,19 @@ older auto-fill put those there). It works for every game JoyPro supports and ne
 | Your style: what you put on the function where an aircraft lacks it (learned like Auto Group, two separate decisions or more) | medium | "Your style: where an aircraft has no 'CMS FWD', you use its 'TMS Up' (3 times in your relations); AV8BNA." |
 | Function map (`DB/Functions/function-map.json`, every game and aircraft, also where the catalog has no entry; same direction and kind) | high when both readings are sure and the title names the function, else medium | "Same function: Throttle axis, like F-16C_50 'Thrust'; 'Flight Control Collective' is it in UH-1H ('collective', JoyPro function map)." |
 | Same DCS command id in more aircraft | high with the same title, else medium | "Same DCS command id in F/A-18C as in F-16C_50, same title." |
+| Same command in a sister game: MSFS 2020/2024 and FSX/Prepar3D (the MSFS id has "KEY_" in front), X-Plane 11/12, IL-2 Great Battles/Korea, Cliffs of Dover/Blitz, Arma 2/OA/3, Battlefield 2042/6 | high; medium when that game has another action in the relation already | "Same command as MSFS 2024 'Toggle Autopilot Master' in this relation; FSX has it too (same simulator family)." |
+| Your style per game: a function the relation is in two or more other games (not DCS), for a game that has no action of the relation's own function | medium | "Your style: in VTOL VR, X4 this relation is 'Throttle increase'; 'Increase thrust (collective up)' is that in Arma2." |
+| A game's toggle where the game has no action of the relation's direction (not DCS: DCS toggles stay in the toggle relation) | medium | "IL21946 has no 'engine start / stop stop' of its own; its toggle does it." |
 | Similar title in any game (at least two shared words, never the opposite direction) | medium or low | "Title matches 'HOTAS Coolie Switch Down' (87% of the words)." |
 
 - The relation's function comes from its name (Auto Group names relations after the function) or from what its
   switched-on commands are in the catalog: the union of their functions, weighted by how many agree (half of them or
   more = full weight; below 20 % ignored). Dismissed (switched-off) commands do not count.
 - One row holds every aircraft that has the same command, so one click can add a command to dozens of aircraft.
+- A button that names its direction is read by it, also when the title has a look-axis word: "Pan left" (FSX,
+  Prepar3D, IL-2 1946, Cliffs of Dover, Nuclear Option) is a look left, "View pan pitch axis" the vertical look axis.
+- Learned from a reworked profile (2026-11-04): the sister-game and style-per-game rows, the toggle rule, and the
+  catalog rows of its relations (`tools/relations/learn_catalog.py`, see [Auto Group](auto-group.md#where-the-functions-come-from)).
 - A relation that Auto Group split ("[Fixed wing]", "[Rotary wing, WW2]", per aircraft) only gets aircraft of its own
   split.
 - A command another relation already uses is still listed, with "Already in '<relation>'"; the editor offers **Move

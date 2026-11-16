@@ -12,15 +12,18 @@ namespace JoyPro.Gui.ViewModels;
 // One sort key of the Relations and Binds lists: "device", "Device".
 public sealed class SortKeyOption
 {
+    // label: English (N()); shown in the language of the moment, so a language change reaches the sort menu too.
     public SortKeyOption(string key, string label)
     {
         Key = key;
-        Label = label;
+        englishLabel = label;
     }
+
+    private readonly string englishLabel;
 
     public string Key { get; }
 
-    public string Label { get; }
+    public string Label => T(englishLabel);
 
     public override string ToString() => Label;
 }
@@ -86,12 +89,12 @@ public sealed partial class ListSortViewModel : ObservableObject
     // the game's command list.
     public static ListSortViewModel ForActions(string page) => new(page,
         [
-            new SortKeyOption("game", T("Game")),
-            new SortKeyOption("plane", T("Aircraft")),
-            new SortKeyOption("category", T("Category")),
-            new SortKeyOption("name", T("Title")),
-            new SortKeyOption("kind", T("Axis / button")),
-            new SortKeyOption("updated", T("Last updated"))
+            new SortKeyOption("game", N("Game")),
+            new SortKeyOption("plane", N("Aircraft")),
+            new SortKeyOption("category", N("Category")),
+            new SortKeyOption("name", N("Title")),
+            new SortKeyOption("kind", N("Axis / button")),
+            new SortKeyOption("updated", N("Last updated"))
         ],
         T("Sort: own order"), T("Own order"),
         T("In the list's own order (best matches first, by category). Add a level to sort by something else; equal rows go by title."),
@@ -117,15 +120,15 @@ public sealed partial class ListSortViewModel : ObservableObject
         ResetTip = T("Back to the list's own order (by name)");
         Options =
         [
-            new SortKeyOption("name", T("Name")),
-            new SortKeyOption("device", T("Device")),
-            new SortKeyOption("input", T("Input")),
-            new SortKeyOption("kind", T("Axis / button")),
-            new SortKeyOption("games", T("Games")),
-            new SortKeyOption("aircraft", T("Aircraft count")),
-            new SortKeyOption("group", T("Group")),
-            new SortKeyOption("bound", T("Bound / not bound")),
-            new SortKeyOption("modifiers", T("Modifiers"))
+            new SortKeyOption("name", N("Name")),
+            new SortKeyOption("device", N("Device")),
+            new SortKeyOption("input", N("Input")),
+            new SortKeyOption("kind", N("Axis / button")),
+            new SortKeyOption("games", N("Games")),
+            new SortKeyOption("aircraft", N("Aircraft count")),
+            new SortKeyOption("group", N("Group")),
+            new SortKeyOption("bound", N("Bound / not bound")),
+            new SortKeyOption("modifiers", N("Modifiers"))
         ];
         Levels.CollectionChanged += (_, _) => Renumber();
     }

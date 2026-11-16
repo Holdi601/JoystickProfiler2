@@ -39,13 +39,14 @@ public sealed partial class ComponentItem : ObservableObject
 
     public string Name => Spec.Name;
 
-    public string WhatItIs => Spec.WhatItIs;
+    // The catalog's texts are English (N()): shown in the language of the app.
+    public string WhatItIs => T(Spec.WhatItIs);
 
-    public string WhyJoyProNeedsIt => Spec.WhyJoyProNeedsIt;
+    public string WhyJoyProNeedsIt => T(Spec.WhyJoyProNeedsIt);
 
-    public string UsedBy => T("Used by: {0}", Spec.UsedBy);
+    public string UsedBy => T("Used by: {0}", T(Spec.UsedBy));
 
-    public string SourceText => T("Version {0}, {1}, the official installer from {2} ({3}).", Spec.Version, Spec.SizeText, Spec.ProjectUrl.Replace("https://", string.Empty, StringComparison.Ordinal), Spec.Author);
+    public string SourceText => T("Version {0}, {1}, the official installer from {2} ({3}).", Spec.Version, Spec.SizeText, Spec.ProjectUrl.Replace("https://", string.Empty, StringComparison.Ordinal), T(Spec.Author));
 
     public string VerificationText => T("Before it runs, JoyPro checks the file's SHA-256 checksum and its digital signature by \"{0}\". Not part of JoyPro: downloaded only when you click Install.", Spec.SignerOrganization);
 

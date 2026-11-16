@@ -71,7 +71,7 @@ namespace JoyPro.Engine
                 EngineAxisDetents.SetCalibration(bind, null);
                 return DetentShowAfter(relationName, relation, bind, had ? "Calibration of " + DetentDeviceLabel(bind) + " removed." : "No calibration stored.", outPath, textOutput);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException ex) when (!IsMissingOptionValue(ex))
             {
                 return Fail(ex.Message);
             }

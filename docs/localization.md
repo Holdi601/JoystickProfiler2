@@ -24,6 +24,8 @@ translated later.
   - `T("Bind here")`, `T("Exported {0} binds to {1}.", count, game)` (string.Format placeholders, never string
     concatenation or `$"..."` for a user text: the translation needs the whole sentence)
   - `Plural("{0} relation", "{0} relations", count)` (args optional; `{0}` is the count by default)
+  - `JoinAnd(names)` / `JoinOr(names)`: a list in a sentence ("A, B and C" -> "A, B und C"); never
+    `string.Join(" and ", ...)` in a user text
   - `Loc.Translate(engineLine)` / `Loc.TranslateLines(text)`: an English text from elsewhere (an engine status line):
     its translation, or the translation of a pattern it matches (`"Exported 12 binds."` <- `"Exported {0} binds."`).
 - English values shown in a list (filter choices such as "All"): `ItemTemplate` with `{Binding Converter={x:Static l:TConverter.Instance}}`; the value stays English.

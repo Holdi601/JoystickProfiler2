@@ -338,6 +338,7 @@ public sealed partial class MainWindowViewModel
             .GroupBy(b => b.RelationName.Trim(), StringComparer.OrdinalIgnoreCase)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
         bool changed = false;
+        bool moreChanged = false;
         foreach (RelationListItem relation in allRelations)
         {
             string bind = byRelation.TryGetValue(relation.Name.Trim(), out BindListItem? item) && item.HasBind &&
@@ -345,10 +346,15 @@ public sealed partial class MainWindowViewModel
                           !item.Device.Equals("<unbound>", StringComparison.OrdinalIgnoreCase) && !item.Input.Equals("<unbound>", StringComparison.OrdinalIgnoreCase)
                 ? item.Device.Trim() + "::" + item.Input.Trim()
                 : "unbound";
-            // Experimental multi-bind: the other inputs (empty while the setting is off).
+            // Multi-bind: the other inputs.
             List<string> more = item != null && item.HasExtraBinds ? item.ExtraBinds.Select(e => e.Label).ToList() : [];
+            relation.ExtraInputs = item?.ExtraBinds ?? [];
             if (!more.SequenceEqual(relation.MoreInputs))
+            {
                 relation.MoreInputs = more;
+                changed = true;
+                moreChanged = true;
+            }
             if (string.Equals(relation.Bind, bind, StringComparison.Ordinal))
                 continue;
             // "unbound" and an empty bind column mean the same.
@@ -358,8 +364,12 @@ public sealed partial class MainWindowViewModel
             changed = true;
         }
 
+        // The relation filters know the other inputs' devices (the list was filtered before the binds came).
+        if (moreChanged)
+            RebuildRelationSubjects();
+
         bool devicesChanged = false;
-        foreach (BindListItem bind in allBinds)
+        foreach (BindListItem bind in allBinds.SelectMany(b => b.AllInputs()))
         {
             string device = (bind.Device ?? string.Empty).Trim();
             if (!bind.HasBind || device.Length == 0 || device.Equals("<unbound>", StringComparison.OrdinalIgnoreCase) ||

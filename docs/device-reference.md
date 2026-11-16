@@ -113,9 +113,9 @@ yoke, collective, quadrant, MFD, base and virtual.
 Pictures are shown best first. The picture strip over the canvas has one button per picture:
 
 1. **Your layout.**
-   - The user's own layout file: a JoyPro 1 `.layout`, a picture he chose, or a layout saved in JoyPro.
+   - The user's own layout file: a JoyPro 1 `.layout`, a picture chosen for it, or a layout saved in JoyPro.
    - For JoyPro 1 layouts, the bound commands are drawn as plain text at the user's positions, in the layout's own
-     font, size and color, like JoyPro 1's cheat sheets. The boxes and lines are part of his picture.
+     font, size and color, like JoyPro 1's cheat sheets. The boxes and lines are part of that picture.
 2. **Your photo.** Pick it with *Your photo...* or drop it on the picture. It is copied to
    `<data>\DeviceReference\Photos`.
 3. **JoyPro's own drawing of the model** (`DB/DeviceDrawings`, see [JoyPro's drawings](#joypros-drawings)). It ships
@@ -147,7 +147,7 @@ Pictures are shown best first. The picture strip over the canvas has one button 
 The Layout page shows the first of these that it can, and the picture strip offers the others in this order; the
 Start page's device cards use the same order.
 
-**A picture picked in the strip is kept at once** (2.5.0 tester report: "Photo 4 · Virpil" fell back to JoyPro's line
+**A picture picked in the strip is kept at once** (2.5.0 report: "Photo 4 · Virpil" fell back to JoyPro's line
 drawing, and Save stayed off because nothing was unsaved): `<data>\DeviceReference\pictures.json` holds per device (its
 name with the GUID, else without it; a catalog model by its id) `<model id>|<picture id>` (`vendor:<address>`,
 `lineart:<content key>`, `user`, `schematic`, `class`). Whenever the device is shown again (a refresh, a rename, the next
@@ -308,7 +308,7 @@ When JoyPro forgot an input or put it on the wrong spot, the user fixes it on th
   changed controls; nothing personal) and opens the prefilled GitHub issue form "Device layout correction"
   (`.github/ISSUE_TEMPLATE/device-layout-correction.yml`) in the browser; the user decides there. A correction too long
   for the address is attached by hand.
-- The maintainer: `python tools/device_corrections.py show|merge <file> [--controls]` (into the drawing's spec
+- Merging a correction: `python tools/device_corrections.py show|merge <file> [--controls]` (into the drawing's spec
   `positions` / `unplaced`, or the photo's curated set; controls into the catalog with `--controls`).
 
 ### Drawing style
@@ -577,7 +577,7 @@ the toolbar switches to the markers with labels.
 
 ### Cheat sheets and the CLI
 
-- The cheat sheets use, per device: the user's own layout (JoyPro 1, his picture), else the device's callout sheet,
+- The cheat sheets use, per device: the user's own layout (JoyPro 1, its picture), else the device's callout sheet,
   else what the engine makes. The sheet on screen is saved before the export.
 - `engine layout render --layout-map <device>=<callouts .json>` draws the sheet like JoyPro 1: the picture, the tables
   with the game's menu titles (per aircraft) or the relation names (overview), the modifier column, the GAME / PLANE /
@@ -588,6 +588,48 @@ the toolbar switches to the markers with labels.
   `--png` draws it (the same picture as `layout render`), `--save` writes the shareable file, `--sample` fills the rows
   with the input names, `--check-all [query]` checks every catalog model.
 - `engine layout titles --device <name>`: the menu titles of the device's binds per game and aircraft.
+
+### Kneeboard
+
+The cheat sheets of each aircraft as kneeboard pages (Layout page, **Kneeboard**; `engine layout kneeboard`), as JoyPro
+1's "Export Layouts to Kneeboard" did:
+
+- DCS: `<Saved Games>\DCS*\Kneeboard\<unit type>\JoyPro_<aircraft>_<device><ending>.png` in every DCS Saved Games
+  folder (DCS and DCS.openbeta; the GUI hands the Export page's DCS folder and the DCS folders next to it, the engine
+  alone finds them like the other DCS commands). DCS shows the pages of the folder named after the unit type of the
+  aircraft flown (`make_flyable` in the module's entry.lua), which is not always JoyPro's aircraft name: A-10C II ->
+  `A-10C_2`, F-15E and F-15E_WSO -> `F-15ESE`, the F-14 pilot and RIO -> `F-14B`, `F-14A-135-GR`, ... The table is
+  `engine\DcsKneeboardFolders.cs` (checked against the entry.lua files of DCS 2.9, 2026-11); an aircraft it does not
+  know is looked up in the installed DCS (InputProfiles / Input folder of a module -> its `make_flyable` names), else
+  it uses its own name and the result says so ("folder name guessed"). Seats share their aircraft's folder (each seat
+  its own file); a game-mode copy (`_easy`, TrackIR gunner) only when its aircraft has no binds, or with
+  `--include-easy`; menu and camera layers get no pages. OpenKneeboard's "DCS Aircraft" tab reads the same folder.
+- A folder of choice (`--target folder --folder <f>`): `<f>\<game>\<aircraft>\...`, the sheet's own shape. That serves
+  OpenKneeboard's "Folder" tab (it reads sub folders too) and any other game or tool that shows a folder of pictures.
+- The page (`engine\EngineKneeboardPage.cs`, `--page list`, the default): 3:4 portrait (DCS stretches every kneeboard
+  picture to its 3:4 frame; `--size` = page height, default 2048 -> 1536x2048). A header with the aircraft and the
+  device (the user's name for it, else its Windows name, never a GUID); the device picture small at the top with a
+  numbered badge on each control that has binds (`--picture none` leaves it out); below it only the bound controls,
+  grouped by control as the device's tables and lines name them (numbered like the badges), one row per bind: the row
+  name ("Up", "First stage") and the game's command title. A modifier bind has a coloured tag with the modifier's name.
+  When every row of a group shares the command's control ("Countermeasures Management Switch - Fwd/Aft/..."), the
+  control is written once under the group's title and the rows show only the rest. A device without tables and lines
+  is grouped by Buttons / Hats / Axes ("Button 7"). The font is the largest from 30 down to 20 px (per 1024 px of page
+  height; 20 px is about 14 px cap height at 768x1024) that puts everything on one page, in one or two columns, with the
+  picture full size, smaller or small; what still does not fit goes on `..._p2.png`, `..._p3.png` (a group cut there
+  repeats its title with "(continued)"). Pages after the last one of an earlier export (JoyPro's own, same ending) are
+  removed. `--combine true` makes the pages of an aircraft with all devices, one section each (no picture). Light page
+  by default (`--style dark` for night flying). Checked by eye at 768x1024: an F-16 on a VKB Gunfighter (27 binds with a
+  Shift layer) fits one page at 20 px; a Warthog throttle with 54 binds takes three pages.
+- `--page portrait` is the cheat sheet picture on a 3:4 page, `--page original` the cheat sheet in its own shape (both
+  drawn at twice the page width and made smaller); a wide sheet fills only part of a tall page and its text is small
+  at 768x1024. Their footer names the device without its GUID (also in `layout render`). `--postfix` (the GUI's "Name
+  ending", JoyPro 1's "Kneeboard postfix") keeps a second set apart.
+- Safety: JoyPro writes only files named `JoyPro_*` that carry its mark (a PNG text chunk `Software: JoyPro
+  kneeboard; postfix=<ending>;`). An existing file with JoyPro's name but without the mark is left as it is (and
+  listed as skipped); other pictures of the kneeboard folders are never read for writing, changed or removed.
+  `--remove-old` removes JoyPro's pages of the same ending that this run did not write (a device that left the
+  profile); `--dry-run` writes nothing. Tests: `engine\tests\smoke\kneeboard.ps1`, `KneeboardExportTests`.
 
 ## 4. Sharing, the photo database and the tools
 
@@ -678,118 +720,32 @@ Code: `Services/ReferencePhotoStore.cs`, `MainWindowViewModel.ReferencePhotos.cs
 (field parsing, allowed sources, download through a fake HTTP server, hash mismatch and dead link to the archive, a
 re-encoded photo with an accepted `sha256Alt`, the offer, the persisted setting).
 
-### Dead links and the private photo archive (maintainer)
+### Dead links
 
-- `python tools/device_photo_links.py check [query] [--report report.json] [--out report.json]` reports each photo
-  (with `--report`, only the failing photos of an earlier report) as:
-  - *alive*: the same content;
-  - *changed*: other content;
-  - *dead*: no picture;
-  - *archive-only*: an old http address.
+A maker's photo address can die or start sending other bytes. JoyPro then uses the photo's recorded Wayback snapshot
+(`archive`), and only with the recorded SHA-256 (or a `sha256Alt`: the same picture, pixel for pixel, re-encoded by the
+shop). Repaired addresses reach users through the photo list in the releases (below).
 
-  For every photo that is not alive, it also says whether the snapshot still has the recorded content
-  (`fallback ok / missing / other content`).
-- `python tools/device_photo_links.py snapshots [query] [--report check.json] [--record] [--save-page-now]` covers
-  photos without a recorded snapshot:
-  - it looks for a capture with the recorded content in the archive's CDX index, then asks the availability API
-    (`archive.org/wayback/available`);
-  - `--report` takes only the photos a check found not alive, also those whose recorded snapshot fails;
-  - a photo without a recorded hash is matched against its copy in the private archive (when there is one; its
-    digest also saves downloading the other captures), and `--record` records that hash with the snapshot;
-  - `--record` writes it as `archive`;
-  - `--save-page-now` asks the public Save Page Now to capture photos the archive does not have yet, one request every
-    15 s. The archive decides what it keeps.
-- `python tools/device_photo_links.py snapshots --all [--record] [--save-page-now] [--hours h] [--spn-gap s]
-  [--status <file>]` does the whole list at once (since 2026-11-01):
-  - the CDX index once per folder of addresses (a folder with one or two photos: per address; answers cached for a
-    day in `%TEMP%\joypro-cdx-cache`, so a second run costs little);
-  - a capture counts when its CDX digest (SHA-1) is the digest of the private archive's copy with the recorded
-    SHA-256, so no capture is downloaded; a photo without a private copy downloads its newest two captures and
-    compares the hash;
-  - a recorded snapshot is kept when the index lists it with the same digest, or it is a snapshot of a former address
-    of the photo; an unpinned one (`2id_`, `2012id_`: the archive picks the nearest capture) gets pinned to a capture
-    with the recorded bytes;
-  - Save Page Now first for the photos without any capture, then for those whose captures have other bytes, one
-    request every `--spn-gap` seconds (20) until `--hours` are over; after "too many requests" it waits 5, 10 and 20
-    minutes, then stops. A new capture is downloaded once and kept only with the recorded bytes;
-  - `--record` saves every 20 snapshots, so a stopped run keeps what it found; a hash missing in the list is taken from
-    the private copy, like `snapshots` does.
-- `tools\backup_device_photos.ps1 -Target <private folder>` keeps the private archive. It is incremental and is the
-  copy of last resort when a site and its snapshot are both gone:
-  - every referenced photo is stored by content as `sha256\<sha256>.<ext>`;
-  - `manifest.json` has one line per model and address: model, view, url, page, source, licence, archive, origin
-    (original or archive), changed, date, sha256, bytes, recordedSha256 and file;
-  - it falls back to the snapshot like JoyPro does;
-  - the folder must be outside the repository, and nothing in the build or release reads it.
-- `python tools/device_photo_links.py recover [query] [--report check.json] [--backup <folder>] [--apply]` works on
-  photos whose address and snapshot both fail:
-  - it names the copy in the private archive (by SHA-256);
-  - it looks for the same photo (same SHA-256) at a new address on the photo's source page: only the model's maker
-    hosts, the photo's own file name first, Shopify's `?v=<version>` form of it too (the version the page names may
-    still send the recorded bytes after the plain address was re-encoded), at most `--tries` (40) addresses a photo;
-  - `--apply` writes that address into the database and into the curated position set of that photo;
-  - otherwise it prints the Save Page Now request to make for the page.
+`python tools/device_photo_links.py` keeps the links healthy:
 
-  It never copies or publishes an archived file. JoyPro distributes only addresses. It never changes a recorded
-  hash: curated position sets and drawings are keyed by it, and so are the users' own positions.
-- `python tools/device_photo_links.py same-pixels [query] [--report check.json] [--backup <folder>] [--apply]` works
-  on photos whose address sends other bytes than on record:
-  - it decodes the new file and the recorded one (the private archive's copy, else a snapshot with the recorded
-    SHA-256) and compares size and every pixel (Pillow; the other commands need only the standard library);
-  - exactly the same picture: the shop re-encoded it, and `--apply` adds the new file's SHA-256 to `sha256Alt`;
-  - other pixels (the maker changed the photo) or no copy of the recorded picture: nothing is recorded.
+- `check [query] [--report report.json] [--out report.json]`: each photo is *alive* (the same content), *changed*
+  (other content), *dead* (no picture) or *archive-only* (an old http address); for the others it also says whether
+  the snapshot still has the recorded content (`fallback ok / missing / other content`).
+- `snapshots [query] [--report check.json] [--record] [--save-page-now]`, or `snapshots --all` for the whole list:
+  finds a Wayback capture with the recorded content (the CDX index, then the availability API), records it as
+  `archive` with `--record`, and with `--save-page-now` asks the public Save Page Now to capture photos the archive does
+  not have yet (one request every 15 to 20 s; the archive decides what it keeps).
+- `recover [query] [--report check.json] [--backup <folder>] [--apply]`: for photos whose address and snapshot both
+  fail, looks for the same photo (same SHA-256) at a new address on the photo's source page (only the model's maker
+  hosts); `--apply` writes that address into the database and into the curated position set of that photo.
+- `same-pixels [query] [--report check.json] [--backup <folder>] [--apply]`: a photo whose address sends other bytes
+  is decoded and compared pixel for pixel with the recorded one (Pillow); exactly the same picture gets the new file's
+  SHA-256 in `sha256Alt`, other pixels get nothing.
 
-**Recover pass 2026-10-31** (1953 photos; reports in the maintainer's work folder, not in the repository):
-- before: 1691 alive, 81 more worked through their snapshot, 181 failed (dead or changed, and no snapshot with the
-  recorded content);
-- recovered: 43 through a Wayback snapshot with the recorded content (`archive`), 57 through a new maker address
-  with the same SHA-256 (Shopify's `?v=` form on flyhoneycomb.com, mozaracing.com and vkbsimcontrollers.com;
-  virtual-fly.com's new upload folders); 35 photos that only worked through the archive's newest capture got their
-  snapshot recorded;
-- after: 1758 alive, 113 through their snapshot, 82 failing:
-  - 62 changed (VKB 58, Honeycomb 3, MOZA 1): the shop's CDN re-encoded the same picture (pixel for pixel the
-    recorded one, other bytes), and no archive has the old bytes. 61 of them have curated positions or a drawing,
-    so their hashes stay. `same-pixels --apply` decoded every one against the private archive's copy (same size,
-    every pixel equal: 63 photo entries, one address is listed for two models) and recorded the new hashes as
-    `sha256Alt`, so with list version 2 they count as the photos on record again, with their curated positions;
-  - 19 dead without any capture: virtual-fly.com (Yoko Force Neo gallery, the Switcho Radios cut-out; the site was
-    rebuilt with new photos), Slaw RF Dora V3 (7), PFC (3). The 7 Slaw photos came from a page that is gone (product
-    49, slug "pre-order-rx-viper-v3"); some showed no lettering or only a base drawing shared with the RX Viper V3,
-    so nothing proves the exact model: they were removed with their position set (exact model only, never a
-    look-alike). The RF Dora V3 keeps the two photos of Slaw's page titled "RF Dora V3 Rudder Pedals" (product 52,
-    plates lettered DORA and RF); the catalog's picture and product page point there now;
-  - 1 that the review site sends in two encodings (GameRevolution, Wingman Force 3D).
-- The web archive drops requests under steady load: a photo reported as "fallback missing" is checked again
-  (`check --report <report>`) before it counts as lost.
-
-**Follow-up 2026-11-01** (the 19 dead photos above): the 7 Slaw photos were already removed; the other 12 are back.
-- virtual-fly.com moved its uploads: the 8 Yoko Force Neo gallery photos and the Switcho Radios cut-out are at
-  `wp-content/uploads/2026/08/` under their old names, with the recorded content where a hash is recorded;
-- flypfc.com was rebuilt: the Cirrus (Beech) desktop yoke photo is at `uploads/2026/06/...-1.png` with the recorded
-  SHA-256; the Cirrus rudder pedals' front view is the same picture at the same size saved again (other bytes), so
-  the entry and its curated position set take the new address and hash (the positions still fit); the 737 column
-  yoke's three-quarter photo is gone, and the maker's new three-quarter photo of the same yoke (product page) replaces
-  it;
-- a check of the 12 afterwards: all alive. List version 3.
-
-**Web archive pass 2026-11-01** (`snapshots --all --record --save-page-now`; the user asked for a Wayback snapshot of
-every photo, so that the pictures stay available when an address dies):
-- the 7 removed Slaw RF Dora V3 photos (`media1.slawdevice.com/715..721-large_default/pre-order-rx-viper-v3-...` and
-  `media3.../720-home_default/...`): the web archive has no capture of any of the 7 addresses, so they cannot be
-  restored from it (the private archive keeps its copies; one of them, `715`, is byte for byte the RX Viper V3's
-  gallery photo, which is why they did not prove the model);
-- the 12 re-pointed photos: the old addresses of 10 had no capture; the old Switcho Radios cut-out and the old Beech
-  yoke address have captures, but with other bytes (other picture sizes: 1036x621 and an older 1024x683 file), so no
-  old snapshot was recorded. The 737 yoke and the Cirrus pedals' front view have new pictures (other hashes) anyway;
-- the list (1946 photos; CDX for every photo, 267 folders, about an hour; Save Page Now for 45 minutes, then stopped
-  by `--hours 1.75`): 104 recorded snapshots kept (index digest checked, or a former address, or an old unpinned one
-  of a gone http site: 28 stay unpinned), 597 found in existing captures (by the private copy's digest; this also
-  pinned the earlier `2id_` and `im_` ones), 69 made by Save Page Now (each downloaded and compared with the recorded
-  hash; a few hosts answer Save Page Now with 520), 379 photos without a hash took the private copy's SHA-256 with
-  their snapshot. Before: 114 photos with a snapshot; after: **770**;
-- still without a snapshot: **1176** (1058 with no capture at all, 118 whose captures have other bytes). The next run
-  (`snapshots --all --record --save-page-now --hours 2`) starts with Save Page Now right after the cached index and
-  takes the photos without any capture first. List version 4.
+The tools never copy or publish an archived file: JoyPro distributes only addresses. A recorded hash never changes:
+curated position sets and drawings are keyed by it, and so are the users' own positions. The web archive drops
+requests under steady load, so a photo reported as "fallback missing" is checked again (`check --report <report>`)
+before it counts as lost.
 
 ### The photo list in the releases
 
@@ -819,7 +775,7 @@ Repaired or new photo addresses reach users without an app update.
 - **Code and tests.** Code: `Services/DevicePhotoList.cs`. Tests: `DevicePhotoListTests`, with a local folder feed
   (`JOYPRO_DEVICE_PHOTO_FEED` points JoyPro at another feed).
 
-Maintainer steps to publish repaired links:
+Steps to publish repaired links:
 
 1. `python tools/device_photo_links.py check --out <report>`, then `snapshots --report <report> --record`,
    `recover --report <report> --apply` and a new `check`. Fix the remaining photos by hand (`photo-add`).
@@ -841,8 +797,7 @@ Maintainer steps to publish repaired links:
   - It calls `engine devices reference photo-add`, which refuses addresses that are not on an official host. A
     review or Commons photo needs `--source review|commons` and a site of `_sources.json`. The command also takes
     `--site`, `--licence`, `--archive`, `--width` and `--height`.
-- `tools\backup_device_photos.ps1` (the private archive) and `tools\device_photo_links.py` (link health, snapshots,
-  recover): see [Dead links and the private photo archive](#dead-links-and-the-private-photo-archive-maintainer).
+- `tools\device_photo_links.py` (link health, snapshots, recover): see [Dead links](#dead-links).
 - `engine devices reference photos [query] [--coverage]`: the photo references and the coverage numbers.
 - `engine devices reference layout-check`: checks the curated sets. Each set must name a catalog model, one of its
   photos, the photo's hash, and only parts the model has.
@@ -910,7 +865,7 @@ hash on record, only parts of the model, the catalog's inputs per part, nothing 
 
 **The shipped sheets.** Every curated photo carries JoyPro's callout sheet in its set (`"callouts"`). It is
 `CalloutLayouter`'s arrangement for that photo's size, plus tables pinned by hand where the automatic one is poor. The
-user edits it as his own copy (`<data>\DeviceReference\Callouts`). The rating of `sheet`: *good* = no overlap, every
+user edits a copy of it (`<data>\DeviceReference\Callouts`). The rating of `sheet`: *good* = no overlap, every
 part linked, at most 4 crossings; *fair* = up to 12 crossings or a shared track; *poor* = more. Since key grids, dense
 keypads (MCDU, PFP, ICP, PDC, PAP) are a few grid tables, and none is poor. The Layout page shows a shipped sheet made on
 the full-size photo scaled to the photo as it is shown (same aspect), with its pins.
@@ -1057,7 +1012,7 @@ order above picks. Code: `Services/DeviceIconService.cs`, `MainWindowViewModel.D
   - *Share layout...* exports the positions; anyone can import them.
   - A curated file in `DB/DeviceLayouts` gives them to everyone with that exact photo.
 - **A maker that changes a photo:** the hash no longer matches, so the old positions are not used and the user is
-  told. The private backup keeps the old photo for the maintainer.
+  told.
 
 ## Catalog fields
 

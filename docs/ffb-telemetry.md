@@ -13,7 +13,7 @@ Thunder; MSFS and X-Plane are researched below.
 This is JoyPro's own implementation. No code of VPforce TelemFFB or any other project was used; the protocol facts
 below come from the games' own documentation and the public sources listed at the end. The graph design (telemetry
 nodes with min/max normalisation, group nodes, Bezier curve nodes, output nodes with values at 0 % and 100 % input,
-"strongest wins" per actuator, gating "only while the game runs") comes from the user's own Forza haptics app
+"strongest wins" per actuator, gating "only while the game runs") comes from the ForzaHaptics app
 (`ForzaHaptics.Tester`: SignalGraph, BlueprintEditor, GameWatch).
 
 ## Where things are

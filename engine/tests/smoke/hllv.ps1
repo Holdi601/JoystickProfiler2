@@ -53,13 +53,17 @@ try {
     Run-Engine @("--profile", $hlProfile, "relations", "add", "Stability", "--button", "--node", "HLLVietnam:Pad_HelicopterStabilityHold", "--device", $hlStick, "--input", "JOY_BTN2", "--text") | Out-Null
     Run-Engine @("--profile", $hlProfile, "relations", "add", "Supply", "--button", "--node", "HLLVietnam:Pad_Helicopter_SupplyDrop", "--device", $hlThrottle, "--input", "JOY_BTN4", "--text") | Out-Null
     Run-Engine @("--profile", $hlProfile, "relations", "add", "Spare", "--button", "--node", "HLLVietnam:Driver_Auto-Level", "--device", $hlThrottle, "--input", "JOY_BTN9", "--text") | Out-Null
+    # The pad takes the game's own invert (its scope), never the base (DCS's) invert.
     Run-Engine @("--profile", $hlProfile, "binds", "set", "Yaw", "--inverted", "true", "--text") | Out-Null
+    $hlBaseOnly = Run-Engine @("--profile", $hlProfile, "vjoy", "plan", "--text")
+    Assert-NotMatch $hlBaseOnly.Output "JOY_RZ -> Xbox XB_RX~" "DCS's (base) invert must not reverse the pad axis."
+    Run-Engine @("--profile", $hlProfile, "binds", "tuning", "set", "Yaw", "--scope", "game:HLLVietnam", "--inverted", "true", "--text") | Out-Null
     $hlMode = Run-Engine @("--profile", $hlProfile, "vjoy", "mode", "HLLVietnam", "xbox", "--text")
     Assert-True ($hlMode.ExitCode -eq 0) "vjoy mode HLLVietnam xbox failed. Output: $($hlMode.Output)"
     Assert-Match $hlMode.Output "VJ Throttle \{11111111-2222-3333-4444-000000000002\} JOY_Z -> Xbox XB_TRIGGERS \(Triggers \(centre split" "The collective on Ascend + Descend must become one centre-split trigger axis."
     Assert-Match $hlMode.Output "VJ Stick \{11111111-2222-3333-4444-000000000001\} JOY_Y -> Xbox XB_LY \(Left stick Y\)" "Layout A: pitch on the left stick Y."
     Assert-Match $hlMode.Output "VJ Stick \{11111111-2222-3333-4444-000000000001\} JOY_X -> Xbox XB_LX \(Left stick X\)" "Layout A: roll on the left stick X."
-    Assert-Match $hlMode.Output "JOY_RZ -> Xbox XB_RX~ \(Right stick X \(reversed\)\)" "Layout A: yaw on the right stick X, reversed by the relation's Invert."
+    Assert-Match $hlMode.Output "JOY_RZ -> Xbox XB_RX~ \(Right stick X \(reversed\)\)" "Layout A: yaw on the right stick X, reversed by the game's own Invert."
     Assert-Match $hlMode.Output "JOY_BTN2 -> Xbox XB_B \(B\)" "Layout A: stability hold on B."
     Assert-Match $hlMode.Output "JOY_BTN4 -> Xbox XB_DPAD_RIGHT \(D-pad right\)" "Layout A: supply drop on D-pad right."
     Assert-Match $hlMode.Output "JOY_BTN9 -> Xbox XB_A \(A\)" "An action without a gamepad key gets the first free button."
@@ -76,7 +80,7 @@ try {
     $hlTable = Join-Path $hlDir "forwarder.json"
     Run-Engine @("--profile", $hlProfile, "vjoy", "forwarder-config", "--out", $hlTable, "--text") | Out-Null
     $hlForwarder = Get-Content $hlTable -Raw | ConvertFrom-Json
-    Assert-True ($hlForwarder.xboxGame -eq "HLLVietnam" -and @($hlForwarder.xbox | Where-Object { $_.target -eq "XB_TRIGGERS" }).Count -eq 1) "The forwarder table must hold the HLLV pad with the split collective."
+    Assert-True ($hlForwarder.xboxGame -eq "HLLVietnam" -and @($hlForwarder.xbox | Where-Object { $_.target -eq "XB_TRIGGERS" }).Count -eq 1) ("The forwarder table must hold the HLLV pad with the split collective. Table: " + (Get-Content $hlTable -Raw).Substring(0, [Math]::Min(1500, (Get-Content $hlTable -Raw).Length)))
 
     # ---- 3. export: gamepad binds noted, keyboard keys only with --include-keyboard
     $hlSav = Join-Path $hlDir "EnhancedInputUserSettings.sav"

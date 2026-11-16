@@ -38,7 +38,7 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `profile history checkpoint`, `--history-note` | Automatic: a version before every export and import; the GUI names every change | FULL | |
 | `profile summary`, `summary` (engine summary) | Start: "Information for experts" | EXPERT | Output panel text. |
 | `profile validate` | Export step 1 **Check now**; bottom bar **Check** | FULL | Problems listed in words on the Export page. |
-| `profile games` | Export step 3: one tile per game with cover and bound count | FULL | |
+| `profile games` | Export step 3: one card per game with cover and bound count | FULL | |
 | `profile merge <left> <right> --mode --save` | Top bar: **Add another profile...** (file picker) + "The other profile wins / My profile wins" | IMPROVED | Was two typed paths and `right/left`. Now asks first and keeps `name.before-merge-<time>.pr0file`. |
 | Global `--load-corrections`, `--auto-add-db-items`, `--remap-missing-devices`, `--correction-mode`, `--correction-auto-threshold`, `--correction-report`, `--status`, `--benchmark` | Top bar: Engine options (advanced) | EXPERT | Safe defaults are on; nobody needs to touch them. `--status`/`--progress` lines always feed the busy area; the option only keeps the status lines in the output pane. |
 | Global `--out`, `--editor`, `--text` | Advanced page | EXPERT | Only meaningful for typed commands. |
@@ -50,21 +50,21 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `dcs import`, `il2 import`, `starcitizen import`, `<game> import` (all 17 game areas) | Start: **Your games** card > **Import** > wizard (1 pick game, 2 choose how, 3 done) | IMPROVED | Was a form of typed paths and 12 check boxes. Wizard: "Add to my profile (recommended)" = `--merge`, "Start over from this game" = replace (asks, keeps a profile copy), "Also take the keyboard keys", DCS aircraft ticks. Result with a symbol and the relation count, shown over the game cards (they stay on the page after an import, a failed one or an error; leaving the page closes the result). |
 | `dcs scan`, `il2 scan`, `starcitizen scan`, `<game> scan` | Import wizard **Look first** | IMPROVED | Read-only; now also works before a profile exists. |
 | Import options `--path`, `--device(s)`, `--ignore-device(s)`, `--include-defaults`, `--import-inverted/slider/curvature/deadzone/saturation-x/-y`, `--ignore-easy-planes`, `--planes` CSV, `--source`, `--game-profile` | Start: **Expert import** expander | EXPERT | Paths are found automatically; the expert form is for portable installs and partial imports. |
-| `dcs export`, `il2 export`, `starcitizen export`, `<game> export` | Export page step 3: game tiles, **Export now** / **Export ticked games**; Start card **Export** | FULL | DCS tile opens its aircraft with pictures. Tiles show a green tick or a red mark with the result. |
+| `dcs export`, `il2 export`, `starcitizen export`, `<game> export` | Export page step 3: game cards, **Export now** / **Export ticked games**; Start card **Export** | FULL | DCS card opens its aircraft with pictures. Cards show a green tick or a red mark with the result. |
 | `--mode clean\|add\|merge\|merge-overwrite` | Export page step 2: four described choices | IMPROVED | Was a raw keyword box (twice). "Update, keep the game's binds" (merge, default), "Update, my profile wins", "Only add", "Replace on my devices" (clean, warning symbol). Clean asks before every export. |
 | `--nuke-untouched-devices` | Export step 2: "Also clear my other devices" | IMPROVED | Warning symbol; asks before the export. |
-| `--dry-run` (registry games) | Tile **Preview** | IMPROVED | Shows the changes in the output panel, writes nothing. |
+| `--dry-run` (registry games) | Card **Preview** | IMPROVED | Shows the changes in the output panel, writes nothing. |
 | `--keep-keyboard-defaults`, `--clean-all-aircraft`, `--prefer-local-order`, `--include-keyboard`, `--aircraft`, `--path`, `--source` | Export: **Options and paths (for experts)** | EXPERT | Defaults are the safe ones. |
 | `backups list` / `show` | Export: **Game config backups** (game picker, table, Show Files) | FULL | |
 | `backups restore <id> [--dry-run]` | Export: Preview Restore / **Restore** | IMPROVED | Now asks first (close the game, can be undone). |
-| `backups restore latest --game <id>` | Tile **Undo last export**; Start card **Undo export** | IMPROVED | New: one click per game, asks first. |
+| `backups restore latest --game <id>` | Card **Undo last export**; Start card **Undo export** | IMPROVED | New: one click per game, asks first. |
 | `games installs` | Settings > Games (cards with status symbols); Start cards | FULL | |
 | `games install set/clear` | Settings > Games: **Choose folder...** (folder picker), **Use detected** | FULL | |
 | `games install disable/enable` | Start page: hide button on a game card (the line below the cards leads to Settings > Games); Settings > Games: **Hide** / **Show again**; first-start setup | FULL | |
 | `games config set/clear` | Settings > Games > **Run setup again** (game setup window, Browse) | FULL | |
 | `games paths`, `<game> paths` | Settings: "Command lists (DB) and game paths" expander; Expert import **Detect** | EXPERT | The paths are used automatically. |
 | `games integrations` | Used automatically for the Start cards; Expert import **Load Games** | FULL | |
-| `games support` | Start: **Supported games** next to "Your games" (the page opens in the browser) | FULL | `--markdown` / `--notes` are for the maintainer's page (tools/game_support.ps1). |
+| `games support` | Start: **Supported games** next to "Your games" (the page opens in the browser) | FULL | `--markdown` / `--notes` write the support page of the docs (tools/game_support.ps1). |
 | `starcitizen list-devices` | Expert import **Refresh Star Citizen** | EXPERT | |
 
 ## Game command lists (DB)
@@ -118,7 +118,7 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `relations auto-group` | Relations: Auto-build relations from all my actions > By function (presets in words, preview, apply) | FULL | |
 | `relations auto-assign` | Binds: Put relations on my buttons automatically (devices, grips, modifiers, mode switch, keep my layout, explain) | FULL | |
 | `arrange ask/apply/prefs` | Binds: Lay out with AI... (words, examples, preview grouped with ticks, Apply, Undo, kept preferences, forget) | FULL | `--forget-saved`, `--games`, `--dry-run` are CLI-only. |
-| `setup devices/aircraft/plan/render/apply` | Start: Set up my devices automatically... / Binds: Set up my devices automatically... (Setup wizard: roles, priorities, modifiers, mode switch, realism, review, apply) | FULL | The GUI runs the same commands; `--seed`, `--replace-existing`, `--force` are CLI-only. |
+| `setup devices/aircraft/plan/render/apply` | Start: Set it all up for me (quick setup) / Set up step by step... / Set up my devices automatically... / Binds: Set up my devices automatically... (Setup wizard: roles, priorities, modifiers, mode switch, where functions go, review, apply) | FULL | The GUI runs the same commands; `--seed`, `--replace-existing`, `--force` are CLI-only. |
 | `setup check` | (the Setup wizard's plan keeps these rules by itself) | CLI-ONLY | For tests and the combination matrix. |
 | `relations from-text`, `from-text --check` | Relations: Auto-build relations from all my actions > By description | FULL | `--check` is CLI-only. |
 | `llm status/recommend/download/remove/enable/disable/cancel` | Relations: Local AI model (optional) | FULL | Same: parallel work, not changed here. |
@@ -150,7 +150,7 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `dcs strip-defaults apply/restore/status/auto`, `dcs device-luas list/remove/restore` | Settings > "DCS: default binds": the two switches, Preview files / Preview device files (dry run), Apply now, Restore DCS files, Check again; `auto` runs at every start | IMPROVED | Both off by default; each change asks first and shows the server integrity-check warning; moving device files rebuilds the DCS clean profiles. |
 | `dcs defaults cut/restore` | Settings > "DCS: default binds" > Folders and older JoyPro backups: "Put back files an older JoyPro moved" (restore); cut is replaced by the device-files switch | IMPROVED | |
 | `dcs verify-clean` | CLI only | CLI-ONLY | Maintainer check with DCS's own Lua (docs/games/dcs.md). |
-| `media [games\|aircraft\|sources] [--no-internet-pictures]` | Automatic: covers on game cards and tiles (downloads follow Settings > Privacy "Game covers from the internet"), aircraft pictures; `sources` is CLI only | FULL | |
+| `media [games\|aircraft\|sources] [--no-internet-pictures]` | Automatic: covers on game cards and export cards (downloads follow Settings > Privacy "Game covers from the internet"), aircraft pictures; `sources` is CLI only | FULL | |
 | `hud devices [--no-device-photos]` | Automatic (Start page device cards, Layout page, HUD); `--no-device-photos` while Settings > Privacy "Makers' product photos" is Never | FULL | The makers' photos are downloaded by the GUI per device after the user's yes (docs/privacy.md). |
 
 ## Watcher and sync
@@ -213,7 +213,7 @@ experts, and 4 stay on the command line on purpose.
   and wizard step numbers. Other pages (watcher settings, Group by description, vJoy) can reuse them.
 - **Start page**: "Your games" cards with cover, installed / game-updated symbols and Import, Export, Update, Undo
   export; the import wizard; the old form is "Expert import".
-- **Export page**: three numbered steps, the export mode as described choices, tiles with status symbols, Preview and
+- **Export page**: three numbered steps, the export mode as described choices, cards with status symbols, Preview and
   Undo last export.
 - **Settings**: device cards with product pictures, pickers instead of typed device names, plain DCS sections, expert
   listings in expanders.

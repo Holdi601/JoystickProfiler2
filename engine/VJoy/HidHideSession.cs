@@ -347,14 +347,95 @@ namespace JoyPro.Engine.VJoy
         HidHideRead Read();
 
         // All commands in one HidHideCLI call; the caller runs elevated (the engine's elevated step). Returns the exit
-        // code; HidHideCli.Cancelled when the user declined the UAC prompt, HidHideCli.TimedOut when it hung.
+        // code; HidHideCli.Cancelled when the user declined the UAC prompt, HidHideCli.TimedOut when it hung,
+        // HidHideCli.Rejected when HidHideCLI refused a command (and so applied none of them, see LastError).
         int Apply(IList<string> arguments);
+
+        // What HidHideCLI wrote to stderr on the last Apply (its reason for refusing), empty otherwise.
+        string LastError { get; }
     }
 
     public static class HidHideCli
     {
         public const int Cancelled = -1223;
         public const int TimedOut = -1460;
+        // HidHideCLI refused a command: it validates the commands one by one and stops at the first it refuses, prints
+        // the reason on stderr and returns BEFORE it applies anything (CommandInterpreter::Start returns before
+        // ApplyConfigurationChanges), with exit code 0. Nothing of the call took effect.
+        public const int Rejected = -1001;
+
+        // The exit code JoyPro works with for one HidHideCLI change call: the real CLI says "refused" only on stderr.
+        public static int ApplyOutcome(int exitCode, string standardError)
+        {
+            if (exitCode == 0 && !string.IsNullOrWhiteSpace(standardError))
+                return Rejected;
+            return exitCode;
+        }
+    }
+
+    // The checks HidHideCLI makes before it runs a command (HidHideCLI/src/Commands.cpp ValOneFullyQualifiedExecutablePath
+    // and ValOneDeviceInstancePath, Utils.cpp FileIsAnApplication, Volume.cpp FindVolumeMountPointForFullyQualifiedFileName).
+    // One refused argument makes HidHideCLI drop the whole call (see HidHideCli.Rejected), so JoyPro never sends one:
+    //   - --app-reg / --app-unreg: a full path ("C:\..."), the extension exactly ".exe", ".com" or ".bin" (case
+    //     sensitive), and a volume mount point must be a case-sensitive prefix: Windows names them "C:\", so a path
+    //     written "c:\program files (x86)\..." (Steam's own spelling) is "not on a storage volume".
+    //   - --dev-hide / --dev-unhide: at most MAX_DEVICE_ID_LEN (200) characters.
+    public static class HidHideCliRules
+    {
+        public const int MaxDeviceIdLength = 200;
+
+        // The spelling HidHideCLI accepts for a program path: backslashes, the drive letter in upper case. The rest of
+        // the path keeps its case (it is what HidHide stores and lists).
+        public static string NormalizeAppPath(string path)
+        {
+            string value = (path ?? string.Empty).Trim().Replace('/', '\\');
+            if (value.Length >= 2 && value[1] == ':' && char.IsLetter(value[0]))
+                value = char.ToUpperInvariant(value[0]).ToString() + value.Substring(1);
+            return value;
+        }
+
+        // Why HidHideCLI would refuse the program path, empty when it takes it.
+        public static string AppPathProblem(string path)
+        {
+            string value = path ?? string.Empty;
+            if (value.Length < 3 || value[1] != ':' || value[2] != '\\' || !char.IsLetter(value[0]))
+                return "The file name should include a full path.";
+            string extension = Path.GetExtension(value);
+            if (extension != ".exe" && extension != ".com" && extension != ".bin")
+                return "The file name should be an executable (.exe, .com, .bin).";
+            if (!char.IsUpper(value[0]))
+                return "The file name should be located on a storage volume (volume is case sensitive).";
+            return string.Empty;
+        }
+
+        public static string DevicePathProblem(string path)
+        {
+            string value = (path ?? string.Empty).Trim();
+            if (value.Length == 0)
+                return "The number of command arguments is not correct.";
+            if (value.Length > MaxDeviceIdLength)
+                return "The device instance path has too many characters.";
+            return string.Empty;
+        }
+
+        // The first argument HidHideCLI would refuse ("--app-reg \"c:\\x.exe\": <reason>"), empty when it takes all.
+        public static string FirstProblem(IList<string> arguments)
+        {
+            for (int i = 0; arguments != null && i < arguments.Count; i++)
+            {
+                string command = (arguments[i] ?? string.Empty).Trim().ToLowerInvariant();
+                bool app = command == "--app-reg" || command == "--app-unreg";
+                bool device = command == "--dev-hide" || command == "--dev-unhide";
+                if (!app && !device)
+                    continue;
+                string value = i + 1 < arguments.Count ? arguments[i + 1] ?? string.Empty : string.Empty;
+                string problem = app ? AppPathProblem(value) : DevicePathProblem(value);
+                if (problem.Length > 0)
+                    return command + " \"" + value + "\": " + problem;
+                i++;
+            }
+            return string.Empty;
+        }
     }
 
     public enum HidHideStrategy
@@ -592,10 +673,11 @@ namespace JoyPro.Engine.VJoy
                 HidHideJournal.AddUnique(journal.Games, game);
             plan.Journal = journal;
 
-            List<string> hide = Distinct(request.HideDevices);
-            List<string> visible = Distinct(request.KeepVisible);
-            List<string> games = Distinct(request.GameExes);
-            List<string> trusted = Distinct(request.TrustedExes);
+            // Only what HidHideCLI takes: one refused argument would make it drop every change of the call.
+            List<string> hide = ValidDevices(request.HideDevices, plan.Notes);
+            List<string> visible = ValidDevices(request.KeepVisible, plan.Notes);
+            List<string> games = ValidApps(request.GameExes, plan.Notes);
+            List<string> trusted = ValidApps(request.TrustedExes, plan.Notes);
             foreach (string device in visible)
             {
                 if (HidHideState.Contains(hide, device))
@@ -663,6 +745,8 @@ namespace JoyPro.Engine.VJoy
                 {
                     if (HidHideState.Contains(hide, device))
                         continue; // stays hidden; it was the user's entry, so it is not "added" either
+                    if (HidHideCliRules.DevicePathProblem(device).Length > 0)
+                        continue; // HidHideCLI would refuse it (and with it the whole call): it stays as it is
                     Add(args, "--dev-unhide", device);
                     HidHideJournal.AddUnique(journal.RemovedDevices, device);
                 }
@@ -671,6 +755,11 @@ namespace JoyPro.Engine.VJoy
                     bool keep = strategy == HidHideStrategy.BlockList ? HidHideState.Contains(games, app) : HidHideState.Contains(trusted, app);
                     if (keep)
                         continue;
+                    if (HidHideCliRules.AppPathProblem(app).Length > 0)
+                    {
+                        plan.Notes.Add("HidHide's program list entry " + app + " is left as it is (HidHideCLI does not take its spelling).");
+                        continue;
+                    }
                     Add(args, "--app-unreg", app);
                     HidHideJournal.AddUnique(journal.RemovedApps, app);
                 }
@@ -685,8 +774,9 @@ namespace JoyPro.Engine.VJoy
             {
                 if (!state.HasDevice(device))
                     continue;
-                Add(args, "--dev-unhide", device);
-                HidHideJournal.AddUnique(journal.RemovedDevices, device);
+                string listed = Listed(state.Devices, device);
+                Add(args, "--dev-unhide", listed);
+                HidHideJournal.AddUnique(journal.RemovedDevices, listed);
                 plan.Notes.Add("The vJoy device " + device + " was hidden in HidHide; it is shown while virtual mode runs.");
             }
 
@@ -704,9 +794,11 @@ namespace JoyPro.Engine.VJoy
                 {
                     if (!state.HasApp(exe))
                         continue;
-                    // On a block list a trusted program would lose the devices: it comes off the list for the session.
-                    Add(args, "--app-unreg", exe);
-                    HidHideJournal.AddUnique(journal.RemovedApps, exe);
+                    // On a block list a trusted program would lose the devices: it comes off the list for the session
+                    // (with HidHide's own spelling of the entry).
+                    string listed = Listed(state.Apps, exe);
+                    Add(args, "--app-unreg", listed);
+                    HidHideJournal.AddUnique(journal.RemovedApps, listed);
                 }
                 foreach (string exe in games)
                 {
@@ -724,8 +816,9 @@ namespace JoyPro.Engine.VJoy
                     if (!state.HasApp(exe))
                         continue;
                     // On an allow list the game would still see the physical devices.
-                    Add(args, "--app-unreg", exe);
-                    HidHideJournal.AddUnique(journal.RemovedApps, exe);
+                    string listed = Listed(state.Apps, exe);
+                    Add(args, "--app-unreg", listed);
+                    HidHideJournal.AddUnique(journal.RemovedApps, listed);
                 }
                 foreach (string exe in trusted)
                 {
@@ -774,27 +867,29 @@ namespace JoyPro.Engine.VJoy
             List<string> args = plan.Arguments;
 
             // Cloaking off first: whatever happens after, nothing is hidden by JoyPro's session any more.
+            // Entries are taken out with HidHide's own spelling and put back in the spelling HidHideCLI takes; one it
+            // would refuse is left out with a note (a refused argument would make it drop the whole call).
             if (journal.SetCloak && current.CloakOn)
                 args.Add("--cloak-off");
             foreach (string app in journal.AddedApps)
             {
                 if (current.HasApp(app))
-                    Add(args, "--app-unreg", app);
+                    AddChecked(args, plan.Notes, "--app-unreg", Listed(current.Apps, app));
             }
             foreach (string device in journal.AddedDevices)
             {
                 if (current.HasDevice(device))
-                    Add(args, "--dev-unhide", device);
+                    AddChecked(args, plan.Notes, "--dev-unhide", Listed(current.Devices, device));
             }
             foreach (string device in journal.RemovedDevices)
             {
                 if (!current.HasDevice(device))
-                    Add(args, "--dev-hide", device);
+                    AddChecked(args, plan.Notes, "--dev-hide", device);
             }
             foreach (string app in journal.RemovedApps)
             {
                 if (!current.HasApp(app))
-                    Add(args, "--app-reg", app);
+                    AddChecked(args, plan.Notes, "--app-reg", HidHideCliRules.NormalizeAppPath(app));
             }
             // Only values that were read before the session are set back; an unknown one is left as it is.
             if (journal.SetInverse && journal.Previous.InverseUnknown)
@@ -835,12 +930,62 @@ namespace JoyPro.Engine.VJoy
             return state.Apps.Where(a => !HidHideOwnApps.Any(own => string.Equals(Path.GetFileName(a ?? string.Empty), own, StringComparison.OrdinalIgnoreCase))).ToList();
         }
 
-        private static List<string> Distinct(IEnumerable<string> values)
+        // Program paths in the spelling HidHideCLI takes; the ones it would refuse are left out with a note.
+        private static List<string> ValidApps(IEnumerable<string> values, List<string> notes)
         {
             List<string> output = new List<string>();
             foreach (string value in values ?? Enumerable.Empty<string>())
-                HidHideJournal.AddUnique(output, value);
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    continue;
+                string path = HidHideCliRules.NormalizeAppPath(value);
+                string problem = HidHideCliRules.AppPathProblem(path);
+                if (problem.Length > 0)
+                    notes.Add("Left out: " + value + " (HidHide would refuse it: " + problem + ")");
+                else
+                    HidHideJournal.AddUnique(output, path);
+            }
             return output;
+        }
+
+        private static List<string> ValidDevices(IEnumerable<string> values, List<string> notes)
+        {
+            List<string> output = new List<string>();
+            foreach (string value in values ?? Enumerable.Empty<string>())
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    continue;
+                string problem = HidHideCliRules.DevicePathProblem(value);
+                if (problem.Length > 0)
+                    notes.Add("Left out: " + value + " (HidHide would refuse it: " + problem + ")");
+                else
+                    HidHideJournal.AddUnique(output, value);
+            }
+            return output;
+        }
+
+        // The entry as HidHide lists it (its own spelling), else the value itself.
+        private static string Listed(List<string> list, string value)
+        {
+            string wanted = (value ?? string.Empty).Trim();
+            foreach (string entry in list ?? new List<string>())
+            {
+                if (string.Equals((entry ?? string.Empty).Trim(), wanted, StringComparison.OrdinalIgnoreCase))
+                    return entry.Trim();
+            }
+            return wanted;
+        }
+
+        private static void AddChecked(List<string> args, List<string> notes, string command, string value)
+        {
+            bool app = command == "--app-reg" || command == "--app-unreg";
+            string problem = app ? HidHideCliRules.AppPathProblem(value) : HidHideCliRules.DevicePathProblem(value);
+            if (problem.Length > 0)
+            {
+                notes.Add("Left as it is: " + value + " (HidHide would refuse " + command + ": " + problem + ")");
+                return;
+            }
+            Add(args, command, value);
         }
 
         private static void Add(List<string> args, string command, string value)
@@ -856,6 +1001,9 @@ namespace JoyPro.Engine.VJoy
         public bool DryRun { get; set; }
         public bool Changed { get; set; }
         public bool Cancelled { get; set; }
+        // The games cannot work this way: cloaking is on and a vJoy device they need is hidden. Forwarding must not
+        // start on it (every other failed check only means the games may also see the physical devices).
+        public bool Blocking { get; set; }
         public string Message { get; set; }
         public string Strategy { get; set; }
         public List<string> Commands { get; set; }
@@ -972,13 +1120,26 @@ namespace JoyPro.Engine.VJoy
                         WriteJournal(running);
                     return Fail(result, "The Windows administrator prompt was declined; HidHide was not changed.");
                 }
-                result.Changed = true;
                 HidHideRead actual = cli.Read();
+                if (actual.Complete && HidHidePlanner.Verify(expected, current).Count > 0 && HidHidePlanner.Verify(current, actual.State).Count == 0)
+                {
+                    // Nothing took (HidHideCLI refused the call, or failed before it changed anything): no session is
+                    // left behind, so nothing waits for a restore and no later start asks to recover one.
+                    if (running == null)
+                        DeleteJournal();
+                    else
+                        WriteJournal(running);
+                    result.Problems = new List<string> { ApplyFailure(exit, "HidHideCLI took none of the changes.") };
+                    result.SessionPhase = running == null ? "none" : running.Phase;
+                    return Fail(result, "HidHide did not change anything: " + result.Problems[0] + " The physical devices are not hidden.");
+                }
+                result.Changed = true;
                 result.Problems = actual.Complete
                     ? HidHidePlanner.Verify(expected, actual.State)
                     : new List<string> { "HidHide could not be read back (" + string.Join("; ", actual.Problems) + "); whether every change took is unknown." };
                 if (exit != 0)
-                    result.Problems.Insert(0, exit == HidHideCli.TimedOut ? "HidHideCLI did not answer in time and was ended." : "HidHideCLI ended with exit code " + exit.ToString(CultureInfo.InvariantCulture) + ".");
+                    result.Problems.Insert(0, ApplyFailure(exit, string.Empty));
+                result.Blocking = actual.Complete && actual.State.CloakOn && request.KeepVisible.Any(d => actual.State.HasDevice(d));
             }
             plan.Journal.Phase = HidHideJournal.PhaseActive;
             if (plan.Journal.HasChanges || running != null)
@@ -1039,7 +1200,7 @@ namespace JoyPro.Engine.VJoy
                     ? HidHidePlanner.Verify(expected, actual.State)
                     : new List<string> { "HidHide could not be read back (" + string.Join("; ", actual.Problems) + ")." };
                 if (exit != 0)
-                    result.Problems.Insert(0, exit == HidHideCli.TimedOut ? "HidHideCLI did not answer in time and was ended." : "HidHideCLI ended with exit code " + exit.ToString(CultureInfo.InvariantCulture) + ".");
+                    result.Problems.Insert(0, ApplyFailure(exit, string.Empty));
                 if (result.Problems.Count > 0)
                 {
                     result.Ok = false;
@@ -1098,6 +1259,51 @@ namespace JoyPro.Engine.VJoy
             {
             }
             File.Delete(journalPath);
+        }
+
+        // Plain words for a change call that did not end well (fallback when the exit code says nothing).
+        private string ApplyFailure(int exit, string fallback)
+        {
+            if (exit == HidHideCli.TimedOut)
+                return "HidHideCLI did not answer in time and was ended.";
+            if (exit == HidHideCli.Rejected)
+                return "HidHideCLI refused the call and applied none of it: " + (string.IsNullOrWhiteSpace(cli.LastError) ? "no reason given" : cli.LastError.Trim());
+            if (exit != 0)
+                return "HidHideCLI ended with exit code " + exit.ToString(CultureInfo.InvariantCulture) + (string.IsNullOrWhiteSpace(cli.LastError) ? "." : ": " + cli.LastError.Trim());
+            return fallback;
+        }
+
+        // The session needs no administrator rights when HidHide (read without them) already is as the request needs:
+        // the result then, null when a change is needed or HidHide could not be read completely. No prompt either way.
+        public HidHideResult EnableIfNothingToChange(HidHideRequest request)
+        {
+            if (!cli.Installed)
+                return null;
+            HidHideJournal running = LoadJournal();
+            if (running != null && IsStale(running))
+                return null;
+            HidHideRead read = cli.Read();
+            if (!read.Complete)
+                return null;
+            HidHidePlan plan = HidHidePlanner.PlanApply(read.State, request, running);
+            if (!plan.Ok || plan.Arguments.Count > 0)
+                return null;
+            return Enable(request, false); // plans nothing, so it calls no HidHideCLI change
+        }
+
+        // Ends the session without administrator rights when HidHide already has its previous configuration (only
+        // the session record is removed); null when a change is needed or HidHide could not be read completely.
+        public HidHideResult DisableIfNothingToChange()
+        {
+            HidHideJournal journal = LoadJournal();
+            if (journal == null)
+                return Disable(false);
+            if (!cli.Installed)
+                return null;
+            HidHideRead read = cli.Read();
+            if (!read.Complete || HidHidePlanner.PlanRestore(journal, read.State).Arguments.Count > 0)
+                return null;
+            return Disable(false); // plans nothing, so it calls no HidHideCLI change
         }
 
         private static HidHideResult Fail(HidHideResult result, string message)
@@ -1174,11 +1380,22 @@ namespace JoyPro.Engine.VJoy
             File.WriteAllText(statePath, state.Describe(), new UTF8Encoding(false));
         }
 
+        public string LastError { get; private set; } = string.Empty;
+
+        // Like HidHideCLI 1.5: every command is checked first; at the first it refuses nothing is applied and the
+        // reason goes to stderr (exit code 0, which the real wrapper turns into HidHideCli.Rejected).
         public int Apply(IList<string> arguments)
         {
             Calls.Add(new List<string>(arguments));
+            LastError = string.Empty;
             if (ApplyExitCode == HidHideCli.Cancelled || ApplyExitCode == HidHideCli.TimedOut)
                 return ApplyExitCode;
+            string refused = HidHideCliRules.FirstProblem(arguments);
+            if (refused.Length > 0)
+            {
+                LastError = refused;
+                return HidHideCli.ApplyOutcome(0, refused);
+            }
             Write(HidHideState.Simulate(ReadState(), arguments));
             return ApplyExitCode;
         }

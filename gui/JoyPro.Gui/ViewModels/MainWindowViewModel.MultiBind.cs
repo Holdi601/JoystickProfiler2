@@ -12,24 +12,22 @@ using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.ViewModels;
 
-// Experimental: several inputs per relation (docs/multi-bind.md). Settings > Experimental switches it on (ui-settings.json
-// "multiBind", off by default); then every engine call gets --multi-bind on, the Binds page shows a relation's other
-// inputs (card badge, "More inputs" panel: record or pick another input, make one the main input, remove one) and
-// "Copy to another device" puts device A's binds on device B too (engine devices copy-to, preview first, one undo step).
-// Off: nothing of this shows and the engine gets nothing, so everything is as before.
+// Several inputs per relation (docs/multi-bind.md; experimental in 2.6.5, a normal feature since 2.6.6, on in the engine
+// by default). The Binds page shows a relation's other inputs (card badge, "More inputs" panel: record or pick another
+// input, make one the main input, remove one) and "Copy to another device" puts device A's binds on device B too
+// (engine devices copy-to, preview first, one undo step). The other pages look a device's inputs up in every input of a
+// relation (BindListItem.AllInputs, AllBoundInputs).
 public sealed partial class MainWindowViewModel
 {
-    public const string ExperimentalSettingsSectionId = "experimental";
-
-    [ObservableProperty]
-    private bool multiBindEnabled;
-
     // The selected relation's other inputs (input 2..).
     public ObservableCollection<ExtraBindRow> SelectedExtraBinds { get; } = [];
 
     public bool HasSelectedExtraBinds => SelectedExtraBinds.Count > 0;
 
-    public bool ShowMultiBindPanel => MultiBindEnabled && SelectedBind != null;
+    public bool ShowMultiBindPanel => SelectedBind != null;
+
+    // Every bound input of the profile: each relation's main bind and its other inputs (one row each, InputNumber 2..).
+    private IEnumerable<BindListItem> AllBoundInputs() => allBinds.SelectMany(b => b.AllInputs()).Where(b => b.HasBind);
 
     // Copy to another device: device A (one the profile uses) and device B (any known device).
     public ObservableCollection<BindDeviceChoice> CopyDeviceChoices { get; } = [];
@@ -54,18 +52,9 @@ public sealed partial class MainWindowViewModel
 
     public bool CanApplyCopyDevice => HasCopyDevicePreview && copyDevicePreviewKey == CopyKey();
 
-    partial void OnMultiBindEnabledChanged(bool value)
+    // The device lists follow the binds each time the copy opens.
+    partial void OnIsCopyDeviceOpenChanged(bool value)
     {
-        SaveUiSettings();
-        OnPropertyChanged(nameof(ShowMultiBindPanel));
-        if (loadingUiSettings)
-            return;
-        foreach (BindListItem bind in allBinds)
-            bind.ShowExtraBinds = value;
-        SyncRelationBindsFromBinds();
-        RefreshExtraBindRows();
-        // The cards show or hide their "+1": the list is built again from the same binds.
-        RebuildVisibleBinds();
         if (value)
             RebuildCopyDeviceChoices();
     }
@@ -121,12 +110,14 @@ public sealed partial class MainWindowViewModel
 
     private void RefreshExtraBindRows()
     {
-        IReadOnlyList<ExtraBindRow> rows = MultiBindEnabled && SelectedBind != null ? SelectedBind.ExtraBinds : [];
+        IReadOnlyList<ExtraBindRow> rows = SelectedBind != null ? SelectedBind.ExtraBinds : [];
         if (!rows.Select(r => r.Number + "\n" + r.Label).SequenceEqual(SelectedExtraBinds.Select(r => r.Number + "\n" + r.Label)))
         {
             SelectedExtraBinds.Clear();
             foreach (ExtraBindRow row in rows)
                 SelectedExtraBinds.Add(row);
+            // The axis-response section's input picker follows (an input added or removed on this relation).
+            RebuildAxisTuningInputChoices(keep: true);
         }
         OnPropertyChanged(nameof(HasSelectedExtraBinds));
         OnPropertyChanged(nameof(ShowMultiBindPanel));
@@ -178,7 +169,7 @@ public sealed partial class MainWindowViewModel
     private async Task RecordExtraInputAsync()
     {
         string relation = SelectedRelationForExtra();
-        if (relation.Length == 0 || !MultiBindEnabled)
+        if (relation.Length == 0)
             return;
         if (IsRecordingInput)
         {
@@ -226,7 +217,7 @@ public sealed partial class MainWindowViewModel
     private async Task AddPickedExtraInputAsync()
     {
         string relation = SelectedRelationForExtra();
-        if (relation.Length == 0 || !MultiBindEnabled)
+        if (relation.Length == 0)
             return;
         await AddExtraBindAsync(relation, BindDeviceInput, BindInputValue);
     }
@@ -247,7 +238,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task MakeExtraBindMainAsync(ExtraBindRow? row)
     {
-        if (row == null || !MultiBindEnabled)
+        if (row == null)
             return;
         EngineCommandResult? result = await RunEngineAsync(["binds", "extra", "move", row.Relation, row.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), "--to", "1"],
             includeProfile: true, mutatesProfile: true, busyLabel: N("Changing the main input..."));

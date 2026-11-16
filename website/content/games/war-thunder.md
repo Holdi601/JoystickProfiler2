@@ -17,16 +17,23 @@ that your exported file wins at the next login.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(aircraft + helicopter)"] --> E["engine warthunder export"]
-  M[("deviceMapping<br/>devices the game listed")] --> E
-  E --> B["machine.blk<br/>shortcuts, axes, options<br/>(diff to the base preset)"]
-  B --> L["Next login:<br/>same version line,<br/>your file wins"]
-  L --> G["War Thunder:<br/>Controls"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep War Thunder closed
+:::
+
+**Before**: log in once. Plug in your devices, start the game and open **Controls** once. Then quit.
+
+**Then**: log in. Your binds are in **Controls**.
+
+Did you bind buttons in War Thunder before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for War Thunder
 
 - **Import**: the aircraft and helicopter shortcuts and axes on your devices come into your profile, with every value
@@ -58,9 +65,9 @@ aircraft actions on one button are not.
 
 1. **Close War Thunder.** The game saves the file now and then while it runs and when it quits, so JoyPro refuses to
    write while it runs.
-2. Open **Export** and tick the War Thunder tile.
+2. Open **Export** and tick the War Thunder card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -161,6 +168,15 @@ shortcut then replaces the base preset's default for it.
 
 :::layer technical
 ## Inside the War Thunder integration
+
+```mermaid
+%% caption: JoyPro writes only what differs from your preset. At the next login your file wins over the server copy.
+flowchart LR
+  P["Your profile<br/>(aircraft + helicopter)"] --> E["engine warthunder export"]
+  M[("deviceMapping<br/>devices the game listed")] --> E
+  E --> B["machine.blk<br/>shortcuts, axes, options<br/>(diff to the base preset)"]
+  B --> L["Next login: your file<br/>wins (same version line);<br/>Controls in War Thunder"]
+```
 
 Code: `engine\Games\WarThunderIntegration.cs`, `engine\Games\WarThunderVromfs.cs`, the axis model
 `engine\AxisModels\WarThunder.cs` and the settings model `engine\FfbModels\WarThunder.cs`.

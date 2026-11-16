@@ -8,7 +8,7 @@ pictures (`engine cockpits pictures build --game WarThunder`, docs/cockpits.md).
 - Protocol (`JoyPro.WtOodle serve`): the client writes `JPWO`, then requests (int32 packed length, int32 raw length,
   int32 stop-after, packed bytes); each answer is int32 status (0 ok), int32 length, bytes (data or error text).
   `JoyPro.WtOodle decode <file> <offset> <packedLength> <rawLength> <out>` unpacks one block.
-- Checked on the maintainer's install (2026-10-18): all 25,764 Oodle-packed cockpit textures and all cockpit models
+- Checked on a War Thunder install (2026-10-18): all 25,764 Oodle-packed cockpit textures and all cockpit models
   unpack; where the original ooz also unpacks a block the output is identical.
 
 ## License

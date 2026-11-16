@@ -285,14 +285,15 @@ public sealed partial class MainWindowViewModel
     internal List<(string Relation, bool Shifted)> RelationsOnInput(string device, string input)
     {
         string token = (input ?? string.Empty).Trim();
-        List<BindListItem> matches = allBinds
+        // Every input of a relation: a press on one of its other inputs (multi-bind) finds it too.
+        List<BindListItem> matches = AllBoundInputs()
             .Where(b => b.HasBind && string.Equals((b.Input ?? string.Empty).Trim(), token, StringComparison.OrdinalIgnoreCase) &&
                         OverlayResolver.SameDevice(b.Device, device))
             .ToList();
         // A profile made on another PC (or before Windows gave the device a new GUID): the same device name.
         if (matches.Count == 0)
         {
-            matches = allBinds
+            matches = AllBoundInputs()
                 .Where(b => b.HasBind && string.Equals((b.Input ?? string.Empty).Trim(), token, StringComparison.OrdinalIgnoreCase) &&
                             SameDeviceName(b.Device, device))
                 .ToList();

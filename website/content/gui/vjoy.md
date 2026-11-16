@@ -16,34 +16,40 @@ as buttons, toggles, short/long press, shift layers, macros, modes.
 
 ```mermaid
 flowchart LR
-  subgraph Real["Your devices (hidden from that game by HidHide)"]
-    S["Stick"]
-    T["Throttle"]
-    P["Panel"]
-  end
-  S & T & P --> F["JoyPro.VJoy forwarder<br/>mapping table + virtual functions"]
-  F --> V["vJoy device<br/>(or virtual Xbox pad)"]
-  V --> G["Game set to Virtual"]
-  S & T & P --> O["Every other program<br/>(JoyPro, SimHub, other games)"]
+  D["Your stick, throttle,<br/>pedals, panels"] --> J["JoyPro copies<br/>every input live"]
+  J --> V["One vJoy device<br/>or pretend Xbox controller"]
+  V --> G["Game set to vJoy<br/>or Xbox pad"]
+  D --> O["Every other game<br/>and program:<br/>your real devices"]
+%% caption: Through "JoyPro copies every input live": a game set to vJoy or Xbox pad, while Start is on. Straight to "Every other game": everything else. HidHide only for vJoy games; games that read only Xbox controllers need no HidHide.
 ```
 
 :::layer beginner
 ## Use it in four steps
 
 1. Under **Games** switch the game to **vJoy** (or **Xbox pad** for games that only take a gamepad). Games known to
-   read only one device show a suggestion with **Use it**.
+   read only one device show a suggestion with **Use it**. Games that read only Xbox controllers (ACE COMBAT 8, Hell
+   Let Loose: Vietnam) are on the Xbox pad by themselves until you pick another mode; the page says why. The list is
+   sorted by name.
 2. Export the game again on the [[gui:export|Export]] page. JoyPro writes the binds to the virtual joystick; your
    profile keeps your real devices.
-3. Press **Start** before you start the game. JoyPro hides your real devices from that game with HidHide (Windows
-   asks once for administrator rights) and copies every input to the virtual joystick live. Exception: the **Xbox
-   pad** of Hell Let Loose: Vietnam and ACE COMBAT 8 reaches the game only when you start it once the game's title
-   screen shows (or press **Stop** and **Start** there). The page says so under this step and in the tooltips of
-   **Start** and of the auto start: for the game you set to Xbox pad, or naming both games while the list of games is
-   not loaded yet.
+3. Press **Start**. One rule per kind of game, said the same way in the pad tour, the help and the page:
+   - **Xbox pad** (ACE COMBAT, Hell Let Loose: Vietnam): start the game first and wait for its title screen, then
+     press **Start**. Too early? Press **Stop**, then **Start**. These games get no export and need no switching, so
+     steps 1 and 2 are left out for them.
+   - **vJoy**: press **Start** before you start the game. JoyPro hides your real devices from that game with HidHide
+     (Windows asks once for administrator rights) and copies every input to the virtual joystick live.
 4. Press **Stop** when you are done. HidHide gets back exactly the setup it had before; nothing stays hidden.
 
-**What this page needs** shows the free drivers: vJoy (for games set to vJoy), ViGEmBus (Xbox pad) and HidHide. They
-are not part of JoyPro; install the ones you need with one click there.
+**What this page needs** shows the free drivers: vJoy (for games set to vJoy), ViGEmBus (Xbox pad) and HidHide (for
+vJoy games). They are not part of JoyPro; install the ones you need with one click there. A game that reads only Xbox
+controllers (ACE COMBAT 8, Hell Let Loose: Vietnam) needs only ViGEmBus: it never sees your real devices, so HidHide is
+not needed and Windows asks for no administrator rights.
+
+:::note Only Xbox-only games?
+Then the page is called **Pretend controller** and shows only what these games need: the ViGEmBus card, **Test** and
+**Start**. vJoy, HidHide and the mode lists are behind **Show details for experts (vJoy, HidHide, modes)**. See
+[[page:how-do-i/xbox-only-games.html|Play an Xbox-only game with a HOTAS]].
+:::
 
 :::tip Test first
 **Test** reads your devices and shows on the **Live test** tab what the game would get, without touching vJoy or
@@ -53,7 +59,8 @@ HidHide. Move your stick and watch the bars.
 :::ingame What changes in the game
 The game's controls menu shows one device, "vJoy Device", with your binds on its buttons and axes. Your real devices
 are invisible to that game only while the virtual joystick runs; every other program keeps seeing them. Curves, dead
-zones and inverts still come from the game's own settings that JoyPro exports.
+zones and inverts still come from the game's own settings that JoyPro exports. On the **Xbox pad** it is different:
+those games get no export, so JoyPro applies each axis curve itself (Binds page, **Axis response**).
 :::
 :::
 
@@ -77,7 +84,34 @@ table in the profile.
 **Functions**: virtual functions, their modes, the Gremlin import and the graph (below).
 
 **Live test**: bars for the axes, the pressed buttons and hats of each vJoy device as the forwarder writes them, with
-the forwarder's log. **Show the virtual joystick live** switches the bars on or off.
+the forwarder's log. **Show the virtual joystick live** (for players whose games are all on the pretend controller:
+**Show the pretend controller live**) switches the bars on or off. For the Xbox pad each mapped
+control says what it does and where it comes from ("A: Fire machine gun (VKB Gunfighter BTN1)", "LX: Roll (Rhino
+X)"), and a pressed button lights up.
+
+## The Xbox pad
+
+- **By itself**: a game that reads no joystick, only Xbox controllers, uses the Xbox pad while you have not chosen a
+  mode for it ("On the Xbox pad by itself"). Your choice wins and is kept. Without the ViGEmBus driver the **Games**
+  card says so and offers its one-click install.
+- **Axis curves**: these games get no export, so JoyPro applies the relation's axis curve (dead zone, saturation,
+  curvature or user curve, invert; the game's own curve, else the **Default curve**) to the pad stick or trigger itself. The
+  [[gui:binds|Binds]] page's **Axis response** says so for them. vJoy games keep the raw values, as their curve is in
+  the export.
+- **Several games on the pad**: each keeps its own pad table; one is live at a time. With auto start the table of the
+  game that runs; **Start** and **Test** take the running game's table, else the one picked under **Xbox pad table for
+  Start and Test** (kept in the profile).
+- **Auto setup** (from the ACE COMBAT 8 live test, for every profile): the throttle drives both triggers (forward RT,
+  back LT) and a brake axis does not take LT; yaw on LB/RB comes from your stick twist, else the rudder pedals, at
+  about 30 % deflection; ACE COMBAT 8's flares (L3 + R3 together, not confirmed in the game yet) come from your flare /
+  CMS forward button; the wingman D-pad from your comm switch or AI-menu hat; a hat direction on Change target drives
+  Y; your Cobra button (DCS ASC Direct Control) or a button relation named "High-G" holds both triggers for the High-G
+  turn. One input never drives two pad
+  controls, and a pad slot no relation feeds any more goes by itself.
+- **Invert on the pad**: DCS's invert never reaches the pad. ACE COMBAT 8's pitch is reversed by default (with the
+  game's default Pitch Controls, forward gives nose down). Flip one game's axis in **Axis response** with only that
+  game ticked under **Applies to**; DCS keeps its own.
+  [[cli:vjoy pad-check]] shows what a profile reaches on the pad.
 
 ## Virtual functions
 
@@ -115,9 +149,10 @@ refused. Click a wire, then its × to disconnect.
 ```mermaid
 flowchart LR
   T["Throttle axis"] --> B["f1 Axis bands<br/>band3 = afterburner"]
-  B -->|band3| TG["f2 Toggle"]
+  B --> TG["f2 Toggle<br/>reads band3"]
   TG --> V1["vJoy button 40"]
   BTN["Stick button 5"] --> M["f3 Mode switch<br/>hold → Landing"]
+%% caption: Two chains: the throttle's afterburner band toggles vJoy button 40, and holding stick button 5 switches to the Landing mode.
 ```
 
 **Modes** (layers): give your inputs another job per situation (Combat, Landing ...). A mode can inherit from
@@ -142,26 +177,23 @@ View models: `MainWindowViewModel.VirtualJoystick.cs` (status, table, Start/Test
 `VirtualFunctionEditorViewModel.cs`; views `VirtualJoystickView.axaml`, `VirtualFunctionEditorView.axaml`,
 `Views/Controls/VirtualFunctionGraphView.cs`, `VirtualFunctionFlowView.cs`, `AxisBandEditor.cs`.
 
-```mermaid
-sequenceDiagram
-  participant U as You
-  participant G as JoyPro
-  participant E as engine
-  participant H as HidHide (admin, once)
-  participant F as JoyPro.VJoy
-  U->>G: Start
-  G->>E: vjoy map (new inputs get a slot, table saved in the profile)
-  G->>E: vjoy forwarder-config (table + functions resolved)
-  G->>E: vjoy apply-hidhide (journal first)
-  E->>H: hide the physical devices from the virtual games
-  G->>F: run --sink vjoy --parent-pid N
-  loop every pass (e.g. 144 Hz)
-    F->>F: read devices, Tick functions, write vJoy / Xbox pad
-  end
-  U->>G: Stop
-  G->>F: stop (outputs neutral, keys released)
-  G->>E: vjoy restore-hidhide (exactly the setup before)
-```
+**Start** of the virtual joystick:
+
+| # | Who | What happens |
+|---|---|---|
+| 1 | You | Press **Start**. |
+| 2 | Engine | `vjoy map`: new inputs get a slot; the table is saved in the profile. |
+| 3 | Engine | `vjoy forwarder-config`: the table and the functions, resolved. |
+| 4 | Engine | `vjoy apply-hidhide` writes its journal first, then hides the physical devices from the vJoy games (HidHide asks for admin rights once). Games that read only Xbox controllers: "HidHide is not needed", no prompt. |
+| 5 | JoyPro.VJoy | `run --sink vjoy --parent-pid N`: every pass (for example 144 times a second) it reads the devices, runs the functions and writes vJoy or the Xbox pad. |
+
+**Stop**:
+
+| # | Who | What happens |
+|---|---|---|
+| 1 | You | Press **Stop**. |
+| 2 | JoyPro.VJoy | Stops: outputs neutral, keys released. |
+| 3 | Engine | `vjoy restore-hidhide` puts back exactly the setup from before. |
 
 - **Mapping table**: in the profile (`Pr0file.VirtualJoystick`); [[cli:vjoy map]] (`--prune`, `--reset`),
   [[cli:vjoy mode]] (`native` | `virtual` | `xbox` per game), [[cli:vjoy status]], [[cli:vjoy settings]] (which vJoy
@@ -241,6 +273,11 @@ functions. Then bind the relations to the vJoy outputs (or keep them), export th
 <!-- entry: CancelGremlinImportCommand -->
 Closes the Gremlin report without importing anything.
 
+<!-- entry: bind:VirtualJoystickShowDetails -->
+<!-- easy: Shows the parts for experts. You do not need them. -->
+Shows only when all your virtual games are on the pretend controller: shows the parts for experts (vJoy, HidHide, the
+forwarding rate, each game's mode and "What this page needs"). Off by default; kept over a restart.
+
 <!-- entry: bind:VirtualJoystickLiveView -->
 Live test tab: shows the virtual joystick's axes, buttons and hats live while Test or Start runs (on by default).
 Off saves the redraws.
@@ -277,23 +314,26 @@ any vJoy button or axis ([[cli:binds set]]). Then export the game again so it ge
 keyboard outputs.
 
 <!-- entry: StartVirtualJoystickCommand -->
-Updates the mapping table, hides your real devices from the games set to Virtual with HidHide (Windows asks once for
-administrator rights; skipped when hiding is off) and copies their inputs to vJoy or the Xbox pad live. Press it
-before you start the game. Exception: Hell Let Loose: Vietnam and ACE COMBAT 8 only see a virtual Xbox pad created
-after their title screen shows, so press it there (or **Stop** and **Start** once the title screen shows); the tooltip
-says so when one of them is set to Xbox pad. If the prompt is declined, nothing starts. Engine: [[cli:vjoy map]],
+<!-- easy: Turns on the pretend controller. Your stick then drives it. -->
+Turns the virtual devices on: your real stick and throttle drive them live. Pretend controller: start the game, wait
+for its title screen, then press it; vJoy: press it before you start the game. Too early for the pretend controller? **Stop**, then
+**Start**. For vJoy JoyPro updates the mapping table and hides your real devices from those games with HidHide (Windows
+asks once for administrator rights; skipped when hiding is off). If the prompt is declined, nothing starts. Engine: [[cli:vjoy map]],
 [[cli:vjoy forwarder-config]], [[cli:vjoy apply-hidhide]].
 
 <!-- entry: TestVirtualJoystickCommand -->
-Reads your devices and shows on the **Live test** tab what the virtual joystick would get. vJoy, the Xbox pad and
-HidHide are not touched, so it also works without the drivers, and the profile is not changed: the mapping is only
-checked (**Start** saves it in the profile). **Stop** ends it.
+<!-- easy: Shows what the pretend controller gets. Nothing changes. -->
+Reads your stick and shows on the **Live test** tab what the pretend controller or the virtual joystick would get.
+Nothing is changed: vJoy, the pretend controller and HidHide are not touched, so it also works without the helpers,
+and the profile stays as it is (the mapping is only checked; **Start** saves it in the profile). **Stop** ends it.
 
 <!-- entry: StopVirtualJoystickCommand -->
-Stops forwarding (the virtual joystick goes neutral, held keys are let go) and gives HidHide back exactly the setup it
-had before. JoyPro does the same by itself when the forwarder ends on its own. Engine: [[cli:vjoy restore-hidhide]].
+<!-- easy: Turns the pretend controller off. -->
+Turns the pretend controller or the virtual joystick off (it goes neutral, held keys are let go); HidHide gets back
+exactly the setup it had before. JoyPro does the same by itself when the forwarder ends on its own. Engine: [[cli:vjoy restore-hidhide]].
 
 <!-- entry: RefreshVirtualJoystickCommand -->
+<!-- easy: Looks again which helpers are installed. -->
 Checks vJoy (version, devices), HidHide, JoyPro's session and the games again and updates the page. Read-only.
 Engine: [[cli:vjoy status]].
 
@@ -314,6 +354,11 @@ virtual mode again afterwards. Engine: [[cli:vjoy configure-vjoy]] `--max`.
 <!-- entry: RefreshComponentsCommand -->
 **What this page needs** > **Check again**: looks again whether vJoy, ViGEmBus and HidHide are installed and running
 and updates their cards. Read-only.
+
+<!-- entry: bind:VirtualJoystickXboxPadGame -->
+Shown when several games are on the Xbox pad: whose pad table **Start** and **Test** use when none of these games
+runs. A running game's table always wins (auto start too). Saved in the profile ([[cli:vjoy settings]]
+`--xbox-pad-game`).
 
 <!-- entry: ApplySuggestionCommand -->
 **Use it** on a game known to read only one device: switches the game to the suggested mode (vJoy or Xbox pad). Export

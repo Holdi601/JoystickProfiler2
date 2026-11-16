@@ -21,17 +21,24 @@ assignments, and please report what differs.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E["engine fsx / fsxse /<br/>p3d4 / p3d5 / p3d6 export"]
-  E --> X["Controls / Standard.XML<br/>(the active file)"]
-  X --> M["One map per device:<br/>&lt;name&gt;{&lt;GUID&gt;}"]
-  X --> K["KEYBOARD_MAIN<br/>(only with the keyboard option)"]
-  M --> G["The sim's controls settings"]
-  K --> G
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep the sim closed
+:::
+
+**Before**: start the sim once with your devices connected, then close it.
+
+**Then**: open the sim's controls settings and check the assignments. This integration was not tested on a
+real install yet: please report what differs.
+
+Did you bind buttons in the sim before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for FSX and Prepar3D
 
 - **Import**: the axes, buttons and hats of your devices come into your profile, with each axis's sensitivity and
@@ -57,9 +64,9 @@ On the **Relations** page the sim's event of a relation sits next to the same fu
 ## Export
 
 1. **Close the sim.** It rewrites the file when it quits; JoyPro refuses while `fsx.exe` or `Prepar3D.exe` runs.
-2. Open **Export** and use the tile of your sim.
+2. Open **Export** and use the card of your sim.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your devices.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 :::ingame What you see in FSX and Prepar3D
 Start the sim and open its controls settings: your devices' assignments show there, and the sensitivity and null zone
@@ -119,7 +126,7 @@ and never written.
 
 - **Granularity**: global, one file for all aircraft.
 - **Axis settings** (axis model `fsx`): sensitivity (0 to 127) and null zone (0 to 127) per device axis, as on the
-  calibration page. A curve set for all games is fitted (dead zone to null zone, saturation to sensitivity); a curve
+  calibration page. The **Default curve** is fitted (dead zone to null zone, saturation to sensitivity); a curve
   shape has no equivalent. In Update mode values set in the sim stay when JoyPro's are the plain default.
 - **Invert**: a negative sensitivity.
 - No force feedback, game settings or telemetry. The watcher notices changes after the sim closes.
@@ -127,6 +134,14 @@ and never written.
 
 :::layer technical
 ## Inside the FSX and Prepar3D integration
+
+```mermaid
+%% caption: One controls file per sim. The keyboard map is written only with the keyboard option.
+flowchart LR
+  P["Your profile<br/>(relations + binds)"] --> E["engine fsx / fsxse /<br/>p3d4 / p3d5 / p3d6 export"]
+  E --> X["Controls / Standard.XML:<br/>one map per device<br/>(device name {GUID}),<br/>KEYBOARD_MAIN (keyboard<br/>option only)"]
+  X --> G["The sim's controls settings"]
+```
 
 Code: `engine\Games\FsxIntegration.cs` (one class, one game per sim), `engine\Games\FsxControlsFile.cs` (text editing
 of whole blocks), `engine\Games\FsxEvents.cs` (JoyPro's event list).

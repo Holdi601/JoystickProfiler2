@@ -100,4 +100,4 @@ The `_aaaa...` tokens are hashes of the property names: the same logical field h
 5. In-game check of the settings: `tools\e2e\games\WardogsSettings.ps1` (random values, HOTAS page OCR, snapshot/restore): 36/36 on 2026-10-11 with the config watcher; the binds (`Wardogs.ps1`) 42/42 on 2026-10-10.
 4. ~~Whether `bUseHOTASHelicopters=True` is required~~: yes (see Files).
 
-Sources: thewardogsguide.com/wardogs-controls-hotas, allthings.how WARDOGS HOTAS guide; real files on a test PC (current file plus three `.bak` versions).
+Sources: thewardogsguide.com/wardogs-controls-hotas, allthings.how WARDOGS HOTAS guide; real files of an installed game (current file plus three `.bak` versions).

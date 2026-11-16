@@ -709,7 +709,7 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
             VirtualFunctionCatalog.Shift => state == 1 ? "Shifted: the layer's outputs" : "Not shifted: the normal outputs",
             VirtualFunctionCatalog.Merge or VirtualFunctionCatalog.Curve or VirtualFunctionCatalog.ButtonsAxis => T("Output {0} %", Math.Round(state / 10.0).ToString(CultureInfo.InvariantCulture)),
             VirtualFunctionCatalog.Split => T("Axis at {0}", percent),
-            VirtualFunctionCatalog.AxesHat or VirtualFunctionCatalog.HatButtons or VirtualFunctionCatalog.ButtonsHat => state < 0 ? "Centred" : "Direction " + VfInputRoleItem.HatChoices[Math.Clamp(state + 1, 0, 8)],
+            VirtualFunctionCatalog.AxesHat or VirtualFunctionCatalog.HatButtons or VirtualFunctionCatalog.ButtonsHat or VirtualFunctionCatalog.HatAxes => state < 0 ? "Centred" : "Direction " + VfInputRoleItem.HatChoices[Math.Clamp(state + 1, 0, 8)],
             VirtualFunctionCatalog.Encoder => state == 0 ? "No pulse waiting" : Math.Abs(state).ToString(CultureInfo.InvariantCulture) + (state > 0 ? " up" : " down") + " pulse(s) waiting",
             VirtualFunctionCatalog.Turbo => state == 1 ? "Repeating" : "Idle",
             VirtualFunctionCatalog.Macro => state < 0 ? "Idle" : "Playing (event " + (state + 1).ToString(CultureInfo.InvariantCulture) + ")",

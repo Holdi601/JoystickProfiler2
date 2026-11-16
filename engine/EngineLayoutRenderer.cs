@@ -169,7 +169,8 @@ namespace JoyPro.Engine
             bool includeOverview,
             bool includePlaneExports,
             bool skipMissingLayouts,
-            LayoutVisualOptions visualOptions)
+            LayoutVisualOptions visualOptions,
+            List<KeyValuePair<string, string>> exactPlaneTargets = null)
         {
             LayoutRenderResult result = new LayoutRenderResult();
             result.ExportPath = NormalizePath(exportPath);
@@ -204,9 +205,14 @@ namespace JoyPro.Engine
                 return result;
             }
 
-            List<KeyValuePair<string, string>> planeTargets = includePlaneExports
-                ? BuildPlaneTargets(result.GameFilters, result.PlaneFilters, result.Games, result.Warnings)
-                : new List<KeyValuePair<string, string>>();
+            // exactPlaneTargets (layout kneeboard): exactly these game/plane pairs, also a plane no game list has.
+            List<KeyValuePair<string, string>> planeTargets = !includePlaneExports
+                ? new List<KeyValuePair<string, string>>()
+                : exactPlaneTargets != null
+                    ? exactPlaneTargets.Distinct().ToList()
+                    : BuildPlaneTargets(result.GameFilters, result.PlaneFilters, result.Games, result.Warnings);
+            if (exactPlaneTargets != null)
+                result.Games.AddRange(planeTargets.Select(t => t.Key));
             result.PlaneTargetCount = planeTargets.Count;
             if (includePlaneExports && planeTargets.Count == 0)
                 AddUnique(result.Warnings, "No DB plane targets matched current --game/--plane filters.");
@@ -340,7 +346,7 @@ namespace JoyPro.Engine
             return sb.ToString();
         }
 
-        private static Dictionary<string, string> BuildJoystickLayoutMap(Dictionary<string, string> overrides)
+        internal static Dictionary<string, string> BuildJoystickLayoutMap(Dictionary<string, string> overrides)
         {
             Dictionary<string, string> map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (InternalDataManagement.JoystickFileImages != null)
@@ -660,7 +666,7 @@ namespace JoyPro.Engine
                 PrintWidth = options == null ? 3508 : Math.Max(0, options.PrintWidth),
                 Game = game ?? string.Empty,
                 Plane = plane ?? string.Empty,
-                Device = device ?? string.Empty
+                Device = Program.StripKneeboardGuid(device ?? string.Empty)
             };
         }
 
@@ -1840,7 +1846,7 @@ namespace JoyPro.Engine
             return string.Join("+", modifiers) + "+" + input;
         }
 
-        private static bool RelationHasActivePlane(Relation relation, string game, string plane)
+        internal static bool RelationHasActivePlane(Relation relation, string game, string plane)
         {
             string targetGame = NormalizeGameName(game);
             foreach (RelationItem node in relation.NODES ?? new List<RelationItem>())
@@ -1855,7 +1861,7 @@ namespace JoyPro.Engine
             return false;
         }
 
-        private static string RelationDescriptionForGamePlane(Relation relation, string game, string plane)
+        internal static string RelationDescriptionForGamePlane(Relation relation, string game, string plane)
         {
             string targetGame = NormalizeGameName(game);
             foreach (RelationItem node in relation.NODES ?? new List<RelationItem>())
@@ -1880,13 +1886,24 @@ namespace JoyPro.Engine
                                 : stored;
                         }
                     }
+                    // A node made on the command line or in the GUI has no stored inputs until a load correction
+                    // fills them: the DB's title of its command for this aircraft.
+                    string fromDb = InternalDataManagement.DcsTitleOrEmpty(node.ID, plane);
+                    if (fromDb.Length > 0)
+                        return fromDb;
                 }
                 else
                 {
                     foreach (OtherGameInput input in node.OtherInputs ?? new OtherGameInput[0])
                     {
                         if (input != null && string.Equals((input.Plane ?? string.Empty).Trim(), plane, StringComparison.OrdinalIgnoreCase))
-                            return (input.Title ?? string.Empty).Trim();
+                        {
+                            string stored = (input.Title ?? string.Empty).Trim();
+                            // IL-2 Great Battles: a string-table key ("inprb_yaw") reads as JoyPro's own name, as everywhere else.
+                            if (string.Equals(targetGame, "IL2Game", StringComparison.OrdinalIgnoreCase) && stored.Length > 0)
+                                return EngineActionTexts.Title("IL2Game", node.ID, stored);
+                            return stored;
+                        }
                     }
                 }
             }

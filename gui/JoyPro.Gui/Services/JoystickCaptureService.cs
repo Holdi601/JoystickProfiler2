@@ -394,13 +394,30 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
     ];
 
     public Task MonitorAsync(Action<JoystickInputEvent> onEvent, Action<JoystickAxisSnapshot>? onAxes, CancellationToken cancellationToken)
+        => MonitorAsync(onEvent, onAxes, TimeSpan.Zero, cancellationToken);
+
+    public Task MonitorAsync(Action<JoystickInputEvent> onEvent, Action<JoystickAxisSnapshot>? onAxes, TimeSpan idleDelay, CancellationToken cancellationToken)
+        => MonitorAsync(onEvent, onAxes, idleDelay, null, cancellationToken);
+
+    public Task MonitorAsync(Action<JoystickInputEvent> onEvent, Action<JoystickAxisSnapshot>? onAxes, TimeSpan idleDelay, Func<string, bool>? include, CancellationToken cancellationToken)
     {
         return Task.Run(async () =>
         {
+            Stopwatch quiet = Stopwatch.StartNew();
             List<string> warnings = [];
             List<DirectInputPollingDevice> devices = CreateDirectInputPollingDevices(string.Empty, warnings);
+            if (include != null)
+            {
+                foreach (DirectInputPollingDevice skipped in devices.Where(d => !include(d.DisplayName)).ToList())
+                {
+                    skipped.Dispose();
+                    devices.Remove(skipped);
+                }
+            }
             LastDiagnostics = devices.Count + " device(s) watched" + (warnings.Count > 0 ? "; " + string.Join("; ", warnings) : string.Empty);
             Dictionary<int, bool> keys = ModifierKeys.ToDictionary(k => k.Key, k => IsVirtualKeyDown(k.Key));
+            int fastPolls = 0, idlePolls = 0;
+            string wake = string.Empty;
             try
             {
                 while (!cancellationToken.IsCancellationRequested)
@@ -415,13 +432,23 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
                         if (firstReport)
                             device.Reported = true;
                         foreach ((string input, bool down) in DiffStates(device.LastState.Buttons, state.Buttons, device.LastState.Pov, state.Pov))
+                        {
                             onEvent(new JoystickInputEvent(device.DisplayName, input, down, firstReport));
+                            quiet.Restart();
+                            wake = device.DisplayName + " " + input;
+                        }
                         if (onAxes != null)
                         {
                             double[] axes = NormalizedAxes(state);
                             // About 0.1 % of travel: no snapshots for sensor noise.
                             if (device.LastAxes == null || firstReport || AxesMoved(device.LastAxes, axes, 0.001))
                             {
+                                // Only a real move (1 % of travel) keeps the fast polling; a jittering sensor does not.
+                                if (device.LastAxes == null || firstReport || AxesMoved(device.LastAxes, axes, 0.01))
+                                {
+                                    quiet.Restart();
+                                    wake = device.DisplayName + " axes";
+                                }
                                 device.LastAxes = axes;
                                 onAxes(new JoystickAxisSnapshot(device.DisplayName, axes, firstReport));
                             }
@@ -439,7 +466,12 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
                     }
                     try
                     {
-                        await Task.Delay(15, cancellationToken).ConfigureAwait(false);
+                        int delay = idleDelay > TimeSpan.Zero && quiet.ElapsedMilliseconds > 1500 ? (int)idleDelay.TotalMilliseconds : 15;
+                        if (delay == 15)
+                            fastPolls++;
+                        else
+                            idlePolls++;
+                        await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException)
                     {
@@ -451,6 +483,9 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
             {
                 foreach (DirectInputPollingDevice device in devices)
                     device.Dispose();
+                // For the CPU measurement (LayoutWindowTests.LiveMonitor_IdleCpu): how often it polled fast or idle,
+                // and what last kept it fast.
+                LastDiagnostics += "; " + fastPolls + " fast / " + idlePolls + " idle polls" + (wake.Length > 0 ? ", last woken by " + wake : string.Empty);
             }
         }, CancellationToken.None);
     }

@@ -17,17 +17,23 @@ them; camera, gameplay and chat binds stay as they are.
 
 {{game-card}}
 
-```mermaid
-flowchart TD
-  P["Your profile"] --> E["engine nuclearoption export"]
-  E --> B[("Backup: snapshot of<br/>the controller-map values")]
-  B --> R["HKCU / Software / Shockfront /<br/>NuclearOption<br/>(a joystick map per device)"]
-  A["resources.assets<br/>(the game's action list)"] -->|"refresh-db"| C["Command list"]
-  C --> E
-  R --> G["Settings > Controls ><br/>Open Control Bindings Menu"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep Nuclear Option closed
+:::
+
+**Before**: start Nuclear Option once, then close it.
+
+**Then**: your binds are in **Settings > Controls > Open Control Bindings Menu**, on your device's tab.
+
+Did you bind buttons in Nuclear Option before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Nuclear Option
 
 - **Import**: the joystick maps of your connected devices come into your profile: axes with their invert, buttons,
@@ -52,7 +58,7 @@ know the game's functions. Then run the [[page:flows/check.html|Check]] on the E
 1. **Close Nuclear Option.** JoyPro refuses to write while it runs: the game writes its maps when the bindings menu
    closes and when a device is unplugged.
 2. Open **Export**, keep **Replace on my devices** with **Also clear my other devices**, and press **Export now** on
-   the Nuclear Option tile.
+   the Nuclear Option card.
 
 ![The Export page](shot:export)
 
@@ -132,6 +138,15 @@ JoyPro uses the registry API (Regedit and `reg export` do not show them all).
 
 :::layer technical
 ## Inside the Nuclear Option integration
+
+```mermaid
+%% caption: The game keeps its controls in the Windows registry. JoyPro saves a snapshot before it writes.
+flowchart LR
+  A["resources.assets<br/>(the game's action list,<br/>read by refresh-db)"] --> E["engine nuclearoption export<br/>(a snapshot of the<br/>controller-map values first)"]
+  P["Your profile"] --> E
+  E --> R["HKCU / Software / Shockfront /<br/>NuclearOption<br/>(a joystick map per device)"]
+  R --> G["Settings > Controls ><br/>Open Control Bindings Menu"]
+```
 
 Code: `engine\Games\NuclearOptionIntegration.cs` (the registry store, the game's specifics, the catalog layout) on top
 of `engine\Games\RewiredMapIntegration.cs` (reading and writing Rewired joystick maps, shared with

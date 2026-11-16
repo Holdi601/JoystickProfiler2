@@ -125,7 +125,7 @@ with n actions`); a DCS action takes its ticked aircraft (the browsed one; its a
 meaning). The open relation's kind decides what is listed (an axis relation: only axes). The list builds only the rows in view, so a filter or
 `Open all` on a big aircraft (the F-4E has 1635 actions) stays instant.
 
-**The filter** (2.6.4, a tester's `RMFD OSB 20` on Falcon BMS: seven rows, all open and equal, by category, RMFD neither
+**The filter** (2.6.4, a user's `RMFD OSB 20` on Falcon BMS: seven rows, all open and equal, by category, RMFD neither
 first nor marked, while `relations search` said name / Recommended for RMFD and related for the rest) keeps a row when:
 
 - its title has every word as typed (`20` is in `OSB-20`), a word typed without the title's separator included (`OSB20`
@@ -205,7 +205,7 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
 
 1. `New relation` (Ctrl+N), type its name (`Throttle ALL`). Left empty, it is named after its first action.
 2. `Add actions`: type what it does (`throttle`). An opened relation starts with an empty box (2.6.2; before, the box
-   held the relation's name, which testers found "usually irrelevant"); the empty box says where to start and offers
+   held the relation's name, which users found "usually irrelevant"); the empty box says where to start and offers
    `Suggested for this relation` (which suggests by the relation itself) and `Open catalog`. The box is only filled by
    Find similar and Replace of a Check card and by Back (the search as it was). The search runs while you type (300 ms after the last key) over every
    game and aircraft (`engine relations search "<words>" [--axis|--button] [--plane ...] --limit 400`). The engine knows
@@ -228,14 +228,14 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
    order the rows within a section), by game and by function, with game chips and after Show more (a game in several
    sections has its `Show n more` on its last header in view). Before 2.6.1 a `Game` sort level sorted a game's rows by
    title, which put "Exterior Lights Master ..." above `MASTER RESET` for `master reset`; 2.6.1 had two sections, the
-   second, **Same meaning**, held everything that was no name match, and the testers' "brakes" showed only landing gear
+   second, **Same meaning**, held everything that was no name match, and users' "brakes" showed only landing gear
    and hook switches there. Only the rows in view are built (a virtualizing list): a search over every
    game lists up to 160 rows. Each game's **main control** of the function comes first, marked `main control`; a title that
    does not name the function says it: `AXIS ELEVATOR SET — Pitch axis (elevator)`.
 4. Filters: `All` / `Axes` / `Buttons` (a relation holds one kind; an open relation with actions shows only its own,
    an empty one every kind), the game chips of the result with how many actions each game has (none ticked = every
    game, the best 12 rows of each: `--limit 200 --per-game 12`; a ticked chip searches that game again for all its
-   rows; the first eight as chips, `+n more games` for the rest). **The chips stay on** (2.6.3, a tester adding Falcon
+   rows; the first eight as chips, `+n more games` for the rest). **The chips stay on** (2.6.3, a user adding Falcon
    BMS to one relation after the other): for the next search, for every relation opened and after a restart
    (`ui-settings.json` `addActionsGames`); they are the first chips, also with an empty box. With chips on, a new search
    asks the engine twice: over every game for the other chips' numbers, then the chosen games for the rows. A chosen
@@ -275,7 +275,7 @@ relation`, and the list it opens only shows: nothing there can be ticked, becaus
 relation has for only **some** of its aircraft stays addable: it says
 `already in this relation for 19 of 20 aircraft`, its aircraft line and `Add selected` hold only the free ones, and in its
 aircraft list the others are marked and have no tick to change (`BuilderSearchResultItem.MarkInOpenRelation`, "some" from
-the row's own same-meaning aircraft; the tester's "F1 Cockpit view" had `ground_unit`, whose id means something else or
+the row's own same-meaning aircraft; a user's "F1 Cockpit view" had `ground_unit`, whose id means something else or
 nothing, and not `su-25T`, so before 2.6.3 it looked like a new action). Adding merges into the node. Ticks survive a new
 search when the same action comes back. Every change can be undone with Ctrl+Z.
 
@@ -336,7 +336,7 @@ command and meaning, with every aircraft where the command means that and the re
 ### Same function and Related
 
 Every search row has a `Section` (relations search JSON, `EngineRelationSearch.Explain`), decided from what found it
-(2.6.2, the testers' `brakes` report on 2.6.1: "Same meaning" showed only F-4E sim-pit gear and hook switches, "I don't
+(2.6.2, users' `brakes` report on 2.6.1: "Same meaning" showed only F-4E sim-pit gear and hook switches, "I don't
 see any connection"):
 
 | Section | Rule (engine data) | List |
@@ -367,7 +367,7 @@ same pass rates and the same failing phrases before and after 2.6.2). `relations
 
 ### Words that tell actions apart
 
-A number or a side the query names tells actions of one function apart (2.6.3, a tester's `LMFD OSB 15`:
+A number or a side the query names tells actions of one function apart (2.6.3, a user's `LMFD OSB 15`:
 `FMFD: OSB-15 Button - Push` was recommended and `LMFD: OSB-15 Button - Push` was "another action for the same thing"; `AVIONICS: MFD
 Switch - OFF` and DCS's `APU Fire Pushbutton` were "Same function" too):
 
@@ -402,7 +402,7 @@ A DCS command id is no function of its own. `a2001cdnil` is "Pitch" in the jets,
 helicopters; a clickable cockpit id like `d3002pnilunilcd3vd1vpnilvunil` (device 3, command 3002) is "Hydraulic
 Emergency Release Knob" in the P-51D, "Fuel Densitometer Selection Switch Cover - OPEN" in the F-86F and "Bomb control
 handle - PASSIVE" in the La-7; `dnilp95u215...` is "Trim: Nose Up" in most jets and "Trim: Nose Down" on the F-16's
-HOTAS. On the development PC's lists (122 DCS aircraft lists, 24 472 ids) 10 839 ids are shared by several aircraft and
+HOTAS. On a full set of lists (122 DCS aircraft lists, 24 472 ids) 10 839 ids are shared by several aircraft and
 3 289 of them mean something else in some aircraft (8 232 aircraft entries), 987 have near variants. The niche ones are
 the worst: cockpit switches, electrics, radios, magnetos, voice chat (`d1731...`: 20 meanings). Every other game has one
 list per game (one meaning per id); the same rules apply there and find nothing (`relations meanings`).
@@ -477,7 +477,7 @@ remembered in `list-preferences.json` (`KeptAircraft`: relation|game|id|plane, t
 asked about again. The profile-wide number is the small link
 `Check all relations (n actions)` above the editor: it runs the check again and lists every flagged action (a click
 opens its relation) with `Switch them all off` (`--apply`, one undo step; one run per action when the user keeps
-aircraft). On the user's HoldiFeb23 profile (443 relations, 2 760 actions): 220 actions with differing
+aircraft). On a real profile (443 relations, 2 760 actions): 220 actions with differing
 aircraft, 165 actions in 129 relations to repair, 360 aircraft to switch off, 398 kept as the same function.
 
 ## Suggested for this relation (no AI)
@@ -723,11 +723,11 @@ boost. `relations resolve` ranks the same way. The `not` words keep the look-ali
 balloon burner, gyroscope axes, flight director and AP pitch reference, ADI / horizon / boresight adjustment, STAB
 AUG, head tracker, turret, Star Citizen's character customizer and EVA, DCS vehicle pedals.
 
-On the lists of the development PC (80 327 actions of 31 games) 73 % of all actions map to a function (95 % of the
+On a full set of lists (80 327 actions of 31 games) 73 % of all actions map to a function (95 % of the
 FSX/P3D lists, 89 % of War Thunder, 84 % of Falcon BMS, 72 % of DCS; the rest are panel knobs, cameras and menus).
 `tools\relations\check-function-map.ps1` measures coverage, search quality on `tools\relations\search-eval.tsv` (218
 name, synonym, game-term, direction, described, held-out and typo queries; `pitch`, `roll`, `yaw`, `rudder` and
-`throttle` also name the first row of every game: 107 of 107 right on the development PC, 85 before the primary axes)
+`throttle` also name the first row of every game: 107 of 107 right, 85 before the primary axes)
 and mapping precision on the hand-labelled `tools\relations\function-labels.tsv`.
 ## Engine API
 
@@ -798,7 +798,7 @@ had instead of stamping the current one, so the next load still corrects) puts a
 node switched on only when no other relation has that action of that aircraft on and, in DCS, its title of the id means
 what the node's switched-on aircraft mean (same / near / same function); otherwise it goes in switched off ("left out").
 Before 2.3.1 it switched the aircraft on in every node of the id, so a profile could collect such duplicates without
-any user action (a tester's DCS import of 21 Oct added 330 aircraft, 77 of them duplicates such as the AH-64 force trim
+any user action (a user's DCS import of 21 Oct added 330 aircraft, 77 of them duplicates such as the AH-64 force trim
 on a MFBB and a MOZA button).
 
 ### Load correction: only aircraft new in the command lists (2.6.2)
@@ -808,9 +808,9 @@ on a MFBB and a MOZA button).
 lists had not had). JoyPro 2's imports put only the bound aircraft into a node, so up to 2.6.1 every change of the
 lists (Refresh DB, which 2.6.1 asked everyone with DCS mods to do, or a JoyPro update with new lists) switched on every
 aircraft of a node's id the user had never bound, as long as nothing else was on that input and the meaning fitted: a
-tester's `THROTTLE - SLIDER -HELO POWER BOTH` (AH-64D CPG and Pilot, Ka-50 III, Mosquito) got F-15C, A-10C, MiG-29,
+user's `THROTTLE - SLIDER -HELO POWER BOTH` (AH-64D CPG and Pilot, Ka-50 III, Mosquito) got F-15C, A-10C, MiG-29,
 Su-25 and `Default` by the shared FC3 thrust id, 446 aircraft in 180 relations in one step, saved under the label of
-his next click. Since 2.6.2:
+the next click. Since 2.6.2:
 
 - the profile keeps the aircraft of the lists next to its DB fingerprint (`Pr0file.DatabasePlanes`, `game<TAB>aircraft`;
   DCS one list per aircraft, IL-2 and Star Citizen one per game), stamped with the fingerprint (a command that loads
@@ -838,7 +838,7 @@ by a change (not an undo, a restore, an import, a take-over or a builder like Au
 fingerprint than the one it was made on and in which aircraft went from "not in the node" to "on" in existing nodes of
 at least 3 relations (relations its label names, such as `Adding 1 actions to 'Pitch'`, are the user's). Offered are
 the aircraft of those steps that are still on now and that no import brought since; `Relations` says per relation what
-goes (`Remove`) and what stays (`Keeps`, `KeepsAircraft`). On the tester's profile (history of 2 and 3 Nov) it finds
+goes (`Remove`) and what stays (`Keeps`, `KeepsAircraft`). On a user's profile (history of 2 and 3 Nov) it finds
 step #117: 448 entries in 180 relations, of them 426 aircraft in 167 relations and 22 input layers (13 relations have
 only a layer), `THROTTLE - SLIDER -HELO POWER BOTH` back to its 4 aircraft. `--apply [--skip "key;key"]` takes them out
 (the node gets back to the aircraft it had; the skipped ones stay), `--keep` stops asking; either is one profile version
@@ -850,16 +850,16 @@ aircraft to untick, `Take them out`, `Keep these aircraft`, `Later`).
 
 *Input layers are no aircraft.* `Default` and the other `EngineDcsExport.IsNonAircraftLayer` layers are marked `NonAircraft`
 on their entry and counted in `NonAircraft` on the result; `Aircraft` and `RelationCount` are real aircraft only. An export writes such a layer to `Config\Input\<layer>\` like an aircraft folder and never into a module's; the
-module's files are byte for byte the same with and without it (checked on a tester's profile), and nuke and "clean all
+module's files are byte for byte the same with and without it (checked on a user's profile), and nuke and "clean all
 aircraft" skip the layers. Whether DCS itself reads the `Default` folder for a module is not something the code can show;
-a tester reports it does not. A profile with only such layers gets no notice and its entries stay (a tester had 17 such
+a user reports it does not. A profile with only such layers gets no notice and its entries stay (a user had 17 such
 rows, "17 aircraft", all `Default`); the command still lists them and `--apply` works. With real aircraft too they come
 last in the list as `Default (not an aircraft)`, ticked like the rest.
 
 *What is never offered.* The history label is what the step was called when it was made, so `BuilderLabels` has both the
 engine's name of a command and the GUI's busy words, past and present (`Import from`, `Importing`, `Taking over`, `Auto
 grouping`, `Assigning controls`, `Creating relations from your description`, `Manage with AI`, `Merging copied relations`,
-`Game setup`, ...); it missed `Importing from DCS` and `Taking over the game's changes` until 2.6.3, so a tester's import
+`Game setup`, ...); it missed `Importing from DCS` and `Taking over the game's changes` until 2.6.3, so a user's import
 of 21 Oct (329 aircraft) was offered for removal. A label is matched per part of a joined label (`Opening the profile +
 Importing from DCS`: one click, several saves). Two guards do not depend on the step's own label (a GUI label can go into
 the history translated): the step right after a `Before import from` checkpoint, and a step that made 3 or more new
@@ -891,7 +891,7 @@ its name says (function map) against the action's function, the aircraft's meani
 aircraft; a button position ("Different functions per aircraft") is neutral; 92 only for "alone here, means something
 else there", 85 for alone against not alone, else at most 80 by the lead. A relation pair the user kept before lowers it
 by 25. `relations duplicates --evaluate <older.pr0file> [--no-history]` measures it against the version before the
-duplicates came: on the tester's profile (81 duplicates, truth = his version of 21 Oct before the import) every
+duplicates came: on a real profile (81 duplicates, truth = its version from before the import) every
 suggestion is right at every threshold with the history; without it 22 of 22 at 90% and more, 23 of 23 at 85%, 24 of 26
 at 80% (the other 2 are right binds too: none of the relations had them, they stay in the one of their function); on two
 more profiles corrupted by the old load correction (414 and 194 duplicates) every suggestion at 85% and more is right.
@@ -1021,7 +1021,7 @@ function id when the map proposed it); `Source` is `function map` for those rows
   relations and new searches, nothing in the chosen games, the left filter, "Which model?", its click and the answer after
   a restart), `GameChipsPersistTests`. Pictures: `JOYPRO_263_RENDER_OUT`, `JOYPRO_263_ENGINE`, `JOYPRO_263_PROFILE`.
 - GUI: `gui/JoyPro.Gui.Tests/SameMeaningTests.cs`: the real engine with "Wheel Brakes (analog)" (the Spitfire's axis)
-  for the tester's aircraft: the empty start, "brakes" (name matches, `Related (7)` folded and opened, the reasons,
+  for a user's aircraft: the empty start, "brakes" (name matches, `Related (7)` folded and opened, the reasons,
   `axis (sim-pit switch)`), Same meaning off (only names, the hidden count; `thrust`: "no name match" and Show same
   meaning), the switch surviving a restart and in Settings > Relations, the reason texts, the plural highlight;
   `JOYPRO_SAMEMEANING_RENDER_OUT=<folder>` renders it light and dark.

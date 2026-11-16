@@ -13,14 +13,10 @@ a fix you can undo.
 :::
 
 ```mermaid
+%% caption: The Check only looks and never blocks an export. Every fix is one step that Ctrl+Z takes back.
 flowchart LR
-  A["Check now<br/>(or Check in the bottom bar)"] --> B["engine profile validate"]
-  B --> C["relations duplicates<br/>relations conflicts<br/>export-marks list"]
-  C --> D["Cards by section:<br/>errors, warnings, notes"]
-  D --> E{"Fix"}
-  E -->|recommended| F["One engine command<br/>= one undo step"]
-  E -->|Open relation| G["Relation opens with the<br/>card's commands marked"]
-  E -->|Ignore| H["Saved in the profile, hidden<br/>until something new joins it"]
+  A["Check<br/>(bottom bar, or<br/>Check now)"] --> B["Cards:<br/>errors, warnings,<br/>notes"]
+  B --> C["Per card: a fix,<br/>Open the relation,<br/>or Ignore"]
 ```
 
 :::layer beginner

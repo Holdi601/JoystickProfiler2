@@ -55,12 +55,12 @@ game's exe, WEB = web source, INF = inferred.
 
 FSX: not on this PC as a Steam version, left out.
 
-### What needs the user (live)
+### Not checked in game yet
 - **Battlefield 6** (and 2042 when installed): the joystick survey, about 5 minutes. See [battlefield.md](battlefield.md#live-survey-finishes-the-integration).
 - **ACE COMBAT 8:** one flight with the virtual Xbox pad (ViGEmBus installed); find the pad buttons of flares and view.
 - Tiny Combat Arena and G-Rebels were started and bound by the e2e kit on 2026-10-11 (see their pages).
 - **KSP 1** (when installed): one real file with known binds, read-only. (Project Wingman and ACE COMBAT 7: done
-  2026-10-12; AC7's controls menu and a flight are still open.)
+  2026-10-12, except AC7's controls menu and a flight.)
 - **H.A.W.X 2:** install Ubisoft Connect, log in, start the game once ([hawx.md](hawx.md)).
 
 ### Checked and not one-device (2026-10-11)

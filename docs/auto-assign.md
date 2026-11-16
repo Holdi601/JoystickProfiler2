@@ -80,7 +80,8 @@ Reach follows from them:
   - by the position word, so that LDG GEAR CENTER is never gear up and HOOK DOWN gets tail hook down;
   - by how much of the label the keywords explain, so JETT SAFE takes "Jettison safe" before "Jettison".
 
-  Generic labels (B1, SW1 UP, Key 01, "5-position rotary") count as unlabelled.
+  Generic labels (B1, SW1 UP, Key 01, "5-position rotary") and catalog descriptions in lower case that only describe
+  the control ("4-way hat Left (buttons 5-8)", "Left position button") count as unlabelled ([devices](devices.md)).
 - **Cockpit replicas** are panels where at least half the controls, and at least four, carry printed labels (WinWing
   take-off panel, UFC, ICP, combat ready panel ...). Their unlabelled controls take nothing except a function whose own
   position they are. Generic button boxes take anything.
@@ -174,7 +175,7 @@ devices through `JOYPRO_FAKE_DEVICES`):
 - yoke + quadrant;
 - a small set with a mode switch;
 - unknown devices;
-- the author's pit.
+- a large pit.
 
 The checks:
 
@@ -210,4 +211,4 @@ phase layers. The same plan is made twice and must be identical.
   criticality. `tools/slot_phases.py` writes the phases, the criticality, the keypad labels and the MFDs' OSB order; run
   it again after the catalog generator rewrote the file.
 
-To set up the relations and binds for the games you watch in one go (device roles, aircraft priorities, modifiers, realism, review), use the [Setup wizard](setup-wizard.md).
+To set up the relations and binds for the games you watch in one go (device roles, aircraft priorities, modifiers, where functions go, review), use the [Setup wizard](setup-wizard.md).

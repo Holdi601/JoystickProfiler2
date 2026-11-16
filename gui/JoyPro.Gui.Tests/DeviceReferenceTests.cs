@@ -76,7 +76,7 @@ public sealed class DeviceReferenceTests : IDisposable
         Assert.Empty(catalog.Warnings);
         Assert.True(catalog.Devices.Count >= 300, "only " + catalog.Devices.Count + " models");
         Assert.Equal(catalog.Devices.Count, catalog.Devices.Select(d => d.Id.ToLowerInvariant()).Distinct().Count());
-        string[] kinds = ["stick", "throttle", "hotas", "base", "pedals", "collective", "yoke", "quadrant", "panel", "mfd", "buttonbox", "controller", "other"];
+        string[] kinds = ["stick", "throttle", "hotas", "base", "pedals", "collective", "yoke", "quadrant", "panel", "mfd", "buttonbox", "controller", "gamepad", "other"];
         foreach (RefDevice device in catalog.Devices)
         {
             Assert.Contains(device.Kind, kinds);

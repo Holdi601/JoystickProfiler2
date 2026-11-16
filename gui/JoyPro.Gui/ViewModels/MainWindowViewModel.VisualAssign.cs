@@ -255,7 +255,7 @@ public sealed partial class MainWindowViewModel
 
     private void RebuildVisualAssignDeviceOptions()
     {
-        IEnumerable<string> devices = allBinds
+        IEnumerable<string> devices = AllBoundInputs()
             .Where(b => b.HasBind && !string.IsNullOrWhiteSpace(b.Device) && !string.Equals(b.Device, "Keyboard", StringComparison.OrdinalIgnoreCase))
             .Select(b => b.Device)
             .Concat(QuickBindDeviceOptions.Where(d => !string.Equals(d, "Keyboard", StringComparison.OrdinalIgnoreCase)))
@@ -301,13 +301,14 @@ public sealed partial class MainWindowViewModel
 
     private string FindRelationBoundTo(string device, string input, string modifier)
     {
-        BindListItem? bind = allBinds.FirstOrDefault(b =>
+        // Every input of a relation (its other inputs too, multi-bind).
+        BindListItem? bind = AllBoundInputs().FirstOrDefault(b =>
             b.HasBind &&
             SameDevice(b.Device, device) &&
             string.Equals((b.Input ?? string.Empty).Trim(), input.Trim(), StringComparison.OrdinalIgnoreCase) &&
             SameModifiers(b.ModifiersSummary, modifier));
         // A profile made on another PC (or before Windows gave the device a new GUID): the same device name.
-        bind ??= allBinds.FirstOrDefault(b =>
+        bind ??= AllBoundInputs().FirstOrDefault(b =>
             b.HasBind &&
             SameDeviceName(b.Device, device) &&
             string.Equals((b.Input ?? string.Empty).Trim(), input.Trim(), StringComparison.OrdinalIgnoreCase) &&

@@ -217,6 +217,31 @@ try {
     Assert-True ((Get-VjSorted (Get-VjHidHide)) -eq (Get-VjSorted $vjDormant)) "restore-hidhide must give HidHide back exactly its previous state."
     Assert-True (@(Get-ChildItem (Join-Path $vjData "VirtualJoystick\history") -Filter "hidhide-session-*.txt").Count -ge 1) "A restored session must be kept in the history."
 
+    # Steam's own spelling "c:\program files (x86)\...": HidHideCLI's volume check is case sensitive and one refused
+    # path makes it drop the WHOLE call with exit code 0 (owner report 2026-11-14: cloaking stayed off, every Start
+    # failed). The path goes to HidHide with an upper-case drive letter, the fake CLI refuses like the real one.
+    $vjMtExe = Join-Path $vjDir "games\DCS World\bin-mt\DCS.exe"
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $vjMtExe) | Out-Null
+    [System.IO.File]::WriteAllText($vjMtExe, "", $vjUtf8)
+    $vjMtLower = $vjMtExe.Substring(0, 1).ToLowerInvariant() + $vjMtExe.Substring(1)
+    Run-Engine @("--profile", $vjProfile, "vjoy", "exe", "DCS", "--add", $vjMtLower, "--text") | Out-Null
+    $vjLower = Run-Engine @("--profile", $vjProfile, "vjoy", "apply-hidhide", "--owner-pid", "$PID", "--text")
+    Assert-True ($vjLower.ExitCode -eq 0) "apply-hidhide with a lower-case drive letter failed. Output: $($vjLower.Output)"
+    $vjLowerState = Get-VjHidHide
+    Assert-True ($vjLowerState -cmatch [regex]::Escape("--app-reg `"" + $vjMtExe.Substring(0, 1).ToUpperInvariant() + $vjMtExe.Substring(1) + "`"")) "The game path must reach HidHide with an upper-case drive letter."
+    Assert-Match $vjLowerState "--cloak-on" "HidHide must be on during the session."
+    Run-Engine @("vjoy", "restore-hidhide", "--text") | Out-Null
+    Assert-True ((Get-VjSorted (Get-VjHidHide)) -eq (Get-VjSorted $vjDormant)) "restore-hidhide must give HidHide back exactly its previous state."
+    # A restore with nothing left to change needs no administrator step (no HidHideCLI change call).
+    $vjCallsBefore = @(Get-Content (Join-Path $vjFake "hidhide-calls.txt")).Count
+    Run-Engine @("--profile", $vjProfile, "vjoy", "apply-hidhide", "--owner-pid", "$PID", "--text") | Out-Null
+    [System.IO.File]::WriteAllText((Join-Path $vjFake "hidhide-state.txt"), $vjDormant, $vjUtf8)
+    $vjQuick = Run-Engine @("vjoy", "restore-hidhide", "--text")
+    Assert-True ($vjQuick.ExitCode -eq 0) "restore-hidhide of a session whose changes are gone failed. Output: $($vjQuick.Output)"
+    Assert-Match $vjQuick.Output "already had its previous configuration" "restore-hidhide must say that nothing had to change."
+    Assert-True (@(Get-Content (Join-Path $vjFake "hidhide-calls.txt")).Count -eq $vjCallsBefore + 1) "restore-hidhide with nothing to change must not call HidHideCLI."
+    Run-Engine @("vjoy", "exe", "DCS", "--remove", $vjMtLower, "--text") | Out-Null
+
     # Crash: the owner is gone -> stale -> recover restores.
     $vjGone = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", "exit" -PassThru -WindowStyle Hidden
     $vjGone.WaitForExit()

@@ -37,6 +37,8 @@ namespace JoyPro
         public static string VirtualJoystickConfig = string.Empty;
         // Lay out with AI: the user's layout preferences as JSON (EngineLayout); empty = none.
         public static string LayoutPreferences = string.Empty;
+        // The Setup wizard's head-tracking answer for this profile (Pr0file.HeadTracking): "yes", "no" or empty (not asked).
+        public static string HeadTracking = string.Empty;
         // Actions on in several relations on purpose (Pr0file.KeptDuplicates).
         public static List<string> KeptDuplicates = new List<string>();
         // Pr0file.ExportSkipMarks and Pr0file.SyncedGames.
@@ -240,6 +242,7 @@ namespace JoyPro
             AxisCalibrations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             VirtualJoystickConfig = string.Empty;
             LayoutPreferences = string.Empty;
+            HeadTracking = string.Empty;
             KeptDuplicates = new List<string>();
             ExportSkipMarks = new List<string>();
             DismissedSuggestions = new List<string>();
@@ -725,6 +728,7 @@ namespace JoyPro
                 : new Dictionary<string, string>(profile.AxisCalibrations, StringComparer.OrdinalIgnoreCase);
             VirtualJoystickConfig = profile.VirtualJoystick ?? string.Empty;
             LayoutPreferences = profile.LayoutPreferences ?? string.Empty;
+            HeadTracking = profile.HeadTracking ?? string.Empty;
             KeptDuplicates = profile.KeptDuplicates == null ? new List<string>() : profile.KeptDuplicates.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             ExportSkipMarks = profile.ExportSkipMarks == null ? new List<string>() : profile.ExportSkipMarks.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.Ordinal).ToList();
             DismissedSuggestions = profile.DismissedSuggestions == null ? new List<string>() : profile.DismissedSuggestions.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
@@ -819,6 +823,7 @@ namespace JoyPro
             public Dictionary<string, string> AxisCalibrations;
             public string VirtualJoystickConfig;
             public string LayoutPreferences;
+            public string HeadTracking;
             public List<string> KeptDuplicates;
             public List<string> ExportSkipMarks;
             public List<string> DismissedSuggestions;
@@ -869,6 +874,7 @@ namespace JoyPro
                 AxisCalibrations = AxisCalibrations,
                 VirtualJoystickConfig = VirtualJoystickConfig,
                 LayoutPreferences = LayoutPreferences,
+                HeadTracking = HeadTracking,
                 KeptDuplicates = KeptDuplicates,
                 ExportSkipMarks = ExportSkipMarks,
                 DismissedSuggestions = DismissedSuggestions,
@@ -928,6 +934,7 @@ namespace JoyPro
             AxisCalibrations = state.AxisCalibrations;
             VirtualJoystickConfig = state.VirtualJoystickConfig;
             LayoutPreferences = state.LayoutPreferences;
+            HeadTracking = state.HeadTracking ?? string.Empty;
             KeptDuplicates = state.KeptDuplicates;
             ExportSkipMarks = state.ExportSkipMarks ?? new List<string>();
             DismissedSuggestions = state.DismissedSuggestions ?? new List<string>();
@@ -4297,6 +4304,7 @@ namespace JoyPro
             profile.VirtualJoystick = string.IsNullOrWhiteSpace(VirtualJoystickConfig) ? null : VirtualJoystickConfig;
             profile.AxisCalibrations = AxisCalibrations == null || AxisCalibrations.Count == 0 ? null : AxisCalibrations;
             profile.LayoutPreferences = string.IsNullOrWhiteSpace(LayoutPreferences) ? null : LayoutPreferences;
+            profile.HeadTracking = string.IsNullOrWhiteSpace(HeadTracking) ? null : HeadTracking;
             profile.KeptDuplicates = KeptDuplicates == null || KeptDuplicates.Count == 0 ? null : KeptDuplicates.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
             profile.ExportSkipMarks = ExportSkipMarks == null || ExportSkipMarks.Count == 0 ? null : ExportSkipMarks.OrderBy(k => k, StringComparer.Ordinal).ToList();
             profile.DismissedSuggestions = DismissedSuggestions == null || DismissedSuggestions.Count == 0 ? null : DismissedSuggestions.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();

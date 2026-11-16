@@ -984,14 +984,36 @@ namespace JoyPro.Engine
             if (axis)
             {
                 if (f.AxisDirs)
-                    return Scan(f.DirTokens, tokens);
+                {
+                    string axisDir = Scan(f.DirTokens, tokens);
+                    // "View pan pitch axis", "View pan tilt axis" (FSX / Prepar3D): "pan" is the generic look word there,
+                    // "pitch" / "tilt" say the axis.
+                    if (axisDir == "x")
+                    {
+                        string named = Scan(f.DirTokens.Where(d => !(d.Key.Length == 1 && d.Key[0] == "pan")).ToList(), tokens);
+                        if (AxisGroupDirs.Contains(named))
+                            return named;
+                    }
+                    return axisDir;
+                }
                 return f.Sided ? SideOf(tokens) : string.Empty;
             }
             string dir = Scan(f.DirTokens, tokens);
+            // A button that names its way beats the function's axis words: "Pan left" (FSX, IL-2 1946, Cliffs of
+            // Dover, Nuclear Option) is a look left, "Tilt up" a look up, not the "pan" / "tilt" axis (x, y).
+            if (AxisGroupDirs.Contains(dir))
+            {
+                string named = Scan(f.DirTokens.Where(d => !AxisGroupDirs.Contains(d.Value)).ToList(), tokens);
+                if (named.Length > 0 && named != "toggle")
+                    return named;
+            }
             if (dir.Length > 0 || f.HasDirs)
                 return dir;
             return Scan(map.GlobalDirs, tokens);
         }
+
+        // A function's own axis words ("x" = horizontal / pan, "y" = vertical / tilt, "z").
+        private static readonly HashSet<string> AxisGroupDirs = new HashSet<string>(StringComparer.Ordinal) { "x", "y", "z" };
 
         // The direction words in the tokens (longest first, each word used once), earliest in the title wins; two
         // opposite ones ("Up/Down", "On/Off") or "toggle" make a toggle.

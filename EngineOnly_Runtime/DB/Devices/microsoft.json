@@ -525,6 +525,160 @@
      "label": "Base button"
     }
    ]
+  },
+  {
+   "id": "microsoft-xbox-controller",
+   "name": "Microsoft Xbox Controller (Xbox One / Series / 360, wired or wireless)",
+   "kind": "gamepad",
+   "hand": "none",
+   "identify": {
+    "vidPids": [
+     "045E:02FF",
+     "045E:028E",
+     "045E:02EA",
+     "045E:02E0",
+     "045E:0B12",
+     "045E:0B13",
+     "045E:0B20"
+    ],
+    "names": [
+     "Controller (Xbox One For Windows)",
+     "Controller (XBOX 360 For Windows)",
+     "Xbox Wireless Controller",
+     "Controller (Xbox Series X For Windows)"
+    ],
+    "note": "Gamepad, held with both hands. Through DirectInput (the XInput compatibility layer) every Xbox controller reports the same layout: X/Y = left stick, Z = both triggers on one axis (LT one way, RT the other), RX/RY = right stick, 10 buttons (A, B, X, Y, LB, RB, View/Back, Menu/Start, left stick press, right stick press) and the D-pad as POV 1. The Setup wizard uses it only when no joystick, HOTAS or yoke is connected (gamepad-only setups): left stick pitch/roll, triggers rudder, right stick (a spring-centred thumb stick) looking around, the throttle on increase / decrease buttons where the game has them, else on the right stick."
+   },
+   "sources": [
+    "https://learn.microsoft.com/windows/win32/xinput/xinput-and-directinput",
+    "http://www.linux-usb.org/usb.ids"
+   ],
+   "confidence": "medium",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll",
+     "label": "Left stick left/right"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch",
+     "label": "Left stick up/down"
+    },
+    {
+     "input": "JOY_Z",
+     "control": "stick.axis.twist",
+     "label": "Triggers LT/RT (one axis)"
+    },
+    {
+     "input": "JOY_RX",
+     "control": "throttle.axis.ministick.x",
+     "label": "Right stick left/right"
+    },
+    {
+     "input": "JOY_RY",
+     "control": "throttle.axis.ministick.y",
+     "label": "Right stick up/down"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "input": "JOY_BTN6",
+     "type": "momentary",
+     "label": "RB (right bumper)",
+     "finger": "index"
+    },
+    {
+     "control": "stick.weapon_release",
+     "input": "JOY_BTN5",
+     "type": "momentary",
+     "label": "LB (left bumper)",
+     "finger": "index"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "input": "JOY_BTN1",
+     "type": "momentary",
+     "label": "A",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "input": "JOY_BTN2",
+     "type": "momentary",
+     "label": "B",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "input": "JOY_BTN3",
+     "type": "momentary",
+     "label": "X",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.4",
+     "input": "JOY_BTN4",
+     "type": "momentary",
+     "label": "Y",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.5",
+     "input": "JOY_BTN9",
+     "type": "momentary",
+     "label": "Left stick press",
+     "finger": "thumb"
+    },
+    {
+     "control": "throttle.ministick.press",
+     "input": "JOY_BTN10",
+     "type": "momentary",
+     "label": "Right stick press",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.base.button.1",
+     "input": "JOY_BTN7",
+     "type": "momentary",
+     "label": "View / Back"
+    },
+    {
+     "control": "stick.base.button.2",
+     "input": "JOY_BTN8",
+     "type": "momentary",
+     "label": "Menu / Start"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "input": "JOY_BTN_POV1_U",
+     "type": "momentary",
+     "label": "D-pad up",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "input": "JOY_BTN_POV1_R",
+     "type": "momentary",
+     "label": "D-pad right",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "input": "JOY_BTN_POV1_D",
+     "type": "momentary",
+     "label": "D-pad down",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "input": "JOY_BTN_POV1_L",
+     "type": "momentary",
+     "label": "D-pad left",
+     "finger": "thumb"
+    }
+   ]
   }
  ]
 }

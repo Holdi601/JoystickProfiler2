@@ -24,7 +24,8 @@ namespace JoyPro.Gui.Tests;
 // The detail screenshots of the wiki's GUI pages (website/content/gui/*.md): tabs, panels, dialogs and wizard steps in
 // the light and the dark theme, with the fake profiles of the design, layout, force feedback, virtual joystick and
 // setup wizard renders. Same opt-in as RenderWebsiteScreenshots (JOYPRO_WEBSITE_SHOTS_OUT); JOYPRO_WEBSITE_SHOTS_ONLY
-// (comma list of groups: design, settings, hud, layout, ffb, vjoy, wizard, setup) renders only those.
+// (comma list of groups: design, settings, hud, layout, ffb, vjoy, wizard, setup, and the 2.7 beginner screens welcome,
+// tour, f1-help, quick-setup, vjoy-pad, layout-kneeboard, where-is-what or all of them as novice) renders only those.
 // Every render is searched for texts with this PC's user name or temp folder: they are listed in leaks.txt (a picture
 // must show only the neutral demo paths).
 public sealed partial class WebsiteScreenshotTests
@@ -46,7 +47,7 @@ public sealed partial class WebsiteScreenshotTests
         Directory.CreateDirectory(outDir);
         HashSet<string> only = (Environment.GetEnvironmentVariable("JOYPRO_WEBSITE_SHOTS_ONLY") ?? string.Empty)
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        bool Wanted(string group) => only.Count == 0 || only.Contains(group);
+        bool Wanted(string group) => only.Count == 0 || only.Contains(group) || (NoviceGroups.Contains(group) && only.Contains("novice"));
         List<string> leaks = [];
 
         AvaloniaRenderThread.Run(() =>
@@ -55,8 +56,8 @@ public sealed partial class WebsiteScreenshotTests
             {
                 if (Wanted("design") || Wanted("settings") || Wanted("hud"))
                     DesignShots(outDir, leaks, Wanted("design"), Wanted("settings"), Wanted("hud"));
-                if (Wanted("layout"))
-                    LayoutShots(outDir, leaks);
+                if (Wanted("layout") || Wanted("layout-kneeboard"))
+                    LayoutShots(outDir, leaks, Wanted("layout"), Wanted("layout-kneeboard"));
                 if (Wanted("ffb"))
                     FfbShots(outDir, leaks);
                 if (Wanted("vjoy"))
@@ -65,6 +66,14 @@ public sealed partial class WebsiteScreenshotTests
                     WizardShots(outDir, leaks);
                 if (Wanted("setup"))
                     FirstStartShots(outDir, leaks);
+                if (Wanted("welcome") || Wanted("tour") || Wanted("f1-help"))
+                    HelpLayerShots(outDir, leaks, Wanted("welcome"), Wanted("tour"), Wanted("f1-help"));
+                if (Wanted("quick-setup"))
+                    QuickSetupShots(outDir, leaks);
+                if (Wanted("vjoy-pad"))
+                    VJoyPadShots(outDir, leaks);
+                if (Wanted("where-is-what"))
+                    WhereIsWhatShots(outDir, leaks);
             }
             finally
             {
@@ -432,7 +441,7 @@ public sealed partial class WebsiteScreenshotTests
 
     // ---- Layout (the layout renders' profile: JoyPro's drawing of the Warthog stick, a button box) ----
 
-    private static void LayoutShots(string outDir, List<string> leaks)
+    private static void LayoutShots(string outDir, List<string> leaks, bool all, bool kneeboard)
     {
         string work = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "website-layout");
         Directory.CreateDirectory(work);
@@ -449,7 +458,7 @@ public sealed partial class WebsiteScreenshotTests
             foreach (string theme in Themes)
             {
                 SetTheme(theme);
-                foreach ((string page, string name) in pages)
+                foreach ((string page, string name) in all ? pages : [])
                 {
                     AvaloniaRenderThread.Wait(LayoutRedesignRenderTests.LayoutPages.ShowAsync(vm, page));
                     if (page == "cheatsheets")
@@ -465,6 +474,9 @@ public sealed partial class WebsiteScreenshotTests
                     if (page == "cheatsheets")
                         vm.LayoutExportPath = Path.Combine(work, "Cheat sheets");
                 }
+                // Layout > Kneeboard: the cheat sheets as kneeboard pages (the Cheat sheets section's card).
+                if (kneeboard)
+                    KneeboardShot(vm, work, theme, outDir, leaks);
             }
         }
         finally

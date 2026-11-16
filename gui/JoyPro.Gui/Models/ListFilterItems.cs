@@ -11,7 +11,7 @@ namespace JoyPro.Gui.Models;
 public sealed class FilterSubject
 {
     public FilterSubject(string name, IEnumerable<string> groups, IEnumerable<string> gamePlanes, string device, bool isBound, bool isAxis, string searchText,
-        IEnumerable<string>? actionTitles = null)
+        IEnumerable<string>? actionTitles = null, IEnumerable<string>? otherDevices = null)
     {
         string titles = string.Join("\u0001", (actionTitles ?? []).Where(t => !string.IsNullOrWhiteSpace(t)));
         NameText = (name ?? string.Empty).Trim().ToLowerInvariant();
@@ -24,6 +24,14 @@ public sealed class FilterSubject
         GamePlanes = new HashSet<string>((gamePlanes ?? []).Where(p => p.Contains('|')), StringComparer.OrdinalIgnoreCase);
         Games = new HashSet<string>(GamePlanes.Select(p => p[..p.IndexOf('|')]), StringComparer.OrdinalIgnoreCase);
         Device = isBound ? (device ?? string.Empty).Trim() : string.Empty;
+        Devices = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (Device.Length > 0)
+            Devices.Add(Device);
+        foreach (string other in otherDevices ?? [])
+        {
+            if (!string.IsNullOrWhiteSpace(other))
+                Devices.Add(other.Trim());
+        }
         IsBound = isBound;
         IsAxis = isAxis;
         SearchText = (titles.Length == 0 ? searchText ?? string.Empty : (searchText ?? string.Empty) + "\u0001" + titles).ToLowerInvariant();
@@ -53,6 +61,10 @@ public sealed class FilterSubject
 
     // The full device name of its bind ("" when not bound).
     public string Device { get; }
+
+    // Every device of its inputs: the bind's and those of its other inputs (multi-bind); the device filter shows a
+    // relation on any of them.
+    public HashSet<string> Devices { get; }
 
     public bool IsBound { get; }
 

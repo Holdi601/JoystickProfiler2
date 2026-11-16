@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <Version>2.6.5</Version>
+    <Version>2.7.0</Version>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -21,6 +21,11 @@
     <EmbeddedResource Include="Resources\ThirdPartyNotices.txt" LogicalName="JoyPro.Gui.ThirdPartyNotices.txt" />
     <!-- The HUD page for OBS's Browser Source (Services\HudStreamServer.cs, docs/hud.md "Streamer mode"). -->
     <EmbeddedResource Include="Resources\hud-stream.html" LogicalName="JoyPro.Gui.HudStream.html" />
+    <!-- F1's help mode (docs/ui/help-and-tours.md): every control's short text from its wiki entry, made by
+         python website/build.py with the help-catalog option. -->
+    <EmbeddedResource Include="Resources\help-controls.json" LogicalName="JoyPro.Gui.HelpControls.json" />
+    <!-- "JoyPro 2 - Tour" next to the exe: starts JoyPro with the welcome and its tours (the welcome option). -->
+    <None Include="Resources\JoyPro 2 - Tour.cmd" Link="JoyPro 2 - Tour.cmd" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <!-- The GUI's texts per language (docs/localization.md): Localization\Strings\<code>.json, English is the key. -->
     <EmbeddedResource Include="Localization\Strings\*.json" LogicalName="JoyPro.Gui.Localization.%(Filename).json" />
     <!-- The engine's axis response models (plain C# 7.3 math) for the curve manager's live preview. -->

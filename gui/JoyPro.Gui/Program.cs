@@ -30,7 +30,7 @@ sealed class Program
         using Watch.SingleInstanceGuard? guard = Watch.SingleInstanceGuard.TryAcquire(names.Gui);
         if (guard == null)
         {
-            AppShell.ForwardReviewKeys(names, options.ReviewKeys);
+            AppShell.ForwardReviewKeys(names, options.ShowWelcome ? [.. options.ReviewKeys, Services.StartupOptions.WelcomeRequest] : options.ReviewKeys);
             Watch.SingleInstanceGuard.SignalExisting(names.Gui);
             return;
         }

@@ -1175,17 +1175,30 @@ namespace JoyPro.Engine.Games
                 // No preset in the package because none of the exported devices is connected (the sim matches a preset
                 // by the device's product ID): the import files still carry the binds (they start from the user's own
                 // profiles), so the export is no failure when they were written.
-                if (isPackage && profiles.Count == 0 && result.Errors.Count == 1 && result.Errors[0].Contains("has no presets yet"))
+                // A fresh MSFS 2024 has no device profile in the folder yet (the sim makes one when Controls is opened with
+                // the device): the same fallback, the import files carry the binds (walk-through of 2026-11-14: the export
+                // failed and wrote nothing).
+                bool noPresets = isPackage && result.Errors[0].Contains("has no presets yet");
+                bool noProfiles = sim == 2024 && result.Errors[0].StartsWith("No MSFS device profiles", StringComparison.Ordinal);
+                if (profiles.Count == 0 && result.Errors.Count == 1 && (noPresets || noProfiles))
                 {
                     List<string> packageErrors = new List<string>(result.Errors);
                     result.Errors.Clear();
                     HashSet<string> notWritten = WriteUserProfilesOf2024(request, result);
                     if (request.DryRun)
+                    {
+                        if (noProfiles)
+                            result.Steps.Add("Dry run: no MSFS 2024 device profile in " + request.ConfigPath + " yet; the export would write the import files.");
                         return result;
+                    }
                     bool direct = result.ProfileUpdates.Any(u => u.Status == "updated" || u.Status == "unchanged");
-                    if (WriteSimImportFiles(request, result, AlwaysWriteImportFiles ? null : notWritten) > 0 || direct)
-                        result.Warnings.Add("JoyPro's MSFS 2024 package got no presets: none of the exported devices is connected (the sim matches a preset by the device's product ID). " +
-                                            (direct ? "Your own MSFS profiles have the binds." : "The import files carry the binds."));
+                    // Every device and category gets its file here (there is no profile the binds went into).
+                    if (WriteSimImportFiles(request, result, noProfiles && !direct ? null : AlwaysWriteImportFiles ? null : notWritten) > 0 || direct)
+                        result.Warnings.Add(noPresets
+                            ? "JoyPro's MSFS 2024 package got no presets: none of the exported devices is connected (the sim matches a preset by the device's product ID). " +
+                              (direct ? "Your own MSFS profiles have the binds." : "The import files carry the binds.")
+                            : "No MSFS 2024 device profile in " + request.ConfigPath + " yet (the sim makes one the first time you open Controls with the device). " +
+                              (direct ? "Your own MSFS profiles have the binds." : "The import files carry the binds: in the sim open Controls, pick the device and the category, click the cogwheel of the profile and choose Import."));
                     else
                         result.Errors.AddRange(packageErrors);
                 }

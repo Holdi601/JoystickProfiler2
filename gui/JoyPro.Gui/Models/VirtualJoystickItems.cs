@@ -21,8 +21,9 @@ public sealed partial class VirtualJoystickGameItem : ObservableObject
     private bool loading;
 
     public VirtualJoystickGameItem(string id, string name, int relations, string mode, IReadOnlyList<string> exes, Action<VirtualJoystickGameItem, string>? onModeChanged,
-        int gamepadLayout = 0, bool writesGamepadBinds = false, string suggestedMode = "", string deviceLimitNote = "")
+        int gamepadLayout = 0, bool writesGamepadBinds = false, string suggestedMode = "", string deviceLimitNote = "", bool autoMode = false)
     {
+        AutoMode = autoMode;
         SuggestedMode = suggestedMode ?? string.Empty;
         DeviceLimitNote = deviceLimitNote ?? string.Empty;
         Id = id;
@@ -45,6 +46,16 @@ public sealed partial class VirtualJoystickGameItem : ObservableObject
     public string SuggestedMode { get; }
 
     public string DeviceLimitNote { get; }
+
+    // No mode chosen by the user: the game reads only Xbox controllers and is on the virtual Xbox pad by itself
+    // (the engine's effective mode). A choice of the user ends it.
+    public bool AutoMode { get; private set; }
+
+    public bool ShowAutoMode => AutoMode && IsXbox;
+
+    public string AutoModeText => !ShowAutoMode
+        ? string.Empty
+        : T("On the Xbox pad by itself: the game reads only Xbox controllers, no joystick. Pick another mode to change it.");
 
     public bool ShowSuggestion => SuggestedMode.Length > 0 && Mode != SuggestedMode;
 
@@ -99,7 +110,9 @@ public sealed partial class VirtualJoystickGameItem : ObservableObject
 
     public IReadOnlyList<string> Exes { get; }
 
-    public string RelationsText => Relations == 1 ? "1 relation" : Relations.ToString(CultureInfo.InvariantCulture) + " relations";
+    public string RelationsText => Relations == 0 && AutoMode
+        ? T("Not in your profile yet: Set my devices automatically (Start page) puts it on your stick and throttle.")
+        : Relations == 1 ? "1 relation" : Relations.ToString(CultureInfo.InvariantCulture) + " relations";
 
     public string ExesText => !IsVirtual
         ? string.Empty
@@ -125,7 +138,13 @@ public sealed partial class VirtualJoystickGameItem : ObservableObject
         OnPropertyChanged(nameof(ShowSuggestion));
         OnPropertyChanged(nameof(SuggestionText));
         if (!loading)
+        {
+            AutoMode = false;
             onModeChanged?.Invoke(this, Mode);
+        }
+        OnPropertyChanged(nameof(AutoMode));
+        OnPropertyChanged(nameof(ShowAutoMode));
+        OnPropertyChanged(nameof(AutoModeText));
     }
 }
 
@@ -172,6 +191,34 @@ public sealed partial class VirtualJoystickAxisItem : ObservableObject
 
     [ObservableProperty]
     private string valueText = "50 %";
+
+    // The virtual Xbox pad: what this axis does and where it comes from ("Roll (Rhino X)"); empty = nothing mapped.
+    [ObservableProperty]
+    private string mapping = string.Empty;
+
+    public bool HasMapping => Mapping.Length > 0;
+
+    partial void OnMappingChanged(string value) => OnPropertyChanged(nameof(HasMapping));
+}
+
+// One mapped button or D-pad of the virtual Xbox pad in the live view: "A: Fire machine gun (VKB Gladiator BTN1)",
+// strong while pressed.
+public sealed partial class VirtualJoystickPadControlItem : ObservableObject
+{
+    public VirtualJoystickPadControlItem(string name, string mapping)
+    {
+        Name = name;
+        Mapping = mapping;
+    }
+
+    public string Name { get; }
+
+    public string Mapping { get; }
+
+    public string Text => Name + ": " + Mapping;
+
+    [ObservableProperty]
+    private bool pressed;
 }
 
 // One vJoy device in the live view: its axes, pressed buttons and hats, as JoyPro.VJoy writes them.
@@ -190,9 +237,20 @@ public sealed partial class VirtualJoystickLiveDevice : ObservableObject
 
     public int Id { get; }
 
-    public string Title => Id == 0 ? T("Virtual Xbox 360 pad") : T("vJoy device {0}", Id.ToString(CultureInfo.InvariantCulture));
+    public string Title => Id != 0
+        ? T("vJoy device {0}", Id.ToString(CultureInfo.InvariantCulture))
+        : Game.Length > 0 ? T("Virtual Xbox 360 pad: table of {0}", Game) : T("Virtual Xbox 360 pad");
+
+    partial void OnGameChanged(string value) => OnPropertyChanged(nameof(Title));
 
     public ObservableCollection<VirtualJoystickAxisItem> Axes { get; } = [];
+
+    // The virtual Xbox pad: its mapped buttons and D-pad with what they do (empty for vJoy devices).
+    public ObservableCollection<VirtualJoystickPadControlItem> Controls { get; } = [];
+
+    // The game whose pad table is live (several games on the Xbox pad).
+    [ObservableProperty]
+    private string game = string.Empty;
 
     [ObservableProperty]
     private string buttonsText = "none";

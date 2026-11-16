@@ -77,6 +77,9 @@ public sealed class VirtualFunctionsGuiTests : IDisposable
         vm.EnginePath = typeof(MainWindowViewModel).Assembly.Location;
         vm.ProfilePath = Path.Combine(folder, "vf.pr0file");
         await vm.RefreshVirtualJoystickCommand.ExecuteAsync(null);
+        // The picker lists the games alphabetically (Arma 2 OA first); these tests work on DCS.
+        if (vm.VirtualFunctionGames.FirstOrDefault(g => g.Id == "DCS") is { } dcs)
+            vm.VirtualFunctionGame = dcs;
         return (vm, engine, confirms);
     }
 
@@ -90,6 +93,8 @@ public sealed class VirtualFunctionsGuiTests : IDisposable
         Assert.Equal("≡", item.Icon);
         Assert.Contains("band1 vJoy 1 Button 33", item.OutputsText);
         Assert.Equal(2, vm.VirtualFunctionDevices.Count);
+        // The game picker lists the games alphabetically by their shown name.
+        Assert.Equal(["Arma2OA", "DCS", "HLLVietnam"], vm.VirtualFunctionGames.Select(g => g.Id).ToList());
         Assert.Equal("DCS", vm.VirtualFunctionGame?.Id);
         VirtualJoystickGameItem dcs = vm.VirtualJoystickGames.First(g => g.Id == "DCS");
         Assert.Contains("128 buttons", dcs.InputLimitText);

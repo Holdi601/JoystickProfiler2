@@ -131,6 +131,8 @@ engine binds unbind "Throttle - HOTAS Warthog::JOY_BTN22" --all --profile "C:\Us
 - Without `--all` it refuses when more than one relation matches; with `--all` every match is freed (the GUI's
   **In all relations** tick; **Unbind selected input** always uses `--all` with the bind's device).
 - Only the input goes: the binds keep their device, modifiers and curve.
+- A relation's other input ([[cli:binds extra add]]) on that input is taken out of the relation (its main bind stays);
+  the ambiguity count includes these ("<relation> (input 2)").
 :::
 
 :::layer technical
@@ -246,7 +248,7 @@ engine binds modifier rename LAlt "Pinky Shift" --profile "C:\Users\Pilot\Docume
 
 :::layer advanced
 - Only the name changes; the modifier's device and input stay. A bind that ends up with the same modifier twice keeps
-  one.
+  one. A relation's other inputs ([[cli:binds extra list]]) are renamed with it.
 - The new name shows in the game after the next export (DCS's modifier list).
 :::
 
@@ -716,6 +718,8 @@ engine devices remove "Throttle - HOTAS Warthog" --confirm false --profile "C:\U
   model keeps its binds.
 - Removed: the binds whose device it is, modifiers of that device on other binds and in the modifier list, its alias,
   layout file, force feedback settings and activity entries.
+- Several inputs per relation: an extra input on the device goes; when the main bind is on the device and the relation
+  has another input, that input becomes its main bind (the relation stays bound).
 - `--confirm` as for [[cli:devices exchange]].
 - After the next export the device has no binds from JoyPro.
 :::
@@ -932,6 +936,50 @@ engine layout render --path "C:\Users\Pilot\Documents\JoyPro\Cheat sheets" --gam
   `layout render failed: ...` (for example `layout render produced no images. Ensure joystick layout mappings exist
   ...`).
 - Related: [[cli:layout titles]], [[cli:layout multiview]], [[cli:layout callouts]].
+:::
+
+<!-- entry: layout kneeboard -->
+:::layer beginner
+Puts your binds of each aircraft on its kneeboard as an easy-to-read list (or the cheat sheet picture): in DCS you see
+them on the kneeboard of the aircraft you fly (also in OpenKneeboard's DCS Aircraft tab), or the pages go into a folder you choose. **Put on the kneeboard** on
+the Layout page (Kneeboard) runs it. JoyPro only adds or replaces its own pages; your other kneeboard pages stay as they
+are.
+
+```powershell
+engine layout kneeboard --plane F-16C_50 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- `--target dcs` (default): every DCS Saved Games folder (DCS, DCS.openbeta) gets
+  `Kneeboard\<aircraft folder>\JoyPro_<aircraft>_<device>.png`; `--saved-games <folder>` (several allowed) names them
+  instead of finding them. The aircraft folder is the name DCS uses (A-10C II -> `A-10C_2`, F-15E -> `F-15ESE`, the
+  F-14's pilot and RIO -> `F-14B` and the F-14A folders). An aircraft JoyPro does not know gets its own name, with a
+  note.
+- `--target folder --folder <folder>`: `<folder>\<game>\<aircraft>\...` (OpenKneeboard's Folder tab, other games);
+  `--game <game>` for another game than DCS.
+- Which aircraft: `--plane(s)`, else every aircraft the devices have binds in (menu layers left out; a game-mode copy
+  such as `F-16C_50_easy` only with `--include-easy` or when its aircraft has no binds). Which devices:
+  `--device(s)` and `--layout-map <device>=<file>` as in [[cli:layout render]].
+- The page: `--page list` (default): a 3:4 page with only the bound controls in large text, grouped by control,
+  modifier binds tagged, the device picture with numbered controls at the top (`--picture none` leaves it out); more
+  pages `..._p2.png` when needed. `--page portrait`: the cheat sheet picture on a 3:4 page (the shape DCS stretches
+  every page to); `--page original`: the cheat sheet in its own shape. `--size <px>` the page height or longest side
+  (default 2048, 512 to 8192); `--combine true` the pages of an aircraft with all devices as sections; `--postfix <text>` added to the file names (a second set,
+  e.g. `_VR`); `--style dark|light`, the sheet style and drawing options as in [[cli:layout render]].
+- `--remove-old` also removes JoyPro's own pages of the same postfix that this run did not write again (a device that
+  left the profile). `--dry-run` lists what it would write.
+:::
+
+:::layer technical
+- Only files named `JoyPro_*` with JoyPro's mark inside the PNG (a text chunk `Software: JoyPro kneeboard; postfix=...;`)
+  are written, replaced or removed. A file of someone else with that name is skipped and listed under `Skipped`.
+- Output: JSON `Target`, `Game`, `Folders`, `Aircraft` (plane, folders, known), `PicturesWritten`, `PicturesReplaced`,
+  `OldPicturesRemoved`, `WrittenFiles`, `Skipped`, `Warnings`, or text; exit code `0`.
+- Failures (exit `1`): `No DCS Saved Games folder found ...`, `Nothing to put on the kneeboard: ...`, `No kneeboard
+  picture was written: ...`, `--target folder needs --folder <folder>.`, `--size must be between 512 and 8192 pixels.`,
+  invalid `--target`, `--page`, `--picture`, `--style` or `--postfix`.
+- The profile and the game's binds are not touched. Related: [[cli:layout render]], [[cli:layout callouts]].
 :::
 
 <!-- entry: layout titles -->
@@ -1456,7 +1504,10 @@ engine vjoy forwarder-config --out "C:\Users\Pilot\Documents\JoyPro\forwarder.js
 
 :::layer advanced
 - Only the places a vJoy game uses go into it; devices by DirectInput instance GUID.
-- `--xbox-game <game>`: the Xbox pad table of that game (else the first Xbox game); it must use the Xbox pad.
+- `--xbox-game <game>`: the Xbox pad table of that game (the GUI passes the game that runs); else the game picked with
+  [[cli:vjoy settings]] `--xbox-pad-game`, else the first Xbox game with something to forward. The others keep their
+  tables (`xboxWaiting` in the table). Each pad axis carries the relation's curve for that game (`curve`), because
+  the pad's games get no export; vJoy places stay 1:1.
 - `--game <game>`: only that game's virtual functions (the GUI passes the game that started); else those of every
   virtual game.
 - Changes nothing in the profile.
@@ -1678,6 +1729,9 @@ engine vjoy mode DCS virtual --profile "C:\Users\Pilot\Documents\JoyPro\My Stick
 - `xbox`: for games that read only Xbox controllers or one device. The game's gamepad layout puts actions on their pad
   controls first, the rest fills the sticks, triggers, 14 buttons and the D-pad; what does not fit is listed.
 - `native` takes the game out of virtual mode; its places stay in the table until [[cli:vjoy map]] `--prune`.
+- Without a mode chosen, a game that reads only Xbox controllers (ACE COMBAT 8, Hell Let Loose: Vietnam) is on the Xbox
+  pad by itself ([[cli:vjoy status]] `AutoMode`). An explicit mode wins and is kept.
+- Switching between `virtual` and `xbox` gives the game's virtual functions outputs of the new target.
 - A one-device game set to another mode than the suggested one gets a warning with the suggested mode.
 - `--dry-run` saves nothing. Only the profile changes: vJoy, HidHide and the game's files are untouched until Start
   and the next export.
@@ -1732,6 +1786,8 @@ engine vjoy settings --first-device 2 --last-device 3 --profile "C:\Users\Pilot\
   the function outputs use only these devices.
 - `--auto-start on|off` (default off), `--hide-devices on|off` (default on); `true`/`false`, `yes`/`no`, `1`/`0` work
   too.
+- `--xbox-pad-game <game>|none`: several games on the Xbox pad: whose pad table Start and Test use when none of them
+  runs (the game must be on the pad).
 - Without options it prints the current settings. `--dry-run` saves nothing.
 :::
 
@@ -1779,8 +1835,8 @@ engine vjoy functions types --text
 
 :::layer advanced
 - Type ids for `--type`: `bands`, `cycle`, `toggle`, `switch`, `presses`, `shift`, `merge`, `split`, `curve`,
-  `axis-buttons`, `axes-hat`, `buttons-axis`, `encoder`, `turbo`, `macro`, `hat-buttons`, `buttons-hat`, `remap`,
-  `mode`.
+  `axis-buttons`, `axes-hat`, `buttons-axis`, `hat-axes`, `encoder`, `turbo`, `macro`, `hat-buttons`, `buttons-hat`,
+  `remap`, `mode`.
 - Per input and output role: its kind, whether it is optional, and `<n>` for numbered roles.
 - Read-only; no profile needed.
 :::
@@ -1869,6 +1925,29 @@ engine vjoy functions test --game DCS --id f1 --stream "0:in=0; 500:in=0.5; 1000
 - Related: [[cli:vjoy functions add]], [[cli:vjoy functions set]].
 :::
 
+<!-- entry: vjoy pad-check -->
+:::layer beginner
+Shows what your profile reaches on the virtual Xbox pad, per game on the pad: the throttle on both triggers, yaw, the
+chords such as ACE COMBAT 8's flares, High-G turn and the menu D-pad, with a score from 0 to 1.
+
+```powershell
+engine vjoy pad-check --game AceCombat8 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- `--game <game>`: one game; without it every game on the pad that the profile uses.
+- It applies JoyPro's auto setup in memory, as [[cli:vjoy plan]] does: the throttle split, yaw from the twist or the
+  pedals, the flare chord, High-G from a relation named "High-G", the D-pad from the comm switch or AI-menu hat.
+- Read-only.
+:::
+
+:::layer technical
+- JSON: `Games[]` with `Game`, `OnPad`, `Score`, `Notes` and `Checks[]` (`Name`: `throttle-split`, `yaw`,
+  `chord:<name>`, `hold:<name>`, `menu-dpad`; `Applies`, `Ok`, `Detail`). Text: one line per check, `ok` or `MISS`.
+- Exit code `0`; `1` with `Unknown game: ...`. Reference: [[doc:virtual-joystick]].
+:::
+
 <!-- entry: vjoy limits -->
 :::layer beginner
 Lists what each game reads of one joystick: how many buttons, axes and hats, with confidence and source. vJoy offers
@@ -1921,11 +2000,11 @@ engine vjoy recover --dry-run --text
 
 <!-- entry: binds extra add -->
 :::layer beginner
-Experimental (Settings > Experimental > Several inputs per relation, or `--multi-bind on`): one more input for a
-relation, with its own device, modifiers and axis curve. The Binds page's **More inputs** panel runs it.
+One more input for a relation, with its own device, modifiers and axis curve. The Binds page's **More inputs** panel
+runs it.
 
 ```powershell
-engine --multi-bind on binds extra add "Weapon Release" --device "MOZA AB9 Base {...}" --input JOY_BTN2 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+engine binds extra add "Weapon Release" --device "MOZA AB9 Base {...}" --input JOY_BTN2 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
 ```
 :::
 
@@ -1935,18 +2014,76 @@ engine --multi-bind on binds extra add "Weapon Release" --device "MOZA AB9 Base 
   (`--to 1` makes it the main bind) or `--to-relation <name>`.
 - An axis starts with the main bind's tuning (`--copy-tuning false`: neutral); `binds tuning set <relation> --bind <n>`
   tunes one input per game or aircraft.
-- Without `--multi-bind on` changes are refused; list and remove always work. Exports and the table per game:
-  docs/multi-bind.md.
+- On by default since 2.7.0 (experimental before, behind `--multi-bind on`). With the global option `--multi-bind off`
+  (or `JOYPRO_MULTI_BIND=0`) changes are refused for that call; list and remove always work. Exports and the table per
+  game: docs/multi-bind.md.
+:::
+
+<!-- entry: binds extra list -->
+:::layer beginner
+Shows every input of a relation, numbered as the Binds page's **More inputs** panel shows them: 1 is the main bind, 2
+and up are the other inputs. Each line names the device, the input and the modifiers; an axis also shows its tuning. It
+works with `--multi-bind off` too.
+
+```powershell
+engine binds extra list "Weapon Release" --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- The numbers are the `<n>` of [[cli:binds extra set]], [[cli:binds extra remove]] and [[cli:binds extra move]].
+- A warning line says when another relation uses the same input.
+:::
+
+<!-- entry: binds extra set -->
+:::layer beginner
+Changes input `<n>` (2 or more) of a relation: its device, input, modifiers or axis tuning. The main bind (1) is
+changed with [[cli:binds set]].
+
+```powershell
+engine binds extra set "Weapon Release" 2 --input JOY_BTN3 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- `--modifier` can be given several times; `--clear-modifiers` takes them all off first.
+- Tuning for one game or aircraft only: `binds tuning set <relation> --bind <n> --scope ...`.
+- A warning says when another relation uses the same input; the change is made anyway.
+:::
+
+<!-- entry: binds extra remove -->
+:::layer beginner
+Takes input `<n>` (2 or more) out of a relation, or all its other inputs with `--all`; the main bind stays. **Remove**
+in the Binds page's **More inputs** panel does the same. It works with `--multi-bind off` too.
+
+```powershell
+engine binds extra remove "Weapon Release" --all --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+<!-- entry: binds extra move -->
+:::layer beginner
+`--to <m>` changes the order of a relation's inputs; `--to 1` makes input `<n>` the main bind, and the old main bind
+takes its number (**Make main** on the Binds page). `--to-relation <name>` moves the input to another relation.
+
+```powershell
+engine binds extra move "Weapon Release" 2 --to 1 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- `--to-relation` needs a relation of the same kind (button to button, axis to axis). A relation without a bind gets the
+  input as its main bind, otherwise as its next input.
 :::
 
 <!-- entry: devices copy-to -->
 :::layer beginner
-Experimental: every bind of device A also gets the matching input of device B, in the same relations (the same grip
-on two bases). Device A keeps its binds. **Copy every bind of a device to another device** on the Binds page runs it
-(Preview, then Copy).
+Every bind of device A also gets the matching input of device B, in the same relations (the same grip on two bases).
+Device A keeps its binds. **Copy every bind of a device to another device** on the Binds page runs it (Preview, then
+Copy).
 
 ```powershell
-engine --multi-bind on devices copy-to "L-VPC Stick MT-50CM2 {...}" "MOZA AB9 Base {...}" --dry-run --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+engine devices copy-to "L-VPC Stick MT-50CM2 {...}" "MOZA AB9 Base {...}" --dry-run --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
 ```
 :::
 

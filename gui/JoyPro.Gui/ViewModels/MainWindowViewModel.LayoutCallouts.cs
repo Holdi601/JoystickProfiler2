@@ -141,7 +141,7 @@ public sealed partial class MainWindowViewModel
     private List<string> DeviceBindCombos(string device) =>
         device.Length == 0
             ? []
-            : allBinds.Where(b => b.HasBind && (SameDevice(b.Device, device) || SameDeviceName(b.Device, device)))
+            : AllBoundInputs().Where(b => b.HasBind && (SameDevice(b.Device, device) || SameDeviceName(b.Device, device)))
                 .Select(b => CalloutCombos.Key(CalloutCombos.Split(b.ModifiersSummary)))
                 .ToList();
 
@@ -386,7 +386,7 @@ public sealed partial class MainWindowViewModel
         if (calloutTitlesModifier.Length > 0)
             return calloutTitlesModifier;
         string device = ResolveLayoutEditorContextDevice();
-        return allBinds
+        return AllBoundInputs()
             .Where(b => b.HasBind && device.Length > 0 && (SameDevice(b.Device, device) || SameDeviceName(b.Device, device)))
             .SelectMany(b => DisplayText.List(b.ModifiersSummary))
             .Where(m => m.Length > 0 && m is not ("-" or "<none>"))

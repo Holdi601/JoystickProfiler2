@@ -17,17 +17,24 @@ and writes them back; keyboard, gamepad and mouse stay as the game has them.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  D["G-Rebels: DEVICES<br/>device on channel 0-5"] --> S
-  P["Your profile<br/>(relations + binds)"] --> E["engine grebels export"]
-  E --> S["SaveOptions.sav<br/>axis roles + invert<br/>per channel"]
-  E --> B["EnhancedInputUserSettings.sav<br/>button binds per channel"]
-  S --> G["G-Rebels: CONTROLS ><br/>JST&lt;channel&gt; tab"]
-  B --> G
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep G-Rebels closed
+:::
+
+**Before**, once per device in the game: give it a channel under **OPTIONS > INPUT > DEVICES**. Change one
+axis role on its **JST** tab. Bind one button. (Details below.)
+
+**Then**: your binds show on the device's **JST** tab.
+
+Did you bind buttons in G-Rebels before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for G-Rebels
 
 - **Import**: the axis roles of every channel (which stick axis is pitch, roll, yaw, thrust, side strafe, up / down),
@@ -54,9 +61,9 @@ axis and one button per action and channel; the Check shows where two relations 
 ## Export to G-Rebels
 
 1. **Close G-Rebels.** JoyPro refuses to write while the game runs.
-2. Open **Export** and tick the G-Rebels tile.
+2. Open **Export** and tick the G-Rebels card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks. Press
-   **Export now** on the tile.
+   **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -133,6 +140,17 @@ One role per axis and one key per action and channel. The same rules hold for ax
 
 :::layer technical
 ## Inside the G-Rebels integration
+
+```mermaid
+%% caption: You give each device a channel once in the game. JoyPro writes the axis roles and buttons of that channel.
+flowchart LR
+  D["G-Rebels: DEVICES<br/>device on channel 0-5"] --> S
+  P["Your profile<br/>(relations + binds)"] --> E["engine grebels export"]
+  E --> S["SaveOptions.sav<br/>axis roles + invert<br/>per channel"]
+  E --> B["EnhancedInputUserSettings.sav<br/>button binds per channel"]
+  S --> G["G-Rebels: CONTROLS ><br/>JST tab of the channel"]
+  B --> G
+```
 
 Code: `engine\Games\GRebelsIntegration.cs`, `engine\Games\GRebelsSaveOptions.cs`, `engine\Games\GvasKeyMappings.cs`.
 

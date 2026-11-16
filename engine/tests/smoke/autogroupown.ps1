@@ -36,6 +36,25 @@ try {
     Assert-True ($aoNames.Count -gt 100) ("auto-group --dry-run proposed too few relations (" + $aoNames.Count + ").")
     $aoRaw = @($aoNames | Where-Object { $_ -cmatch '^[a-z0-9]+(_[a-z0-9]+)+$' -or $_ -cmatch '^[A-Za-z]*[a-z][A-Z][A-Za-z0-9]*$' })
     Assert-True ($aoRaw.Count -eq 0) ("auto-group proposed relation names that are ids: " + (($aoRaw | Select-Object -First 8) -join ", "))
+
+    # Head tracking (round 7): the answer lives in the profile; with yes Auto Group makes no look-around relation in the
+    # head-tracking sims and the suggestions propose no look command of them (the recenter stays).
+    $aoHt = Join-Path $aoDir "headtracking.pr0file"
+    $aoHtSet = Run-Engine @("--profile", $aoHt, "profile", "head-tracking", "yes", "--text")
+    Assert-True ($aoHtSet.ExitCode -eq 0 -and $aoHtSet.Output -match "Head Tracking: yes") ("profile head-tracking yes failed: " + $aoHtSet.Output)
+    $aoHtShow = Run-Engine @("--profile", $aoHt, "profile", "head-tracking", "--text")
+    Assert-Match $aoHtShow.Output "Head Tracking: yes" ("The head-tracking answer must be kept in the profile: " + $aoHtShow.Output)
+    $aoHtRun = Invoke-AoJson @("--profile", $aoHt, "relations", "auto-group", "--planes", "F-16C_50|IL2Game")
+    Assert-True ($aoHtRun.HeadTrackingSkipped -ge 1) "auto-group with head tracking left no look-around function out."
+    $aoHtList = Run-Engine @("--profile", $aoHt, "relations", "list", "--text")
+    Assert-NotMatch $aoHtList.Output "(?m)^View: look (left|right|forward|back) \(snap\)|^View: look (left / right|up / down) axis" ("auto-group made look-around relations with head tracking: " + $aoHtList.Output)
+    Assert-Match $aoHtList.Output "(?m)^View Center " "auto-group must keep the view recenter with head tracking."
+    Run-Engine @("--profile", $aoHt, "relations", "add", "My look left", "--button", "--node", "DCS:dnilp28u209cdnilvdnilvpnilvunil:F-16C_50", "--text") | Out-Null
+    $aoHtSuggest = Run-Engine @("--profile", $aoHt, "relations", "suggest", "My look left", "--min", "low", "--text")
+    Assert-NotMatch $aoHtSuggest.Output "(?m)^\s*- \[\w+\] (DCS|IL2Game|MSFS2020|MSFS2024|XPlane12|StarCitizen|Arma3):" ("suggestions proposed look commands of head-tracking sims: " + $aoHtSuggest.Output)
+    Run-Engine @("--profile", $aoHt, "profile", "head-tracking", "no", "--text") | Out-Null
+    $aoNoHtSuggest = Run-Engine @("--profile", $aoHt, "relations", "suggest", "My look left", "--min", "low", "--text")
+    Assert-Match $aoNoHtSuggest.Output "(?m)^\s*- \[\w+\] (IL2Game|Arma2|Arma3|MSFS2020|MSFS2024):" ("without head tracking the look suggestions of the sims must come back: " + $aoNoHtSuggest.Output)
 }
 finally {
     $env:JOYPRO_DATA_DIR = $aoPreviousData

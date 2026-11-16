@@ -1,10 +1,10 @@
 # Export
 
-The Export page starts with **Export to games**: one tile per game the profile has relations for, with the game's
+The Export page starts with **Export to games**: one card per game the profile has relations for, with the game's
 cover, how many of its relations are bound, and an **Export now** button. Tick the games and press **Export ticked
 games** to export them one after the other; the page and the status line then say "Exported 5 of 6 games, 1 failed:
-<game> (<reason>)". A tile starts ticked only when the game has bound relations and was started once (its control
-files exist, `engine games installs`: ConfigPaths); a tick the user changed stays. Each tile shows the result of its
+<game> (<reason>)". A card starts ticked only when the game has bound relations and was started once (its control
+files exist, `engine games installs`: ConfigPaths); a tick the user changed stays. Each card shows the result of its
 last export ("Exported 14:02" or the engine's error, e.g. "Failed: War Thunder file not found: ..."). **Undo last
 export** is enabled once a backup of that game exists (an export made it; the backups list below is read again after
 every export).
@@ -32,8 +32,18 @@ every export).
     import's ignored devices, not the vJoy device JoyPro tunnels into).
   Clean and nuke ask before the export (Settings > Confirmations: `games.export-removes-binds`). Paths and keyboard
   options are under **Options and paths (for experts)**. Every export backs up the game files first
-  ([backups](backups.md)); **Undo last export** on a tile restores the newest backup of that game (`engine backups
+  ([backups](backups.md)); **Undo last export** on a card restores the newest backup of that game (`engine backups
   restore latest --game <id>`), byte for byte also after clean + nuke.
+- **Write to my game** (the quick setup's last button, `QuickExportAsync`): the click is the answer, so the Export
+  page's questions below are not asked there. A game with no binds on game devices (`profile game-state`:
+  `GameJoystickBindCount` 0, never imported or exported by this profile, or no control files) is written at once. A
+  game with stick binds, or one this profile imported or wrote before (its files are not read then), or one whose
+  state cannot be read, asks ONE plain question: "<game> already has buttons set. Use the new ones instead? JoyPro
+  keeps a copy of the old ones, and you can undo." **Use the new ones** exports with the chosen mode (clean + nuke by
+  default, backup first); **Keep the old ones too** exports this once with "Only add" and no nuke (nothing in the game
+  is removed; taken buttons are marked), the user's mode stays; **Cancel** writes nothing and the setup window says
+  to press **Write to my game** again. Not asked when the mode removes nothing ("Only add" without nuke) or both
+  export questions are switched off in Settings > Confirmations. Tests: `QuickWriteQuestionTests`.
 - **First export to a game** this profile never imported from or exported to, when the game has binds of its own
   (`engine profile game-state --game <id>`: `Imported`, `Exported` from the profile's `SyncedGames`, or the sync record
   of an earlier export from this profile; `GameHasBinds`): the GUI asks once "Export replaces the binds in <game> with
@@ -50,7 +60,7 @@ every export).
   when a later export writes the bind or the button is free. Every exporter fills the same result field
   (`SkippedTakenInputs`, engine/ExportSkippedBinds.cs); the export command marks them.
 - Games without an exporter show "no export for this game".
-- Games that are not installed on this PC get no tile; the page names them. Set their folder in Settings > Games
+- Games that are not installed on this PC get no card; the page names them. Set their folder in Settings > Games
   ([installed games](installs.md)).
 - Every export keeps JoyPro's own data of the binds next to the game file, so a later import restores relation
   names, groups, modifiers and tuning ([re-import](reimport.md)).
@@ -82,11 +92,11 @@ for example), and an export writes only what really differs from the game's defa
 added again. The smoke test checks this with synthetic files (`engine\tests\smoke\roundtrip.ps1`).
 
 
-## Several inputs per relation (experimental)
+## Several inputs per relation
 
-With Settings > Experimental "Several inputs per relation" on, a relation's extra binds are exported like its main bind
-where the game keeps several inputs per action; games with one input per action get the main bind and a warning per
-relation, and with the setting off an export names the extra binds it left out once. The modes (clean, nuke, keyboard
+A relation's extra binds are exported like its main bind where the game keeps several inputs per action; games with one
+input per action get the main bind and a warning per relation (since 2.7.0 always on; the engine option
+`--multi-bind off` leaves the extra binds out and names them once). The modes (clean, nuke, keyboard
 rules) are unchanged. Table per game with the evidence: [multi-bind.md](multi-bind.md#export-per-game).
 
 ## Remembered settings
@@ -96,7 +106,7 @@ export mode, "Also clear my other devices", the options per game (DCS and Star C
 in every aircraft, Star Citizen local order, the dry run of the other games) and the paths of **Options and paths**
 (per registry game its own file or folder) for every profile alike; and per profile the games and DCS aircraft you
 ticked or unticked yourself. They come back at the next start and when you open the profile again. Only your own
-ticks are kept: a tick set back to what JoyPro would tick is forgotten, so the other tiles keep following the game
+ticks are kept: a tick set back to what JoyPro would tick is forgotten, so the other cards keep following the game
 (bound relations, started once). A remembered path is used only while it exists. "Export" on a Start page card (only
 that game for now) and a dry-run preview are not remembered. Clean and nuke still ask before every export.
 
@@ -114,8 +124,8 @@ from websites, and JoyPro ships no game artwork:
 
 | What | Source |
 |---|---|
-| Game covers | Per game, the first that works: 1. the picture Steam keeps on this PC for a game of the user's library (`steam\appcache\librarycache\<app id>`, also its hash sub folders; portrait cover first, else the wide header); 2. the cover downloaded before (`<data>\Media\Covers\<GameId>.<ext>`, with `<GameId>.source`: kind and address); 3. a download from the game's fixed web source (`engine/EngineGameCovers.cs`, `engine media sources`): Steam's store CDN by app id (library capsule, then main capsule, then header) for Steam games and FSX (the Steam Edition's art), the publisher's site for Star Citizen (RSI's key art, then its logo), Falcon BMS (falcon-bms.com app icon) and Prepar3D v4/v5/v6 (prepar3d.com product marks); 4. the icon of the game's executable (Star Citizen, Falcon BMS, DCS standalone; kept in `<data>\Media`). Games with none get a JoyPro badge with the game's name ([branding](branding/README.md)). A logo (publisher mark, executable icon) is drawn on the badge, a cover fills the tile; both on every game card, installed or not. |
+| Game covers | Per game, the first that works: 1. the picture Steam keeps on this PC for a game of the user's library (`steam\appcache\librarycache\<app id>`, also its hash sub folders; portrait cover first, else the wide header); 2. the cover downloaded before (`<data>\Media\Covers\<GameId>.<ext>`, with `<GameId>.source`: kind and address); 3. a download from the game's fixed web source (`engine/EngineGameCovers.cs`, `engine media sources`): Steam's store CDN by app id (library capsule, then main capsule, then header) for Steam games and FSX (the Steam Edition's art), the publisher's site for Star Citizen (RSI's key art, then its logo), Falcon BMS (falcon-bms.com app icon) and Prepar3D v4/v5/v6 (prepar3d.com product marks); 4. the icon of the game's executable (Star Citizen, Falcon BMS, DCS standalone; kept in `<data>\Media`). Games with none get a JoyPro badge with the game's name ([branding](branding/README.md)). A logo (publisher mark, executable icon) is drawn on the badge, a cover fills the card; both on every game card, installed or not. |
 | Download rules | https only, 10 s timeout, at most 5 MB, `Content-Type: image/*` and a JPEG, PNG or WebP file; up to 4 at a time; a failed game is tried again a day later. Off with `--no-internet-pictures` (the GUI passes it while Settings > Privacy "Game covers from the internet" is off; the device photos have their own per-device consent) or `JOYPRO_NO_INTERNET_PICTURES=1` (tests): then neither a download nor a downloaded cover is used. `JOYPRO_COVER_CATALOG=<json>` replaces the list (tests: `engine\tests\smoke\gamecovers.ps1` with the loopback fake server). |
 | DCS aircraft | The icon and mission editor picture every DCS module ships in its own folder (`Skins\...\icon.png`, `ME\BackGround*.png`), found through the module's `entry.lua`. |
 
-The GUI shows them next to the export tiles, the relation entries and the suggestions.
+The GUI shows them next to the export cards, the relation entries and the suggestions.

@@ -44,6 +44,8 @@ public sealed class EngineServerTests
     [InlineData("--status|false|arrange|ask|trim on the hat|--llm|off", true)]
     [InlineData("--status|false|arrange|ask|trim on the hat|--llm|auto", false)]
     [InlineData("--status|false|arrange|apply|--proposal|x", false)]
+    [InlineData("--profile|x.pr0file|--status|false|profile|auto-added", true)]
+    [InlineData("--profile|x.pr0file|--status|false|setup|games|--games|DCS|--status-only", false)]
     public void ServedCommands_AreTheQuickInteractiveOnes(string commandLine, bool served)
     {
         Assert.Equal(served, EngineServerCommands.IsServed(commandLine.Split('|')));
@@ -62,6 +64,12 @@ public sealed class EngineServerTests
         // Exports and imports change game files and the profile, not the lists the server keeps.
         Assert.True(EngineServerCommands.KeepsServer(["--profile", "p", "--status", "false", "dcs", "export", "--path", "x"]));
         Assert.True(EngineServerCommands.KeepsServer(["--profile", "p", "--status", "false", "warthunder", "import"]));
+        // The Start page's background look at the games only reads: the server keeps running after it.
+        Assert.True(EngineServerCommands.KeepsServer(["--profile", "p", "--status", "false", "setup", "games", "--games", "DCS", "--status-only"]));
+        Assert.False(EngineServerCommands.KeepsServer(["--profile", "p", "--status", "false", "setup", "apply", "--plan", "x"]));
+        Assert.True(EngineServerCommands.KeepsServer(["--status", "false", "--text", "db", "planes", "--game", "DCS"]));
+        Assert.True(EngineServerCommands.KeepsServer(["--status", "false", "--text", "db", "games"]));
+        Assert.False(EngineServerCommands.KeepsServer(["--status", "false", "db", "check-updates", "--accept-all"]));
     }
 
     [Fact]
@@ -108,6 +116,7 @@ public sealed class EngineServerTests
             ["relations", "show", "does not exist"],
             ["relations", "item", "remove", "Pitch", "--node", "DCS:a2001cdnil:F-16C_50"],
             ["relations", "check-aircraft"],
+            ["profile", "auto-added"],
             ["layout", "titles"],
             ["arrange", "prefs"],
             ["arrange", "ask", "trim on the hat, curves softer for helis", "--llm", "off", "--games", "DCS", "--text"],
@@ -173,6 +182,99 @@ public sealed class EngineServerTests
 
     private static string NormalizePaths(string text, string folder) =>
         (text ?? string.Empty).Replace(folder, "<side>", StringComparison.OrdinalIgnoreCase).Replace(folder.Replace('\\', '/'), "<side>", StringComparison.OrdinalIgnoreCase).Replace("\r\n", "\n");
+
+    // A server that ran an export and Lay out with AI answers a search, the catalog and the relation list exactly as a
+    // fresh server does, saves nothing on a question, and a pause of a few seconds keeps its working set. (The gate's
+    // session after the exports was 2-3x slower: after the DCS export every later command of that server saved the
+    // profile, 0.4 s each and a profile version per click; and the server gave its memory back after 3 s quiet.)
+    [Fact]
+    public async Task AfterAnExport_TheServerAnswersAsAFreshOne_AndAShortPauseKeepsItsMemory()
+    {
+        string? engine = EnginePath();
+        if (engine == null)
+            return;
+        string root = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "server-after-export-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            List<List<string>> setup =
+            [
+                ["relations", "add", "Pitch", "--axis", "--node", "DCS:a2001cdnil:F-16C_50"],
+                ["relations", "add", "Gear", "--button", "--node", "DCS:d68pnilunilcdnilvdnilvpnilvunil:F-16C_50"],
+                ["binds", "set", "Gear", "--device", "vJoy Device {89D63500-B53F-11f1-8002-444553540000}", "--input", "JOY_BTN7"],
+                ["dcs", "export", "--path", "<saved>", "--mode", "clean", "--keep-keyboard-defaults", "true", "--nuke-untouched-devices", "true", "--clean-all-aircraft", "false"],
+                ["arrange", "ask", "trim on the hat, curves softer for helis", "--llm", "off", "--games", "DCS", "--text"]
+            ];
+            List<List<string>> probes =
+            [
+                ["relations", "search", "pitch", "--limit", "200", "--per-game", "12"],
+                ["relations", "search", "Pitch (left stick up/down)", "--limit", "200", "--per-game", "12"],
+                ["relations", "browse", "--game", "DCS", "--plane", "F-16C_50"],
+                ["relations", "browse", "--game", "AceCombat8"],
+                ["relations", "list", "--titles"],
+                ["relations", "check-aircraft"],
+                ["binds", "list"]
+            ];
+            // The used server: everything in one server.
+            List<string> used = await RunAfterExportAsync(engine, Path.Combine(root, "used"), setup, probes, setupInServer: true);
+            int server = ServerProcesses(engine).FirstOrDefault();
+            Assert.True(server != 0, "no engine server runs");
+            await Task.Delay(4500);
+            using (Process process = Process.GetProcessById(server))
+            {
+                process.Refresh();
+                Assert.True(process.WorkingSet64 > 40L * 1024 * 1024,
+                    "the server gave its working set back after a short pause (" + (process.WorkingSet64 >> 20) + " MB): every next call pages it in again");
+            }
+            EngineServerPool.StopAll();
+            // A fresh server for the questions; the same changes made in processes of their own before.
+            List<string> fresh = await RunAfterExportAsync(engine, Path.Combine(root, "fresh"), setup, probes, setupInServer: false);
+            for (int i = 0; i < probes.Count; i++)
+                Assert.True(fresh[i] == used[i], "'" + string.Join(" ", probes[i]) + "' after an export differs from a fresh server:\nfresh: " + Cut(fresh[i]) + "\nused:  " + Cut(used[i]));
+        }
+        finally
+        {
+            EngineServerPool.StopAll();
+            TryDelete(root);
+        }
+    }
+
+    private static async Task<List<string>> RunAfterExportAsync(string engine, string folder, List<List<string>> setup, List<List<string>> probes, bool setupInServer)
+    {
+        string saved = Path.Combine(folder, "Saved Games DCS");
+        Directory.CreateDirectory(Path.Combine(saved, "Config", "Input"));
+        string profile = Path.Combine(folder, "p.pr0file");
+        Dictionary<string, string> environment = new()
+        {
+            ["JOYPRO_DATA_DIR"] = Path.Combine(folder, "data"), ["JOYPRO_DEVICE_KB"] = "off", ["JOYPRO_TEST_ASSUME_INSTALLED"] = "1"
+        };
+        EngineRunOptions options = new() { Environment = environment };
+        EngineCliClient client = new();
+        async Task<EngineCommandResult> Run(List<string> command, bool inServer)
+        {
+            List<string> args = ["--profile", profile, "--status", "false", "--benchmark", "false", "--load-corrections", "false"];
+            args.AddRange(command.Select(a => a == "<saved>" ? saved : a));
+            if (!inServer)
+                return await client.RunProcessAsync(engine, args, options, CancellationToken.None);
+            EngineCommandResult? served = await EngineServerPool.TryRunAsync(engine, args, "test", options, CancellationToken.None);
+            Assert.NotNull(served);
+            return served!;
+        }
+        foreach (List<string> command in setup)
+        {
+            EngineCommandResult result = await Run(command, setupInServer);
+            Assert.True(result.ExitCode == 0, string.Join(" ", command) + ": " + result.StandardError);
+        }
+        List<string> outputs = [];
+        DateTime savedAt = File.GetLastWriteTimeUtc(profile);
+        foreach (List<string> command in probes)
+        {
+            EngineCommandResult result = await Run(command, inServer: true);
+            outputs.Add("exit " + result.ExitCode + "\n" + Normalize(result.StandardOutput, folder));
+        }
+        // Questions never save the profile (after a served DCS export, every later command of that server saved it).
+        Assert.True(File.GetLastWriteTimeUtc(profile) == savedAt, "a read-only command saved the profile (" + (setupInServer ? "used" : "fresh") + " server)");
+        return outputs;
+    }
 
     [Fact]
     public async Task ChangedGameData_StartsANewServer_AndTheAnswerUsesTheNewFiles()

@@ -37,7 +37,7 @@ Clauses are split at sentence ends, commas and semicolons, and each clause is re
 | vjoy for Star Citizen, native for DCS, xbox pad for X | The game's virtual joystick mode. |
 | no modifiers / one modifier / two modifiers / as few modifiers as possible | The modifier budget. "No modifiers" is a rule: JoyPro adds none, even when the buttons are too few. |
 | use a mode switch / no mode switch | Phase layers on a latched switch ([auto-assign.md](auto-assign.md#phase-layers)). |
-| like the real aircraft / same button everywhere | Realism 100 % or 0 %. |
+| like the real aircraft / same button everywhere | **Where should functions go?** at 100 % or 0 %. |
 | keep my layout / from scratch | Only unbound relations get a place, or every bind is laid out again. |
 | the F-16 first / mostly the Hornet | That aircraft heads the priority list. |
 
@@ -136,14 +136,14 @@ its own, as every AI path does.
 ## Tests
 
 - `gui/JoyPro.Gui.Tests/LayoutWithAiTests.cs`:
-  - phrases and what they compile into, on four device sets (small, medium, the author's pit, space with two sticks);
+  - phrases and what they compile into, on four device sets (small, medium, a large pit, space with two sticks);
   - the German test set (each German text gives the preferences of its English one) and the same layout from German and
     English words through the real engine;
   - inputs and controls in plain words (Auto Assign preview, Setup wizard review, Lay out preview, plan reasons and notes);
   - the same phrases through the real engine, on fake devices with the shipped catalogs: trim on a hat, no modifier,
     curves only for helicopters, rudder on the twist without pedals, space yaw on the left twist, kept preferences used
     again;
-  - the author's pit on a copy of a real profile (`JOYPRO_LAYOUT_BIG_PROFILE`);
+  - a large pit on a copy of a real profile (`JOYPRO_LAYOUT_BIG_PROFILE`);
   - the Binds page panel with a fake engine, and its settings across a restart;
   - offscreen pictures (`JOYPRO_LAYOUT_AI_OUT`).
 - `engine/tests/smoke/autoassignmatrix.ps1`: ask, apply with a skip, the history version, the kept preferences, and

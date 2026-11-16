@@ -542,13 +542,16 @@ public sealed partial class MainWindowViewModel
 
     private int aircraftCheckVersion;
 
+    // A profile is being opened (LoadProfileAsync): the Relations page's aircraft check waits for it.
+    private bool loadingProfile;
+
     internal async Task RefreshAircraftCheckAsync()
     {
         if (!HasProfile)
             return;
         int version = ++aircraftCheckVersion;
         EngineCommandResult? result = await RunEngineAsync(["relations", "check-aircraft"], includeProfile: true, mutatesProfile: false,
-            busyLabel: N("Checking the aircraft of every relation..."), forceText: false, background: true);
+            busyLabel: N("Checking the aircraft of every relation..."), forceText: false, background: true, countsAsBusy: false);
         if (version != aircraftCheckVersion || result == null || result.ExitCode != 0)
             return;
         ApplyAircraftCheck(result.StandardOutput);

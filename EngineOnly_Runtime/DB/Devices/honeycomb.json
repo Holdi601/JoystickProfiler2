@@ -496,31 +496,31 @@
      "input": "JOY_BTN24",
      "control": "quadrant.detent.1",
      "type": "momentary",
-     "label": "Lever 1 detent"
+     "label": "Lever 1 reverse detent (below idle)"
     },
     {
      "input": "JOY_BTN25",
      "control": "quadrant.detent.2",
      "type": "momentary",
-     "label": "Lever 2 detent"
+     "label": "Lever 2 reverse detent (below idle)"
     },
     {
      "input": "JOY_BTN26",
      "control": "quadrant.detent.3",
      "type": "momentary",
-     "label": "Lever 3 detent"
+     "label": "Lever 3 reverse detent (below idle)"
     },
     {
      "input": "JOY_BTN27",
      "control": "quadrant.detent.4",
      "type": "momentary",
-     "label": "Lever 4 detent"
+     "label": "Lever 4 reverse detent (below idle)"
     },
     {
      "input": "JOY_BTN28",
      "control": "quadrant.detent.5",
      "type": "momentary",
-     "label": "Lever 5 detent"
+     "label": "Lever 5 reverse detent (below idle)"
     },
     {
      "input": "JOY_BTN29",
@@ -550,7 +550,7 @@
      "input": "JOY_BTN33",
      "control": "quadrant.detent.6",
      "type": "momentary",
-     "label": "Lever 6 detent"
+     "label": "Lever 6 reverse detent (below idle)"
     },
     {
      "input": "JOY_BTN34",
@@ -884,6 +884,9 @@
    "identify": {
     "vidPids": [
      "294B:190D"
+    ],
+    "names": [
+     "SIERRA"
     ],
     "note": "Throttle/prop/mixture levers, trim wheel, flaps, parking brake and gear lever. Lever axes: DirectInput names not known. VID:PID 294B:190D not publicly confirmed either. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
    },
@@ -1303,20 +1306,25 @@
     "vidPids": [
      "294B:190E"
     ],
-    "note": "All-in-one aviation controller (joystick, four slider levers, rudder, hat, face/shoulder buttons, gear/flaps/brake/trim). Axis DirectInput names not known. The XPC (Xbox) version may report another USB id. VID:PID 294B:190E not publicly confirmed either. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+    "note": "All-in-one aviation controller (left thumbstick, 8-way POV, four face buttons, four bumpers, four top-center system buttons, four slider levers with detent buttons, trim wheel, gear lever, flaps lever, parking-brake knob, rudder paddles on the back). Button numbers verified from Honeycomb's official 'Input overview: buttons' picture (docs.flyhoneycomb.com Controller Mapping) and Sporty's Echo key-assignment sheet: 1-4 face buttons (1 bottom, 2 right, 3 left, 4 top), 5 / 6 = left front / rear bumper, 7 / 8 = right front / rear bumper, 9-12 top center (9 wide button, 10 list icon, 11 Honeycomb logo, 12 camera icon), 13 / 14 gear lever up / down, 15 / 16 parking brake out / in, 17 / 18 flaps lever up / down, 19-22 detent of slider 1-4, 23 / 24 trim wheel up / down, 25 thumbstick press. There is NO trigger: the index-finger inputs are the four digital bumpers 5-8, so a gun belongs on a bumper, not on the thumbstick press. Rudder = rear counter-swaying paddles (axis). Sporty's MSFS sheet names the axes L-Axis X / Y (stick), R-Axis X (rudder paddles), L-Axis Z / R-Axis Z / Slider Y / Slider X (sliders 1-4), but its own picture labels yaw 'Axis-Z', so only the stick X/Y inputs are set. Whether gear / flaps / parking-brake buttons stay pressed while the lever rests in a position is not documented. The XPC (Xbox) version is a separate entry. VID:PID 294B:190E is not publicly confirmed (294B is Honeycomb's vendor id); verify on a real device."
    },
    "image": "https://flyhoneycomb.com/cdn/shop/files/HC003981_EchoAviationController_1.webp",
    "productUrl": "https://flyhoneycomb.com/products/echo-aviation-controller",
    "sources": [
-    "https://flyhoneycomb.com/products/echo-aviation-controller"
+    "https://flyhoneycomb.com/products/echo-aviation-controller",
+    "https://docs.flyhoneycomb.com/docs/Echo%20Aviation%20Controller/Controller%20Mapping",
+    "https://docs.flyhoneycomb.com/img/Echo-Aviation-Controller_input-overview.png",
+    "https://www.sportys.com/media/pdf/honeycombcontroller.pdf"
    ],
-   "confidence": "low",
+   "confidence": "medium",
    "axes": [
     {
+     "input": "JOY_X",
      "control": "stick.axis.roll",
      "label": "Joystick x"
     },
     {
+     "input": "JOY_Y",
      "control": "stick.axis.pitch",
      "label": "Joystick y"
     },
@@ -1338,7 +1346,7 @@
     },
     {
      "control": "pedals.axis.rudder",
-     "label": "Rudder (back)"
+     "label": "Rudder paddles (back of controller)"
     }
    ],
    "controls": [
@@ -1346,175 +1354,188 @@
      "control": "stick.button.thumb.1",
      "input": "JOY_BTN1",
      "type": "momentary",
-     "label": "Bottom face button"
+     "label": "Face button 1 (bottom)",
+     "finger": "thumb"
     },
     {
      "control": "stick.button.thumb.2",
      "input": "JOY_BTN2",
      "type": "momentary",
-     "label": "Right face button"
+     "label": "Face button 2 (right)",
+     "finger": "thumb"
     },
     {
      "control": "stick.button.thumb.3",
      "input": "JOY_BTN3",
      "type": "momentary",
-     "label": "Left face button"
+     "label": "Face button 3 (left)",
+     "finger": "thumb"
     },
     {
      "control": "stick.button.thumb.4",
      "input": "JOY_BTN4",
      "type": "momentary",
-     "label": "Top face button"
+     "label": "Face button 4 (top)",
+     "finger": "thumb"
     },
     {
      "control": "stick.button.index.1",
      "input": "JOY_BTN5",
      "type": "momentary",
-     "label": "Top left button"
+     "label": "Left front bumper (5)",
+     "finger": "index"
     },
     {
      "control": "stick.button.index.2",
      "input": "JOY_BTN6",
      "type": "momentary",
-     "label": "Bottom left button"
+     "label": "Left rear bumper (6)",
+     "finger": "index"
     },
     {
      "control": "stick.button.index.3",
      "input": "JOY_BTN7",
      "type": "momentary",
-     "label": "Top right button"
+     "label": "Right front bumper (7)",
+     "finger": "index"
     },
     {
      "control": "stick.button.index.4",
      "input": "JOY_BTN8",
      "type": "momentary",
-     "label": "Bottom right button"
+     "label": "Right rear bumper (8)",
+     "finger": "index"
     },
     {
      "control": "stick.ministick.press",
      "input": "JOY_BTN25",
      "type": "momentary",
-     "label": "Joystick press"
+     "label": "Thumbstick press (25)",
+     "finger": "thumb"
     },
     {
      "control": "stick.hat.1.up",
      "input": "JOY_BTN_POV1_U",
      "type": "momentary",
-     "label": "8-way hat"
+     "label": "8-way POV hat",
+     "finger": "thumb"
     },
     {
      "control": "stick.hat.1.right",
      "input": "JOY_BTN_POV1_R",
      "type": "momentary",
-     "label": "8-way hat"
+     "label": "8-way POV hat",
+     "finger": "thumb"
     },
     {
      "control": "stick.hat.1.down",
      "input": "JOY_BTN_POV1_D",
      "type": "momentary",
-     "label": "8-way hat"
+     "label": "8-way POV hat",
+     "finger": "thumb"
     },
     {
      "control": "stick.hat.1.left",
      "input": "JOY_BTN_POV1_L",
      "type": "momentary",
-     "label": "8-way hat"
+     "label": "8-way POV hat",
+     "finger": "thumb"
     },
     {
      "control": "panel.button.1",
      "input": "JOY_BTN9",
      "type": "momentary",
-     "label": "Menu"
+     "label": "Top center wide button (9)"
     },
     {
      "control": "panel.button.2",
      "input": "JOY_BTN10",
      "type": "momentary",
-     "label": "List"
+     "label": "Top center list-icon button (10)"
     },
     {
      "control": "panel.button.3",
      "input": "JOY_BTN11",
      "type": "momentary",
-     "label": "Logo"
+     "label": "Top center Honeycomb logo button (11)"
     },
     {
      "control": "panel.button.4",
      "input": "JOY_BTN12",
      "type": "momentary",
-     "label": "Back"
+     "label": "Top center camera-icon button (12)"
     },
     {
      "control": "quadrant.button.1",
      "input": "JOY_BTN19",
      "type": "momentary",
-     "label": "Slider 1 reverse"
+     "label": "Slider 1 detent (19)"
     },
     {
      "control": "quadrant.button.2",
      "input": "JOY_BTN20",
      "type": "momentary",
-     "label": "Slider 2 reverse"
+     "label": "Slider 2 detent (20)"
     },
     {
      "control": "quadrant.button.3",
      "input": "JOY_BTN21",
      "type": "momentary",
-     "label": "Slider 3 reverse"
+     "label": "Slider 3 detent (21)"
     },
     {
      "control": "quadrant.button.4",
      "input": "JOY_BTN22",
      "type": "momentary",
-     "label": "Slider 4 reverse"
+     "label": "Slider 4 detent (22)"
     },
     {
      "control": "panel.lever.gear.up",
      "input": "JOY_BTN13",
      "type": "momentary",
-     "label": "Landing gear up"
+     "label": "Gear lever up (13)"
     },
     {
      "control": "panel.lever.gear.down",
      "input": "JOY_BTN14",
      "type": "momentary",
-     "label": "Landing gear down"
+     "label": "Gear lever down (14)"
     },
     {
      "control": "panel.toggle.1.up",
      "input": "JOY_BTN15",
      "type": "momentary",
-     "label": "Parking brake set"
+     "label": "Parking brake knob pulled out (15)"
     },
     {
      "control": "panel.toggle.1.down",
      "input": "JOY_BTN16",
      "type": "momentary",
-     "label": "Parking brake release"
+     "label": "Parking brake knob pushed in (16)"
     },
     {
      "control": "panel.lever.flaps.up",
      "input": "JOY_BTN17",
      "type": "momentary",
-     "label": "Flaps up"
+     "label": "Flaps lever up (17)"
     },
     {
      "control": "panel.lever.flaps.down",
      "input": "JOY_BTN18",
      "type": "momentary",
-     "label": "Flaps down"
+     "label": "Flaps lever down (18)"
     },
     {
      "control": "panel.rotary.1.ccw",
      "input": "JOY_BTN23",
      "type": "rotary",
-     "label": "Trim nose down"
+     "label": "Trim wheel up (23)"
     },
     {
      "control": "panel.rotary.1.cw",
      "input": "JOY_BTN24",
      "type": "rotary",
-     "label": "Trim nose up"
+     "label": "Trim wheel down (24)"
     }
    ]
   },
@@ -1781,7 +1802,7 @@
     "names": [
      "Echo Aviation Controller XPC"
     ],
-    "note": "Xbox-licensed version of the Echo (SKU HC004339, October 2026): TMR stick, Hall rudder paddles, four sliders with detents, trim wheel, flight switches, wireless dongle or USB-C. Control list copied from the Echo entry without numbers; USB id and numbering not published."
+    "note": "Xbox-licensed version of the Echo (SKU HC004339, October 2026): TMR stick, Hall rudder paddles, four sliders with detents, trim wheel, flight switches, wireless dongle or USB-C. Control list copied from the Echo entry without numbers. Incomplete: USB id, how it shows up on PC (DirectInput joystick or Xbox controller) and the button numbering are not published; Honeycomb's verified Echo numbering (see the Echo entry) is not confirmed for this model. Like the Echo it has no trigger (bumpers only)."
    },
    "productUrl": "https://flyhoneycomb.com/products/echo-xpc-aviation-controller",
    "image": "https://flyhoneycomb.com/cdn/shop/files/HC004339_EchoXPC_Shopify_1.webp",
@@ -1789,6 +1810,7 @@
     "https://flyhoneycomb.com/products/echo-xpc-aviation-controller"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll",

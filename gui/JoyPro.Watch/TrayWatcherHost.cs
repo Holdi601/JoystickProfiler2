@@ -202,6 +202,9 @@ public sealed class TrayWatcherHost : IDisposable
     // Menu "Open JoyPro2" and a click on the icon.
     public void Open() => launcher.OpenGui([]);
 
+    // Menu "Where is what?": JoyPro with its layout window (docs/setup-wizard.md#layout-window).
+    public void OpenLayout() => launcher.OpenGui(["--layout-window"]);
+
     // The notification or menu "Review ...": the GUI checks these configs at once (and loads the last profile).
     public void Review()
     {

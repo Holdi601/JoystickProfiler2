@@ -60,16 +60,20 @@ namespace JoyPro.Setup
                 device.Reason = string.Empty;
             }
 
+            // A gamepad is held with both hands: it flies only when no joystick, HOTAS or yoke is there.
+            bool hasStick = devices.Any(d => IsStickKind(d.Kind));
             foreach (SetupDevice device in devices)
             {
                 string name = (device.Model + " " + device.Device).ToLowerInvariant();
                 string kind = (device.Kind ?? string.Empty).ToLowerInvariant();
+                if (kind == "gamepad" && !hasStick)
+                    continue;
                 if (kind == "virtual" || Regex.IsMatch(name, @"\bvjoy\b|vigem|virtual (joystick|device|controller)") || device.VidPid.Equals("1234:BEAD", StringComparison.OrdinalIgnoreCase))
                     Set(device, Virtual, "virtual device: binds on it are kept, the plan does not use it");
                 else if (kind == "keyboard" || Regex.IsMatch(name, @"wooting|keyboard"))
                     Set(device, KeyboardJoystick, "keyboard with joystick mode: an extra, kept for your keyboard binds");
                 else if (kind == "wheel" || kind == "gamepad" || kind == "other")
-                    Set(device, Unused, kind == "wheel" ? "racing wheel" : kind == "gamepad" ? "gamepad" : "not a flight device");
+                    Set(device, Unused, kind == "wheel" ? "racing wheel" : kind == "gamepad" ? "gamepad: a joystick is connected, which flies better" : "not a flight device");
             }
 
             List<SetupDevice> open = devices.Where(d => d.ProposedRole.Length == 0).ToList();
@@ -87,7 +91,10 @@ namespace JoyPro.Setup
             List<SetupDevice> throttles = ranked(open.Where(d => d.Kind == "throttle" || d.Kind == "quadrant"));
             TakeFirst(throttles, Throttle, "throttle: the left hand for aircraft");
 
-            List<SetupDevice> sticks = open.Where(d => d.Kind == "stick" || d.Kind == "hotas" || d.Kind == "yoke" || d.Kind == "base").ToList();
+            List<SetupDevice> sticks = open.Where(d => IsStickKind(d.Kind)).ToList();
+            List<SetupDevice> pads = ranked(open.Where(d => d.Kind == "gamepad"));
+            if (sticks.Count == 0 && pads.Count > 0)
+                Set(pads[0], MainStick, "gamepad: both hands (no joystick connected): left stick pitch and roll, triggers rudder, right stick throttle");
             List<SetupDevice> left = ranked(sticks.Where(IsLeftHand));
             List<SetupDevice> right = ranked(sticks.Where(d => !IsLeftHand(d)));
             if (right.Count == 0 && left.Count > 0)
@@ -97,6 +104,13 @@ namespace JoyPro.Setup
                 left.RemoveAt(0);
             }
             TakeFirst(right, MainStick, "main stick: the right hand in every aircraft");
+            // A second stick that fits either hand and no throttle (two T.16000M for space sims): the left stick.
+            if (left.Count == 0 && throttles.Count == 0)
+            {
+                SetupDevice twin = right.FirstOrDefault(d => d.ProposedRole.Length == 0 && d.Hand == "either" && d.Kind == "stick");
+                if (twin != null)
+                    left.Add(twin);
+            }
             TakeFirst(left, LeftStick, "left-hand stick: translation in space sims" + (throttles.Count > 0 ? string.Empty : "; also the throttle side (no throttle)"));
 
             foreach (SetupDevice device in devices.Where(d => d.ProposedRole.Length == 0))
@@ -107,6 +121,8 @@ namespace JoyPro.Setup
                 else if (kind == "stick" || kind == "hotas" || kind == "yoke" || kind == "base")
                     Set(device, Unused, "a second " + (IsLeftHand(device) ? "left" : "right") + "-hand stick: an alternative (one device per hand)" +
                                         (device.ForceFeedback ? "; choose \"Stick for helicopters\" to fly helicopters with it" : string.Empty));
+                else if (kind == "gamepad")
+                    Set(device, Unused, "a second gamepad: an alternative (one device for both hands)");
                 else if (kind == "throttle" || kind == "quadrant" || kind == "collective" || kind == "pedals")
                     Set(device, Unused, "a second " + kind + ": an alternative (one device per hand)");
                 else
@@ -118,6 +134,11 @@ namespace JoyPro.Setup
                 if (device.Role.Length == 0 || !All.Contains(device.Role))
                     device.Role = device.ProposedRole;
             }
+        }
+
+        public static bool IsStickKind(string kind)
+        {
+            return kind == "stick" || kind == "hotas" || kind == "yoke" || kind == "base";
         }
 
         public static bool IsLeftHand(SetupDevice device)
@@ -224,6 +245,19 @@ namespace JoyPro.Setup
                 rules.Add("Pedals: yaw / rudder and toe brakes on " + Short(pedals) + ".");
             if (panels.Count > 0)
                 rules.Add("Panels: system switches (gear, lights, master arm ...) where their type and label fit: " + string.Join(", ", panels.Select(Short)) + ".");
+            // Devices JoyPro does not know (not in its device list): set up anyway, like a usual device of their kind.
+            foreach (SetupDevice device in devices.Where(d => d.Generic && Binds(d.Role)))
+            {
+                if (device.Role == MainStick || device.Role == HeliStick || device.Role == LeftStick)
+                    rules.Add("JoyPro does not know the exact model of " + Short(device) + ". It is set up like a usual joystick: moving it steers, button 1 fires, the first hat trims. Check it in the review.");
+                else if (device.Role == Throttle || device.Role == Collective)
+                    rules.Add("JoyPro does not know the exact model of " + Short(device) + ". It is set up like a usual throttle: its first lever is the throttle, its buttons get the other functions. Check it in the review.");
+                else
+                    rules.Add("JoyPro does not know the exact model of " + Short(device) + ". Its buttons get functions by their numbers. Check it in the review.");
+            }
+            List<SetupDevice> assumed = devices.Where(d => d.Assumed && Binds(d.Role)).ToList();
+            if (assumed.Count > 0)
+                rules.Add("Button numbers not published for " + string.Join(", ", assumed.Select(Short)) + ": JoyPro assumed the usual order (button 1 = trigger, hat 1 = the first hat). Check them in the review.");
             foreach (SetupDevice device in devices.Where(d => d.Role == KeyboardJoystick))
                 rules.Add(Short(device) + ": an extra, kept for your keyboard binds (the plan does not bind it).");
             foreach (SetupDevice device in devices.Where(d => d.Role == Virtual))
@@ -236,8 +270,9 @@ namespace JoyPro.Setup
 
         public static string Short(SetupDevice device)
         {
-            string name = device.Model.Length > 0 ? device.Model : Regex.Replace(device.Device, @"\s*\{[0-9A-Fa-f-]+\}\s*$", string.Empty);
-            return name.Trim();
+            // An unknown device's model is its Windows name with the instance GUID: shown without it.
+            string name = device.Model.Length > 0 ? device.Model : device.Device;
+            return Regex.Replace(name, @"\s*\{[0-9A-Fa-f-]+\}\s*$", string.Empty).Trim();
         }
     }
 }

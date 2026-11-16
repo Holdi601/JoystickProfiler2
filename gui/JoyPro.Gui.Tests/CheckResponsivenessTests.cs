@@ -94,6 +94,9 @@ public sealed class CheckResponsivenessTests
                 report.Add("BuildCheckSections alone (no layout): " + build.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture) + " ms");
                 window.Settle();
                 Measure("search the check", () => { vm.CheckSearchText = "Keyboard"; return Task.CompletedTask; }, window, vm, report, misses);
+                // The search builds each section's page a few cards per dispatcher turn: done once the UI is idle.
+                Assert.All(vm.CheckSections, s => Assert.True(!s.HasPendingCards && s.Cards.Count == Math.Min(s.TotalCount, s.ShownCount),
+                    s.Kind + ": " + s.Cards.Count + " of " + s.ShownCount + " cards built after the search"));
                 Measure("clear the search", () => { vm.CheckSearchText = string.Empty; return Task.CompletedTask; }, window, vm, report, misses);
                 Measure("collapse all", () => { vm.CollapseAllCheckCardsCommand.Execute(null); return Task.CompletedTask; }, window, vm, report, misses);
                 Measure("expand all", () => { vm.ExpandAllCheckCardsCommand.Execute(null); return Task.CompletedTask; }, window, vm, report, misses);

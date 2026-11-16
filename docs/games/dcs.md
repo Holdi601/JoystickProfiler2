@@ -42,7 +42,7 @@ refresh now reads `input.mo` itself (`AppendEnglishNamesShim`) and answers `dtra
 (`Input.*`, `<module>:Inp:` / `:Cat:`) with the English text, whatever language DCS or Windows uses; the step list says
 "English DCS command names: n". Names that already are English keep DCS's source text: the catalog rewords about 1000
 of them ("Throttle Up" -> "Throttle Levers - UP"), which would make lists built before and after disagree. Checked on
-the user's DCS 2.9.30 (read only, refresh into a temp data folder): 0 raw titles / categories after (3682 / 512
+DCS 2.9.30 (read only, refresh into a temp data folder): 0 raw titles / categories after (3682 / 512
 before), ids and combos identical, only the key rows changed. The shipped list (`EngineOnly_Runtime\DB\DCS`) is rebuilt.
 
 A list built before (the user's, until the next DB refresh) is translated when it is read (`DcsCommandNames`, used by
@@ -51,7 +51,7 @@ DCS install the sibling list's title (`_easy`, `CW`) or a readable form of the k
 
 ## Commands from mods
 Mods add commands to DCS's controls list without a new DCS version. JoyPro's list must have them too, else a relation
-says "the id is not in its list" for a command DCS shows (tester report, 2026-11-02: the F-16C's "C & I Knob - UFC
+says "the id is not in its list" for a command DCS shows (for example the F-16C's "C & I Knob - UFC
 else BACKUP (2-way Switch)", `d3001pnilu3001cd35vd1vpnilvu0`, and about 140 more "X else Y (2-way Switch)" commands
 in "Special For Joystick").
 
@@ -69,10 +69,9 @@ in "Special For Joystick").
 - **Modules in `<Saved Games>\<variant>\Mods\aircraft`**: DCS loads them like installed modules; the refresh lists
   them.
 
-**Why the tester's list lacked them** (DCS 2.9.31, `E:\Games\Eagle Dynamics\DCS World Openbeta`, binds in
-`Saved Games\DCS.openbeta`): the headless refresh runs DCS's own Lua in `luae.exe`, where no hook of
-`Scripts\Hooks` runs, so the 1.1.0 injector never merged anything; and his refresh read `Saved Games\DCS` (the old
-GUI default), not `DCS.openbeta` where the pack is.
+**Why a list could lack them** (an OpenBeta install with its binds in `Saved Games\DCS.openbeta`): the headless
+refresh runs DCS's own Lua in `luae.exe`, where no hook of `Scripts\Hooks` runs, so the 1.1.0 injector never merged
+anything; and the refresh read `Saved Games\DCS` (the old GUI default), not `DCS.openbeta` where the pack is.
 
 **The refresh** (`dcs refresh id` / `clean`, `EngineDcsRefresh.ResolveModInputs`, `DcsModInputs`):
 - reads the Saved Games folder of the install's variant: `dcs_variant.txt` "openbeta" (or an install folder named
@@ -86,12 +85,12 @@ GUI default), not `DCS.openbeta` where the pack is.
   command files. Every merged file is listed ("InputCommands Files Merged"), a broken one is a warning (DCS shows an
   error for it and leaves it out).
 
-Checked with the user's DCS 2.9.30 (read only, temporary Saved Games with the tester's pack of 248 files, temporary
+Checked with DCS 2.9.30 (read only, a temporary Saved Games folder with a community pack of 248 files, temporary
 data folder): 134 files merged (the others are device files of devices not connected, modules not installed, or the
 old Flaming Cliffs layout DCS does not load), 15425 more commands in 44 lists, none lost, e.g. F-16C_50 1125 -> 1494,
-FA-18C_hornet 1082 -> 1415, AJS37 994 -> 998, AH-64D_BLK_II_PLT 741 -> 1064; both C & I ids as in his .diff.lua
-(`...vd1vpnilvu0`, `...vd0vpnilvu1`). Of the 4495 command ids in his bind files, 59 were missing from the list without
-the pack and 13 with it (F-14, F-4E, TF-51D, Mosquito: commands of his DCS 2.9.31 or old binds).
+FA-18C_hornet 1082 -> 1415, AJS37 994 -> 998, AH-64D_BLK_II_PLT 741 -> 1064; both C & I ids as in the pack's .diff.lua
+(`...vd1vpnilvu0`, `...vd0vpnilvu1`). Of the 4495 command ids in a matching set of bind files, 59 were missing from the list
+without the pack and 13 with it (F-14, F-4E, TF-51D, Mosquito: commands of DCS 2.9.31 or old binds).
 
 **Outdated list** (`db check-updates`): the recorded state (`DB\DCS\source-version.txt`) has `mod-inputs` =
 a fingerprint (names, sizes, dates; no file is read) of the InputCommands files and of the Saved Games modules' input
@@ -151,7 +150,7 @@ Everything is written into a temporary Saved Games folder; the user's `Config\In
 `--plane`/`--planes` limit the aircraft. A file the strip option (below) patched is read from its `.nocombo.bak`, so
 the clean profiles always hold DCS's real defaults (checked: FA-18C and F-15C from a stripped copy of the install are
 byte-identical to those from the untouched install). Before the refresh JoyPro re-applies the switched-on install
-options. It writes 5071 clean profiles on a test PC (85 profiles, 136 device types; 9 MB; before: 1145).
+options. It writes 5071 clean profiles for a large install (85 profiles, 136 device types; 9 MB; before: 1145).
 
 ### Speed of the headless refreshes (`dcs refresh id` and `clean`)
 Both run DCS's Lua in several `luae.exe` at once (`EngineDcsRefresh.Parallel.cs`): every run lists all input profiles
@@ -173,7 +172,7 @@ profile's commands again for every device page, now once per profile. DCS's own 
 both fall back to DCS's functions when DCS changes them. The ID refresh writes DCS's `InputLayoutsTxt` into a temporary
 folder (before: `<Saved Games>\InputLayoutsTxt`, which was deleted); it still reads the user's `Config\Input`.
 
-Measured on the test PC (16 cores, DCS 2.9.30, 85 aircraft, 13 connected devices; old vs new engine on copies, the
+Measured on a PC with 16 cores ( DCS 2.9.30, 85 aircraft, 13 connected devices; old vs new engine on copies, the
 written DB, clean and keyboard profiles byte-identical): `dcs refresh id` 277 s -> 12-14 s, `dcs refresh clean`
 1408 s -> 46-57 s (61-67 s on a first clean refresh with only the ID refresh's times or none; the F-4E alone took 75 s
 before its fake sticks were split over runs).
@@ -186,7 +185,7 @@ the clean profiles of 2026-10-13:
    and in exported aircraft where that device has no bind (a device bound only in some aircraft): only `clean` mode
    touched other aircraft, and never the exported ones. Now every mode removes the DCS defaults of the written
    devices in every aircraft (`--clean-all-aircraft`, default true; outside clean mode the files keep their binds).
-   (2.5.0 changed this again by the user's decision: clean + nuke is the default and works only in the exported
+   (2.5.0 changed this again: clean + nuke is the default and works only in the exported
    aircraft, the import brings the active defaults into the profile, merge and add keep DCS's defaults; see [Export
    modes](#export-modes).)
 2. The refresh built device-type clean profiles only for types with a default file of their own. Types that
@@ -222,7 +221,7 @@ integrity check of multiplayer servers that enforce it. The GUI shows that warni
   either one can undo the other's work; JoyPro's restore covers files that script patched). Original bytes, line ends
   and a UTF-8 BOM stay. After patching, DCS's own loader (`Input.Data.loadDeviceProfileFromFile` in luae.exe) reads
   every patched file and its original: same commands, no combos left; a file that fails is put back at once. On a copy
-  of a test PC's install: 218 files, all compared, 2525 default binds switched off; restore byte-identical (8231
+  of a full install: 218 files, all compared, 2525 default binds switched off; restore byte-identical (8231
   files). `--skip-ui-layer` keeps `Config\Input\UiLayer`. The user's `Saved Games\DCS\Config\Input` is never touched,
   and nothing below a folder named `keyboard` (the keyboard's defaults) is ever patched or moved, also by the device
   files switch below.
@@ -230,7 +229,7 @@ integrity check of multiplayer servers that enforce it. The GUI shows that warni
   joystick folders (`<device type>.lua` and template diffs `<device type>.diff.lua`, not `default.lua`) move into
   `<data>\DcsDefaults\DeviceLuas` (with `manifest.json`), so DCS uses `default.lua` for every device (JoyPro 1's way).
   Files another Lua file of the module names stay, and so does the UI layer (its VR controller files make the menus
-  usable in VR). On a test PC's install: 554 files. After a move or restore the clean profiles no longer match what
+  usable in VR). On a full install: 554 files. After a move or restore the clean profiles no longer match what
   DCS loads; the GUI rebuilds them and the export warns until then. `engine dcs defaults restore` still puts back what
   an older JoyPro moved into `Saved Games\DCS\BACKUP_JOYSTICK_DEFAULTS`.
 - The switches are kept in `<data>\DcsDefaults\state.json`. A DCS update or repair brings original files back; with a

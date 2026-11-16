@@ -26,7 +26,7 @@ vocabulary. [Auto Assign](auto-assign.md) uses it to place functions on the righ
 
 - `id`: lower-case slug, unique across all files.
 - `kind`: `stick`, `throttle`, `hotas` (stick and throttle on one USB id), `base` (gimbal or FFB base without grip),
-  `pedals`, `collective`, `yoke`, `quadrant`, `panel`, `mfd`, `buttonbox`, `controller` (DIY boards), `other`.
+  `pedals`, `collective`, `yoke`, `quadrant`, `panel`, `mfd`, `buttonbox`, `controller` (DIY boards), `gamepad` (Xbox and other game controllers: the setup flies with one when no joystick is connected), `other`.
 - `hand`: `right`, `left`, `either` or `none`.
 - `base`: for grips and heads on an exchangeable base. The base has its own entry (`kind: base`) with its own axes
   and buttons. Each grip lists the numbers its controls get on that base.
@@ -43,9 +43,16 @@ vocabulary. [Auto Assign](auto-assign.md) uses it to place functions on the righ
   verified numbers; such controls have no `input`).
 - `input`: `JOY_X JOY_Y JOY_Z JOY_RX JOY_RY JOY_RZ JOY_SLIDER1 JOY_SLIDER2`, `JOY_BTN<n>` (1-based) or
   `JOY_BTN_POV<h>_<U|UR|R|DR|D|DL|L|UL>`.
-- `type`: `momentary`, `latched` (a switch position that stays), `rotary` (one encoder step) or `analog`.
+- `type`: `momentary`, `latched` (a switch position that stays), `rotary` (one encoder step) or `analog`. On an axis,
+  `centring` marks a spring-return axis whose control name does not say so (the T.Flight / TWCS rudder rocker,
+  `throttle.axis.wheel.1`): the Setup wizard puts centred rates (look around, TDC slew) there and no throttle.
 - `label`: the printed label of panel switches ("LDG GEAR UP", "ANTI SKID ON"). Auto Assign matches it against the
-  function and its direction.
+  function and its direction. Write a printed label in capitals as it is printed. A description of the control (where
+  it sits, what it is: "4-way hat Left (buttons 5-8)", "Left position button", "Mode dial position 2") is written in
+  lower case and never steers placement: a label in lower case whose words all describe a control is no function
+  label, and a label keyword made of such words ("POSITION", the UFC's "4") counts on it only where it is printed in
+  capitals ("POSITION left" on the MOZA MTP). Do not put function words a device does not print into a description
+  ("next to the JETT cover"): the planner would read them as the button's function.
 - `finger`: `index`, `middle`, `thumb`, `pinky`, `palm` or `hand` (grip controls only).
 
 ## Control vocabulary

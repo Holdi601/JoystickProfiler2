@@ -96,42 +96,106 @@ public sealed partial class DetentGroupItem : ObservableObject
     public static string Percent(double fraction) => Math.Round(fraction * 100.0, 1).ToString("0.#", CultureInfo.InvariantCulture) + " %";
 }
 
-// One proposal of "merge my per-aircraft throttle relations" (binds detent merge without --apply).
-public sealed class DetentMergeProposalItem
+// One relation of a merge proposal: ticked ones are merged; an unticked one stays apart with its own curve (2.6.5
+// report: the merge took every throttle relation of the axis, a helicopter collective as well).
+public sealed partial class DetentMergeRelationItem : ObservableObject
+{
+    public DetentMergeRelationItem(string name) => Name = name;
+
+    public string Name { get; }
+
+    [ObservableProperty]
+    private bool isChecked = true;
+}
+
+// One proposal of "merge my per-aircraft throttle relations" (binds detent merge without --apply). The relations are
+// ticked; unticking one plans the merge again for the ticked ones (Update).
+public sealed class DetentMergeProposalItem : ObservableObject
 {
     public DetentMergeProposalItem(string deviceLabel, string into, IReadOnlyList<string> relations, string calibrationText,
         IReadOnlyList<string> groupLines, IReadOnlyList<string> notes, IReadOnlyList<string> problems)
     {
         DeviceLabel = deviceLabel;
+        Candidates = relations.Select(r => new DetentMergeRelationItem(r)).ToList();
+        foreach (DetentMergeRelationItem candidate in Candidates)
+            candidate.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName != nameof(DetentMergeRelationItem.IsChecked))
+                    return;
+                Raise();
+                TicksChanged?.Invoke(this);
+            };
+        Update(into, calibrationText, groupLines, notes, problems);
+    }
+
+    // A tick changed: the view model plans the merge of the ticked relations again.
+    public event Action<DetentMergeProposalItem>? TicksChanged;
+
+    public string DeviceLabel { get; }
+
+    // Every throttle relation of the device axis, as the first plan found them.
+    public IReadOnlyList<DetentMergeRelationItem> Candidates { get; }
+
+    public string Into { get; private set; } = string.Empty;
+
+    // The ticked relations: the ones a merge takes.
+    public IReadOnlyList<string> Relations => Candidates.Where(c => c.IsChecked).Select(c => c.Name).ToList();
+
+    public string CalibrationText { get; private set; } = string.Empty;
+
+    public IReadOnlyList<string> GroupLines { get; private set; } = [];
+
+    public IReadOnlyList<string> Notes { get; private set; } = [];
+
+    public IReadOnlyList<string> Problems { get; private set; } = [];
+
+    // The engine plans the ticked relations now (Merge waits for it).
+    public bool IsPlanning
+    {
+        get => isPlanning;
+        set
+        {
+            if (SetProperty(ref isPlanning, value))
+                Raise();
+        }
+    }
+
+    private bool isPlanning;
+
+    public bool HasEnough => Relations.Count >= 2;
+
+    public bool CanApply => Problems.Count == 0 && HasEnough && !IsPlanning;
+
+    public string Heading => T("{0}: {1} -> {2}", DeviceLabel, string.Join(", ", Relations), Into);
+
+    public string GroupsText => HasEnough ? string.Join("\n", GroupLines) : string.Empty;
+
+    public string NotesText => HasEnough ? string.Join("\n", Notes.Concat(Problems)) : T("Tick at least two relations to merge.");
+
+    public bool HasNotes => !HasEnough || Notes.Count + Problems.Count > 0;
+
+    // The plan of the ticked relations (binds detent merge --relations ...).
+    public void Update(string into, string calibrationText, IReadOnlyList<string> groupLines, IReadOnlyList<string> notes, IReadOnlyList<string> problems)
+    {
         Into = into;
-        Relations = relations;
         CalibrationText = calibrationText;
         GroupLines = groupLines;
         Notes = notes;
         Problems = problems;
+        Raise();
     }
 
-    public string DeviceLabel { get; }
-
-    public string Into { get; }
-
-    public IReadOnlyList<string> Relations { get; }
-
-    public string CalibrationText { get; }
-
-    public IReadOnlyList<string> GroupLines { get; }
-
-    public IReadOnlyList<string> Notes { get; }
-
-    public IReadOnlyList<string> Problems { get; }
-
-    public bool CanApply => Problems.Count == 0;
-
-    public string Heading => T("{0}: {1} -> {2}", DeviceLabel, string.Join(", ", Relations), Into);
-
-    public string GroupsText => string.Join("\n", GroupLines);
-
-    public string NotesText => string.Join("\n", Notes.Concat(Problems));
-
-    public bool HasNotes => Notes.Count + Problems.Count > 0;
+    private void Raise()
+    {
+        OnPropertyChanged(nameof(Into));
+        OnPropertyChanged(nameof(Relations));
+        OnPropertyChanged(nameof(CalibrationText));
+        OnPropertyChanged(nameof(GroupLines));
+        OnPropertyChanged(nameof(Heading));
+        OnPropertyChanged(nameof(GroupsText));
+        OnPropertyChanged(nameof(NotesText));
+        OnPropertyChanged(nameof(HasNotes));
+        OnPropertyChanged(nameof(HasEnough));
+        OnPropertyChanged(nameof(CanApply));
+    }
 }

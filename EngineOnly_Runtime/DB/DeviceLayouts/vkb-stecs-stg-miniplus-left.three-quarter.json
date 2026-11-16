@@ -280,12 +280,31 @@
       "mapping": "medium",
       "confidence": "high",
       "note": "ATEM 4 (printed)"
+    },
+    "throttle.ministick": {
+      "type": "ministick",
+      "name": "Grip gimbal",
+      "inputs": [
+        {"input": "JOY_X", "control": "throttle.axis.ministick.x"},
+        {"input": "JOY_Y", "control": "throttle.axis.ministick.y"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.axis.main": {
+      "type": "lever",
+      "name": "Throttle lever",
+      "inputs": [
+        {"input": "JOY_Z", "control": "throttle.axis.main"}
+      ],
+      "mapping": "medium"
     }
   },
   "unplaced": {
     "throttle.axis.slider.1": "Space Brake axis (JOY_RX): physical control not identified on the photos",
     "throttle.axis.slider.2": "big ribbed paddle on the grip end, not named by the VKB template (axes have no lines); one of the 2 analog axes, which one (Laser vs Space Brake) is a guess",
-    "throttle.button.2": "main trigger is on the front underside of the grip, hidden"
+    "throttle.button.2": "main trigger is on the front underside of the grip, hidden",
+    "throttle.ministick": "the whole grip tilts as the X / Y gimbal (template STG x/y); no single spot on the photo",
+    "throttle.axis.main": "the throttle lever is the whole grip's fore / aft travel; no single spot on the photo"
   },
   "candidates": {
     "throttle.axis.slider.2": [0.73, 0.32]
@@ -293,7 +312,7 @@
   "source": "JoyPro curated on the maker's photo (2026-10-11), STECS Mini Plus with left Space Throttle Grip (STECS-MiniP-STG-L_04) seen from the right front and above: grip thumb face, pointer stalk, base panel and the ATEM module in front (ARMED, 1-4, PUSH, SAFE all labelled)",
   "mappingSource": "catalog vkb.json: EDCD community map 231D0137 (https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D0137.buttonMap, factory profile); grip control names and spots from VKB's STECS Space Throttle LH template v1.0 (https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-SpaceThrottleGrip-LH-v1.0.pdf; leader lines on a photo of nearly this angle) and ATEM template v1.0 (https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-ATEM-v1.0.pdf), both linked on https://vkbsimcontrollers.com/pages/downloads; printed labels (H1, HAT1, B1, B2, SPEED LIM, H2, ARMED, 1-4, PUSH, SAFE)",
   "confidence": "high",
-  "note": "gallery-2, 3, 8, 9, 10 (STECS-MiniP-STG-R_*) show the RIGHT-hand grip, another product. hat.3 = H1 (3-way up/down/push), hat.4 = H2 (push + left/right in the template) as in the STG Standard draft. The main trigger is on the hidden front of the grip. The grip X/Y gimbal (template STG x/y) has no catalog part. ATEM SAFE/ARMED is one catalog part (toggle.5: BTN10 SAFE = up, BTN15 ARMED = down); the marker sits on SAFE, ARMED is the pad at 0.255 0.643. MODE 1-5 are the positions of the white rotary.",
+  "note": "gallery-2, 3, 8, 9, 10 (STECS-MiniP-STG-R_*) show the RIGHT-hand grip, another product. hat.3 = H1 (3-way up/down/push), hat.4 = H2 (push + left/right in the template) as in the STG Standard draft. The main trigger is on the hidden front of the grip. The grip X/Y gimbal (template STG x/y) is the catalog's grip gimbal. ATEM SAFE/ARMED is one catalog part (toggle.5: BTN10 SAFE = up, BTN15 ARMED = down); the marker sits on SAFE, ARMED is the pad at 0.255 0.643. MODE 1-5 are the positions of the white rotary.",
   "callouts": {
     "version": 1,
     "width": 1372,

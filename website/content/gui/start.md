@@ -16,6 +16,11 @@ the binds you made in a game into JoyPro; **Export** writes them back. The impor
 ## From top to bottom
 
 - **Notices**: missing requirements, command lists to build or update, a crash report to send, an update.
+- **Set up your devices**: the auto setup card. JoyPro looks (read-only) which of your games have nothing assigned yet
+  and names them: "Set up your devices for War Thunder and Star Citizen". **Set it all up for me** (the blue button) does it all by itself; **Set up step by step...** opens the setup
+  wizard with these games ticked. Games where you made binds yourself are listed below it: **Import, then fill the
+  gaps** takes your binds in first, then the setup only uses the free controls. Games already in your profile:
+  **Fill the gaps...**. **Where is what?** shows your devices with what each control does.
 - **Profile at a glance**: relations (and how many are axes), how many are bound, modifiers, devices connected,
   games installed.
 - **Next steps**: what JoyPro suggests now ("3 relations have no button yet: Bind them", "VPforce Rhino FFB Base is
@@ -52,6 +57,7 @@ from **Load Games**) with Scan / Import / Export.
 :::
 
 <!-- entry: StartImportWizardCommand -->
+<!-- easy: Reads the buttons this game already has. The game stays as it is. -->
 Starts the import wizard for this game: step 2 asks how to import. Nothing is read or changed yet.
 
 <!-- entry: RunImportWizardCommand -->
@@ -74,7 +80,9 @@ Replaces the relations of the open profile with what the game has. JoyPro asks f
 Exports only this game with the Export page's mode (the same questions as on the Export page).
 
 <!-- entry: UndoGameCardExportCommand -->
-Restores this game's files from before the last export, byte for byte (`engine backups restore latest --game <id>`).
+<!-- easy: Puts the game back the way it was before. -->
+Puts this game back the way it was before the last export: its files come back byte for byte
+(`engine backups restore latest --game <id>`).
 
 <!-- entry: UpdateGameCommandListCommand -->
 Builds or updates this game's command list from your installation (DCS: the command list and the clean profiles,
@@ -88,8 +96,40 @@ Watch this game's control files: after the game closes, JoyPro asks whether to t
 your profile. Off: changes in this game are ignored.
 
 <!-- entry: OpenSetupWizardCommand -->
+<!-- easy: Sets up your stick, and you can choose every step. -->
 Opens the setup wizard: your games, your devices and their roles, your priorities, then a plan of relations and
-binds you review before it is applied.
+binds you review before it is applied. Shown here when the auto setup card above is not (no game it could set up).
+
+<!-- entry: OpenAutoSetupCommand -->
+<!-- easy: Sets up your stick, and you can choose every step. -->
+The auto setup card's main button: opens the setup wizard with the games ticked where nothing is assigned yet (named in
+the card's title, "Set up your devices for ..."). Your devices get their roles, the important functions of these games
+go where pilots expect them, and you review the plan before anything changes. Engine: [[cli:setup games]],
+[[cli:setup plan]].
+
+<!-- entry: OpenLayoutPreviewCommand -->
+**Where is what?**: opens the layout window with every device and the function on each control for one game and
+aircraft. While a setup plan waits to be applied it shows that plan; otherwise your profile. See the Layout page.
+
+<!-- entry: QuickSetupCommand -->
+<!-- easy: JoyPro puts the game controls on your stick for you. -->
+**Set it all up for me**: JoyPro does every step of the setup by itself with its defaults (your devices and their
+usual jobs, every aircraft equal, no modifier) for the games named in the card, and stops at the review. A box at the top
+says in plain words what was set up and which device JoyPro does not know (set up like a usual stick or throttle). Then
+**Use these buttons** and **Write to my game** (the export of these games). The same as the first start's **Done, and
+set everything up for me**. Engine: [[cli:setup games]], [[cli:setup plan]], [[cli:setup apply]].
+
+<!-- entry: ImportThenFillGapsCommand -->
+For a game where you have binds of your own: starts the import of that game first (the usual import steps). Its result
+then offers **Now fill the gaps...**: the setup only uses the controls that are still free, your binds stay.
+
+<!-- entry: FillAutoSetupGapsCommand -->
+For the games already in your profile: opens the setup wizard with them ticked. Your binds stay where they are; only
+free controls get functions.
+
+<!-- entry: FillGapsAfterImportCommand -->
+After an import started with **Import, then fill the gaps**: opens the setup wizard for that game. The binds you just
+imported stay; only free controls get functions.
 
 <!-- entry: RefreshGameCardsCommand -->
 Detects the installed games again (after you installed one) and rebuilds the cards (`engine games installs`).

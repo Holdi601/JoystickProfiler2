@@ -14,6 +14,34 @@ except a bind you make in **Bind** mode, which goes into your profile like any o
 ![The Layout page: your devices on the left, the picture of the selected device with its markers and binds](shot:layout)
 
 :::layer beginner
+## Where is what? (the layout window)
+
+**Where is what?** opens a window with all your devices. Next to each control it says what the control does in your
+game. You find it at the top right of this page, on the Start page and in the tray menu.
+
+1. Pick a **Game** and an **Aircraft**.
+2. Press a button or move an axis or hat. Its row lights up. Its function shows in big letters at the top.
+3. Keep the window on a second monitor while you fly. It comes back where you left it.
+
+**Follow the game** switches to the game you play and, in DCS, to the aircraft you fly. More:
+[[page:how-do-i/where-is-what.html|Where is what? See what each button does]].
+
+![The Where is what? window](shot:where-is-what)
+
+## Your binds on the DCS kneeboard
+
+JoyPro can put a page with your binds on the kneeboard of each DCS aircraft. You read it right in the cockpit.
+
+1. Press **Cheat sheets** at the top of this page.
+2. Find the part **Kneeboard**. Keep **DCS kneeboard (also OpenKneeboard)**.
+3. Press **Put on the kneeboard**.
+4. Start DCS, get into an aircraft and open the kneeboard. Your page is there.
+
+Changed a button? Press **Put on the kneeboard** again: JoyPro replaces its own pages. Your other kneeboard pages stay.
+More: [[page:how-do-i/dcs-kneeboard.html|See my binds on the DCS kneeboard]].
+
+![The kneeboard part of the Cheat sheets](shot:layout-kneeboard)
+
 ## Device pictures
 
 - **Left: your devices.** One card per stick, throttle, pedals or panel, with its model and "Your layout · 47
@@ -131,14 +159,16 @@ photo of the device.
 ## Behind the page
 
 ```mermaid
-flowchart LR
-  D["Device<br/>(USB id, name, inputs)"] --> I["DeviceIdentifier +<br/>device catalog"]
+flowchart TD
+  D["Device<br/>(USB id, name, inputs)"] --> I["DeviceIdentifier<br/>+ device catalog"]
   I --> R["Device reference:<br/>model, parts, pictures"]
   R --> C["DeviceMarkerCanvas<br/>(View / Edit / Bind)"]
-  P["Profile binds<br/>(engine binds list)"] --> C
-  C -->|"Bind to this input"| B["engine binds set"]
+  P["Profile binds<br/>(binds list)"] --> C
+  C --> B["binds set"]
   R --> S["Callout sheet:<br/>tables and lines"]
-  S -->|"Create cheat sheets"| L["engine layout render<br/>-> PNG per device / aircraft"]
+  S --> L["layout render:<br/>a PNG per device<br/>and aircraft"]
+  S --> K["layout kneeboard:<br/>DCS Kneeboard or<br/>OpenKneeboard"]
+%% caption: From a connected device to its picture, a bind, the cheat sheets and the kneeboard pages.
 ```
 
 - View models: `MainWindowViewModel.LayoutWorkspace.cs` (modes, undo, bind and free), `LayoutReference.cs` (the
@@ -681,3 +711,72 @@ Shows the newest pictures of the output folder in the preview, also those of ear
 Makes the cheat sheets (PNG) into the output folder with the ticked devices, games, aircraft and the sheet style, and
 shows them in the preview. Unsaved layout-file edits are saved first; a ticked device without a picture stops it with a
 message. Games are not touched. Engine: [[cli:layout render]].
+
+<!-- entry: ExportKneeboardCommand -->
+**Put on the kneeboard** puts the cheat sheet of each aircraft on its kneeboard: one page per aircraft and device (or one
+page with all devices), drawn like the cheat sheets with the ticked devices and the sheet style. In DCS you find the
+pages on the kneeboard of that aircraft in the cockpit (and in OpenKneeboard's DCS Aircraft tab). JoyPro only adds or
+replaces its own pages, named `JoyPro_...`; your other kneeboard pages stay as they are. Press it again after you
+changed binds: the pages are replaced. The preview shows the new pages. Engine: [[cli:layout kneeboard]].
+
+<!-- entry: bind:KneeboardToDcs -->
+Puts the pages on the DCS kneeboard: the Kneeboard folder of your DCS Saved Games folder (the one on the Export page)
+and of a DCS.openbeta folder next to it, in the folder DCS uses for each aircraft (for example `F-16C_50`, `A-10C_2`,
+`F-15ESE`).
+
+<!-- entry: bind:KneeboardToFolder -->
+Writes the pages into a folder you pick instead, one sub folder per game and aircraft, in the sheet's own shape. Point
+an OpenKneeboard Folder tab at it, or any other kneeboard tool or game that shows a folder of pictures.
+
+<!-- entry: click:BrowseKneeboardFolderClicked -->
+Picks the folder for the kneeboard pages (A folder of my choice).
+
+<!-- entry: bind:KneeboardAllAircraft -->
+On: every aircraft your devices have binds in gets its pages. Off: only the aircraft ticked above for the cheat sheets.
+A game-mode copy such as `F-16C_50_easy` shares the kneeboard of its aircraft and is left out while that aircraft has
+binds.
+
+<!-- entry: bind:KneeboardListPage -->
+On (default): each page lists only the controls that do something in this aircraft, in large text, grouped by control
+(for example "PC hat: Up - Target Management Switch - Up"), with a coloured tag on binds that need a modifier. A device
+with many binds goes on to a second page (`..._p2`). Off: the cheat sheet picture instead, as on this page.
+
+<!-- entry: bind:KneeboardPicture -->
+Shows the device picture at the top of the list page, with a number on each control that matches the list. Off: no
+picture, more room for the list.
+
+<!-- entry: bind:KneeboardOnePage -->
+The pages of an aircraft list all devices, each device a section, instead of pages per device. The name ending and the page height (in pixels; 2048 makes
+1536x2048 pages for DCS) are kept with the other options.
+
+<!-- entry: OpenLayoutWindowCommand -->
+**Where is what?** opens the layout window: a window of its own (also for a second monitor) with every device and the
+function on each control for one game and aircraft. What you press lights up. Also on the Start page and in the tray
+menu.
+
+<!-- entry: bind:SelectedGame -->
+Layout window: the game whose binds the devices show. Only games with binds on your devices are listed.
+
+<!-- entry: bind:SelectedAircraft -->
+Layout window: the aircraft (DCS) whose functions the tables show. Games with one setup for the whole game have no
+aircraft list.
+
+<!-- entry: bind:SelectedDevice -->
+Layout window: **Every device** shows them all, one under the other; one device alone gets the whole window (easier to
+read from a distance).
+
+<!-- entry: bind:LightUp -->
+Layout window, on by default: press a button, move an axis or a hat and its row lights up; its function is named in big
+letters at the top. JoyPro reads your devices only while the window is open and not minimized, and after a moment
+without input only every 250 ms.
+
+<!-- entry: bind:FollowGame -->
+Layout window: switches to the game you play and, in DCS, to the aircraft you fly (JoyPro's DCS hook tells it; other
+games are found by their running program every 10 seconds). Without that your choice stays.
+
+<!-- entry: LoadCommand -->
+Layout window: reads the binds again, for example after you changed something on the Binds page.
+
+<!-- entry: click:CloseClicked -->
+Closes the layout window. JoyPro remembers where it was (monitor, place, size) and what it showed; it opens there next
+time. Left open when JoyPro closes, it comes back with the next start.

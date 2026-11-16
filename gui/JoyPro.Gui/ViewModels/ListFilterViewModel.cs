@@ -402,7 +402,7 @@ public sealed partial class ListFilterViewModel : ObservableObject
         return false;
     }
 
-    private bool PassDevices(FilterSubject s) => devices.Count == 0 || devices.Contains(s.Device);
+    private bool PassDevices(FilterSubject s) => devices.Count == 0 || s.Devices.Overlaps(devices);
 
     private bool PassBound(FilterSubject s) => Bound switch
     {
@@ -488,7 +488,7 @@ public sealed partial class ListFilterViewModel : ObservableObject
         }
 
         // Devices by their name without the instance id; two of the same model keep a part of the id.
-        List<string> deviceKeys = subjects.Select(s => s.Device).Where(d => d.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase)
+        List<string> deviceKeys = subjects.SelectMany(s => s.Devices).Where(d => d.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(d => DisplayText.ShortDevice(d), StringComparer.OrdinalIgnoreCase).ToList();
         if (known)
             devices.IntersectWith(deviceKeys);
@@ -824,8 +824,11 @@ public sealed partial class ListFilterViewModel : ObservableObject
                 if (anyGameTicked && !HasTickedGameAction(s))
                     noActionN++;
             }
-            if (g && ga && b && k && s.Device.Length > 0)
-                deviceCounts[s.Device] = deviceCounts.GetValueOrDefault(s.Device) + 1;
+            if (g && ga && b && k)
+            {
+                foreach (string device in s.Devices)
+                    deviceCounts[device] = deviceCounts.GetValueOrDefault(device) + 1;
+            }
             if (g && ga && d && k)
             {
                 if (s.IsBound)

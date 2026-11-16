@@ -197,6 +197,39 @@ namespace JoyPro.Engine.Games
             "SIM_RATE|b|" + Simulation + "|Simulation rate select"
         };
 
+        // The DB folders of the FSX / Prepar3D games (their GameIds).
+        internal static readonly string[] DbFolders = { "FSX", "FSXSE", "P3D4", "P3D5", "P3D6" };
+
+        // Titles older JoyPro versions wrote with the pitch direction reversed (corrected 2026-11-04). A list built
+        // with them stays on the user's PC and a refresh keeps the titles it has, so these exact titles are corrected
+        // (GameDataPaths.FixKnownTitles on start, RefreshCatalog).
+        internal static readonly Dictionary<string, string> ReversedTitles = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            { "ELEV_UP", "Elevator up (nose down)" },
+            { "ELEV_DOWN", "Elevator down (nose up)" },
+            { "ELEV_TRIM_UP", "Elevator trim up (nose down)" },
+            { "ELEV_TRIM_DN", "Elevator trim down (nose up)" }
+        };
+
+        // JoyPro's title of one of its own events; empty when the event is not in its list.
+        internal static string OwnTitle(string id)
+        {
+            foreach (GameAction action in All())
+                if (string.Equals(action.Id, id, StringComparison.Ordinal))
+                    return action.Title;
+            return string.Empty;
+        }
+
+        // The corrected title when the given one is a known wrong one of an older version; else null.
+        internal static string CorrectedTitle(string id, string title)
+        {
+            string wrong;
+            if (id == null || !ReversedTitles.TryGetValue(id, out wrong) || !string.Equals(wrong, title, StringComparison.Ordinal))
+                return null;
+            string own = OwnTitle(id);
+            return own.Length > 0 ? own : null;
+        }
+
         public static IEnumerable<GameAction> All()
         {
             foreach (string row in Rows)

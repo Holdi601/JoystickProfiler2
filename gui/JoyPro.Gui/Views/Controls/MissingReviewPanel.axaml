@@ -15,7 +15,11 @@
             <Button Grid.Column="1" Classes="icon small" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Check again'}" Command="{Binding SuggestMissingForAllCommand}"
                     VerticalAlignment="Top" ToolTip.Tip="{l:T 'Look at every relation again'}" />
         </Grid>
-        <ProgressBar Grid.Row="1" IsIndeterminate="True" IsVisible="{Binding IsMissingReviewLoading}" />
+        <StackPanel Grid.Row="1" Spacing="4">
+            <CheckBox x:Name="MissingReviewInstalledOnly" IsChecked="{Binding SuggestInstalledGamesOnly}" Content="{l:T 'Only games installed on this PC'}"
+                      ToolTip.Tip="{l:T 'Off: suggestions for every game JoyPro knows, also the ones you do not have.'}" />
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsMissingReviewLoading}" />
+        </StackPanel>
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MinHeight="0">
             <ItemsControl ItemsSource="{Binding MissingReview}" Margin="0,0,12,0">
                 <ItemsControl.ItemTemplate>

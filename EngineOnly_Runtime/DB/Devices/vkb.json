@@ -4076,17 +4076,33 @@
         "names": [
           "VKBsim STECS Standard"
         ],
-        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider; base axes X/Y/Z not unambiguous in source and omitted. PID changes with attached modules. Includes STEM module (buttons 30-53). HID name guessed."
+        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider, Z = throttle lever, X / Y = grip gimbal (STG x / y): verified 2026-11-14 from raw HID reports of two 0138 owners (github.com/Alphonsvds/joystick-mapper issues 4 and 11) and the EDCD EliteCustomButtonNames maps of every listed PID (the Mini Plus maps name Z \"Throttle\"); VKB's templates list \"STG(x), STG(y), Throttle, Brake, Laser\". PID changes with attached modules. Includes STEM module (buttons 30-53). HID name guessed."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/STECS-Standard-STG-L_03_1200.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us",
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D0138.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
+        {
+          "input": "JOY_Z",
+          "control": "throttle.axis.main",
+          "label": "Throttle lever"
+        },
+        {
+          "input": "JOY_X",
+          "control": "throttle.axis.ministick.x",
+          "label": "Grip gimbal left/right (STG x)"
+        },
+        {
+          "input": "JOY_Y",
+          "control": "throttle.axis.ministick.y",
+          "label": "Grip gimbal up/down (STG y)"
+        },
         {
           "input": "JOY_RX",
           "control": "throttle.axis.slider.1"
@@ -4113,31 +4129,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -4451,17 +4467,33 @@
         "names": [
           "VKBsim STECS Standard"
         ],
-        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider; base axes X/Y/Z not unambiguous in source and omitted. PID changes with attached modules. Includes STEM module (buttons 30-53). HID name guessed."
+        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider, Z = throttle lever, X / Y = grip gimbal (STG x / y): verified 2026-11-14 from raw HID reports of two 0138 owners (github.com/Alphonsvds/joystick-mapper issues 4 and 11) and the EDCD EliteCustomButtonNames maps of every listed PID (the Mini Plus maps name Z \"Throttle\"); VKB's templates list \"STG(x), STG(y), Throttle, Brake, Laser\". PID changes with attached modules. Includes STEM module (buttons 30-53). HID name guessed."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/STECS-Standard-STG-L_03_1200.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us",
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D013C.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
+        {
+          "input": "JOY_Z",
+          "control": "throttle.axis.main",
+          "label": "Throttle lever"
+        },
+        {
+          "input": "JOY_X",
+          "control": "throttle.axis.ministick.x",
+          "label": "Grip gimbal left/right (STG x)"
+        },
+        {
+          "input": "JOY_Y",
+          "control": "throttle.axis.ministick.y",
+          "label": "Grip gimbal up/down (STG y)"
+        },
         {
           "input": "JOY_RX",
           "control": "throttle.axis.slider.1"
@@ -4488,31 +4520,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -4826,17 +4858,33 @@
         "names": [
           "VKBsim STECS Mini"
         ],
-        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider; base axes X/Y/Z not unambiguous in source and omitted. PID changes with attached modules. Mini has no STEM/ATEM. HID name guessed."
+        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider, Z = throttle lever, X / Y = grip gimbal (STG x / y): verified 2026-11-14 from raw HID reports of two 0138 owners (github.com/Alphonsvds/joystick-mapper issues 4 and 11) and the EDCD EliteCustomButtonNames maps of every listed PID (the Mini Plus maps name Z \"Throttle\"); VKB's templates list \"STG(x), STG(y), Throttle, Brake, Laser\". PID changes with attached modules. Mini has no STEM/ATEM. HID name guessed."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/STECS-Mini-STG-L_04_1200.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-mini-us",
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D0136.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-mini-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
+        {
+          "input": "JOY_Z",
+          "control": "throttle.axis.main",
+          "label": "Throttle lever"
+        },
+        {
+          "input": "JOY_X",
+          "control": "throttle.axis.ministick.x",
+          "label": "Grip gimbal left/right (STG x)"
+        },
+        {
+          "input": "JOY_Y",
+          "control": "throttle.axis.ministick.y",
+          "label": "Grip gimbal up/down (STG y)"
+        },
         {
           "input": "JOY_RX",
           "control": "throttle.axis.slider.1"
@@ -4863,31 +4911,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -5057,17 +5105,33 @@
         "names": [
           "VKBsim STECS Mini"
         ],
-        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider; base axes X/Y/Z not unambiguous in source and omitted. PID changes with attached modules. Mini has no STEM/ATEM. HID name guessed."
+        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider, Z = throttle lever, X / Y = grip gimbal (STG x / y): verified 2026-11-14 from raw HID reports of two 0138 owners (github.com/Alphonsvds/joystick-mapper issues 4 and 11) and the EDCD EliteCustomButtonNames maps of every listed PID (the Mini Plus maps name Z \"Throttle\"); VKB's templates list \"STG(x), STG(y), Throttle, Brake, Laser\". PID changes with attached modules. Mini has no STEM/ATEM. HID name guessed."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/STECS-Mini-STG-L_04_1200.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-mini-us",
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D013A.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-mini-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
+        {
+          "input": "JOY_Z",
+          "control": "throttle.axis.main",
+          "label": "Throttle lever"
+        },
+        {
+          "input": "JOY_X",
+          "control": "throttle.axis.ministick.x",
+          "label": "Grip gimbal left/right (STG x)"
+        },
+        {
+          "input": "JOY_Y",
+          "control": "throttle.axis.ministick.y",
+          "label": "Grip gimbal up/down (STG y)"
+        },
         {
           "input": "JOY_RX",
           "control": "throttle.axis.slider.1"
@@ -5094,31 +5158,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -5288,17 +5352,33 @@
         "names": [
           "VKBsim STECS Mini Plus"
         ],
-        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider; base axes X/Y/Z not unambiguous in source and omitted. PID changes with attached modules. Includes ATEM (buttons 8-20); numbering verified for left (0137) only, right (013B) assumed the same (possible pointer left/right swap). HID name guessed."
+        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider, Z = throttle lever, X / Y = grip gimbal (STG x / y): verified 2026-11-14 from raw HID reports of two 0138 owners (github.com/Alphonsvds/joystick-mapper issues 4 and 11) and the EDCD EliteCustomButtonNames maps of every listed PID (the Mini Plus maps name Z \"Throttle\"); VKB's templates list \"STG(x), STG(y), Throttle, Brake, Laser\". PID changes with attached modules. Includes ATEM (buttons 8-20); numbering verified for left (0137) only, right (013B) assumed the same (possible pointer left/right swap). HID name guessed."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/STECS-MiniP-STG-L_03_1200.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-mini-plus-us",
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D0137.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-mini-plus-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
+        {
+          "input": "JOY_Z",
+          "control": "throttle.axis.main",
+          "label": "Throttle lever"
+        },
+        {
+          "input": "JOY_X",
+          "control": "throttle.axis.ministick.x",
+          "label": "Grip gimbal left/right (STG x)"
+        },
+        {
+          "input": "JOY_Y",
+          "control": "throttle.axis.ministick.y",
+          "label": "Grip gimbal up/down (STG y)"
+        },
         {
           "input": "JOY_RX",
           "control": "throttle.axis.slider.1"
@@ -5325,31 +5405,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -5597,17 +5677,33 @@
         "names": [
           "VKBsim STECS Mini Plus"
         ],
-        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider; base axes X/Y/Z not unambiguous in source and omitted. PID changes with attached modules. Includes ATEM (buttons 8-20); numbering verified for left (0137) only, right (013B) assumed the same (possible pointer left/right swap). HID name guessed."
+        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider, Z = throttle lever, X / Y = grip gimbal (STG x / y): verified 2026-11-14 from raw HID reports of two 0138 owners (github.com/Alphonsvds/joystick-mapper issues 4 and 11) and the EDCD EliteCustomButtonNames maps of every listed PID (the Mini Plus maps name Z \"Throttle\"); VKB's templates list \"STG(x), STG(y), Throttle, Brake, Laser\". PID changes with attached modules. Includes ATEM (buttons 8-20); numbering verified for left (0137) only, right (013B) assumed the same (possible pointer left/right swap). HID name guessed."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/STECS-MiniP-STG-L_03_1200.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-mini-plus-us",
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D013B.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-mini-plus-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "low",
       "axes": [
+        {
+          "input": "JOY_Z",
+          "control": "throttle.axis.main",
+          "label": "Throttle lever"
+        },
+        {
+          "input": "JOY_X",
+          "control": "throttle.axis.ministick.x",
+          "label": "Grip gimbal left/right (STG x)"
+        },
+        {
+          "input": "JOY_Y",
+          "control": "throttle.axis.ministick.y",
+          "label": "Grip gimbal up/down (STG y)"
+        },
         {
           "input": "JOY_RX",
           "control": "throttle.axis.slider.1"
@@ -5634,31 +5730,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -5904,19 +6000,36 @@
           "231D:0139"
         ],
         "names": [
-          "VKBsim STECS Max"
+          "VKBsim STECS Max",
+          "S-TECS SPACE-L THROTTLE MAX STEM"
         ],
-        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider; base axes X/Y/Z not unambiguous in source and omitted. PID changes with attached modules. Includes ATEM (8-20) and STEM (43-66). HID name guessed."
+        "note": "Numbering from community Elite Dangerous button map (factory profile). RX = Space Brake slider, RY = Laser Power slider, Z = throttle lever, X / Y = grip gimbal (STG x / y): verified 2026-11-14 from raw HID reports of two 0138 owners (github.com/Alphonsvds/joystick-mapper issues 4 and 11) and the EDCD EliteCustomButtonNames maps of every listed PID (the Mini Plus maps name Z \"Throttle\"); VKB's templates list \"STG(x), STG(y), Throttle, Brake, Laser\". PID changes with attached modules. Includes ATEM (8-20) and STEM (43-66). HID name guessed."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/STECS-MAX-STG-L_02_1200.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-max-us",
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D0139.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-max-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
+        {
+          "input": "JOY_Z",
+          "control": "throttle.axis.main",
+          "label": "Throttle lever"
+        },
+        {
+          "input": "JOY_X",
+          "control": "throttle.axis.ministick.x",
+          "label": "Grip gimbal left/right (STG x)"
+        },
+        {
+          "input": "JOY_Y",
+          "control": "throttle.axis.ministick.y",
+          "label": "Grip gimbal up/down (STG y)"
+        },
         {
           "input": "JOY_RX",
           "control": "throttle.axis.slider.1"
@@ -5943,31 +6056,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -6357,7 +6470,9 @@
           "231D:012D"
         ],
         "names": [
-          "VKBsim STECS Standard"
+          "VKBsim STECS Standard",
+          "S-TECS MODERN THROTTLE STANDARD",
+          "S-TECS MODERN THROTTLE STANDARD STEM"
         ],
         "note": "Numbering from community Elite Dangerous map (VKB factory profile). Axes: RX/RY = MB1 mini-stick, X/Y = left/right throttle lever, Z = thumb wheel. Buttons 39-62 (STEM: A1,A2,C1,B1-B5, SW1/SW2, TGL, EN1/EN2, LEV) not listed. HID name guessed."
       },
@@ -6366,7 +6481,9 @@
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D012D.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-throttle-system-mk-ii-standard-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "VKB STECS manual / button map labels in this entry: BRK hat fwd/aft = speed brake, RADIO switch = mic switch (HOTAS equivalence; same grip numbering as the MTS Mini, whose map labels BRK right/left as fwd/aft)",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
@@ -6408,31 +6525,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -6572,28 +6689,32 @@
           "control": "throttle.hat.1.right",
           "label": "BRK right",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.fwd"
         },
         {
           "input": "JOY_BTN28",
           "control": "throttle.hat.1.left",
           "label": "BRK left",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.aft"
         },
         {
           "input": "JOY_BTN29",
           "control": "throttle.hat.2.down",
           "label": "RADIO down",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.hat.mic.down"
         },
         {
           "input": "JOY_BTN30",
           "control": "throttle.hat.2.up",
           "label": "RADIO up",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.hat.mic.up"
         },
         {
           "input": "JOY_BTN31",
@@ -6663,7 +6784,8 @@
           "231D:012C"
         ],
         "names": [
-          "VKBsim STECS Mini Plus"
+          "VKBsim STECS Mini Plus",
+          "S-TECS MODERN THROTTLE MINI PLUS"
         ],
         "note": "Numbering from community Elite Dangerous map for 231D:012C (some labels ED-specific). RX/RY = OTS ministick, X/Y = right/left throttle, Z = scroll wheel. HID name guessed."
       },
@@ -6672,7 +6794,9 @@
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D012C.buttonMap",
         "https://vkbsimcontrollers.com/products/stecs-throttle-system-mk-ii-mini-plus-us",
-        "https://www.vkbcontrollers.com/pages/downloads"
+        "https://www.vkbcontrollers.com/pages/downloads",
+        "VKB STECS manual / button map labels in this entry: BRK hat fwd/aft = speed brake (HOTAS equivalence); BRK right/left = fwd/aft as on the MTS Mini/Max grip",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
@@ -6714,31 +6838,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -6901,7 +7025,8 @@
           "control": "throttle.hat.1.left",
           "label": "BRK left",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.aft"
         },
         {
           "input": "JOY_BTN39",
@@ -6915,7 +7040,8 @@
           "control": "throttle.hat.1.right",
           "label": "BRK right",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.fwd"
         },
         {
           "input": "JOY_BTN41",
@@ -6949,7 +7075,9 @@
         "https://github.com/MobiFlight/MobiFlight-Connector/blob/main/src/MobiFlightConnector/Joysticks/vkbsim/s_tecs_modern_throttle_mini.joystick.json",
         "https://github.com/Alphonsvds/joystick-mapper/blob/main/src/shared/devices.js",
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D012D.buttonMap",
-        "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-v1.1.pdf"
+        "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-v1.1.pdf",
+        "VKB STECS manual / button map labels in this entry: BRK hat fwd/aft = speed brake (HOTAS equivalence)",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
@@ -7006,31 +7134,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN9",
@@ -7156,14 +7284,16 @@
           "control": "throttle.hat.1.right",
           "label": "BRK fwd (Elite map: right)",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.fwd"
         },
         {
           "input": "JOY_BTN28",
           "control": "throttle.hat.1.left",
           "label": "BRK aft (Elite map: left)",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.aft"
         }
       ]
     },
@@ -7179,7 +7309,8 @@
         "names": [
           "VKBsim STECS Max",
           "S-TECS MODERN THROTTLE MAX STEM",
-          "S-TECS MODERN THROTTLE MAX"
+          "S-TECS MODERN THROTTLE MAX",
+          "S-TECS MODERN THROTTLE MAX STEM FSM.GA"
         ],
         "note": "231D:012E with HID name 'S-TECS MODERN THROTTLE MAX STEM' (seen in a Star Citizen export and a joystick-mapper GitHub issue; MobiFlight also lists 'S-TECS MODERN THROTTLE MAX' and '... MAX STEM FSM.GA' on the same PID; the older entry name 'VKBsim STECS Max' was a guess). Buttons 1-41 from the three MobiFlight Max definitions, which agree: base 1-7, ATEM 8-20 (multi encoder CCW/CW, SAFE, #1-#4, ARMED, multi 4-way + push), MTG-L 21-28, MTG-R 29-41 (triggers, ENT, pushes, BRK 4-way). This is the Mini numbering with the ATEM block inserted at 8-20, the same pattern as the STECS Space Mini Plus/Max. Buttons from 42 on (MB1/RADIO/MB2/OP EXEC directions, then STEM A1..LEVER with 24 buttons) shift with the fitted hat modules (STEM starts at 48 or 58 in the MobiFlight maps) and are left out. Axes X = MTG-L, Y = MTG-R (joystick-mapper for 231d:012e); Z = thumb wheel per the Standard map (assumed)."
       },
@@ -7195,7 +7326,9 @@
         "https://github.com/Osiris-DevWorks/sc-profile-editor/blob/main/example-profiles/layout_19APR2025_exported.xml",
         "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-v1.1.pdf",
         "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-ATEM-v1.0.pdf",
-        "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-STEM-v1.0_1d344eed-eb3d-4326-bff2-541f981d4e2a.pdf"
+        "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-STEM-v1.0_1d344eed-eb3d-4326-bff2-541f981d4e2a.pdf",
+        "VKB STECS manual / button map labels in this entry: BRK hat fwd/aft = speed brake (HOTAS equivalence)",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "medium",
       "axes": [
@@ -7252,31 +7385,31 @@
           "input": "JOY_BTN3",
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN4",
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN5",
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN6",
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN7",
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN8",
@@ -7480,14 +7613,16 @@
           "control": "throttle.hat.1.right",
           "label": "BRK fwd",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.fwd"
         },
         {
           "input": "JOY_BTN41",
           "control": "throttle.hat.1.left",
           "label": "BRK aft",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.aft"
         }
       ]
     },
@@ -7498,10 +7633,17 @@
       "hand": "none",
       "identify": {
         "vidPids": [
-          "231D:2204"
+          "231D:2204",
+          "231D:2214",
+          "231D:2224",
+          "231D:2234"
         ],
         "names": [
-          "VKBSim NXT SEM"
+          "VKBSim NXT SEM",
+          "VKBSim NXT SEM THQ",
+          "VKBSim NXT SEM THQx2",
+          "VKBSim NXT SEM THQx2 FSM.GA",
+          "VKBSim NXT SEM THQx3"
         ],
         "note": "Inputs are for the SEM on its own GNX USB link: 231D:2204 'VKBSim NXT SEM' (MobiFlight; with a THQ also attached 231D:2214 'VKBSim NXT SEM THQ', seen in a linux-hardware.org probe, SEM numbering unchanged). When the SEM is chained to a Gladiator stick it changes the stick's PID (e.g. 0204 'VKBsim Gladiator EVO R SEM' / 'VKBsim Gladiator NXT  R SEM', 0205 left) and its buttons move up by 40 (A1 = 41 ... GEAR UP = 64; stick keeps 1-40). Numbering from the MobiFlight SEM definitions; control names match the official VKB SEM template. SW1/SW2 report up, centre and down as separate buttons; the existing toggle entry was renamed to the 3-way vocabulary. Lever axes (flaps, gear) exist per the VKB template but their axis ids were not found."
       },
@@ -7515,7 +7657,9 @@
         "https://github.com/MobiFlight/MobiFlight-Connector/blob/main/src/MobiFlightConnector/Joysticks/vkbsim/vkbsim_nxt_sem_thq.joystick.json",
         "https://linux-hardware.org/?probe=FDC65FEA9D",
         "https://linux-hardware.org/?probe=EDC30B8A22",
-        "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-SEM-v1.0.pdf"
+        "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-SEM-v1.0.pdf",
+        "https://linux-hardware.org/?id=usb:231d-2214",
+        "https://github.com/MobiFlight/MobiFlight-Connector/tree/main/src/MobiFlightConnector/Joysticks/vkbsim"
       ],
       "confidence": "medium",
       "controls": [
@@ -8115,7 +8259,7 @@
       "identify": {
         "vidPids": [],
         "names": [],
-        "note": "Add-on grip for THQ; numbering not found."
+        "note": "Add-on grip for THQ; numbering not found. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/WWII_Grip_for_THQ_800_2.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/wwii-gnx-thq-add-on-grip-us",
@@ -8124,6 +8268,7 @@
         "https://www.vkbcontrollers.com/pages/downloads"
       ],
       "confidence": "low",
+      "incomplete": true,
       "controls": [
         {
           "control": "throttle.button.1",
@@ -8295,17 +8440,17 @@
         },
         {
           "input": "JOY_RY",
-          "control": "pedals.axis.rudder",
+          "control": "stick.axis.rotary.2",
           "label": "Rudder of VKB pedals on the Pedals port (external)"
         },
         {
           "input": "JOY_RZ",
-          "control": "pedals.axis.brake_left",
+          "control": "stick.axis.rotary.3",
           "label": "Left toe brake of VKB pedals on the Pedals port (external)"
         },
         {
           "input": "JOY_SLIDER1",
-          "control": "pedals.axis.brake_right",
+          "control": "stick.axis.rotary.4",
           "label": "Right toe brake of VKB pedals on the Pedals port (external)"
         }
       ],
@@ -8957,7 +9102,7 @@
           "control": "stick.button.thumb.3",
           "label": "3-position mode switch",
           "finger": "thumb",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "control": "stick.base.button.1",
@@ -9090,7 +9235,7 @@
           "control": "stick.button.thumb.3",
           "label": "3-position mode switch",
           "finger": "thumb",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "control": "stick.base.button.1",
@@ -9306,7 +9451,7 @@
           "control": "stick.button.thumb.3",
           "label": "3-position mode switch",
           "finger": "thumb",
-          "type": "latched"
+          "type": "selector"
         }
       ]
     },
@@ -10526,7 +10671,8 @@
         "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-max-us",
         "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-SpaceThrottleGrip-RH-v1.0.pdf",
         "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-ATEM-v1.0.pdf",
-        "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-STEM-v1.0_1d344eed-eb3d-4326-bff2-541f981d4e2a.pdf"
+        "https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-STEM-v1.0_1d344eed-eb3d-4326-bff2-541f981d4e2a.pdf",
+        "https://vkbsimcontrollers.com/products/stecs-space-throttle-system-standard-us (STECS base: 2 buttons + 1 five-position rotary switch = MODE 1-5, buttons 3-7 in the EDCD maps)"
       ],
       "confidence": "low",
       "axes": [
@@ -10551,27 +10697,27 @@
         {
           "control": "throttle.base.button.3",
           "label": "MODE 1",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "control": "throttle.base.button.4",
           "label": "MODE 2",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "control": "throttle.base.button.5",
           "label": "MODE 3",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "control": "throttle.base.button.6",
           "label": "MODE 4",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "control": "throttle.base.button.7",
           "label": "MODE 5",
-          "type": "momentary"
+          "type": "selector"
         },
         {
           "control": "throttle.base.encoder.3.ccw",

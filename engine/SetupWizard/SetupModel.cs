@@ -24,6 +24,7 @@ namespace JoyPro.Setup
         public bool Generic;                      // not in the catalog: layout from what Windows reports
         public bool ForceFeedback;
         public bool NeedsGrip;                    // a base that takes several grips: the user picks one
+        public bool Assumed;                      // the catalog does not publish its numbers: the usual order was assumed
         public string VidPid = string.Empty;
         public int Buttons;
         public int Hats;
@@ -50,8 +51,11 @@ namespace JoyPro.Setup
         public string Input = string.Empty;       // JOY_BTN5, JOY_X, JOY_BTN_POV1_U ...
         public string Control = string.Empty;     // stick.hat.tms.up, throttle.axis.main, panel.toggle.2.up ...
         public string Label = string.Empty;       // printed label of panel switches
-        public string Type = "momentary";         // momentary, latched, rotary, analog
+        public string Type = "momentary";         // momentary, latched, detent, selector, rotary, analog
         public bool IsAxis;
+        // The real-HOTAS positions this input stands in for (device catalog "hotas", e.g. a T.16000M's only hat = the trim
+        // hat): the real-position match of "Where should functions go?" uses these instead of Control.
+        public List<string> Hotas = new List<string>();
     }
 
     // A function of the knowledge map (DB\Functions\slots.json + slot_controls.tsv): "TMS up", "Gear up", "Pitch".
@@ -70,8 +74,15 @@ namespace JoyPro.Setup
         public string Group = string.Empty;       // functions on one hat / 2D stick (tms:up, tdc_axes:x)
         public string MapFunction = string.Empty; // the function of the knowledge map (function-map.json) this slot belongs to
         public string MapCategory = string.Empty; // its category there (flight, engine, weapons, countermeasures, sensors ...)
+        public string MapDir = string.Empty;      // its direction there ("left", "up", "toggle"; "@0.7" = a weaker link)
         public List<string> Phases = new List<string>();  // flight phases (SetupPhases: pilot, tol, nav, a2a, a2g ...)
         public string Crit = string.Empty;        // time criticality: instant, seconds, minutes, idle
+
+        // A shallow copy (the lists are shared): a plan's own name for the function.
+        public SetupFunction Copy()
+        {
+            return (SetupFunction)MemberwiseClone();
+        }
     }
 
     // One game command of one aircraft that does a function (DB\Functions\<Game>.tsv row).
@@ -84,6 +95,8 @@ namespace JoyPro.Setup
         public string Hotas = string.Empty;       // where it is in the real aircraft: stick, cyclic, throttle, collective, panel ...
         public string Frequency = string.Empty;
         public string Status = string.Empty;      // confirmed, corrected, new, substitute
+        public string Control = string.Empty;     // the catalog's description of the real control ("stick: trigger first detent")
+        public string Title = string.Empty;       // the game's own title of the action ("Engine start/stop"), where JoyPro has it
     }
 
     public sealed class SetupAircraft
@@ -94,6 +107,7 @@ namespace JoyPro.Setup
         public string VariantOf = string.Empty;
         public string Era = string.Empty;
         public string Role = string.Empty;        // fighter, attack, multirole, transport, helicopter_attack ... (aircraft.json)
+        public string Module = string.Empty;      // the DCS module it belongs to (aircraft.json "module"): its seats share it
 
         // DCS input layers (Default, NS430, voice) serve every aircraft of the game at once.
         public bool SharedLayer { get { return Type == "layer" || Type == "ground"; } }
@@ -178,6 +192,13 @@ namespace JoyPro.Setup
         public bool ExistingOnly;
         // With ReplaceExisting: lay out only these bound relations again (null = all); the others keep their binds.
         public HashSet<string> ReplaceOnly;
+        // Only these DCS aircraft (the modules the user owns; empty = every aircraft of the local database). The DCS input
+        // layers (Default, NS430, voice) and the other games stay.
+        public List<string> OnlyAircraft = new List<string>();
+        // The wizard's question "Do you use head tracking (TrackIR, face tracking, Tobii) or VR, or do you plan to?"
+        // (docs/setup-wizard.md#head-tracking): yes = no buttons for looking around in the sims that support it (only the
+        // view recenter); no = looking around goes on a grip hat right after the fight essentials.
+        public bool HeadTracking;
     }
 
     // A preference rule: functions (by id pattern, category or phase, of aircraft classes) get a bonus on controls that
@@ -226,6 +247,9 @@ namespace JoyPro.Setup
         public double Realism;
         public int Seed;
         public string PhaseLayers = string.Empty;
+        // The head-tracking answer the plan was made with ("yes", "no"; empty = not asked): setup apply keeps it in the
+        // profile (Pr0file.HeadTracking), so Auto Group and the suggestions follow it.
+        public string HeadTracking = string.Empty;
         public string CockpitSource = string.Empty;
         public List<SetupDevice> Devices = new List<SetupDevice>();
         public List<string> Rules = new List<string>();
@@ -261,8 +285,12 @@ namespace JoyPro.Setup
         public string Modifier = string.Empty;
         public double Score;
         public double RealMatch;                  // 0..1: how much the position is the real aircraft's
+        public bool RealKnown;                    // the cockpit database knows where the real aircraft has it (RealMatch means something)
         public string Phase = string.Empty;       // a2a / a2g: its function is used only in that combat phase
         public string Reason = string.Empty;
+        // What it may share an input with across a DCS input layer (SetupPlanner.ShareKey): the same function, or an axis
+        // of the same kind ("ax:throttle|right|"). Two relations of one real aircraft never share.
+        public string Share = string.Empty;
     }
 
     public sealed class SetupPlanModifier
@@ -286,6 +314,9 @@ namespace JoyPro.Setup
         public double Importance;
         public List<string> Aircraft = new List<string>();
         public string Reason = string.Empty;
+        // An essential of its aircraft (flight controls and weapons used often) that no other placed input covers: the
+        // quick review counts it as "important, no room".
+        public bool Essential;
     }
 
     public sealed class SetupQuality

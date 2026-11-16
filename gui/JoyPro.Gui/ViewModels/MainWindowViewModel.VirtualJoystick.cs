@@ -31,7 +31,8 @@ namespace JoyPro.Gui.ViewModels;
 // every 3 s; nothing polls otherwise.
 public sealed partial class MainWindowViewModel
 {
-    private const string VirtualJoystickIdleText = "Not running.";
+    // Kept in English (the page translates it through TConverter, also after a language change).
+    private static readonly string VirtualJoystickIdleText = N("Not running.");
 
     public ObservableCollection<VirtualJoystickGameItem> VirtualJoystickGames { get; } = [];
 
@@ -42,7 +43,7 @@ public sealed partial class MainWindowViewModel
     public ObservableCollection<string> VirtualJoystickLog { get; } = [];
 
     [ObservableProperty]
-    private string vJoyStatusText = "Press Refresh to check vJoy and HidHide.";
+    private string vJoyStatusText = N("Press Refresh to check vJoy and HidHide.");
 
     [ObservableProperty]
     private string vJoyDevicesText = string.Empty;
@@ -51,7 +52,7 @@ public sealed partial class MainWindowViewModel
     private string hidHideStatusText = string.Empty;
 
     [ObservableProperty]
-    private string virtualJoystickSessionText = "No HidHide session.";
+    private string virtualJoystickSessionText = N("No HidHide session.");
 
     [ObservableProperty]
     private string virtualJoystickNeedsText = string.Empty;
@@ -103,6 +104,177 @@ public sealed partial class MainWindowViewModel
 
     public bool HasXboxGames => VirtualJoystickGames.Any(g => g.IsXbox);
 
+    // Only Xbox pad games are virtual (no vJoy game): "How to use it" tells the pad's steps (nothing to switch or export).
+    public bool VirtualJoystickPadOnly => HasXboxGames && !VirtualJoystickGames.Any(g => g.Mode == VirtualJoystickGameItem.ModeVJoy);
+
+    public bool VirtualJoystickShowsVJoySteps => !VirtualJoystickPadOnly;
+
+    // Pad-only players see the pretend controller's page: vJoy, HidHide, the forwarding rate and the modes only under
+    // "Show details" (kept over a restart, ui-settings.json).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(VirtualJoystickShowsExpertParts))]
+    private bool virtualJoystickShowDetails;
+
+    partial void OnVirtualJoystickShowDetailsChanged(bool value) => SaveUiSettings();
+
+    public bool VirtualJoystickShowsExpertParts => !VirtualJoystickPadOnly || VirtualJoystickShowDetails;
+
+    // The bottom bar's name of the page: the pretend controller for a player whose games are all on it (as the page
+    // title), else Virtual Joystick. Before the page was read: the pad tour, or the tour's games all pad games.
+    public string VirtualJoystickNavTitle => VirtualJoystickPadOnly || (!virtualJoystickStatusRead && (ActiveTour?.Id == Services.Help.TourCatalog.Pad ||
+                                                                     (TourGameIds.Count > 0 && TourGameIds.All(g => Services.Help.TourCatalog.PadGames.Contains(g)))))
+        ? T("Pretend controller")
+        : T("Virtual Joystick");
+
+    // A game is on the Xbox pad (by itself or chosen) but ViGEmBus is missing: the page says so with the one-click
+    // install of the component (the same card as under "What this page needs").
+    public bool VirtualJoystickNeedsViGEm => HasXboxGames && !ViGEmInstalled && virtualJoystickStatusRead;
+
+    public string VirtualJoystickViGEmMissingText => !VirtualJoystickNeedsViGEm
+        ? string.Empty
+        : T("{0} uses the pretend controller, and the pretend controller needs the free helper ViGEmBus (by Nefarius). Tick the box below, then click Install ViGEmBus. JoyPro sees it by itself when it is there.",
+            string.Join(", ", VirtualJoystickGames.Where(g => g.IsXbox).Select(g => g.Name)));
+
+    public ComponentItem? VirtualJoystickViGEmComponent => FindComponent(Services.Components.ComponentCatalog.ViGEmBusId);
+
+    private bool virtualJoystickStatusRead;
+
+    // ---- Several games on the Xbox pad: each keeps its own pad table, one is live at a time.
+
+    public ObservableCollection<VirtualJoystickGameItem> VirtualJoystickXboxGames { get; } = [];
+
+    public bool HasSeveralXboxGames => VirtualJoystickXboxGames.Count > 1;
+
+    // The game whose pad table a manual Start/Test uses when none of the Xbox games runs (saved in the profile).
+    [ObservableProperty]
+    private VirtualJoystickGameItem? virtualJoystickXboxPadGame;
+
+    // The game whose pad table is live now (empty while stopped or without the pad).
+    [ObservableProperty]
+    private string virtualJoystickLiveXboxGame = string.Empty;
+
+    private string virtualJoystickSavedXboxPadGame = string.Empty;
+
+    partial void OnVirtualJoystickXboxPadGameChanged(VirtualJoystickGameItem? value)
+    {
+        if (virtualJoystickLoading || value == null || string.Equals(value.Id, virtualJoystickSavedXboxPadGame, StringComparison.OrdinalIgnoreCase))
+            return;
+        virtualJoystickSavedXboxPadGame = value.Id;
+        if (!string.IsNullOrWhiteSpace(ProfilePath))
+            _ = RunEngineAsync(["vjoy", "settings", "--xbox-pad-game", value.Id], includeProfile: true, mutatesProfile: true,
+                busyLabel: N("Saving the virtual joystick setting..."), forceText: false);
+        if (VirtualJoystickRunning && VirtualJoystickLiveXboxGame.Length > 0 && !string.Equals(VirtualJoystickLiveXboxGame, value.Id, StringComparison.OrdinalIgnoreCase))
+            VirtualJoystickMessage = T("The pad table of {0} goes live with the next Start (Stop, then Start).", value.Name);
+    }
+
+    // The Xbox game whose pad table goes live: the one whose process runs (the game that started, with auto start),
+    // else the user's pick, else the first.
+    internal string ChooseVirtualJoystickXboxGame(int? gamePid)
+    {
+        List<VirtualJoystickGameItem> xboxGames = VirtualJoystickGames.Where(g => g.IsXbox).ToList();
+        if (xboxGames.Count == 0)
+            return string.Empty;
+        foreach (VirtualJoystickGameItem game in xboxGames)
+        {
+            if (!virtualJoystickProcessNames.TryGetValue(game.Id, out List<string>? names) || names.Count == 0)
+                continue;
+            int? pid = VirtualJoystickFindGame(names);
+            if (pid != null && (gamePid == null || pid == gamePid))
+                return game.Id;
+        }
+
+        return VirtualJoystickXboxPadGame is { IsXbox: true } picked ? picked.Id : xboxGames[0].Id;
+    }
+
+    // Per pad control of the game's table (VirtualJoystickSlots, engine status "XboxMapping"): what it does and where it
+    // comes from, "Fire machine gun (VKB Gladiator BTN1)". Key: LX LY RX RY LT RT, A B X Y LB RB Back Start LS RS Guide,
+    // D-pad up/down/left/right, D-pad (a whole hat).
+    internal static Dictionary<string, string> XboxControlLabels(IEnumerable<VirtualJoystickSlotItem> slots, string game)
+    {
+        Dictionary<string, List<string>> parts = new(StringComparer.OrdinalIgnoreCase);
+        foreach (VirtualJoystickSlotItem slot in slots)
+        {
+            if (!slot.IsXbox || !slot.Used || (game.Length > 0 && !string.Equals(slot.Game, game, StringComparison.OrdinalIgnoreCase)))
+                continue;
+            string target = slot.Target.Trim().TrimEnd('~').ToUpperInvariant();
+            string sign = string.Empty;
+            if (target.Length > 2 && (target[^1] == '+' || target[^1] == '-') && target.StartsWith("XB_", StringComparison.Ordinal))
+            {
+                sign = target[^1].ToString();
+                target = target[..^1];
+            }
+
+            string what = slot.Relations.FirstOrDefault() ?? (string.IsNullOrWhiteSpace(slot.TargetName) ? slot.Target : slot.TargetName);
+            string input = slot.Input.StartsWith("JOY_", StringComparison.OrdinalIgnoreCase) ? slot.Input[4..] : slot.Input;
+            string text = (sign.Length > 0 ? sign + " " : string.Empty) + what + " (" + (string.IsNullOrWhiteSpace(slot.SourceName) ? slot.Source : slot.SourceName) + " " + input + ")";
+            foreach (string control in XboxControlNames(target))
+            {
+                if (!parts.TryGetValue(control, out List<string>? list))
+                    parts[control] = list = [];
+                if (!list.Contains(text))
+                    list.Add(text);
+            }
+        }
+
+        return parts.ToDictionary(p => p.Key, p => string.Join("; ", p.Value), StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static IEnumerable<string> XboxControlNames(string token) => token switch
+    {
+        "XB_LX" => ["LX"],
+        "XB_LY" => ["LY"],
+        "XB_RX" => ["RX"],
+        "XB_RY" => ["RY"],
+        "XB_LT" => ["LT"],
+        "XB_RT" => ["RT"],
+        "XB_TRIGGERS" => ["LT", "RT"],
+        "XB_A" => ["A"],
+        "XB_B" => ["B"],
+        "XB_X" => ["X"],
+        "XB_Y" => ["Y"],
+        "XB_LB" => ["LB"],
+        "XB_RB" => ["RB"],
+        "XB_BACK" => ["Back"],
+        "XB_START" => ["Start"],
+        "XB_LS" => ["LS"],
+        "XB_RS" => ["RS"],
+        "XB_GUIDE" => ["Guide"],
+        "XB_DPAD_UP" => ["D-pad up"],
+        "XB_DPAD_DOWN" => ["D-pad down"],
+        "XB_DPAD_LEFT" => ["D-pad left"],
+        "XB_DPAD_RIGHT" => ["D-pad right"],
+        "XB_DPAD" => ["D-pad"],
+        _ => []
+    };
+
+    // The live view of the pad gets the labels of the live game's table.
+    private void FillXboxLiveLabels(VirtualJoystickLiveDevice device)
+    {
+        string game = VirtualJoystickLiveXboxGame;
+        Dictionary<string, string> labels = XboxControlLabels(VirtualJoystickSlots, game);
+        device.Game = game.Length == 0 ? string.Empty : VirtualJoystickGames.FirstOrDefault(g => string.Equals(g.Id, game, StringComparison.OrdinalIgnoreCase))?.Name ?? game;
+        foreach (VirtualJoystickAxisItem axis in device.Axes)
+            axis.Mapping = labels.TryGetValue(axis.Name, out string? text) ? text : string.Empty;
+        device.Controls.Clear();
+        foreach (string name in XboxButtonNames.Select(b => b.Name).Append("D-pad"))
+        {
+            if (labels.TryGetValue(name, out string? text))
+                device.Controls.Add(new VirtualJoystickPadControlItem(name, text));
+        }
+    }
+
+    partial void OnViGEmInstalledChanged(bool value) => NotifyVirtualJoystickState();
+
+    private void ApplyVirtualJoystickXboxGames(string savedPick)
+    {
+        VirtualJoystickXboxGames.Clear();
+        foreach (VirtualJoystickGameItem game in VirtualJoystickGames.Where(g => g.IsXbox))
+            VirtualJoystickXboxGames.Add(game);
+        virtualJoystickSavedXboxPadGame = savedPick;
+        VirtualJoystickXboxPadGame = VirtualJoystickXboxGames.FirstOrDefault(g => string.Equals(g.Id, savedPick, StringComparison.OrdinalIgnoreCase)) ?? VirtualJoystickXboxGames.FirstOrDefault();
+        OnPropertyChanged(nameof(HasSeveralXboxGames));
+    }
+
     // Games whose virtual Xbox pad must be created after their title screen shows (docs/virtual-joystick.md "When to
     // start the pad"): a pad that exists before the launch never reaches them.
     internal static readonly string[] XboxPadAfterTitleGames = ["HLLVietnam", "AceCombat8"];
@@ -114,23 +286,39 @@ public sealed partial class MainWindowViewModel
         get
         {
             if (VirtualJoystickGames.Count == 0)
-                return T("Exception, the virtual Xbox pad of Hell Let Loose: Vietnam and ACE COMBAT 8: these games only see a pad created after their title screen shows. Press Start there, or press Stop and Start once the title screen shows.");
+                return T("Xbox controller games: start the game first and wait for its title screen. Then press Start. Too early? Press Stop, then Start.");
             List<VirtualJoystickGameItem> late = VirtualJoystickGames
                 .Where(g => g.IsXbox && XboxPadAfterTitleGames.Contains(g.Id, StringComparer.OrdinalIgnoreCase))
                 .ToList();
             if (late.Count == 0)
                 return string.Empty;
             if (late.Count > 1)
-                return T("Exception, the virtual Xbox pad of Hell Let Loose: Vietnam and ACE COMBAT 8: these games only see a pad created after their title screen shows. Press Start there, or press Stop and Start once the title screen shows.");
-            return T("Exception, the virtual Xbox pad of {0}: the game only sees a pad created after its title screen shows. Press Start there, or press Stop and Start once the title screen shows.", late[0].Name);
+                return T("Xbox controller games: start the game first and wait for its title screen. Then press Start. Too early? Press Stop, then Start.");
+            return T("{0} (Xbox controller): start the game first and wait for its title screen. Then press Start. Too early? Press Stop, then Start.", late[0].Name);
         }
     }
 
     public bool HasVirtualXboxPadTimingNote => VirtualXboxPadTimingNote.Length > 0;
 
-    public string VirtualJoystickStartTip => WithXboxPadTimingNote(T("Hides your physical devices from the games set to Virtual (Windows asks once for administrator rights) and copies their inputs to vJoy live. Press it before you start the game."));
+    public string VirtualJoystickStartTip => VirtualJoystickPadOnly
+        ? WithXboxPadTimingNote(T("Turns on the pretend controller: your stick and throttle drive it live. Xbox controller games need no administrator prompt."))
+        : WithXboxPadTimingNote(T("Hides your physical devices from the games set to Virtual (Windows asks once for administrator rights) and copies their inputs to vJoy live. vJoy: press it before you start the game."));
 
-    public string VirtualJoystickAutoStartTip => WithXboxPadTimingNote(T("JoyPro looks for the game every 3 seconds while this is on. Pressing Start before the game is still the safest: some games only look for devices when they start."));
+    // Auto start starts when the game's program starts, before its title screen: right for vJoy games, too early for the
+    // title-screen games (XboxPadAfterTitleGames), which the tip names instead of repeating the Start rule.
+    public string VirtualJoystickAutoStartTip
+    {
+        get
+        {
+            string text = T("JoyPro looks for the game every 3 seconds while this is on and starts when the game starts. For games set to vJoy, pressing Start before the game is still the safest: some games only look for devices when they start.");
+            List<string> late = VirtualJoystickGames.Where(g => g.IsXbox && XboxPadAfterTitleGames.Contains(g.Id, StringComparer.OrdinalIgnoreCase)).Select(g => g.Name).ToList();
+            if (VirtualJoystickGames.Count == 0)
+                late = [T("Xbox controller games")];
+            return late.Count == 0
+                ? text
+                : text + " " + T("Not for {0}: auto start comes before the title screen, which is too early. Click Start yourself at the title screen.", string.Join(", ", late));
+        }
+    }
 
     private string WithXboxPadTimingNote(string text)
     {
@@ -140,6 +328,10 @@ public sealed partial class MainWindowViewModel
 
     [ObservableProperty]
     private bool hidHideInstalled;
+
+    // The last start failed: the page shows Try again next to the message.
+    [ObservableProperty]
+    private bool virtualJoystickCanRetry;
 
     public bool IsVirtualJoystickStage => CurrentStage == UiStage.VirtualJoystick;
 
@@ -186,6 +378,14 @@ public sealed partial class MainWindowViewModel
     private bool virtualJoystickLoading;
     private bool virtualJoystickStopping;
     private bool virtualJoystickHidHideApplied;
+    // A start is running (map, table, HidHide, forwarder): a second one (auto start while the user pressed Start) waits
+    // for nothing and does nothing, so no second administrator prompt can come.
+    private bool virtualJoystickStarting;
+    // A start failed: auto start does not try again by itself while the game still runs (no prompt every few seconds);
+    // it gets one try per game start, the user can always press Try again / Start.
+    private bool virtualJoystickAutoStartBlocked;
+    // Games that read only Xbox controllers (XInput): they never see the physical sticks, so they need no HidHide.
+    private readonly HashSet<string> virtualJoystickReadsOnlyXbox = new(StringComparer.OrdinalIgnoreCase);
     private int? virtualJoystickAutoGamePid;
     private string virtualJoystickConfigFile = string.Empty;
 
@@ -212,6 +412,8 @@ public sealed partial class MainWindowViewModel
     {
         OnPropertyChanged(nameof(HasVirtualJoystickGames));
         OnPropertyChanged(nameof(HasXboxGames));
+        OnPropertyChanged(nameof(VirtualJoystickNeedsViGEm));
+        OnPropertyChanged(nameof(VirtualJoystickViGEmMissingText));
         OnPropertyChanged(nameof(VirtualXboxPadTimingNote));
         OnPropertyChanged(nameof(HasVirtualXboxPadTimingNote));
         OnPropertyChanged(nameof(VirtualJoystickStartTip));
@@ -251,6 +453,9 @@ public sealed partial class MainWindowViewModel
         if (result != null && result.ExitCode == 0)
             ApplyVirtualJoystickStatus(result.StandardOutput);
     }
+
+    private string vigemVersion = string.Empty;
+    private bool vigemRunning;
 
     internal void ApplyVirtualJoystickStatus(string output)
     {
@@ -312,10 +517,10 @@ public sealed partial class MainWindowViewModel
 
                 if (root.TryGetProperty("ViGEm", out JsonElement vigem))
                 {
+                    virtualJoystickStatusRead = true;
                     ViGEmInstalled = ReadJsonBool(vigem, "Installed");
-                    ViGEmStatusText = ViGEmInstalled
-                        ? T("ViGEmBus {0} is installed{1}: the virtual Xbox pad works.", ReadJsonString(vigem, "Version"), (ReadJsonBool(vigem, "Running") ? "" : T(" but not running (restart Windows)")))
-                        : T("ViGEmBus is not installed. Games set to \"Xbox pad\" need it (free driver by Nefarius): install it under \"What this page needs\" below, then press Refresh.");
+                    vigemVersion = ReadJsonString(vigem, "Version");
+                    vigemRunning = ReadJsonBool(vigem, "Running");
                 }
 
                 if (root.TryGetProperty("Settings", out JsonElement settings))
@@ -329,6 +534,15 @@ public sealed partial class MainWindowViewModel
                     VirtualJoystickRefreshRate = hz;
 
                 ApplyVirtualJoystickGames(root);
+                ApplyVirtualJoystickXboxGames(root.TryGetProperty("Settings", out JsonElement padSettings) ? ReadJsonString(padSettings, "XboxPadGame") : string.Empty);
+                // The helper's line once the games are known (the first read too): plain words for pad players and during
+                // the pad tour, the expert line only for someone who set games to "Xbox pad" by hand.
+                if (root.TryGetProperty("ViGEm", out _))
+                    ViGEmStatusText = ViGEmInstalled
+                        ? T("ViGEmBus {0} is installed{1}: the pretend controller works.", vigemVersion, (vigemRunning ? "" : T(" but not running (restart Windows)")))
+                        : VirtualJoystickPadOnly || HasXboxGames || ActiveTour?.Id == JoyPro.Gui.Services.Help.TourCatalog.Pad || TourGameIds.Any(JoyPro.Gui.Services.Help.TourCatalog.PadGames.Contains)
+                            ? T("The pretend controller needs the free helper ViGEmBus. Install it in the card below.")
+                            : T("ViGEmBus is not installed. Games set to \"Xbox pad\" need it (free driver by Nefarius): install it under \"What this page needs\" below, then press Refresh.");
                 ApplyVirtualJoystickSlots(root);
                 ApplyVirtualJoystickNeeds(root);
                 if (root.TryGetProperty("VJoy", out JsonElement vjoyDevices))
@@ -355,27 +569,40 @@ public sealed partial class MainWindowViewModel
             return;
         List<VirtualJoystickGameItem> items = [];
         virtualJoystickProcessNames.Clear();
+        virtualJoystickReadsOnlyXbox.Clear();
         foreach (JsonElement game in games.EnumerateArray())
         {
             string id = ReadJsonString(game, "Id");
             if (id.Length == 0 || IsGameHidden(id))
                 continue;
+            if (ReadJsonBool(game, "ReadsOnlyXbox"))
+                virtualJoystickReadsOnlyXbox.Add(id);
+            // The engine's effective mode: the user's choice, else the Xbox pad for a game that reads only Xbox controllers.
             string mode = ReadJsonString(game, "Mode");
             bool isVirtual = mode is VirtualJoystickGameItem.ModeVJoy or VirtualJoystickGameItem.ModeXbox;
+            bool autoMode = ReadJsonBool(game, "AutoMode");
             int relations = ReadJsonInt(game, "Relations");
             virtualJoystickProcessNames[id] = ReadStringArray(game, "ProcessNames");
-            // The games the profile uses, and every game already in virtual mode.
-            if (relations == 0 && !isVirtual)
+            // The games the profile uses, every game the user put in virtual mode, and an installed game that is on the
+            // Xbox pad by itself (it reads only Xbox pads: the pad tour shows it before the profile uses it). An Xbox-only
+            // game that is not installed and not used stays off the list.
+            if (relations == 0 && (!isVirtual || autoMode) && !(autoMode && gameInstallsKnown && installedGames.Contains(id)))
                 continue;
             virtualJoystickModes[id] = isVirtual ? mode : VirtualJoystickGameItem.ModeNative;
             items.Add(new VirtualJoystickGameItem(id, DisplayText.GameName(id, ReadJsonString(game, "Name")), relations, isVirtual ? mode : VirtualJoystickGameItem.ModeNative, ReadStringArray(game, "Exes"),
                 OnVirtualJoystickModeToggled, ReadJsonInt(game, "GamepadLayout"), ReadJsonBool(game, "WritesGamepadBinds"),
-                ReadJsonString(game, "SuggestedMode"), ReadJsonString(game, "DeviceLimitNote")));
+                ReadJsonString(game, "SuggestedMode"), ReadJsonString(game, "DeviceLimitNote"), autoMode));
         }
 
+        // Alphabetical by the name shown (the user's language rules, case ignored); the function game picker follows.
+        items.Sort((a, b) => VirtualJoystickGameNameOrder.Compare(a.Name, b.Name));
         VirtualJoystickGames.Clear();
         foreach (VirtualJoystickGameItem item in items)
             VirtualJoystickGames.Add(item);
+        OnPropertyChanged(nameof(VirtualJoystickPadOnly));
+        OnPropertyChanged(nameof(VirtualJoystickShowsVJoySteps));
+        OnPropertyChanged(nameof(VirtualJoystickShowsExpertParts));
+        OnPropertyChanged(nameof(VirtualJoystickNavTitle));
     }
 
     private void ApplyVirtualJoystickSlots(JsonElement root)
@@ -404,6 +631,9 @@ public sealed partial class MainWindowViewModel
     private void ApplyVirtualJoystickNeeds(JsonElement root)
     {
         List<string> lines = [];
+        // Pad-only players: the vJoy lines and the pad's technical notes (device ids, chords) go under Show details.
+        List<string> details = [];
+        List<string> expert = VirtualJoystickPadOnly ? details : lines;
         bool needsConfig = false;
         if (root.TryGetProperty("Needs", out JsonElement needs) && needs.ValueKind == JsonValueKind.Array)
         {
@@ -412,12 +642,12 @@ public sealed partial class MainWindowViewModel
                 string id = ReadJsonInt(need, "Id").ToString(CultureInfo.InvariantCulture);
                 if (ReadJsonBool(need, "Sufficient"))
                 {
-                    lines.Add(T("vJoy device {0} offers everything the table needs ({1}).", id, ReadJsonString(need, "Current")));
+                    expert.Add(T("vJoy device {0} offers everything the table needs ({1}).", id, ReadJsonString(need, "Current")));
                     continue;
                 }
 
                 needsConfig = true;
-                lines.Add(T("vJoy device {0} needs: {1}. JoyPro sets it to: {2}.", id, string.Join(", ", ReadStringArray(need, "Missing")), ReadJsonString(need, "Recommended")));
+                expert.Add(T("vJoy device {0} needs: {1}. JoyPro sets it to: {2}.", id, string.Join(", ", ReadStringArray(need, "Missing")), ReadJsonString(need, "Recommended")));
             }
         }
 
@@ -426,15 +656,27 @@ public sealed partial class MainWindowViewModel
             foreach (JsonElement game in xboxGames.EnumerateArray())
             {
                 List<string> unfit = ReadStringArray(game, "Unfit");
-                lines.Add(T("Xbox pad for {0}: {1} input(s) placed{2}", ReadJsonString(game, "Game"), ReadJsonInt(game, "Slots"), (unfit.Count == 0 ? ", everything fits." : "; does not fit: " + string.Join(" ", unfit))));
+                // The game's name, never its id; the pad's words are the pretend controller's.
+                string name = DisplayText.Game(ReadJsonString(game, "Game"));
+                int slots = ReadJsonInt(game, "Slots");
+                lines.Add(unfit.Count == 0
+                    ? Plural("{1}: {0} input is on the pretend controller. Everything fits.", "{1}: {0} inputs are on the pretend controller. Everything fits.", slots, slots, name)
+                    : Plural("{1}: {0} input is on the pretend controller. These do not fit: {2}", "{1}: {0} inputs are on the pretend controller. These do not fit: {2}", slots, slots, name, string.Join(" ", unfit)));
                 foreach (string note in ReadStringArray(game, "Notes"))
-                    lines.Add("  " + note);
+                    expert.Add("  " + note);
             }
         }
 
         VirtualJoystickNeedsConfig = needsConfig;
         VirtualJoystickNeedsText = string.Join(Environment.NewLine, lines);
+        VirtualJoystickNeedsDetails = string.Join(Environment.NewLine, details);
     }
+
+    // The technical lines of the status for a pad-only player (shown under Show details).
+    [ObservableProperty]
+    private string virtualJoystickNeedsDetails = string.Empty;
+
+    internal static StringComparer VirtualJoystickGameNameOrder => StringComparer.Create(JoyPro.Gui.Localization.Loc.Culture, ignoreCase: true);
 
     // ---- Per game: native / virtual
 
@@ -449,6 +691,8 @@ public sealed partial class MainWindowViewModel
         {
             item.SetQuietly(previous);
             VirtualJoystickMessage = T("Could not switch {0}: {1} {2}", item.Name, FirstLine(result?.StandardError), FirstLine(result?.StandardOutput));
+            // The status line says what the game uses now, never the result of an earlier switch.
+            StatusText = VirtualJoystickMessage;
             return;
         }
 
@@ -456,8 +700,10 @@ public sealed partial class MainWindowViewModel
         VirtualJoystickMessage = mode == VirtualJoystickGameItem.ModeVJoy
             ? T("{0} now uses the virtual joystick. Export it again (Export page) so the game gets the vJoy binds.", item.Name)
             : mode == VirtualJoystickGameItem.ModeXbox
-                ? T("{0} now uses the virtual Xbox 360 pad (needs the ViGEmBus driver). {1}", item.Name, item.XboxNote)
+                ? T("{0} now uses the pretend controller, a virtual Xbox 360 controller (needs the free helper ViGEmBus). {1}", item.Name, item.XboxNote)
                 : T("{0} uses your physical devices again. Export it again so the game gets the binds on them.", item.Name);
+        // The status line says the latest switch in words (an earlier "...virtual Xbox pad: done." must not stay).
+        StatusText = VirtualJoystickMessage;
         await RefreshVirtualJoystickAsync();
     }
 
@@ -492,7 +738,32 @@ public sealed partial class MainWindowViewModel
     // ---- Start / stop
 
     [RelayCommand]
-    private Task StartVirtualJoystickAsync() => StartVirtualJoystickCoreAsync(test: false, gamePid: null);
+    private async Task StartVirtualJoystickAsync()
+    {
+        // A title-screen game (XboxPadAfterTitleGames) that is not running yet never sees a pretend controller made now:
+        // Start still starts, but says so clearly (nobody is left wondering why the game does nothing).
+        string early = VirtualJoystickTooEarlyGame();
+        if (await StartVirtualJoystickCoreAsync(test: false, gamePid: null) && early.Length > 0)
+        {
+            VirtualJoystickMessage = T("Too early: {0} is not running yet, so it will not see the pretend controller. Start {0}. At its title screen, hold Alt and press Tab to come back here. Then click Stop and Start.", early);
+            StatusText = VirtualJoystickMessage;
+        }
+    }
+
+    // The name of the title-screen game Start is too early for: every game on the pretend controller is one, JoyPro
+    // knows its program name, and none of them runs. Empty: not too early (or JoyPro cannot tell).
+    internal string VirtualJoystickTooEarlyGame()
+    {
+        List<VirtualJoystickGameItem> virtualGames = VirtualJoystickGames.Where(g => g.IsVirtual).ToList();
+        if (virtualGames.Count == 0 || !virtualGames.All(g => g.IsXbox && XboxPadAfterTitleGames.Contains(g.Id, StringComparer.OrdinalIgnoreCase)))
+            return string.Empty;
+        foreach (VirtualJoystickGameItem game in virtualGames)
+        {
+            if (!virtualJoystickProcessNames.TryGetValue(game.Id, out List<string>? names) || names.Count == 0 || VirtualJoystickFindGame(names) != null)
+                return string.Empty;
+        }
+        return string.Join(", ", virtualGames.Select(g => g.Name));
+    }
 
     // Reads the sticks and shows what vJoy would get; writes nothing to vJoy and does not touch HidHide.
     [RelayCommand]
@@ -505,6 +776,38 @@ public sealed partial class MainWindowViewModel
     {
         if (vjoyHost != null)
             return true;
+        if (virtualJoystickStarting)
+            return false;
+        virtualJoystickStarting = true;
+        VirtualJoystickCanRetry = false;
+        bool started = false;
+        try
+        {
+            started = await StartVirtualJoystickOnceAsync(test, gamePid);
+            return started;
+        }
+        finally
+        {
+            virtualJoystickStarting = false;
+            // Every failed start (by hand or automatic) waits for the user: Try again, never a retry by itself.
+            if (!started)
+            {
+                virtualJoystickAutoStartBlocked = true;
+                VirtualJoystickCanRetry = !test;
+            }
+            else
+            {
+                virtualJoystickAutoStartBlocked = false;
+            }
+        }
+    }
+
+    // A game in virtual mode reads joysticks (DirectInput/HID), so HidHide matters for it; a game that reads only Xbox
+    // controllers never sees the physical sticks and needs no HidHide (and no administrator prompt).
+    private bool VirtualJoystickNeedsHidHide => VirtualJoystickGames.Any(g => g.IsVirtual && !virtualJoystickReadsOnlyXbox.Contains(g.Id));
+
+    private async Task<bool> StartVirtualJoystickOnceAsync(bool test, int? gamePid)
+    {
         if (string.IsNullOrWhiteSpace(ProfilePath))
         {
             VirtualJoystickMessage = T("Open a profile first.");
@@ -524,17 +827,21 @@ public sealed partial class MainWindowViewModel
 
         Directory.CreateDirectory(VirtualJoystickDataFolder);
         virtualJoystickConfigFile = Path.Combine(VirtualJoystickDataFolder, "forwarder.json");
-        // One virtual Xbox pad: the table of the Xbox game that runs (auto start), else the engine takes the first.
+        // One virtual Xbox pad at a time, several games may be on it (each with its own table): the table of the Xbox game
+        // that runs (the one that started, with auto start), else the one picked on the page, else the first.
         List<string> configArgs = ["vjoy", "forwarder-config", "--out", virtualJoystickConfigFile];
         bool xbox = VirtualJoystickGames.Any(g => g.IsXbox);
-        if (gamePid is int runningPid && VirtualJoystickGames.FirstOrDefault(g => g.IsXbox && virtualJoystickProcessNames.TryGetValue(g.Id, out List<string>? names) && VirtualJoystickFindGame(names) == runningPid) is { } runningXbox)
-            configArgs.AddRange(["--xbox-game", runningXbox.Id]);
+        string liveXbox = ChooseVirtualJoystickXboxGame(gamePid);
+        if (liveXbox.Length > 0)
+            configArgs.AddRange(["--xbox-game", liveXbox]);
         // The virtual functions of the game that started (auto start); started by hand: of every virtual game.
         if (gamePid is int gameRunning && VirtualJoystickGames.FirstOrDefault(g => g.IsVirtual && virtualJoystickProcessNames.TryGetValue(g.Id, out List<string>? gameNames) && VirtualJoystickFindGame(gameNames) == gameRunning) is { } runningGame)
             configArgs.AddRange(["--game", runningGame.Id]);
         if (xbox && !test && !ViGEmInstalled)
         {
-            VirtualJoystickMessage = T("A game is set to \"Xbox pad\", but the ViGEmBus driver is not installed: press \"Get ViGEmBus\", install it and press Refresh (or use Test, which needs no driver).");
+            VirtualJoystickMessage = VirtualJoystickPadOnly
+                ? T("The pretend controller needs the free helper ViGEmBus. Install it in the card below. Test works without it.")
+                : T("A game is set to \"Xbox pad\", but the ViGEmBus driver is not installed: press \"Get ViGEmBus\", install it and press Refresh (or use Test, which needs no driver).");
             return false;
         }
         EngineCommandResult? config = await RunEngineAsync(configArgs, includeProfile: true, mutatesProfile: false,
@@ -545,7 +852,8 @@ public sealed partial class MainWindowViewModel
             return false;
         }
 
-        if (!test && VirtualJoystickHideDevices)
+        string hidHideWarning = string.Empty;
+        if (!test && VirtualJoystickHideDevices && VirtualJoystickNeedsHidHide)
         {
             List<string> args = ["vjoy", "apply-hidhide", "--owner-pid", VirtualJoystickGuiPid.ToString(CultureInfo.InvariantCulture)];
             if (VirtualJoystickGuiExe.Length > 0)
@@ -557,15 +865,36 @@ public sealed partial class MainWindowViewModel
                 busyLabel: N("Hiding the physical devices from the games (Windows asks for administrator rights)..."), forceText: false);
             if (hide == null)
                 return false;
-            if (hide.ExitCode != 0)
+            (string phase, bool blocking, string problem) = ReadHidHideOutcome(hide.StandardOutput);
+            // A session that changed HidHide is restored at Stop (or when JoyPro closes), whatever its checks said.
+            bool sessionActive = phase is "active" or "applying";
+            if (hide.ExitCode == 0)
             {
+                virtualJoystickHidHideApplied = phase != "none";
+            }
+            else if (hide.ExitCode == 2)
+            {
+                // The administrator prompt was declined: the user said no, nothing starts.
                 VirtualJoystickMessage = ReadMessage(hide.StandardOutput, FirstLine(hide.StandardError)) +
-                                         (hide.ExitCode == 2 ? T(" Nothing was started; press Start again and allow the prompt, or switch off \"Hide the physical devices\".") : string.Empty);
+                                         T(" Nothing was started; press Start again and allow the prompt, or switch off \"Hide the physical devices\".");
                 await RefreshVirtualJoystickAsync();
                 return false;
             }
+            else
+            {
+                virtualJoystickHidHideApplied = sessionActive;
+                if (blocking)
+                {
+                    // The games could not see the virtual joystick: HidHide goes back, nothing starts.
+                    VirtualJoystickMessage = T("HidHide hides the virtual joystick from the games, so nothing was started: {0}", problem.Length > 0 ? problem : ReadMessage(hide.StandardOutput, FirstLine(hide.StandardError)));
+                    await RestoreVirtualJoystickHidHideAsync();
+                    await RefreshVirtualJoystickAsync();
+                    return false;
+                }
 
-            virtualJoystickHidHideApplied = true;
+                // Not every device could be hidden: forwarding still works, the game may also see the physical devices.
+                hidHideWarning = T("Virtual joystick on, but HidHide did not hide everything: {0} The game may see your physical devices as well as the virtual joystick.", problem.Length > 0 ? problem : ReadMessage(hide.StandardOutput, FirstLine(hide.StandardError)));
+            }
         }
 
         if (!File.Exists(VirtualJoystickExePath))
@@ -597,6 +926,7 @@ public sealed partial class MainWindowViewModel
         }
 
         virtualJoystickAutoGamePid = gamePid;
+        VirtualJoystickLiveXboxGame = liveXbox;
         virtualJoystickStopping = false;
         VirtualJoystickRunning = true;
         // It may have ended before the handlers were attached (vJoy busy, bad table): same as an end by itself.
@@ -607,12 +937,41 @@ public sealed partial class MainWindowViewModel
         }
 
         VirtualJoystickTestMode = test;
-        VirtualJoystickForwarderText = test ? T("Test: reading your devices, nothing goes to vJoy.") : T("Starting...");
+        // Pad-only players hear the pretend controller's words (no vJoy, no HidHide).
+        bool padWords = VirtualJoystickPadOnly;
+        VirtualJoystickForwarderText = test
+            ? padWords ? T("Test: reading your stick. Nothing goes to the game.") : T("Test: reading your devices, nothing goes to vJoy.")
+            : T("Starting...");
         VirtualJoystickMessage = test
-            ? T("Test mode: move your sticks and press buttons - the live view shows what the virtual joystick would get. vJoy and HidHide are not touched.")
-            : T("Virtual joystick on: start the game now (or keep it running). Stop switches everything back.");
+            ? padWords
+                ? T("Test: move your stick and press buttons. The picture shows what the pretend controller would get. Nothing is changed.")
+                : T("Test mode: move your sticks and press buttons - the live view shows what the virtual joystick would get. vJoy and HidHide are not touched.")
+            : hidHideWarning.Length > 0
+                ? hidHideWarning
+                : padWords
+                    ? T("The pretend controller is on. Stop turns it off.")
+                    : T("Virtual joystick on: start the game now (or keep it running). Stop switches everything back.");
         await RefreshVirtualJoystickAsync();
         return true;
+    }
+
+    // The session phase, whether the result stops the games from seeing the virtual joystick, and the first problem of
+    // an engine vjoy apply-hidhide answer.
+    private static (string Phase, bool Blocking, string Problem) ReadHidHideOutcome(string? output)
+    {
+        try
+        {
+            using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(output ?? string.Empty));
+            JsonElement root = doc.RootElement;
+            if (root.ValueKind != JsonValueKind.Object)
+                return (string.Empty, false, string.Empty);
+            List<string> problems = ReadStringArray(root, "Problems");
+            return (ReadJsonString(root, "SessionPhase"), ReadJsonBool(root, "Blocking"), problems.Count == 0 ? string.Empty : problems[0]);
+        }
+        catch (JsonException)
+        {
+            return (string.Empty, false, string.Empty);
+        }
     }
 
     internal async Task StopVirtualJoystickCoreAsync(string reason)
@@ -634,6 +993,7 @@ public sealed partial class MainWindowViewModel
         VirtualJoystickRunning = false;
         VirtualJoystickTestMode = false;
         virtualJoystickAutoGamePid = null;
+        VirtualJoystickLiveXboxGame = string.Empty;
         VirtualJoystickForwarderText = VirtualJoystickIdleText;
         VirtualJoystickLive.Clear();
         await RestoreVirtualJoystickHidHideAsync();
@@ -652,6 +1012,7 @@ public sealed partial class MainWindowViewModel
         host.Dispose();
         VirtualJoystickRunning = false;
         VirtualJoystickTestMode = false;
+        VirtualJoystickLiveXboxGame = string.Empty;
         VirtualJoystickForwarderText = VirtualJoystickIdleText;
         await RestoreVirtualJoystickHidHideAsync();
         if (VirtualJoystickMessage.Length == 0 || !VirtualJoystickMessage.StartsWith("JoyPro.VJoy", StringComparison.Ordinal))
@@ -832,6 +1193,7 @@ public sealed partial class MainWindowViewModel
         if (device == null)
         {
             device = new VirtualJoystickLiveDevice(0);
+            FillXboxLiveLabels(device);
             VirtualJoystickLive.Add(device);
         }
 
@@ -851,6 +1213,13 @@ public sealed partial class MainWindowViewModel
         if (!ushort.TryParse(parts[7], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out ushort buttons))
             return;
         List<string> pressed = XboxButtonNames.Where(b => (buttons & b.Mask) != 0).Select(b => b.Name).ToList();
+        foreach (VirtualJoystickPadControlItem control in device.Controls)
+        {
+            bool down = control.Name == "D-pad" ? (buttons & 0x000F) != 0 : pressed.Contains(control.Name);
+            if (control.Pressed != down)
+                control.Pressed = down;
+        }
+        // What each pressed button does shows on its line above (Controls); this line names the buttons.
         string text = pressed.Count == 0 ? "none" : string.Join(", ", pressed);
         if (device.ButtonsText != text)
             device.ButtonsText = text;
@@ -928,11 +1297,20 @@ public sealed partial class MainWindowViewModel
             return;
         if (vjoyHost == null)
         {
-            if (VirtualJoystickFindGame(names) is int pid)
+            if (VirtualJoystickFindGame(names) is not int pid)
             {
-                AddVirtualJoystickLog("A game with virtual mode started (pid " + pid.ToString(CultureInfo.InvariantCulture) + "): starting the virtual joystick.");
-                await StartVirtualJoystickCoreAsync(test: false, gamePid: pid);
+                // No game runs: the next game start gets its one automatic try.
+                virtualJoystickAutoStartBlocked = false;
+                return;
             }
+
+            // One automatic try per game start: after a failed start (a declined or failed administrator step, a
+            // mapping that is not ready) nothing is tried again by itself while the game runs.
+            if (virtualJoystickAutoStartBlocked || virtualJoystickStarting)
+                return;
+            AddVirtualJoystickLog("A game with virtual mode started (pid " + pid.ToString(CultureInfo.InvariantCulture) + "): starting the virtual joystick.");
+            if (!await StartVirtualJoystickCoreAsync(test: false, gamePid: pid))
+                VirtualJoystickMessage = T("{0} Automatic start does not try again while the game runs: press Try again when you are ready.", VirtualJoystickMessage).Trim();
         }
         else if (virtualJoystickAutoGamePid != null && VirtualJoystickFindGame(names) == null)
         {

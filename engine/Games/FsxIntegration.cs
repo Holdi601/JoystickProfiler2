@@ -795,8 +795,20 @@ namespace JoyPro.Engine.Games
         public GameCatalog RefreshCatalog(string sourcePath, GameCatalog current, GameIoResult result)
         {
             GameCatalog catalog = new GameCatalog { GameId = GameId };
+            int corrected = 0;
             foreach (GameAction action in current.Actions)
+            {
+                // A list of an older version keeps its titles; the ones that had the pitch direction reversed are fixed.
+                string fixedTitle = FsxEvents.CorrectedTitle(action.Id, action.Title);
+                if (fixedTitle != null)
+                {
+                    action.Title = fixedTitle;
+                    corrected++;
+                }
                 catalog.Add(action);
+            }
+            if (corrected > 0)
+                result.Steps.Add("Corrected " + corrected.ToString(CultureInfo.InvariantCulture) + " elevator title(s) of an older JoyPro version (nose up / nose down were reversed).");
             int own = 0;
             foreach (GameAction action in FsxEvents.All())
             {

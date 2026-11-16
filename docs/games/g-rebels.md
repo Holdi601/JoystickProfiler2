@@ -8,7 +8,7 @@ Status: **integrated, experimental: `engine grebels`** (`engine/Games/GRebelsInt
 `--dry-run`). Started for the first time in the in-game test on 2026-10-11 (build 26/0911.0.64; no store, no
 anti-cheat); the save layout below is from that start and from binds made in the game with vJoy.
 
-Tags: **[OBS]** seen on a test PC · **[SRC]** the game's files · **[WEB]** public sources.
+Tags: **[OBS]** seen in the installed game · **[SRC]** the game's files · **[WEB]** public sources.
 
 ## Input in the game [OBS]
 - OPTIONS > INPUT > **DEVICES** lists every HID joystick (vendor + product line) with a dropdown **DEACTIVATED / 0 - CHANNEL

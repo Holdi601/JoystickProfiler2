@@ -74,7 +74,7 @@ namespace JoyPro.Engine
                 satYRaw = PopOptionValue(args, "--saturation-y");
                 curvatureOptions = PopOptionValues(args, "--curvature");
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException ex) when (!IsMissingOptionValue(ex))
             {
                 return Fail(ex.Message);
             }
@@ -432,6 +432,16 @@ namespace JoyPro.Engine
             return uses.OrderBy(u => u.Game, StringComparer.OrdinalIgnoreCase).ThenBy(u => u.Plane ?? string.Empty, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
+        // The relation's games that are on the virtual Xbox pad (effective mode, docs/virtual-joystick.md).
+        internal static List<string> XboxPadGames(Relation relation)
+        {
+            if (relation == null || relation.NODES == null)
+                return new List<string>();
+            JoyPro.Engine.VJoy.VJoySettings settings = EngineVJoy.LoadSettings();
+            return relation.NODES.Where(n => n != null && !string.IsNullOrWhiteSpace(n.Game)).Select(n => n.Game.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase).Where(settings.IsXbox).OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
         private static int EmitTuningShow(string relationName, Relation relation, Bind bind, string game, string plane, string outPath, bool textOutput)
         {
             List<TuningUse> uses = TuningUses(relation, bind);
@@ -443,6 +453,8 @@ namespace JoyPro.Engine
                     scopes[entry.Key] = entry.Value;
             }
             ResolvedTuning resolved = string.IsNullOrWhiteSpace(game) ? null : BindTuning.Resolve(bind, game, plane);
+            // The relation's games on the virtual Xbox pad: JoyPro's forwarder applies their curve itself (no export).
+            List<string> xboxPadGames = XboxPadGames(relation);
             if (!textOutput)
             {
                 EmitPayload(EngineSerialization.ToJson(new
@@ -452,7 +464,8 @@ namespace JoyPro.Engine
                     Game = game,
                     Plane = plane,
                     Resolved = resolved == null ? null : new { Model = resolved.Model.Id, resolved.Source, resolved.Fitted, Tuning = resolved.Tuning.Format(), resolved.Note },
-                    Uses = uses.Select(u => new { u.Game, u.Plane, u.Source, u.Fitted, u.Detent }).ToList()
+                    Uses = uses.Select(u => new { u.Game, u.Plane, u.Source, u.Fitted, u.Detent }).ToList(),
+                    XboxPadGames = xboxPadGames
                 }), outPath);
                 return 0;
             }
@@ -460,6 +473,8 @@ namespace JoyPro.Engine
             sb.AppendLine("Axis tuning: " + relationName);
             foreach (KeyValuePair<string, string> entry in scopes)
                 sb.AppendLine("  " + entry.Key + ": " + entry.Value);
+            if (xboxPadGames.Count > 0)
+                sb.AppendLine("On the virtual Xbox pad (JoyPro applies the curve itself): " + string.Join(", ", xboxPadGames));
             if (resolved != null)
                 sb.AppendLine(game + (string.IsNullOrWhiteSpace(plane) ? string.Empty : " / " + plane) + " uses (" + resolved.Model.Id + ", from " + resolved.Source + (resolved.Source == BindTuning.DetentSource ? ", detent mode: " + resolved.Note : resolved.Fitted ? ", fitted to the base curve" : string.Empty) + "): " + resolved.Tuning.Format());
             if (uses.Count > 0)

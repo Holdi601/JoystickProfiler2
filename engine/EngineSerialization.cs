@@ -204,7 +204,7 @@ namespace JoyPro.Engine
                 sb.AppendLine("Bind Deadzone/SatX/SatY: " + relation.Bind.Deadzone + " / " + relation.Bind.SaturationX + " / " + relation.Bind.SaturationY);
                 if (relation.Bind.ExtraBinds != null && relation.Bind.ExtraBinds.Count > 0)
                 {
-                    sb.AppendLine("More inputs (experimental): " + relation.Bind.ExtraBinds.Count);
+                    sb.AppendLine("More inputs: " + relation.Bind.ExtraBinds.Count);
                     AppendExtraBindLines(sb, relation.Bind, "  ");
                 }
             }
@@ -249,7 +249,7 @@ namespace JoyPro.Engine
                 sb.AppendLine("Bind Deadzone/SatX/SatY: " + bindWithRelation.Bind.Deadzone + " / " + bindWithRelation.Bind.SaturationX + " / " + bindWithRelation.Bind.SaturationY);
                 if (bindWithRelation.Bind.ExtraBinds != null && bindWithRelation.Bind.ExtraBinds.Count > 0)
                 {
-                    sb.AppendLine("More inputs (experimental): " + bindWithRelation.Bind.ExtraBinds.Count);
+                    sb.AppendLine("More inputs: " + bindWithRelation.Bind.ExtraBinds.Count);
                     AppendExtraBindLines(sb, bindWithRelation.Bind, "  ");
                 }
             }

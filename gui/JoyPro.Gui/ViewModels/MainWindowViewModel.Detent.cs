@@ -634,9 +634,38 @@ public sealed partial class MainWindowViewModel
 
     internal void ApplyDetentMergePlan(string output)
     {
+        foreach (DetentMergeProposalItem old in DetentMergeProposals)
+            old.TicksChanged -= OnDetentMergeTicksChanged;
         DetentMergeProposals.Clear();
+        List<DetentMergePlanRead>? plans = ReadDetentMergePlans(output);
+        if (plans == null)
+        {
+            DetentMergeStatus = T("The engine's merge plan could not be read.");
+        }
+        else
+        {
+            foreach (DetentMergePlanRead plan in plans)
+            {
+                DetentMergeProposalItem item = new(plan.DeviceLabel, plan.Into, plan.Relations, plan.Calibration, plan.Lines, plan.Notes, plan.Problems);
+                item.TicksChanged += OnDetentMergeTicksChanged;
+                DetentMergeProposals.Add(item);
+            }
+            DetentMergeStatus = DetentMergeProposals.Count == 0
+                ? T("No device axis has two or more throttle relations: nothing to merge.")
+                : T("Merging keeps the first relation's bind and curve, adds the others' aircraft to it and removes the others. Undo takes it back.") + " " +
+                  T("Untick a relation to keep it out of the merge; it keeps its own curve.");
+        }
+        OnPropertyChanged(nameof(HasDetentMergeProposals));
+    }
+
+    private sealed record DetentMergePlanRead(string DeviceLabel, string Into, List<string> Relations, string Calibration, List<string> Lines, List<string> Notes, List<string> Problems);
+
+    // The proposals of binds detent merge (null: the answer could not be read).
+    private static List<DetentMergePlanRead>? ReadDetentMergePlans(string output)
+    {
         try
         {
+            List<DetentMergePlanRead> plans = [];
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(output));
             foreach (JsonElement p in doc.RootElement.GetProperty("Proposals").EnumerateArray())
             {
@@ -655,17 +684,44 @@ public sealed partial class MainWindowViewModel
                     .ToList();
                 List<string> notes = p.GetProperty("Notes").EnumerateArray().Select(n => n.GetString() ?? string.Empty).ToList();
                 List<string> problems = p.GetProperty("Problems").EnumerateArray().Select(n => n.GetString() ?? string.Empty).ToList();
-                DetentMergeProposals.Add(new DetentMergeProposalItem(GetJsonString(p, "DeviceLabel"), GetJsonString(p, "Into"), relations, calibration, lines, notes, problems));
+                plans.Add(new DetentMergePlanRead(GetJsonString(p, "DeviceLabel"), GetJsonString(p, "Into"), relations, calibration, lines, notes, problems));
             }
-            DetentMergeStatus = DetentMergeProposals.Count == 0
-                ? T("No device axis has two or more throttle relations: nothing to merge.")
-                : T("Merging keeps the first relation's bind and curve, adds the others' aircraft to it and removes the others. Undo takes it back.");
+            return plans;
         }
         catch (Exception ex) when (ex is JsonException or KeyNotFoundException or InvalidOperationException)
         {
-            DetentMergeStatus = T("The engine's merge plan could not be read.");
+            return null;
         }
-        OnPropertyChanged(nameof(HasDetentMergeProposals));
+    }
+
+    // A relation of a proposal ticked or unticked: the engine plans the merge of the ticked ones again (which relation
+    // stays, the detent, what each aircraft gets). Fewer than two: nothing to plan, Merge waits.
+    private void OnDetentMergeTicksChanged(DetentMergeProposalItem proposal) => _ = ReplanDetentMergeAsync(proposal);
+
+    private readonly Dictionary<DetentMergeProposalItem, int> detentMergePlanVersions = [];
+
+    internal async Task ReplanDetentMergeAsync(DetentMergeProposalItem proposal)
+    {
+        int version = detentMergePlanVersions[proposal] = detentMergePlanVersions.GetValueOrDefault(proposal) + 1;
+        List<string> relations = proposal.Relations.ToList();
+        if (relations.Count < 2)
+        {
+            proposal.IsPlanning = false;
+            return;
+        }
+        proposal.IsPlanning = true;
+        EngineCommandResult? result = await RunEngineAsync(["binds", "detent", "merge", "--relations", string.Join(",", relations)], includeProfile: true, mutatesProfile: false,
+            busyLabel: T("Planning the throttle merge..."), forceText: false);
+        if (detentMergePlanVersions.GetValueOrDefault(proposal) != version)
+            return;
+        proposal.IsPlanning = false;
+        DetentMergePlanRead? plan = result?.ExitCode == 0 ? ReadDetentMergePlans(result.StandardOutput)?.FirstOrDefault() : null;
+        if (plan == null)
+        {
+            proposal.Update(proposal.Into, proposal.CalibrationText, proposal.GroupLines, [], [T("Could not plan the merge (see output).")]);
+            return;
+        }
+        proposal.Update(plan.Into, plan.Calibration, plan.Lines, plan.Notes, plan.Problems);
     }
 
     [RelayCommand]
@@ -681,6 +737,7 @@ public sealed partial class MainWindowViewModel
             DetentMergeStatus = T("The merge failed (see output).");
             return;
         }
+        proposal.TicksChanged -= OnDetentMergeTicksChanged;
         DetentMergeProposals.Remove(proposal);
         OnPropertyChanged(nameof(HasDetentMergeProposals));
         // Undo merge writes back the version the merge was made on (also when other changes came after it).

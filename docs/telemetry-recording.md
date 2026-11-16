@@ -127,7 +127,7 @@ time bucket, so peaks stay). A game hidden in Settings > Games is not listed and
 ```
 engine telemetry games                                   the games, what JoyPro listens to, ACMI possible, recorded now
 engine telemetry config show
-engine telemetry config set --param enabled=true --param folder=E:\Recordings --param sample-hz=20
+engine telemetry config set --param enabled=true --param folder=D:\Recordings --param sample-hz=20
 engine telemetry config set --game IL2Game --param enabled=false
 engine telemetry sessions [--game G] [--folder F]        newest first
 engine telemetry show <session>                          facts, channels by category, event counts

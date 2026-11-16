@@ -135,6 +135,21 @@ public sealed partial class CalloutSheetViewModel : ObservableObject
         Notify();
     }
 
+    // A finished sheet as it is (the layout window: the engine arranged it for the plan's device), nothing to edit.
+    public void ShowFixed(CalloutSheet sheet)
+    {
+        schematic = null;
+        known = new Dictionary<string, double[]>(StringComparer.OrdinalIgnoreCase);
+        undo.Clear();
+        redo.Clear();
+        SelectedTable = null;
+        SelectedLine = null;
+        SelectedRow = -1;
+        Sheet = sheet;
+        HasUnsavedChanges = false;
+        Notify();
+    }
+
     // A saved sheet keeps its settings for a picture of another size (the user's photo replaced): tables, pins and
     // lines are re-arranged, the look and the table settings stay.
     private static CalloutSheet Rescaled(CalloutSheet saved, double width, double height)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using JoyPro.Engine.Games;
 
 namespace JoyPro.Engine.VJoy
 {
@@ -132,6 +133,32 @@ namespace JoyPro.Engine.VJoy
             return IsAxis(token) || IsButton(token) || string.Equals(token, DPad, StringComparison.OrdinalIgnoreCase) || IsHalf(token, out axis, out direction);
         }
 
+        // A relation bound to one hat direction whose game action sits on a pad button (JOY_BTN_POV2_R -> Y): that direction
+        // is an Xbox input of its own, a button for the pad. Its slot input is the bind token ("JOY_BTN_POV2_R").
+        public static bool IsHatDirection(string slotInput, out int hat, out int direction)
+        {
+            hat = direction = -1;
+            JoyInput joy;
+            if (!GameInputTokens.TryParse((slotInput ?? string.Empty).Trim(), out joy) || joy.Kind != JoyInputKind.Pov || joy.Direction < 0)
+                return false;
+            hat = joy.Index;
+            direction = joy.Direction;
+            return true;
+        }
+
+        // An Xbox slot's input: an axis, a button, a whole hat, or one hat direction (a button for the pad).
+        public static bool TryParseInput(string slotInput, out VJoyInput input)
+        {
+            if (VJoyInput.TryParseSlotToken(slotInput, out input))
+                return true;
+            int hat;
+            int direction;
+            if (!IsHatDirection(slotInput, out hat, out direction))
+                return false;
+            input = new VJoyInput { Kind = VJoyInputKind.Button, Index = VJoySettings.MaxButtons + hat * 8 + direction };
+            return true;
+        }
+
         // Can a physical input of this kind drive the control?
         public static bool Fits(VJoyInputKind kind, string token)
         {
@@ -159,8 +186,10 @@ namespace JoyPro.Engine.VJoy
         public List<string> Actions { get; set; }
         public string Pinned { get; set; }
         public string PinnedAction { get; set; }
-        // The relation's Invert: the forwarder reverses the axis.
+        // The relation's Invert for this game: the forwarder reverses the axis.
         public bool Invert { get; set; }
+        // Decided by the first relation with this axis as its bind (the others on it do not change it).
+        public bool InvertDecided { get; set; }
 
         public XboxUse()
         {
@@ -213,7 +242,7 @@ namespace JoyPro.Engine.VJoy
             foreach (XboxUse use in used.Where(u => u.Pinned.Length > 0).OrderBy(u => u.Source, StringComparer.OrdinalIgnoreCase).ThenBy(u => u.Input, StringComparer.OrdinalIgnoreCase))
             {
                 VJoyInput input;
-                if (!VJoyInput.TryParseSlotToken(use.Input, out input))
+                if (!XboxControls.TryParseInput(use.Input, out input))
                     continue;
                 string key = VJoyPlanner.Key(use.Source, use.Input);
                 if (!XboxControls.Fits(input.Kind, use.Pinned))
@@ -240,8 +269,11 @@ namespace JoyPro.Engine.VJoy
             {
                 string key = VJoyPlanner.Key(slot.Source, slot.Input);
                 VJoyInput input;
-                bool valid = VJoyInput.TryParseSlotToken(slot.Input, out input) && XboxControls.Fits(input.Kind, slot.Target) && !assigned.Contains(key) && !takenBy.ContainsKey(XboxControls.Control(slot.Target));
-                if (!valid || (prune && !byKey.ContainsKey(key)))
+                bool valid = XboxControls.TryParseInput(slot.Input, out input) && XboxControls.Fits(input.Kind, slot.Target) && !assigned.Contains(key) && !takenBy.ContainsKey(XboxControls.Control(slot.Target));
+                // A slot no relation of the game feeds any more goes (unlike vJoy's slots, which stay so the exported
+                // binds do not move: the pad's games get no binds from JoyPro, and a stale slot would still drive the
+                // control).
+                if (!valid || !byKey.ContainsKey(key))
                     continue;
                 takenBy[XboxControls.Control(slot.Target)] = slot.Source + " " + slot.Input;
                 assigned.Add(key);
@@ -253,7 +285,7 @@ namespace JoyPro.Engine.VJoy
                          .OrderBy(u => u.Source, StringComparer.OrdinalIgnoreCase).ThenBy(u => OrderOf(u.Input)))
             {
                 VJoyInput input;
-                if (!VJoyInput.TryParseSlotToken(use.Input, out input))
+                if (!XboxControls.TryParseInput(use.Input, out input))
                     continue;
                 string target = null;
                 if (input.Kind == VJoyInputKind.Axis)
@@ -301,7 +333,7 @@ namespace JoyPro.Engine.VJoy
         private static int OrderOf(string token)
         {
             VJoyInput input;
-            return VJoyInput.TryParseSlotToken(token, out input) ? (int)input.Kind * 1000 + input.Index : int.MaxValue;
+            return XboxControls.TryParseInput(token, out input) ? (int)input.Kind * 1000 + input.Index : int.MaxValue;
         }
     }
 }

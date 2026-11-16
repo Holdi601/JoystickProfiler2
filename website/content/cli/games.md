@@ -58,7 +58,7 @@ devices without a profile of their own. Flight and General binds come in, with t
 :::layer beginner
 Writes your binds into Microsoft Flight Simulator 2024: into the profile the sim uses for each device and category
 (Steam or Microsoft Store), into JoyPro's preset package for aircraft the sim has not set up yet, and into import files
-where a profile cannot be written. Close the sim first. The GUI's **Export now** on the MSFS 2024 tile runs it.
+where a profile cannot be written. Close the sim first. The GUI's **Export now** on the MSFS 2024 card runs it.
 
 ```powershell
 engine msfs2024 export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -287,7 +287,7 @@ the device's Sensitivity page.
 <!-- entry: msfs2020 export -->
 :::layer beginner
 Writes your binds into the Steam version's device profiles of Microsoft Flight Simulator 2020 (the `inputprofile_*`
-files the sim already has). Close the sim first. The GUI's **Export now** on the MSFS 2020 tile runs it.
+files the sim already has). Close the sim first. The GUI's **Export now** on the MSFS 2020 card runs it.
 
 ```powershell
 engine msfs2020 export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -504,7 +504,7 @@ devices connected, or the file does not exist yet.
 <!-- entry: xplane12 export -->
 :::layer beginner
 Writes your binds into X-Plane 12's joystick preferences, so **Settings > Joystick** shows them. Close X-Plane first.
-The GUI's **Export now** on the X-Plane 12 tile runs it.
+The GUI's **Export now** on the X-Plane 12 card runs it.
 
 ```powershell
 engine xplane12 export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -707,7 +707,7 @@ It reads X-Plane 11's `<install>\Output\preferences\X-Plane Joystick Settings.pr
 <!-- entry: xplane11 export -->
 :::layer beginner
 Writes your binds into X-Plane 11's joystick preferences, so **Settings > Joystick** shows them. Close X-Plane first.
-The GUI's **Export now** on the X-Plane 11 tile runs it.
+The GUI's **Export now** on the X-Plane 11 card runs it.
 
 ```powershell
 engine xplane11 export --mode merge --dry-run --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -906,7 +906,7 @@ Controls_Current`. Commands are the sim's event names (`GEAR_TOGGLE`, `AXIS_AILE
 <!-- entry: fsx export -->
 :::layer beginner
 Writes your binds into the active controls file of Microsoft Flight Simulator X (boxed). Close the sim first. The GUI's
-**Export now** on the FSX tile runs it.
+**Export now** on the FSX card runs it.
 
 ```powershell
 engine fsx export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -1087,7 +1087,7 @@ It reads the controls file in `%APPDATA%\Microsoft\FSX-SE\Controls\` when boxed 
 <!-- entry: fsxse export -->
 :::layer beginner
 Writes your binds into the active controls file of Microsoft Flight Simulator X: Steam Edition. Close the sim first.
-The GUI's **Export now** on the FSX: Steam Edition tile runs it.
+The GUI's **Export now** on the FSX: Steam Edition card runs it.
 
 ```powershell
 engine fsxse export --mode merge-overwrite --include-keyboard --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -1261,7 +1261,7 @@ It reads `%APPDATA%\Lockheed Martin\Prepar3D v4\Controls\Standard.xml`, or the f
 <!-- entry: p3d4 export -->
 :::layer beginner
 Writes your binds into the active controls file of Prepar3D v4. Close the sim first. The GUI's **Export now** on the
-Prepar3D v4 tile runs it.
+Prepar3D v4 card runs it.
 
 ```powershell
 engine p3d4 export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -1428,7 +1428,7 @@ It reads `%APPDATA%\Lockheed Martin\Prepar3D v5\Controls\Standard.xml`, or the f
 <!-- entry: p3d5 export -->
 :::layer beginner
 Writes your binds into the active controls file of Prepar3D v5. Close the sim first. The GUI's **Export now** on the
-Prepar3D v5 tile runs it.
+Prepar3D v5 card runs it.
 
 ```powershell
 engine p3d5 export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -1593,7 +1593,7 @@ It reads `%APPDATA%\Lockheed Martin\Prepar3D v6\Controls\Standard.xml`, or the f
 <!-- entry: p3d6 export -->
 :::layer beginner
 Writes your binds into the active controls file of Prepar3D v6. Close the sim first. The GUI's **Export now** on the
-Prepar3D v6 tile runs it.
+Prepar3D v6 card runs it.
 
 ```powershell
 engine p3d6 export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -1764,7 +1764,7 @@ slots as the modifier `BMS Shift`, hats, axes, throttle detents).
 <!-- entry: bms export -->
 :::layer beginner
 Writes your binds into the Falcon BMS launcher's device files. On your next **Launch** the launcher builds the key file
-and the axis setup from them. Close BMS and its launcher first. The GUI's **Export now** on the Falcon BMS tile runs it.
+and the axis setup from them. Close BMS and its launcher first. The GUI's **Export now** on the Falcon BMS card runs it.
 
 ```powershell
 engine bms export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -1968,7 +1968,7 @@ launcher. The game writes `general.actions` when you press **ACCEPT** in Key map
 <!-- entry: il2korea export -->
 :::layer beginner
 Writes your binds into the key mapping of IL-2 Series: Korea and gives each device you write a device number, as the
-game's own dialog does. Close the game first. The GUI's **Export now** on the IL-2 Series: Korea tile runs it.
+game's own dialog does. Close the game first. The GUI's **Export now** on the IL-2 Series: Korea card runs it.
 
 ```powershell
 engine il2korea export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -2168,7 +2168,7 @@ and the axis response lines of `<install>\conf.ini`. `<install>` is `steamapps\c
 <!-- entry: il21946 export -->
 :::layer beginner
 Writes your binds into the pilot's `settings.ini` of IL-2 Sturmovik: 1946 and the axis lines of `conf.ini`, so the
-game's Controls page shows them. Close the game first. The GUI's **Export now** on the IL-2 Sturmovik: 1946 tile runs
+game's Controls page shows them. Close the game first. The GUI's **Export now** on the IL-2 Sturmovik: 1946 card runs
 it.
 
 ```powershell
@@ -2360,7 +2360,7 @@ sections and `[Config pilotMove]`). Blitz creates the folder on its first start.
 <!-- entry: il2codblitz export -->
 :::layer beginner
 Writes your binds into the flight sections of `confUser.ini` of IL-2 Sturmovik: Cliffs of Dover Blitz. Close the game
-first. The GUI's **Export now** on the Cliffs of Dover Blitz tile runs it.
+first. The GUI's **Export now** on the Cliffs of Dover Blitz card runs it.
 
 ```powershell
 engine il2codblitz export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -2548,7 +2548,7 @@ folder `...\il-2 sturmovik cliffs of dover - MOD\confUser.ini` is listed too.
 <!-- entry: il2cod export -->
 :::layer beginner
 Writes your binds into the flight sections of `confUser.ini` of the original IL-2 Sturmovik: Cliffs of Dover. Close
-the game first. The GUI's **Export now** on the Cliffs of Dover tile runs it.
+the game first. The GUI's **Export now** on the Cliffs of Dover card runs it.
 
 ```powershell
 engine il2cod export --mode merge --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -2734,7 +2734,7 @@ category uses).
 :::layer beginner
 Writes your ship flight binds into your Elite Dangerous Ship preset (`Custom.4.x.binds`) in place; everything else in
 the file stays. Close the game first, and save your controls once in the game so the preset exists. The GUI's **Export
-now** on the Elite Dangerous tile runs it.
+now** on the Elite Dangerous card runs it.
 
 ```powershell
 engine elite export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -2941,7 +2941,7 @@ device slots of `config.xml` in the same folder. `<id>` is the Steam account's f
 :::layer beginner
 Writes your space flight binds into X4's `inputmap.xml` in place, on the slots of your devices; menu, first-person,
 keyboard and mouse binds stay. Close X4 first, and pin every device to a slot once in the game. The GUI's **Export
-now** on the X4 tile runs it.
+now** on the X4 card runs it.
 
 ```powershell
 engine x4 export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -3148,7 +3148,7 @@ It reads `%USERPROFILE%\Documents\My Games\WarThunder\Saves\<uid>\production\mac
 <!-- entry: warthunder export -->
 :::layer beginner
 Writes your aircraft and helicopter binds and axis values into War Thunder's `machine.blk` in place. Tanks, ships,
-infantry and the menus are never touched. Close the game first. The GUI's **Export now** on the War Thunder tile runs
+infantry and the menus are never touched. Close the game first. The GUI's **Export now** on the War Thunder card runs
 it.
 
 ```powershell
@@ -3359,7 +3359,7 @@ of `class JoysticksList`.
 :::layer beginner
 Writes your aircraft and helicopter binds into your Arma 3 profile; only the key lines of the flight actions change, your
 keyboard and mouse binds stay. Close Arma 3 first, and start it once with every device connected. The GUI's **Export
-now** on the Arma 3 tile runs it.
+now** on the Arma 3 card runs it.
 
 ```powershell
 engine arma3 export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -3560,7 +3560,7 @@ Operation Arrowhead, Combined Operations and the DayZ mod use this file.
 :::layer beginner
 Writes your aircraft and helicopter binds into your Arma 2: Operation Arrowhead profile; only the key lines of the
 flight actions change. Close the game first, and start it once with every device connected. The GUI's **Export now**
-on the Operation Arrowhead tile runs it.
+on the Operation Arrowhead card runs it.
 
 ```powershell
 engine arma2oa export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -3757,7 +3757,7 @@ Operation Arrowhead is the separate game `arma2oa`.
 <!-- entry: arma2 export -->
 :::layer beginner
 Writes your aircraft and helicopter binds into your Arma 2 profile; only the key lines of the flight actions change.
-Close the game first, and start it once with every device connected. The GUI's **Export now** on the Arma 2 tile runs
+Close the game first, and start it once with every device connected. The GUI's **Export now** on the Arma 2 card runs
 it.
 
 ```powershell
@@ -3949,7 +3949,7 @@ settings.
 :::layer beginner
 Writes JoyPro's joystick preset `JoyPro.conf` for Arma Reforger with your helicopter flight binds, and sorts your
 devices into the game's four joystick slots. Close the game first; then pick **JoyPro** once under Settings >
-Controllers > Joystick preset and restart the game. The GUI's **Export now** on the Arma Reforger tile runs it.
+Controllers > Joystick preset and restart the game. The GUI's **Export now** on the Arma Reforger card runs it.
 
 ```powershell
 engine reforger export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -4153,7 +4153,7 @@ It reads the seat files `<install>\SaveData\BYOJ_<seat>.xml` (`AV42C`, `FA26B`, 
 <!-- entry: vtolvr export -->
 :::layer beginner
 Writes your binds into the BYOJoystick mod's seat files of VTOL VR; a relation goes into every seat whose vehicle has
-that target. Close VTOL VR first. The GUI's **Export now** on the VTOL VR tile runs it.
+that target. Close VTOL VR first. The GUI's **Export now** on the VTOL VR card runs it.
 
 ```powershell
 engine vtolvr export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -4321,7 +4321,7 @@ It reads the Rewired joystick maps in `%APPDATA%\Boundless Dynamics, LLC\VTOLVR\
 <!-- entry: vtolvr-native export -->
 :::layer beginner
 Writes your rudder and toe brake binds into VTOL VR's own `inputbindings.cfg`, and the control settings you stored into
-`gameSettings.cfg`. Close VTOL VR first. The GUI's **Export now** on the native VTOL VR tile runs it.
+`gameSettings.cfg`. Close VTOL VR first. The GUI's **Export now** on the native VTOL VR card runs it.
 
 ```powershell
 engine vtolvr-native export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -4523,7 +4523,7 @@ device for the player `Player0` (Rewired XML).
 <!-- entry: nuclearoption export -->
 :::layer beginner
 Writes your Flight Controls binds into the joystick map of each device in Nuclear Option's settings; a device without a
-saved map gets a new one. Close the game first. The GUI's **Export now** on the Nuclear Option tile runs it.
+saved map gets a new one. Close the game first. The GUI's **Export now** on the Nuclear Option card runs it.
 
 ```powershell
 engine nuclearoption export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -4719,7 +4719,7 @@ and tab (Flight, Weapons, Camera, View Select, Map UI, System) for the player `P
 :::layer beginner
 Writes your binds into Tiny Combat Arena's joystick maps, each into the tab of its action (pitch into Flight, a gun into
 Weapons, a view into View Select); the rest of each map stays. Close the game first. The GUI's **Export now** on the
-Tiny Combat Arena tile runs it.
+Tiny Combat Arena card runs it.
 
 ```powershell
 engine tinycombatarena export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -4904,7 +4904,7 @@ It reads the section `[/Script/WDJoystick.WDJoystickSettings]` of
 <!-- entry: wardogs export -->
 :::layer beginner
 Writes your helicopter binds into WARDOGS' settings file and switches **Enable HOTAS** on, so the game uses them. Close
-the game first, and open its HOTAS page once before the first export. The GUI's **Export now** on the WARDOGS tile
+the game first, and open its HOTAS page once before the first export. The GUI's **Export now** on the WARDOGS card
 runs it.
 
 ```powershell
@@ -5101,7 +5101,7 @@ It reads `%LOCALAPPDATA%\G_Rebels\Saved\SaveGames\SaveOptions.sav` (devices with
 <!-- entry: grebels export -->
 :::layer beginner
 Sets the axis roles and button binds on the channels of your devices in G-Rebels. It never adds a channel or a device:
-switch each device on once in the game. Close the game first. The GUI's **Export now** on the G-Rebels tile runs it.
+switch each device on once in the game. Close the game first. The GUI's **Export now** on the G-Rebels card runs it.
 
 ```powershell
 engine grebels export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
@@ -5280,7 +5280,7 @@ section per device model with its `Flight_*` keys.
 <!-- entry: ac7 export -->
 :::layer beginner
 Writes your binds into ACE COMBAT 7's `Input.ini`, one section per device model. Close the game first. The GUI's
-**Export now** on the ACE COMBAT 7 tile runs it.
+**Export now** on the ACE COMBAT 7 card runs it.
 
 ```powershell
 engine ac7 export --mode merge-overwrite --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -5451,7 +5451,7 @@ engine ac8 import --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" 
 :::layer beginner
 Writes nothing into ACE COMBAT 8: Wings of Theve and says so: your binds reach the game through the virtual Xbox pad,
 which **Start** on the Virtual Joystick page builds from your relations. The GUI's **Export now** on the ACE COMBAT 8
-tile runs it.
+card runs it.
 
 ```powershell
 engine ac8 export --dry-run --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -5615,7 +5615,7 @@ and the curves and dead zones per axis action from `...\Saved\SaveGames\savegame
 <!-- entry: pw export -->
 :::layer beginner
 Writes your binds into Project Wingman's `Input.ini` and the curves and dead zones into its save game. Close the game
-first, and export again after you add or remove a controller. The GUI's **Export now** on the Project Wingman tile
+first, and export again after you add or remove a controller. The GUI's **Export now** on the Project Wingman card
 runs it.
 
 ```powershell
@@ -5799,7 +5799,7 @@ layout (`SelectedGamepadLayout` in `GameUserSettings.ini`) is read for the virtu
 :::layer beginner
 Writes the keyboard pilot keys of your profile into Hell Let Loose: Vietnam, only with `--include-keyboard`. Pad binds
 are never written: the virtual Xbox pad carries them. Close the game first. The GUI's **Export now** on the Hell Let
-Loose: Vietnam tile runs it.
+Loose: Vietnam card runs it.
 
 ```powershell
 engine hllv export --mode merge --include-keyboard --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -5988,7 +5988,7 @@ It reads `%USERPROFILE%\Documents\Battlefield 6\settings\steam\PROFSAVEbf6mp_pro
 :::layer beginner
 Writes the keyboard keys of your jet and helicopter relations into Battlefield 6's settings profiles, with
 `--include-keyboard`. Joystick binds are listed as not written until the game's numbering is confirmed; bind the vJoy
-device on the game's joystick page yourself. Close the game first. The GUI's **Export now** on the Battlefield 6 tile
+device on the game's joystick page yourself. Close the game first. The GUI's **Export now** on the Battlefield 6 card
 runs it.
 
 ```powershell
@@ -6171,7 +6171,7 @@ It reads `%USERPROFILE%\Documents\Battlefield 2042\settings\PROFSAVE_profile`, t
 :::layer beginner
 Writes the keyboard keys of your jet and helicopter relations into Battlefield 2042's settings profile, with
 `--include-keyboard`. Joystick binds are listed as not written until the game's numbering is confirmed. Close the game
-first. The GUI's **Export now** on the Battlefield 2042 tile runs it.
+first. The GUI's **Export now** on the Battlefield 2042 card runs it.
 
 ```powershell
 engine bf2042 export --mode clean --include-keyboard --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"

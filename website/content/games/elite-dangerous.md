@@ -17,18 +17,24 @@ taken, JoyPro says so instead of overwriting one.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  S["StartPreset.4.start<br/>line 2 = Ship preset"] --> F["Custom.4.x.binds<br/>(newest x)"]
-  P["Your profile"] --> E["engine elite export"]
-  F --> E
-  E --> B{"Action: Primary<br/>and Secondary"}
-  B -->|"a place is free<br/>or already yours"| W["Bind written"]
-  B -->|"both places taken"| N["Not written<br/>(mark in the Check)"]
-  W --> G["Elite: Options > Controls"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep Elite Dangerous closed
+:::
+
+**Before**: save your controls once in the game. Change one ship control, save, close the game.
+
+**Then**: keep every device of the preset connected when you start the game. Your binds are in
+**Options > Controls**.
+
+Did you bind buttons in Elite Dangerous before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Elite Dangerous
 
 - **Import**: the ship's flight binds on your sticks, throttles and panels come into your profile, with their invert
@@ -57,9 +63,9 @@ the last export had no place for, with **Move to another button** and **Keep as 
 ## Export to Elite
 
 1. **Close Elite Dangerous.** JoyPro refuses to write while the game runs.
-2. Open **Export** and tick the Elite Dangerous tile.
+2. Open **Export** and tick the Elite Dangerous card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 4. Read the result: binds that did not fit and half-axis binds JoyPro kept are named in plain words.
 
 ![The Export page](shot:export)
@@ -162,6 +168,17 @@ Game"). The same holds for an axis action whose one place holds another axis of 
 
 :::layer technical
 ## Inside the Elite integration
+
+```mermaid
+%% caption: Each action has two places, Primary and Secondary. JoyPro never overwrites a taken place; a bind that does not fit gets a mark in the Check. Line 2 of StartPreset.4.start names the Ship preset (the newest Custom.4.x.binds).
+flowchart LR
+  S["StartPreset.4.start"] --> F["Custom.4.x.binds"]
+  P["Your profile"] --> E["engine elite export"]
+  F --> E
+  E --> W["Written: a place<br/>is free or yours"]
+  E --> N["Not written:<br/>both taken"]
+  W --> G["Options ><br/>Controls"]
+```
 
 Code: `engine\Games\EliteDangerousIntegration.cs`, the axis model `engine\AxisModels\EliteDangerous.cs` and the
 settings model `engine\FfbModels\EliteDangerous.cs`.

@@ -38,7 +38,7 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
 
     private IReadOnlyList<string> moreInputs = [];
 
-    // Experimental multi-bind: the relation's other inputs ("MOZA AB9 · BTN 8"), empty while the setting is off.
+    // Multi-bind: the relation's other inputs ("MOZA AB9 · BTN 8").
     public IReadOnlyList<string> MoreInputs
     {
         get => moreInputs;
@@ -54,6 +54,9 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
     }
 
     public bool HasMoreInputs => MoreInputs.Count > 0;
+
+    // The other inputs themselves (device, input, modifiers) for the filters (set with MoreInputs).
+    public IReadOnlyList<ExtraBindRow> ExtraInputs { get; set; } = [];
 
     public string MoreInputsBadge => HasMoreInputs ? "+" + MoreInputs.Count : string.Empty; // nonloc
 

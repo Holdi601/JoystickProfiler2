@@ -783,6 +783,35 @@ namespace JoyPro.Engine
             output.VJoyDevice = kind == "button" || kind == "axis" || kind == "hat" ? (device > 0 ? device : (output.VJoyDevice > 0 ? output.VJoyDevice : defaultDevice)) : 0;
         }
 
+        // A game switched between vJoy and the Xbox pad: its functions' outputs on the other target cannot reach it, so they
+        // get a free output of the new target (or none when nothing is free; named in the notes). Keys stay.
+        public static List<string> RetargetFunctionOutputs(VJoySettings settings, string game, Dictionary<int, VJoyDeviceCaps> caps)
+        {
+            List<string> notes = new List<string>();
+            if (settings.Functions == null || !settings.Functions.ContainsKey(game))
+                return notes;
+            bool xbox = settings.IsXbox(game);
+            bool vjoy = settings.IsVirtual(game);
+            if (!xbox && !vjoy)
+                return notes;
+            foreach (VirtualFunction function in settings.FunctionsOf(game))
+            {
+                List<VfOutput> wrong = function.Outputs.Where(o => o.Target.Length > 0 && !o.Target.StartsWith("KEY_", StringComparison.OrdinalIgnoreCase) &&
+                                                                    o.Target.StartsWith("XB_", StringComparison.OrdinalIgnoreCase) != xbox).ToList();
+                if (wrong.Count == 0)
+                    continue;
+                foreach (VfOutput output in wrong)
+                {
+                    output.Target = string.Empty;
+                    output.VJoyDevice = 0;
+                }
+                List<string> allocated = AllocateOutputs(settings, game, function, caps);
+                notes.Add(VJoyPlanner.VJoyFunctionLabel(game, function, null) + ": " + string.Join(", ", wrong.Select(o => o.Role + " -> " + (o.Target.Length == 0 ? "none" : VfTokens.Describe(o.Target)))) +
+                          " (" + (xbox ? "the game is on the Xbox pad" : "the game uses vJoy") + ")." + string.Concat(allocated.Select(a => " " + a)));
+            }
+            return notes;
+        }
+
         // Gives every output role without a target a free virtual output: on vJoy the lowest free button/axis/hat
         // (vJoy's maximum of 128 buttons, 8 axes, 4 hats is assumed; what the device or the game lacks is warned about),
         // on the Xbox pad a free control. The table's slots and every other function's outputs are taken.

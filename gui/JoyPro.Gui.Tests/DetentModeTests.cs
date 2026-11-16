@@ -384,6 +384,35 @@ public sealed class DetentModeTests
         Assert.StartsWith("Merged Throttle, ThrottleMig29, ThrottleNoAB into Throttle.", vm.DetentMergeStatus);
     });
 
+    // 2.6.5 report: the merge took every throttle relation of the axis (a helicopter collective too). Each relation is
+    // ticked; an unticked one is planned out and stays apart; fewer than two ticked: nothing to merge.
+    [Fact]
+    public Task Merge_UntickedRelationStaysApart() => UiThread.RunAsync(async () =>
+    {
+        DetentFakeEngine fake = new();
+        MainWindowViewModel vm = await CreateVmAsync(fake);
+        await vm.OpenDetentMergeCommand.ExecuteAsync(null);
+        DetentMergeProposalItem proposal = Assert.Single(vm.DetentMergeProposals);
+        Assert.Equal(["Throttle", "ThrottleMig29", "ThrottleNoAB"], proposal.Candidates.Select(c => c.Name).ToArray());
+        Assert.All(proposal.Candidates, c => Assert.True(c.IsChecked));
+
+        proposal.Candidates.Single(c => c.Name == "ThrottleMig29").IsChecked = false;
+        await WaitForAsync(() => fake.Calls.Any(c => AxisTuningTests.Seq(c, "binds", "detent", "merge", "--relations", "Throttle,ThrottleNoAB")) && !proposal.IsPlanning);
+        Assert.Equal("Test Throttle JOY_RX: Throttle, ThrottleNoAB -> Throttle", proposal.Heading);
+        Assert.True(proposal.CanApply);
+
+        // One left: Merge waits and says why.
+        proposal.Candidates.Single(c => c.Name == "ThrottleNoAB").IsChecked = false;
+        Assert.False(proposal.CanApply);
+        Assert.Equal("Tick at least two relations to merge.", proposal.NotesText);
+        proposal.Candidates.Single(c => c.Name == "ThrottleNoAB").IsChecked = true;
+        await WaitForAsync(() => !proposal.IsPlanning && proposal.CanApply);
+
+        await vm.ApplyDetentMergeCommand.ExecuteAsync(proposal);
+        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "binds", "detent", "merge", "--relations", "Throttle,ThrottleNoAB", "--into", "Throttle", "--apply"));
+        Assert.DoesNotContain(fake.Calls, c => c.Contains("--apply") && c.Any(a => a.Contains("ThrottleMig29", StringComparison.Ordinal)));
+    });
+
     // The panel's texts go through the localization; the engine's English group texts are translated by pattern.
     [Fact]
     public void Texts_AreLocalized()

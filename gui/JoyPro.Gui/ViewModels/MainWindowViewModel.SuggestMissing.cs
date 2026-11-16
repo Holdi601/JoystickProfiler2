@@ -20,6 +20,32 @@ public sealed partial class MainWindowViewModel
 {
     public ObservableCollection<SuggestionSectionItem> BuilderSuggestionSections { get; } = [];
 
+    // Suggestions only for the games installed on this PC (on by default, kept in ui-settings.json): a user with one game
+    // gets no list of games he does not have. Off: every game JoyPro knows.
+    [ObservableProperty]
+    private bool suggestInstalledGamesOnly = true;
+
+    partial void OnSuggestInstalledGamesOnlyChanged(bool value)
+    {
+        if (loadingUiSettings)
+            return;
+        SaveUiSettings();
+        if (IsBuilderMissingAllPanel)
+            _ = SuggestMissingForAllAsync();
+        else if (SelectedRelation != null && IsBuilderSuggestedPanel)
+            _ = LoadBuilderSuggestionsAsync(SelectedRelation.Name);
+    }
+
+    // The engine's game filter (--game a|b): the installed games the user did not hide; none while the installs are not
+    // known yet or when the user wants every game.
+    internal List<string> SuggestGameArgs()
+    {
+        if (!SuggestInstalledGamesOnly || !gameInstallsKnown)
+            return [];
+        List<string> games = installedGames.Where(g => !IsGameHidden(g)).OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList();
+        return games.Count == 0 ? [] : ["--game", string.Join("|", games)];
+    }
+
     public int BuilderMissingCount => BuilderSuggestions.Count(s => s.IsMissing && !s.HasConflict);
 
     public int BuilderTickedCount => BuilderSuggestions.Count(s => s.IsChecked && !s.HasConflict);
@@ -165,7 +191,7 @@ public sealed partial class MainWindowViewModel
         MissingReviewStatus = T("Checking every relation for the games and aircraft it lacks (this takes a moment with a big profile)...");
         try
         {
-            EngineCommandResult? result = await RunEngineAsync(["relations", "suggest", "--all", "--missing", "--min", "medium", "--per-relation", "25"],
+            EngineCommandResult? result = await RunEngineAsync(["relations", "suggest", "--all", "--missing", "--min", "medium", "--per-relation", "25", .. SuggestGameArgs()],
                 includeProfile: true, mutatesProfile: false, busyLabel: T("Suggest missing for every relation..."), forceText: false, background: true);
             ClearMissingReview();
             if (result == null || result.ExitCode != 0)

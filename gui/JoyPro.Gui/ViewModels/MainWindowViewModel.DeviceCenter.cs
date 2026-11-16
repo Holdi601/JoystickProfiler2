@@ -104,6 +104,9 @@ public sealed partial class MainWindowViewModel
     [NotifyPropertyChangedFor(nameof(HasOtherDevices))]
     private string otherDevicesText = string.Empty;
 
+    // The devices were looked at once (the welcome's suggestion knows them from then on).
+    private bool deviceCardsLoadedOnce;
+
     public bool HasOtherDevices => OtherDevicesText.Length > 0;
 
     [RelayCommand]
@@ -152,6 +155,8 @@ public sealed partial class MainWindowViewModel
         }
         OtherDevicesText = set.Others;
         OnPropertyChanged(nameof(HasDeviceCards));
+        deviceCardsLoadedOnce = true;
+        RefreshOpenWelcome();
         if (announce)
         {
             StatusText = DeviceCards.Count == 0

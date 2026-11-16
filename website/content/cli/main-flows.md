@@ -4,7 +4,7 @@ belongs to the command named in its marker; build.py puts it on the command's en
 <!-- entry: dcs export -->
 :::layer beginner
 Writes your profile's binds into DCS, so the game's controls menu shows them. Use it after you changed binds in JoyPro
-and want to fly with them; the GUI's **Export now** on the DCS tile runs it. Close DCS first.
+and want to fly with them; the GUI's **Export now** on the DCS card runs it. Close DCS first.
 
 ```powershell
 engine dcs export --mode clean --nuke-untouched-devices true --planes "F-16C_50|FA-18C_hornet" --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -115,7 +115,7 @@ DCS, no backup.
 <!-- entry: il2 export -->
 :::layer beginner
 Writes your profile's binds into IL-2 Great Battles. Use it after you changed binds in JoyPro; close IL-2 first. The
-Export page's **Export now** on the IL-2 tile runs it.
+Export page's **Export now** on the IL-2 card runs it.
 
 ```powershell
 engine il2 export "D:\Games\IL-2 Sturmovik Battle of Stalingrad" --mode clean --nuke-untouched-devices true --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -145,7 +145,7 @@ responses) and JoyPro's `jp.actions`.
 <!-- entry: starcitizen export -->
 :::layer beginner
 Writes your profile's ship binds into Star Citizen. Use it after you changed binds in JoyPro; close the game first. The
-Export page's **Export now** on the Star Citizen tile runs it.
+Export page's **Export now** on the Star Citizen card runs it.
 
 ```powershell
 engine starcitizen export "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE" --mode clean --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text

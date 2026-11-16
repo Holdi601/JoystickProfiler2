@@ -158,7 +158,8 @@ public sealed partial class MainWindowViewModel
     {
         string name = DeviceProbe.RemoveGuid(device);
         Dictionary<string, string> map = new(StringComparer.OrdinalIgnoreCase);
-        foreach (IGrouping<string, BindListItem> group in allBinds
+        // Every input of a relation (its other inputs too, multi-bind).
+        foreach (IGrouping<string, BindListItem> group in AllBoundInputs()
                      .Where(b => b.HasBind && b.Input.Length > 0 &&
                                  (string.Equals(b.Device, device, StringComparison.OrdinalIgnoreCase) || string.Equals(DeviceProbe.RemoveGuid(b.Device), name, StringComparison.OrdinalIgnoreCase) ||
                                   SameDeviceName(b.Device, device)))

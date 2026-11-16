@@ -57,9 +57,9 @@ checking Microsoft's Authenticode signature.
 | Application icons (`gui/JoyPro.Gui/Assets/joypro2_gui.ico`, `engine/assets/engine_console.ico`, `branding/*`), the JoyPro mark, the title "JOYPRO 2" and the game badges (`gui/JoyPro.Gui/Styles/Branding.axaml`, `Views/Controls/GameBadge.cs`, `docs/branding/*`) | Drawn for JoyPro as path data (`branding/generate-branding.py`, `branding/generate-icons.ps1`); the mark redraws the original JoyPro logo. No font is used: the title's letters and the "2" / ">_" are JoyPro's own shapes. The game badges use the Material Design Icons motifs listed above (airplane, rocket) and a helicopter drawn for JoyPro | JoyPro's own |
 | Fonts | None shipped. The GUI names Windows system fonts (Bahnschrift, Consolas) and the Avalonia default font; they are not redistributed | — |
 | Device pictures on the layout pages | JoyPro's own drawings of the devices (`DB/DeviceDrawings`) and from the device reference (`DB/Devices`), the user's own pictures, or (after the user's yes) the manufacturer's photo loaded on the user's PC. The former bundled `LayoutTemplates/*.layout` pictures of other people were removed (2026-10-11) | JoyPro's own / the user's |
-| 2D layouts (`EngineOnly_Runtime/DB/DeviceLayouts2D`) | Only the text positions of cheat-sheet templates ship (JSON, no picture). The pictures stay on the user's PC: the JoyPro 1 sheets and button maps in the user's own JoyPro 1 folder (`jp1-*.json`), the WinWing Orion 2 sheets made by **maogowzeg (Discord)** in `<data>\Layouts\Community` once the user has received them (`maogowzeg-*.json`, positions mapped with his consent). His name is shown and printed wherever his sheets are used | JoyPro's own positions / maogowzeg's sheets, used with permission |
+| 2D layouts (`EngineOnly_Runtime/DB/DeviceLayouts2D`) | Only the text positions of cheat-sheet templates ship (JSON, no picture). The pictures stay on the user's PC: the JoyPro 1 sheets and button maps in the user's JoyPro 1 folder (`jp1-*.json`), the WinWing Orion 2 sheets made by **maogowzeg (Discord)** in `<data>\Layouts\Community` once the user has received them (`maogowzeg-*.json`, positions mapped with his consent). His name is shown and printed wherever his sheets are used | JoyPro's own positions / maogowzeg's sheets, used with permission |
 | Device product pictures (`EngineOnly_Runtime/DB/Devices/*.json`, `"image"` URLs) | Not shipped: downloaded from the manufacturer's (or a shop's) web site into `%LOCALAPPDATA%\JoyPro2\DeviceImages` when the GUI shows the device | Copyright of the respective manufacturer; see audit finding P5 |
-| Game covers and DCS aircraft pictures | Not shipped: read from the user's own Steam library cache / Steam's store CDN and from the user's DCS installation at run time | Copyright of the respective game publisher |
+| Game covers and DCS aircraft pictures | Not shipped: read from the user's Steam library cache / Steam's store CDN and from the user's DCS installation at run time | Copyright of the respective game publisher |
 
 ### 1.4 Game names and data
 
@@ -337,11 +337,11 @@ SOFTWARE.
 | Newtonsoft.Json (transitive of the test SDK) | 13.0.1 | MIT | tests |
 | Avalonia.Diagnostics | 11.3.12 | MIT | Debug builds only (excluded from Release) |
 | Avalonia.BuildServices | 11.3.2 | MIT | build time only (Avalonia's anonymous build telemetry; opt out with `AVALONIA_TELEMETRY_OPTOUT=1`) |
-| Tesseract OCR (if installed) | — | Apache-2.0 | the maintainer's in-game test scripts (not in the public repository) |
-| ooz (parts, ported to C# in `tools/wt-oodle/OodleLz.cs`) | 2016 (github.com/powzix/ooz) | GPL-3.0-or-later, Copyright (C) 2016 Powzix | the maintainer's War Thunder Oodle helper `tools/wt-oodle` (a separate program the engine starts; builds the War Thunder picture packs) and its unit tests |
+| Tesseract OCR (if installed) | — | Apache-2.0 | the in-game test scripts (not in the public repository) |
+| ooz (parts, ported to C# in `tools/wt-oodle/OodleLz.cs`) | 2016 (github.com/powzix/ooz) | GPL-3.0-or-later, Copyright (C) 2016 Powzix | the War Thunder Oodle helper `tools/wt-oodle` (a separate program the engine starts; builds the War Thunder picture packs) and its unit tests |
 | Python 3 with Pillow (if installed) | — | PSF License; Pillow: MIT-CMU (HPND) | helper scripts in `tools/` and `branding/` (run by hand, never shipped) |
 | Windows PowerShell 5.1 | — | part of Windows | `engine/tests` smoke test, `tools/*.ps1` |
-| SimConnect (part of Microsoft Flight Simulator) | — | Microsoft; not redistributed | the maintainer's in-game test tools load the `SimConnect.dll` of the user's MSFS install (not in the public repository) |
+| SimConnect (part of Microsoft Flight Simulator) | — | Microsoft; not redistributed | the in-game test tools load the `SimConnect.dll` of the MSFS install (not in the public repository) |
 
 ## 6. Compatibility with JoyPro's license (GPL-3.0-or-later)
 

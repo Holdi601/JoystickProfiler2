@@ -23,7 +23,7 @@ namespace JoyPro.Engine.VJoy
         public string Id { get; set; }
         public string Name { get; set; }
         // A VirtualFunctionCatalog type id: bands, cycle, toggle, switch, presses, shift, merge, split, curve,
-        // axis-buttons, axes-hat, buttons-axis, encoder, turbo, macro, hat-buttons, buttons-hat, remap, mode.
+        // axis-buttons, axes-hat, buttons-axis, hat-axes, encoder, turbo, macro, hat-buttons, buttons-hat, remap, mode.
         public string Type { get; set; }
         public bool Enabled { get; set; }
         // Keyboard outputs (KEY_* targets) only when the user switched this on for the function.
@@ -299,6 +299,7 @@ namespace JoyPro.Engine.VJoy
         public const string AxisButtons = "axis-buttons";
         public const string AxesHat = "axes-hat";
         public const string ButtonsAxis = "buttons-axis";
+        public const string HatAxes = "hat-axes";
         public const string Encoder = "encoder";
         public const string Turbo = "turbo";
         public const string Macro = "macro";
@@ -494,6 +495,15 @@ namespace JoyPro.Engine.VJoy
             });
             list.Add(new VfTypeInfo
             {
+                Id = HatAxes, Name = "Hat to axes", Icon = "⊹",
+                Summary = "A hat as two axes: each direction holds its axis out while held, a diagonal both, centred = both in the middle.",
+                Example = "Camera look (a pad's right stick) on a hat when no thumb stick is free; a slew control on a hat.",
+                Inputs = { Role("hat", "Hat", "hat") },
+                Outputs = { Role("x", "Left/right axis", "axis", optional: true), Role("y", "Up/down axis", "axis", optional: true) },
+                Params = { P("deflection", "Deflection", 0.1, 1, 0.05, 1, "of half travel", "How far a direction moves its axis from the centre (1: all the way).") }
+            });
+            list.Add(new VfTypeInfo
+            {
                 Id = Encoder, Name = "Axis to encoder pulses", Icon = "⟳",
                 Summary = "Moving an axis gives up/down button pulses, one per step (relative mode).",
                 Example = "A rotary axis turns a radio or altimeter knob that only has increase/decrease binds.",
@@ -528,7 +538,11 @@ namespace JoyPro.Engine.VJoy
                 Example = "Start-up sequence: battery, generator, APU with pauses.",
                 Inputs = { Role("trigger", "Trigger", "button") },
                 Outputs = { Role("out", "Output", "button", optional: true, numbered: true) },
-                Params = { P("repeat", "Runs", 0, 1, 1, 0, "", "Once per press, or again and again while held.", "Once per press", "Repeat while held") },
+                Params =
+                {
+                    P("repeat", "Runs", 0, 1, 1, 0, "", "Once per press, or again and again while held.", "Once per press", "Repeat while held"),
+                    P("together", "Steps", 0, 1, 1, 0, "", "One after another, or all pressed at the same moment, each held for its hold time (a chord such as L3 + R3).", "One after another", "Pressed together")
+                },
                 DefaultCount = 2, MaxCount = 16
             });
             list.Add(new VfTypeInfo

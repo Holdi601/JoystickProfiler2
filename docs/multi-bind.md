@@ -1,15 +1,16 @@
-# Several inputs per relation (experimental, 2.6.5)
+# Several inputs per relation (experimental in 2.6.5, a normal feature since 2.7.0)
 
 A relation can have more than one bind: the **main bind** (as always) and **extra binds**, each with its own device,
 input, modifiers and axis tuning. Two devices can then do the same functions, for example the same grip on two bases
-(a tester's two Virpil Constellation ALPHA Left grips, one on a VPC MongoosT-50CM2 base, one on a MOZA AB9). The
+(a user's two Virpil Constellation ALPHA Left grips, one on a VPC MongoosT-50CM2 base, one on a MOZA AB9). The
 alternative, a copy relation per device, was not chosen: the actions, aircraft and names stay in one relation.
 
-The feature is behind **Settings > Experimental > Several inputs per relation (experimental)**, off by default
-(`ui-settings.json` `"multiBind"`). The GUI then passes the global option `--multi-bind on` to every engine call
-(`JOYPRO_MULTI_BIND=1` does the same for hand-typed commands). With it off everything behaves as before: the engine
-reads no extra bind, exports, checks and pages use the main binds only, and a profile without extra binds is written
-byte for byte as before.
+Since 2.7.0 the feature is always on: Settings has no switch any more (the old `ui-settings.json` `"multiBind"` is
+ignored), the GUI passes nothing and the engine reads the extra binds unless a call has the global option
+`--multi-bind off` (or `JOYPRO_MULTI_BIND=0`; `--multi-bind on` from older scripts is still accepted). With it off the
+engine reads no extra bind: exports, checks and pages use the main binds only. A profile without extra binds behaves
+exactly as before either way and is written byte for byte as before (checked by engine/tests/smoke/multibind.ps1: load
++ save with on and off give the same bytes).
 
 ## Data model
 
@@ -41,8 +42,7 @@ byte for byte as before.
     engine relations join-inputs [--game <id>] [--relation <name>] [--apply]
     engine devices copy-to <device A> <device B> [--mode auto|same|layout] [--map OLD=NEW]... [--grip <device>=<grip id>]... [--merge skip|add] [--dry-run]
 
-Changing commands need `--multi-bind on`; `list` and `remove` work always, so extra binds of a profile can be seen and
-taken out with the setting off. `add` on an axis copies the main bind's tuning (every scope) unless `--copy-tuning
+Changing commands are refused with `--multi-bind off`; `list` and `remove` work always. `add` on an axis copies the main bind's tuning (every scope) unless `--copy-tuning
 false`; a relation without a bind gets the input as its main bind. `binds list` and `relations show` list the extra
 binds ("+ input 2: device=... | input=... | modifiers(n)=..."; JSON: `ExtraBinds` of the main bind).
 
@@ -58,9 +58,9 @@ relation.
 
 Where the game's file keeps several inputs per action, every bind is written (main first). Where it keeps one, the
 main bind is written and the export warns per relation ("<game> keeps one ...: relation 'X' was exported with its main
-input only; N extra input(s) not written"). With the setting off, an export names the extra binds it left out once
-("N extra input(s) of M relation(s) were not exported to <game>: the experimental setting ... is off"). Nothing is
-dropped without a word. Registry games go through `GameProfileBridge.CollectBindings` / `ExportedBinds`; DCS, IL-2
+input only; N extra input(s) not written"). With `--multi-bind off`, an export names the extra binds it left out once
+("N extra input(s) of M relation(s) were not exported to <game>: several inputs per relation are switched off for this
+call ..."). Nothing is dropped without a word. Registry games go through `GameProfileBridge.CollectBindings` / `ExportedBinds`; DCS, IL-2
 Great Battles and Star Citizen have their own exporters with the same rules. The export rules per game class (clean,
 nuke, keyboard) are unchanged: the extra binds are binds like any other for them.
 
@@ -97,17 +97,17 @@ its own vJoy slot (EngineVJoy.CollectUsedInputs); the virtual Xbox pad uses the 
 
 ## Import and re-import
 
-- Re-import of JoyPro's own export (setting on): the metadata names the relation, so an extra bind comes back as an
+- Re-import of JoyPro's own export: the metadata names the relation, so an extra bind comes back as an
   extra bind of that relation with its modifiers and tuning, not as a second relation: DCS (`.jp`, `JPK`), IL-2 (`//JP:`
   comments, a seventh field = the input number, only for extra binds), registry games (`<config>.joypro-meta.json`:
   `"Inputs"` with the input numbers, only when there is an extra bind). Files without extra binds stay byte for byte as
   before; an older JoyPro ignores the new field.
 - A game file with the same action on two inputs that JoyPro did not export: the import makes a relation per input as
-  before and, with the setting on, adds a note "N function(s) are bound on several inputs as separate relations (...):
+  before and adds a note "N function(s) are bound on several inputs as separate relations (...):
   keep each as one relation with several inputs? engine relations join-inputs --game <id> --apply". `relations
   join-inputs` finds relations with exactly the same actions and aircraft on other inputs and keeps the first (a name
   without copy suffix, else the shortest) with the others' inputs as extra binds (preview without `--apply`).
-- With the setting off every import is as before.
+- With `--multi-bind off` every import is as before.
 
 ## Copy to another device
 
@@ -118,7 +118,7 @@ same input ids for the same product (or `--mode same`), else by layout from the 
 out with a warning unless `--merge add`. The preview (`--dry-run`) changes nothing; the copy is one profile version
 (Ctrl+Z undoes it). GUI: Binds page > More inputs > Copy every bind of a device to another device (Preview, Copy).
 
-### The same grip on two bases (tester report)
+### The same grip on two bases (a user's report)
 
 What the device catalog (EngineOnly_Runtime/DB/Devices) knows:
 
@@ -147,25 +147,29 @@ What `devices copy-to` does with them (checked with fake devices "L-VPC Stick MT
 
 ## GUI
 
-- Settings > Experimental: the switch.
-- Binds page: a card shows "+1" (the other inputs in its tooltip); the selected relation's **More inputs
-  (experimental)** panel lists input 2.. with **Make main** and **Remove**, **Record another input**, **Add the input
-  picked by hand** (the device and input of Pick the input by hand) and **Copy every bind of a device to another device**
-  (First device, Second device, Preview, Copy).
+- Binds page: a card shows "+1" (the other inputs in its tooltip), the selected relation's **More inputs** panel lists
+  input 2.. with **Make main** and **Remove**, **Record another input**, **Add the input picked by hand** (the device and
+  input of Pick the input by hand) and **Copy every bind of a device to another device** (First device, Second device,
+  Preview, Copy). For an axis with several inputs, **Axis response** has an **Input** list: each input has its own
+  curves (`binds tuning ... --bind <n>`).
 - Relations page: the card and the relation editor show "+1" next to the bind chip (a click opens the bind).
-- Overlay/HUD names (engine overlay map), the Layout page's pictures and cheat sheets (EngineLayoutRenderer) and the
-  layout suggestion's used inputs include the extra binds while the setting is on.
-- Not covered yet: the HUD designer's live "which relation is on this input" uses the overlay map (covered), but the
-  Binds page's follow input, Visual assign and the device reference page look up the main binds only; the axis-response
-  section of the Binds page edits the main bind (`binds tuning --bind <n>` tunes an extra bind on the command line).
+- Every page finds a relation by any of its inputs (`BindListItem.AllInputs`, `MainWindowViewModel.AllBoundInputs`,
+  2.7.0): Follow input, the Layout page's picture legend and tables (`DeviceReferenceBindings`, the callout rows),
+  Visual assign, the Devices filter and the search of the Relations and Binds pages (`FilterSubject.Devices`), the
+  device lists (pickers, Replace device, copy to another device). The overlay/HUD names (engine overlay map), the cheat
+  sheets (EngineLayoutRenderer), the layout suggestion's used inputs, the checks and the exports are engine side.
+- Engine commands that follow every input (2.7.0): `binds unbind` (an extra bind on the input goes), `binds modifier
+  rename` and `binds modifier list` (the extra binds' modifiers), `devices remove` (an extra bind on the device goes, a
+  main bind on it gives way to the next input), the profile's device list, Auto Assign (the extra binds' inputs are
+  taken).
 
 ## Tests
 
 - engine/tests/smoke/multibind.ps1: off/on, add/set/move/remove, tuning `--bind`, history undo/redo, conflicts and
   validate, DCS export off/on and the `.jp` re-import, Star Citizen's warning, join-inputs, copy-to (preview changes
   nothing, one undo), a profile whose extra binds were removed has no `ExtraBinds` member.
-- gui/JoyPro.Gui.Tests/MultiBindTests.cs: off by default nothing shows and no flag; on, the cards, the relation editor
-  and the panel, every command's arguments, the copy preview and apply, the setting survives a restart; renders with
-  `JOYPRO_MULTIBIND_RENDER_OUT`.
-- Old vs new engine with the setting off and on on a copy of a real profile: every export (DCS add/merge/clean on a copy
+- gui/JoyPro.Gui.Tests/MultiBindTests.cs: no setting and no flag, the cards, the relation editor and the panel, every
+  command's arguments, the copy preview and apply, the pages that find a relation by its other inputs, the axis-response
+  input picker; renders (Binds, Relations, Layout view/tables/bind) with `JOYPRO_MULTIBIND_RENDER_OUT`.
+- Old vs new engine (2.6.5) with the setting off and on on a copy of a real profile: every export (DCS add/merge/clean on a copy
   of Saved Games, IL-2, 33 registry games) and the saved profiles byte for byte the same, except timestamps.

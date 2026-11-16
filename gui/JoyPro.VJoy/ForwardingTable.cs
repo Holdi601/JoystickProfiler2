@@ -118,7 +118,9 @@ public struct VJoyPosition
 /// The device state is JoyPro's DirectInput data format (DIJOYSTATE2's first part, 176 bytes): 8 axes (X, Y, Z, Rx,
 /// Ry, Rz, Slider 0, Slider 1) as int at 0..31, 4 hats as uint at 32..47 (hundredths of a degree, low word 0xFFFF =
 /// centred), 128 buttons as byte at 48..175 (bit 7 = down). Axis values go over 1:1 (DirectInput is set to vJoy's
-/// range, so no scaling happens; JoyPro's curves stay in the game). <see cref="Apply"/> allocates nothing.
+/// range, so no scaling happens; JoyPro's curves stay in the game, which gets them with the export). The virtual Xbox
+/// pad is different (<see cref="XboxTable"/>): its games get no export, so it applies the curves itself. <see cref="Apply"/>
+/// allocates nothing.
 /// </remarks>
 public sealed class ForwardingTable
 {
@@ -334,7 +336,12 @@ public sealed class ForwarderConfig
         if (root.TryGetProperty("xbox", out var xbox) && xbox.ValueKind == JsonValueKind.Array)
         {
             foreach (var slot in xbox.EnumerateArray())
-                config.Xbox.Add(new XboxSlotConfig(Int(slot, "source", -1), Text(slot, "kind"), Int(slot, "index", -1), Text(slot, "target")));
+            {
+                double[]? curve = null;
+                if (slot.TryGetProperty("curve", out var points) && points.ValueKind == JsonValueKind.Array)
+                    curve = points.EnumerateArray().Where(p => p.ValueKind == JsonValueKind.Number).Select(p => p.GetDouble()).ToArray();
+                config.Xbox.Add(new XboxSlotConfig(Int(slot, "source", -1), Text(slot, "kind"), Int(slot, "index", -1), Text(slot, "target")) { Curve = curve, Direction = Int(slot, "direction", -1), Skip = Int(slot, "skip", 0) });
+            }
         }
         if (root.TryGetProperty("sources", out var sources) && sources.ValueKind == JsonValueKind.Array)
         {
@@ -390,7 +397,20 @@ public sealed record ForwarderSource(string Device, string Name, Guid InstanceGu
 public sealed record ForwarderSlot(int Source, string Kind, int Index, int Device, int Target);
 
 /// <summary>One Xbox slot: physical input of a source -> Xbox control (XB_LX, XB_A, XB_LY+, XB_DPAD ...).</summary>
-public sealed record XboxSlotConfig(int Source, string Kind, int Index, string Target);
+public sealed record XboxSlotConfig(int Source, string Kind, int Index, string Target)
+{
+    /// <summary>
+    /// An axis slot's curve (engine vjoy forwarder-config "curve"): the outputs -1..1 at stick positions -1..1 in equal
+    /// steps, the relation's axis tuning for the game as the Binds page previews it (invert included). Null: 1:1.
+    /// </summary>
+    public double[]? Curve { get; init; }
+
+    /// <summary>Kind "hatdir": the hat direction (0 up, 1 up-right .. 7 up-left) that presses the control.</summary>
+    public int Direction { get; init; } = -1;
+
+    /// <summary>Kind "hat" (the whole hat on the D-pad): directions another slot or a function reads (bit 0 up .. 7 up-left), left out here.</summary>
+    public int Skip { get; init; }
+}
 
 /// <summary>The XInput report of the virtual Xbox 360 pad (XINPUT_GAMEPAD layout).</summary>
 public struct XboxReport
@@ -411,12 +431,15 @@ public struct XboxReport
 /// The virtual Xbox pad's table: physical device states in, one XInput report out. Every change recomputes the report
 /// from the last state of every source (two buttons on one control combine; a pressed button on a stick half wins over
 /// the axis on that stick; triggers take the larger value). Stick Y follows XInput (up = positive), so a physical axis
-/// is inverted on the Y sticks (DirectInput: forward = smaller). <see cref="Apply"/> allocates nothing.
+/// is inverted on the Y sticks (DirectInput: forward = smaller). An axis slot with a curve (the relation's axis tuning;
+/// these games get no export, so nobody else applies it) goes through a lookup table built once here: raw value in,
+/// bent raw value out. <see cref="Apply"/> allocates nothing.
 /// </summary>
 public sealed class XboxTable
 {
     // Control codes: 0..5 axes LX LY RX RY LT RT; 10..25 buttons (mask); 30..37 stick halves (axis*2 + (minus ? 1 : 0)); 40 D-pad.
-    private const byte KindAxis = 0, KindButton = 1, KindHat = 2;
+    // KindHatDir: one direction of a physical hat pressing a pad button (a relation bound to that direction).
+    private const byte KindAxis = 0, KindButton = 1, KindHat = 2, KindHatDir = 3;
     private const byte CodeLx = 0, CodeLy = 1, CodeRx = 2, CodeRy = 3, CodeLt = 4, CodeRt = 5, CodeTriggers = 6, CodeButton = 10, CodeHalf = 30, CodeDPad = 40;
 
     private static readonly (string Token, ushort Mask)[] ButtonMasks =
@@ -430,6 +453,8 @@ public sealed class XboxTable
     private static readonly string[] AxisTokens = ["XB_LX", "XB_LY", "XB_RX", "XB_RY", "XB_LT", "XB_RT"];
 
     private readonly Slot[] _slots;
+    // Per slot: the curve's lookup table (index = raw - axis minimum), null = 1:1.
+    private readonly int[]?[] _curves;
     private readonly byte[][] _states;
     private readonly int _axisMin;
     private readonly int _axisMax;
@@ -441,12 +466,15 @@ public sealed class XboxTable
         _axisMax = Math.Max(axisMin + 1, axisMax);
         Game = config.XboxGame;
         var slots = new List<Slot>();
+        var curves = new List<int[]?>();
         foreach (var slot in config.Xbox)
         {
             if (slot.Source < 0 || slot.Source >= config.Sources.Count)
                 continue;
-            var kind = slot.Kind switch { "axis" => KindAxis, "button" => KindButton, _ => KindHat };
+            var kind = slot.Kind switch { "axis" => KindAxis, "button" => KindButton, "hatdir" => KindHatDir, _ => KindHat };
             var limit = kind == KindAxis ? 8 : kind == KindButton ? 128 : 4;
+            if (kind == KindHatDir && slot.Direction is < 0 or > 7)
+                continue;
             var target = (slot.Target ?? "").Trim();
             var invert = target.EndsWith('~');
             if (invert)
@@ -457,13 +485,18 @@ public sealed class XboxTable
             {
                 KindAxis => code <= CodeTriggers,
                 KindHat => code == CodeDPad,
+                // A button, a hat direction: a pad button, a stick half or a trigger.
                 _ => code == CodeButton || code >= CodeHalf && code < CodeDPad || code == CodeLt || code == CodeRt
             };
-            if (fits)
-                slots.Add(new Slot(kind, (byte)slot.Index, (byte)slot.Source, code, mask, invert));
+            if (!fits)
+                continue;
+            var curve = kind == KindAxis ? BuildCurveTable(slot.Curve, _axisMin, _axisMax) : null;
+            slots.Add(new Slot(kind, (byte)slot.Index, (byte)slot.Source, code, mask, invert && curve == null, (byte)Math.Max(0, slot.Direction), (byte)(slot.Skip & 0xFF)));
+            curves.Add(curve);
         }
 
         _slots = slots.ToArray();
+        _curves = curves.ToArray();
         _states = new byte[config.Sources.Count][];
         for (var i = 0; i < _states.Length; i++)
         {
@@ -479,6 +512,37 @@ public sealed class XboxTable
     public int SlotCount => _slots.Length;
 
     public bool Active => _slots.Length > 0;
+
+    /// <summary>Axis slots whose curve the table applies (the rest go over 1:1).</summary>
+    public int CurveCount => _curves.Count(c => c != null);
+
+    /// <summary>
+    /// The lookup table of a curve (samples -1..1 at stick positions -1..1 in equal steps): every raw axis value to the
+    /// raw value the curve makes of it, around the same centre the sticks use. Null for no curve or a straight 1:1 line.
+    /// </summary>
+    internal static int[]? BuildCurveTable(double[]? curve, int axisMin, int axisMax)
+    {
+        if (curve == null || curve.Length < 2 || axisMax <= axisMin)
+            return null;
+        var identity = true;
+        for (var i = 0; i < curve.Length && identity; i++)
+            identity = Math.Abs(curve[i] - (-1.0 + 2.0 * i / (curve.Length - 1))) < 1e-6;
+        if (identity)
+            return null;
+        var centre = axisMin + (axisMax - axisMin + 1) / 2;
+        var table = new int[axisMax - axisMin + 1];
+        for (var raw = axisMin; raw <= axisMax; raw++)
+        {
+            var x = raw >= centre ? (raw - centre) / (double)Math.Max(1, axisMax - centre) : (raw - centre) / (double)Math.Max(1, centre - axisMin);
+            var position = (Math.Clamp(x, -1.0, 1.0) + 1.0) / 2.0 * (curve.Length - 1);
+            var lo = Math.Min(curve.Length - 2, (int)Math.Floor(position));
+            var y = Math.Clamp(curve[lo] + (curve[lo + 1] - curve[lo]) * (position - lo), -1.0, 1.0);
+            var value = y >= 0 ? centre + y * (axisMax - centre) : centre + y * (centre - axisMin);
+            table[raw - axisMin] = Math.Clamp((int)Math.Round(value), axisMin, axisMax);
+        }
+
+        return table;
+    }
 
     public ref XboxReport Report => ref _report;
 
@@ -507,6 +571,9 @@ public sealed class XboxTable
             if (i >= 4)
             {
                 var trigger = (byte)Math.Round(unit * 255);
+                // A button on a trigger (High-G turn: both triggers full while held) adds to the table's trigger.
+                if (functions.XboxAxisAdds[i])
+                    trigger = Math.Max(trigger, i == 4 ? _report.LeftTrigger : _report.RightTrigger);
                 if (i == 4)
                     output.LeftTrigger = trigger;
                 else
@@ -546,14 +613,17 @@ public sealed class XboxTable
         // Sticks centre, triggers up.
         Span<int> half = stackalloc int[4];
         Span<bool> halfSet = stackalloc bool[4];
-        foreach (var slot in _slots)
+        for (var s = 0; s < _slots.Length; s++)
         {
+            var slot = _slots[s];
             var state = _states[slot.Source];
             switch (slot.Kind)
             {
                 case KindAxis:
                 {
                     var raw = BinaryPrimitives.ReadInt32LittleEndian(state.AsSpan(ForwardingTable.AxisOffset + slot.Index * 4, 4));
+                    if (_curves[s] is { } curveTable)
+                        raw = curveTable[Math.Clamp(raw, _axisMin, _axisMax) - _axisMin];
                     if (slot.Invert)
                         raw = _axisMax - (Math.Clamp(raw, _axisMin, _axisMax) - _axisMin);
                     var unit = (Math.Clamp(raw, _axisMin, _axisMax) - _axisMin) / (double)(_axisMax - _axisMin); // 0..1
@@ -587,8 +657,9 @@ public sealed class XboxTable
                     break;
                 }
                 case KindButton:
+                case KindHatDir:
                 {
-                    if ((state[ForwardingTable.ButtonOffset + slot.Index] & 0x80) == 0)
+                    if (slot.Kind == KindButton ? (state[ForwardingTable.ButtonOffset + slot.Index] & 0x80) == 0 : !HatPointsTo(state, slot.Index, slot.Direction))
                         break;
                     if (slot.Code == CodeButton)
                         _report.Buttons |= slot.Mask;
@@ -611,7 +682,9 @@ public sealed class XboxTable
                     if ((raw & 0xFFFF) == 0xFFFF)
                         break;
                     var direction = (int)(((raw % 36000) + 2250) / 4500 % 8); // 0 U, 1 UR, 2 R ... 7 UL
-                    _report.Buttons |= direction switch
+                    if ((slot.Skip & (1 << direction)) != 0)
+                        break;
+                    ushort dpad = direction switch
                     {
                         0 => XboxReport.DPadUp,
                         1 => (ushort)(XboxReport.DPadUp | XboxReport.DPadRight),
@@ -622,6 +695,12 @@ public sealed class XboxTable
                         6 => XboxReport.DPadLeft,
                         _ => (ushort)(XboxReport.DPadUp | XboxReport.DPadLeft)
                     };
+                    // A diagonal leaves out the part another slot or a function has (its cardinal direction is skipped).
+                    if ((slot.Skip & 0x01) != 0) dpad &= unchecked((ushort)~XboxReport.DPadUp);
+                    if ((slot.Skip & 0x04) != 0) dpad &= unchecked((ushort)~XboxReport.DPadRight);
+                    if ((slot.Skip & 0x10) != 0) dpad &= unchecked((ushort)~XboxReport.DPadDown);
+                    if ((slot.Skip & 0x40) != 0) dpad &= unchecked((ushort)~XboxReport.DPadLeft);
+                    _report.Buttons |= dpad;
                     break;
                 }
             }
@@ -632,6 +711,13 @@ public sealed class XboxTable
             if (halfSet[axis])
                 SetStick(axis, (short)Math.Clamp(half[axis], -32768, 32767));
         }
+    }
+
+    // The hat points in this direction (0 up .. 7 up-left, eight sectors of 45 degrees).
+    private static bool HatPointsTo(byte[] state, int hat, int direction)
+    {
+        var raw = BinaryPrimitives.ReadUInt32LittleEndian(state.AsSpan(ForwardingTable.HatOffset + hat * 4, 4));
+        return (raw & 0xFFFF) != 0xFFFF && (int)(((raw % 36000) + 2250) / 4500 % 8) == direction;
     }
 
     private void SetStick(byte code, short value)
@@ -702,5 +788,5 @@ public sealed class XboxTable
         return false;
     }
 
-    private readonly record struct Slot(byte Kind, byte Index, byte Source, byte Code, ushort Mask, bool Invert);
+    private readonly record struct Slot(byte Kind, byte Index, byte Source, byte Code, ushort Mask, bool Invert, byte Direction, byte Skip);
 }

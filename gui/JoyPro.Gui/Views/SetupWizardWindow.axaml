@@ -37,7 +37,8 @@
         <!-- Header: the step and the five steps -->
         <StackPanel Spacing="10" Margin="0,0,0,12">
             <TextBlock Text="{Binding StepHeading}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" />
-            <ItemsControl ItemsSource="{Binding Steps}">
+            <!-- The five steps: not in the quick path (JoyPro does them by itself; "Priorities" and "Plan" mean nothing there). -->
+            <ItemsControl ItemsSource="{Binding Steps}" IsVisible="{Binding !QuickMode}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <!-- Wraps on a narrow window (a small screen at 150 %) instead of running past its edge. -->
@@ -55,11 +56,94 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            <!-- The quick path: what JoyPro did by itself, in plain words, and what it does not know. -->
+            <Border x:Name="QuickPanel" Classes="card" IsVisible="{Binding QuickMode}">
+                <StackPanel Spacing="6">
+                    <TextBlock x:Name="QuickSummaryText" Text="{Binding QuickSummary}" TextWrapping="Wrap" FontWeight="SemiBold" FontSize="{DynamicResource JP.FontSize.16}" />
+                    <!-- What must not be missed (flares or the weapon release behind a shift, no button for the flares). -->
+                    <ItemsControl x:Name="QuickWarningsList" ItemsSource="{Binding QuickWarnings}" IsVisible="{Binding HasQuickWarnings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{Binding}" Classes="warnText" FontWeight="Bold" TextWrapping="Wrap" Margin="0,2,0,0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ItemsControl ItemsSource="{Binding QuickNotes}" IsVisible="{Binding HasQuickNotes}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <!-- What the head-tracking answer changed and which real button the shift is (one plain line each). -->
+                    <ItemsControl x:Name="QuickLinesList" ItemsSource="{Binding QuickLines}" IsVisible="{Binding HasQuickLines}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <!-- The quick review asks the head-tracking question too (one yes / no; Easy words with "du"); the plan is
+                         made again with it. The answers wrap (long in German). -->
+                    <StackPanel x:Name="QuickHeadTrackingPanel" Spacing="4" IsVisible="{Binding ShowsQuickHeadTracking}" Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Data="{StaticResource Icon.Eye}" Width="16" Height="16" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding HeadTrackingQuestion}" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <RadioButton x:Name="QuickHeadTrackingYesRadio" GroupName="QuickHeadTracking" IsChecked="{Binding HeadTrackingYes}" IsEnabled="{Binding !IsWorking}">
+                            <TextBlock Text="{Binding HeadTrackingYesText}" TextWrapping="Wrap" />
+                        </RadioButton>
+                        <RadioButton x:Name="QuickHeadTrackingNoRadio" GroupName="QuickHeadTracking" IsChecked="{Binding HeadTrackingNo}" IsEnabled="{Binding !IsWorking}">
+                            <TextBlock Text="{Binding HeadTrackingNoText}" TextWrapping="Wrap" />
+                        </RadioButton>
+                    </StackPanel>
+                    <!-- Only an Xbox controller and only pad games: it already works. Play is the one blue button; the pad remap is
+                         an optional extra. -->
+                    <WrapPanel ItemSpacing="8" LineSpacing="6" IsVisible="{Binding QuickPadWorks}">
+                        <Button x:Name="QuickPlayAsIsButton" Classes="accent" Content="{l:T 'Close and play'}" Command="{Binding QuickPlayAsIsCommand}"
+                                ToolTip.Tip="{l:T 'Closes this window. Start the game: your controller works as it is.'}" />
+                        <Button x:Name="QuickPadExtrasButton" Content="{l:T 'Make it feel better (optional)'}" Command="{Binding QuickPadExtrasCommand}" IsEnabled="{Binding !IsWorking}"
+                                ToolTip.Tip="{l:T 'Not needed to play. Other buttons and a softer stick feel through a pretend controller; it needs a small extra driver.'}" />
+                    </WrapPanel>
+                    <!-- Stopped before the review: never a dead end. -->
+                    <WrapPanel ItemSpacing="8" LineSpacing="6" IsVisible="{Binding QuickStuck}">
+                        <Button x:Name="QuickTryAgainButton" Classes="icon accent" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Try again'}"
+                                Command="{Binding QuickTryAgainCommand}" IsEnabled="{Binding !IsWorking}"
+                                ToolTip.Tip="{l:T 'Looks for your games and devices again and starts over'}" />
+                        <Button x:Name="QuickStepByStepButton" Content="{l:T 'Set it up step by step'}" Command="{Binding QuickStepByStepCommand}"
+                                ToolTip.Tip="{l:T 'Opens the setup with all its steps, so you can choose each one yourself'}" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
         </StackPanel>
 
         <Panel Grid.Row="1">
+            <!-- The quick path's question: which aircraft do you fly (DCS), by the names a person reads, the ones on this PC
+                 first and ticked. -->
+            <ScrollViewer x:Name="QuickAircraftPanel" IsVisible="{Binding QuickAsksAircraft}" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding QuickAircraft}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel ItemSpacing="8" LineSpacing="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:SetupAircraftPick">
+                            <Border Classes="card" Width="270">
+                                <CheckBox IsChecked="{Binding IsChosen}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Hint}" Classes="muted" IsVisible="{Binding HasHint}" />
+                                    </StackPanel>
+                                </CheckBox>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
             <!-- 1 Games -->
-            <ScrollViewer IsVisible="{Binding IsGamesStep}" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer IsVisible="{Binding ShowsGamesStep}" VerticalScrollBarVisibility="Auto">
                 <StackPanel Spacing="10">
                     <TextBlock TextWrapping="Wrap" Opacity="0.85"
                                Text="{l:T 'JoyPro makes relations for the important functions of these games, binds them to your devices and groups them. The games you watch on the Start page are ticked; change it here for this setup (the watching stays as it is).'}" />
@@ -88,7 +172,7 @@
             </ScrollViewer>
 
             <!-- 2 Devices and roles -->
-            <Grid IsVisible="{Binding IsDevicesStep}" ColumnDefinitions="3*,2*" ColumnSpacing="16">
+            <Grid IsVisible="{Binding ShowsDevicesStep}" ColumnDefinitions="3*,2*" ColumnSpacing="16">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
                         <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Opacity="0.85" MaxWidth="560"
@@ -134,8 +218,8 @@
                 </Border>
             </Grid>
 
-            <!-- 3 Priorities, modifiers, realism -->
-            <Grid IsVisible="{Binding IsPrioritiesStep}" ColumnDefinitions="*,*,*" ColumnSpacing="16">
+            <!-- 3 Priorities, modifiers, where functions go (realism) -->
+            <Grid IsVisible="{Binding ShowsPrioritiesStep}" ColumnDefinitions="*,*,*" ColumnSpacing="16">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Classes="h2" Text="{l:T 'Your aircraft'}" Margin="0,0,0,6" />
                     <TextBox DockPanel.Dock="Top" Text="{Binding AircraftFilter}" Watermark="{l:T 'Search, e.g. F-16, helicopter, Star Citizen'}" Margin="0,0,0,6" />
@@ -230,17 +314,35 @@
                                 <TextBlock Text="{Binding PhaseLayersText}" TextWrapping="Wrap" Opacity="0.8" />
                             </StackPanel>
                         </Border>
+                        <!-- Head tracking / VR (docs/setup-wizard.md#head-tracking): yes = no buttons for looking around in the sims. -->
+                        <Border x:Name="HeadTrackingCard" Classes="surface" IsVisible="{Binding AsksHeadTracking}">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Data="{StaticResource Icon.Eye}" Width="18" Height="18" VerticalAlignment="Center" />
+                                    <TextBlock Classes="h2" Text="{l:T 'Do you use head tracking or VR?'}" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <TextBlock TextWrapping="Wrap" Opacity="0.85" Text="{l:T 'With head tracking (TrackIR, a face tracking webcam, a Tobii eye tracker) or VR you look around by turning your head. Then JoyPro puts no view buttons on your HOTAS in the flight sims, only a button to centre the view.'}" />
+                                <!-- The answers wrap: a narrow column cut them off (final novice review F08). -->
+                                <RadioButton x:Name="HeadTrackingYesRadio" GroupName="HeadTracking" IsChecked="{Binding HeadTrackingYes}">
+                                    <TextBlock Text="{l:T 'Yes – I use head tracking, face tracking, Tobii or VR, or I plan to (no view buttons on the HOTAS)'}" TextWrapping="Wrap" />
+                                </RadioButton>
+                                <RadioButton x:Name="HeadTrackingNoRadio" GroupName="HeadTracking" IsChecked="{Binding HeadTrackingNo}">
+                                    <TextBlock Text="{l:T 'No – put looking around on a hat of my stick or throttle'}" TextWrapping="Wrap" />
+                                </RadioButton>
+                            </StackPanel>
+                        </Border>
                         <Border Classes="surface">
                             <StackPanel Spacing="8">
-                                <TextBlock Classes="h2" Text="{l:T 'Like the real aircraft?'}" />
-                                <TextBlock TextWrapping="Wrap" Opacity="0.85" Text="{l:T 'How much should your stick work like the real aircraft\'s stick?'}" />
+                                <TextBlock Classes="h2" Text="{l:T 'Where should functions go?'}" />
+                                <TextBlock TextWrapping="Wrap" Opacity="0.85" Text="{l:T 'Should a button do the same job in every aircraft, or what the real aircraft has at that place?'}" />
                                 <Slider Minimum="0" Maximum="100" Value="{Binding Realism}" TickFrequency="10" IsSnapToTickEnabled="True" />
                                 <Grid ColumnDefinitions="*,*">
-                                    <TextBlock Text="{l:T 'Group by function'}" Classes="caption" />
-                                    <TextBlock Grid.Column="1" Text="{l:T 'Like the real aircraft'}" Classes="caption" HorizontalAlignment="Right" />
+                                    <TextBlock Text="{l:T 'Same button for the same job in every aircraft'}" Classes="caption" />
+                                    <TextBlock Grid.Column="1" Text="{l:T 'Where the real aircraft has it'}" Classes="caption" HorizontalAlignment="Right" />
                                 </Grid>
                                 <TextBlock Text="{Binding Realism, StringFormat='{}{0:0} %'}" FontWeight="SemiBold" />
                                 <TextBlock Text="{Binding RealismText}" TextWrapping="Wrap" Opacity="0.85" />
+                                <TextBlock Text="{l:T 'It follows the real HOTAS only on devices whose buttons JoyPro knows by their real role; on other devices it changes little.'}" TextWrapping="Wrap" Opacity="0.7" Classes="caption" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -248,7 +350,7 @@
             </Grid>
 
             <!-- 4 Plan -->
-            <Grid IsVisible="{Binding IsPlanStep}" ColumnDefinitions="3*,2*" ColumnSpacing="16">
+            <Grid IsVisible="{Binding ShowsPlanStep}" ColumnDefinitions="3*,2*" ColumnSpacing="16">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,10">
                         <TextBlock Text="{Binding PlanHeadline}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" TextWrapping="Wrap" />
@@ -313,33 +415,36 @@
             <Grid IsVisible="{Binding IsReviewStep}" RowDefinitions="Auto,*" ColumnDefinitions="3*,2*" ColumnSpacing="16" RowSpacing="8">
                 <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="10">
                     <TextBlock Text="{l:T 'Device:'}" VerticalAlignment="Center" />
-                    <ComboBox Width="380" ItemsSource="{Binding ReviewDevices}" SelectedItem="{Binding SelectedReviewDevice}" />
-                    <TextBlock Text="{l:T 'Aircraft:'}" VerticalAlignment="Center" />
-                    <ComboBox Width="300" ItemsSource="{Binding ReviewAircraft}" SelectedItem="{Binding SelectedReviewAircraft}" />
-                    <Button Content="{l:T 'Open the sheet'}" Command="{Binding OpenSheetCommand}" IsEnabled="{Binding HasSheet}" ToolTip.Tip="{l:T 'The sheet full size in your picture viewer (to print it)'}" />
+                    <ComboBox MinWidth="380" MaxWidth="620" ItemsSource="{Binding ReviewDevices}" SelectedItem="{Binding SelectedReviewDevice}" />
+                    <TextBlock Text="{l:T 'Aircraft:'}" VerticalAlignment="Center" IsVisible="{Binding ShowsAircraftChoice}" />
+                    <ComboBox Width="300" ItemsSource="{Binding ReviewAircraft}" SelectedItem="{Binding SelectedReviewAircraft}" IsVisible="{Binding ShowsAircraftChoice}" />
+                    <Button x:Name="OpenSheetButton" Content="{Binding OpenSheetText}" Command="{Binding OpenSheetCommand}" IsEnabled="{Binding HasSheet}" ToolTip.Tip="{l:T 'The sheet full size in your picture viewer (to print it)'}" />
+                    <Button x:Name="ChangeSomethingButton" Content="{Binding ChangeSomethingText}" Command="{Binding ToggleChangeSomethingCommand}" IsVisible="{Binding QuickMode}"
+                            ToolTip.Tip="{l:T 'Shows the tools to move, swap or leave out a function, and why each one sits where it is'}" />
                 </StackPanel>
-                <Border Grid.Row="1" Classes="sunken">
+                <Border Grid.Row="1" Classes="sunken" IsVisible="{Binding ShowsSheetPanel}">
                     <Panel>
                         <Image Source="{Binding SheetImage}" Stretch="Uniform" IsVisible="{Binding HasSheet}" Margin="4" />
                         <TextBlock Text="{Binding SheetNote}" Margin="12" TextWrapping="Wrap" IsVisible="{Binding !HasSheet}" />
                     </Panel>
                 </Border>
-                <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="2*,Auto,*">
-                    <ListBox ItemsSource="{Binding ReviewRows}" SelectedItem="{Binding SelectedRow}">
+                <Grid Grid.Row="1" Grid.Column="{Binding ReviewListColumn}" Grid.ColumnSpan="{Binding ReviewListSpan}" RowDefinitions="2*,Auto,*">
+                    <ListBox x:Name="ReviewList" ItemsSource="{Binding ReviewRows}" SelectedItem="{Binding SelectedRow}" Grid.RowSpan="{Binding ReviewListRowSpan}">
                         <ListBox.ItemTemplate>
                             <DataTemplate x:DataType="models:SetupReviewRow">
-                                <Grid ColumnDefinitions="110,*" ColumnSpacing="8">
+                                <Grid ColumnDefinitions="140,*" ColumnSpacing="8">
                                     <TextBlock Text="{Binding Input}" FontWeight="SemiBold" TextWrapping="Wrap" />
                                     <StackPanel Grid.Column="1">
                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                        <TextBlock Text="{Binding Control}" Classes="muted" TextWrapping="Wrap" />
-                                        <TextBlock Text="{Binding Reason}" Opacity="0.75" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Control}" Classes="muted" TextWrapping="Wrap" IsVisible="{Binding Control, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <TextBlock Text="{Binding Reason}" Opacity="0.75" TextWrapping="Wrap"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:SetupWizardViewModel)DataContext).ShowsChangeTools, FallbackValue=True}" />
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Border Grid.Row="1" Classes="surface tight" Margin="0,8">
+                    <Border Grid.Row="1" Classes="surface tight" Margin="0,8" IsVisible="{Binding ShowsChangeTools}">
                         <StackPanel Spacing="6">
                             <TextBlock Text="{l:T 'Change the selected function'}" FontWeight="SemiBold" />
                             <StackPanel Orientation="Horizontal" Spacing="6">
@@ -356,7 +461,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Border>
-                    <DockPanel Grid.Row="2">
+                    <DockPanel Grid.Row="2" IsVisible="{Binding ShowsChangeTools}">
                         <TextBlock DockPanel.Dock="Top" Classes="h3" Text="{l:T 'Not placed (most important first)'}" Margin="0,0,0,4" />
                         <ListBox ItemsSource="{Binding NotPlaced}" SelectedItem="{Binding SelectedNotPlaced}">
                             <ListBox.ItemTemplate>
@@ -377,11 +482,16 @@
         <Grid x:Name="WizardFooter" Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
             <TextBlock Text="{Binding Status}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0" />
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button Content="{l:T 'Back'}" Command="{Binding BackCommand}" IsEnabled="{Binding CanGoBack}" />
-                <Button Content="{Binding NextText}" Command="{Binding NextCommand}" IsEnabled="{Binding CanGoNext}" IsVisible="{Binding !IsReviewStep}" Classes="accent" />
-                <Button Content="{l:T 'Apply to my profile'}" Command="{Binding ApplyCommand}" IsVisible="{Binding IsReviewStep}" IsEnabled="{Binding !IsWorking}" Classes="accent"
-                        ToolTip.Tip="{l:T 'Writes the relations and binds into your profile in one step (Undo takes all of it back)'}" />
-                <Button Content="{l:T 'Export to my games'}" Command="{Binding ExportCommand}" IsVisible="{Binding Applied}" />
+                <Button Content="{l:T 'Back'}" Command="{Binding BackCommand}" IsEnabled="{Binding CanGoBack}" IsVisible="{Binding ShowsBack}" />
+                <Button Content="{Binding NextText}" Command="{Binding NextCommand}" IsEnabled="{Binding CanGoNext}" IsVisible="{Binding ShowsNext}" Classes="accent" />
+                <Button x:Name="QuickAircraftNextButton" Content="{l:T 'Next'}" Command="{Binding QuickAircraftNextCommand}" IsEnabled="{Binding !IsWorking}"
+                        IsVisible="{Binding QuickAsksAircraft}" Classes="accent" ToolTip.Tip="{l:T 'JoyPro sets up the buttons of the ticked aircraft'}" />
+                <Button Content="{l:T 'Where is what?'}" Command="{Binding ShowLayoutPreviewCommand}" IsVisible="{Binding IsReviewStep}" IsEnabled="{Binding !IsWorking}"
+                        ToolTip.Tip="{l:T 'Shows your stick and throttle with the function on each control, per game and aircraft'}" />
+                <Button x:Name="WizardApplyButton" Content="{Binding ApplyText}" Command="{Binding ApplyCommand}" IsVisible="{Binding IsReviewStep}" IsEnabled="{Binding CanApply}"
+                        Classes.accent="{Binding !Applied}" ToolTip.Tip="{Binding ApplyTip}" />
+                <Button x:Name="WizardExportButton" Content="{Binding ExportText}" Command="{Binding ExportCommand}" IsVisible="{Binding Applied}" Classes="accent"
+                        ToolTip.Tip="{Binding ExportTip}" />
                 <Button Content="{l:T 'Close'}" Click="CloseClicked" />
             </StackPanel>
         </Grid>

@@ -91,9 +91,9 @@ XPlane11	target_management_system_up	sim/weapons/weapon_target_up	new	stick	freq
 XPlane11	tdc_horizontal	axis/gun_bomb_left_right	new	stick	occasional	gun/bomb sight left-right axis
 XPlane11	tdc_vertical	axis/gun_bomb_up_down	new	stick	occasional	gun/bomb sight up-down axis
 XPlane11	throttleleft	axis/throttle_1	new	throttle	frequent	throttle: engine 1 lever axis
-XPlane11	throttleleftnonab	axis/collective	new	collective	constant	collective: collective axis (use code 5)
+XPlane11	throttlerightnonab	axis/collective	new	collective	constant	collective: helicopter collective axis (use code 5)
 XPlane11	throttleright	axis/throttle_2	new	throttle	frequent	throttle: engine 2 lever axis
-XPlane11	throttlerightnonab	axis/throttle	new	throttle	constant	throttle: all-engine throttle axis (use code 4)
+XPlane11	throttleleftnonab	axis/throttle	new	throttle	constant	throttle: all-engine throttle axis (use code 4), the one lever every aircraft flies with
 XPlane11	trigger1ststage	sim/weapons/fire_guns	new	stick	frequent	stick: trigger first stage (guns)
 XPlane11	trigger2ndstage	sim/weapons/fire_any_armed	new	stick	frequent	stick: trigger second stage (all armed weapons)
 XPlane11	trim_nosedown	sim/flight_controls/pitch_trim_down	new	stick	frequent	trim hat: nose down
@@ -105,3 +105,119 @@ XPlane11	ufc_iff	sim/transponder/transponder_ident	new	panel	occasional	transpon
 XPlane11	ufc_mastercaution	sim/annunciator/clear_master_caution	new	panel	occasional	clear master caution
 XPlane11	wheelbrakeleftanalog	axis/left_toe_brake	new	pedals	constant	pedals: left toe brake axis
 XPlane11	wheelbrakerightanalog	axis/right_toe_brake	new	pedals	constant	pedals: right toe brake axis
+XPlane11	wheelbrakes_button	sim/flight_controls/brakes_regular	new	stick	frequent	stick: regular brakes (hold), when there are no toe brakes
+XPlane11	apu_stop	sim/electrical/APU_off	new	panel	occasional	profile style 2026-11-04
+XPlane11	airbrake_axis	axis/speedbrakes	new	none	occasional	profile style 2026-11-04
+XPlane11	altimeter_baro_std	sim/instruments/barometer_2992	new	panel	occasional	profile style 2026-11-04
+XPlane11	altimeter_baro	sim/instruments/barometer_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	altimeter_baro_2	sim/instruments/barometer_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	anti_ice_engine	sim/ice/inlet_heat_tog	new	panel	occasional	profile style 2026-11-04
+XPlane11	anti_ice_propeller	sim/ice/prop_heat_tog	new	panel	occasional	profile style 2026-11-04
+XPlane11	anti_ice_windshield	sim/ice/window_heat_tog	new	panel	occasional	profile style 2026-11-04
+XPlane11	anti_ice_wing	sim/ice/wing_heat_tog	new	panel	occasional	profile style 2026-11-04
+XPlane11	autobrake	sim/flight_controls/brakes_up_auto	new	panel	occasional	profile style 2026-11-04
+XPlane11	autobrake_2	sim/flight_controls/brakes_dn_auto	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_approach	sim/autopilot/approach	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_back_course	sim/autopilot/back_course	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_course_down	sim/radios/obs1_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_course_up	sim/radios/obs1_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_flight_director	sim/autopilot/fdir_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_flight_level_change	sim/autopilot/level_change	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_localizer	sim/autopilot/NAV	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_master	sim/autopilot/servos_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_speed_down	sim/autopilot/airspeed_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_speed_up	sim/autopilot/airspeed_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_vs_down	sim/autopilot/vertical_speed_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_vs_up	sim/autopilot/vertical_speed_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_vertical_speed	sim/autopilot/vertical_speed	new	panel	occasional	profile style 2026-11-04
+XPlane11	autopilot_yaw_damper	sim/systems/yaw_damper_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	autothrottle_disconnect	sim/autopilot/autothrottle_off	new	panel	occasional	profile style 2026-11-04
+XPlane11	autothrottle_toga	sim/autopilot/take_off_go_around	new	panel	occasional	profile style 2026-11-04
+XPlane11	com1_swap	sim/radios/com1_standy_flip	new	panel	occasional	profile style 2026-11-04
+XPlane11	canopy_toggle	sim/flight_controls/canopy_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	eject	sim/flight_controls/eject	new	panel	occasional	profile style 2026-11-04
+XPlane11	electrics_alternator	sim/electrical/generators_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	electrics_avionics_master	sim/systems/avionics_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	electrics_battery	sim/electrical/batteries_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	f14_wing_sweep_aft	sim/flight_controls/vector_sweep_aft	new	throttle	frequent	profile style 2026-11-04
+XPlane11	f14_wing_sweep_fwd	sim/flight_controls/vector_sweep_forward	new	throttle	frequent	profile style 2026-11-04
+XPlane11	fire_extinguisher	sim/engines/fire_ext_1_on	new	panel	occasional	profile style 2026-11-04
+XPlane11	firefighting_scoop	sim/flight_controls/water_scoop_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	flaps_axis	axis/flaps	new	none	occasional	profile style 2026-11-04
+XPlane11	fuel_pump	sim/fuel/fuel_pumps_tog	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_clr	sim/GPS/g1000n3_clr	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_directto	sim/GPS/g1000n3_direct	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_ent	sim/GPS/g1000n3_ent	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_fpl	sim/GPS/g1000n3_fpl	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_menu	sim/GPS/g1000n3_menu	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_proc	sim/GPS/g1000n3_proc	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_rbd	sim/GPS/g1000n3_fms_outer_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_rbi	sim/GPS/g1000n3_fms_outer_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_rngdown	sim/GPS/g1000n3_range_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_rngup	sim/GPS/g1000n3_range_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_rsd	sim/GPS/g1000n3_fms_inner_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_rsi	sim/GPS/g1000n3_fms_inner_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_rsp	sim/GPS/g1000n3_cursor	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk1	sim/GPS/g1000n3_softkey1	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk10	sim/GPS/g1000n3_softkey10	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk11	sim/GPS/g1000n3_softkey11	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk12	sim/GPS/g1000n3_softkey12	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk2	sim/GPS/g1000n3_softkey2	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk3	sim/GPS/g1000n3_softkey3	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk4	sim/GPS/g1000n3_softkey4	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk5	sim/GPS/g1000n3_softkey5	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk6	sim/GPS/g1000n3_softkey6	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk7	sim/GPS/g1000n3_softkey7	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk8	sim/GPS/g1000n3_softkey8	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_mfd_sk9	sim/GPS/g1000n3_softkey9	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk1	sim/GPS/g1000n1_softkey1	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk10	sim/GPS/g1000n1_softkey10	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk11	sim/GPS/g1000n1_softkey11	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk12	sim/GPS/g1000n1_softkey12	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk2	sim/GPS/g1000n1_softkey2	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk3	sim/GPS/g1000n1_softkey3	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk4	sim/GPS/g1000n1_softkey4	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk5	sim/GPS/g1000n1_softkey5	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk6	sim/GPS/g1000n1_softkey6	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk7	sim/GPS/g1000n1_softkey7	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk8	sim/GPS/g1000n1_softkey8	new	panel	occasional	profile style 2026-11-04
+XPlane11	g1000_pfd_sk9	sim/GPS/g1000n1_softkey9	new	panel	occasional	profile style 2026-11-04
+XPlane11	gear_emergency_extend	sim/flight_controls/landing_gear_emer_on	new	panel	occasional	profile style 2026-11-04
+XPlane11	gear_hand_pump	sim/flight_controls/pump_gear	new	panel	occasional	profile style 2026-11-04
+XPlane11	lights_in_flood_2	sim/instruments/panel_bright_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	lights_in_flood	sim/instruments/panel_bright_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	lights_in_flood1_2	sim/instruments/instrument_bright_up	new	panel	occasional	profile style 2026-11-04
+XPlane11	lights_in_flood1	sim/instruments/instrument_bright_down	new	panel	occasional	profile style 2026-11-04
+XPlane11	magnetos	sim/magnetos/magnetos_up_1	new	panel	occasional	profile style 2026-11-04
+XPlane11	magnetos_2	sim/magnetos/magnetos_down_1	new	panel	occasional	profile style 2026-11-04
+XPlane11	magnetos_both	sim/magnetos/magnetos_both	new	panel	occasional	profile style 2026-11-04
+XPlane11	magnetos_l	sim/magnetos/magnetos_left_1	new	panel	occasional	profile style 2026-11-04
+XPlane11	magnetos_off	sim/magnetos/magnetos_off	new	panel	occasional	profile style 2026-11-04
+XPlane11	magnetos_r	sim/magnetos/magnetos_right_1	new	panel	occasional	profile style 2026-11-04
+XPlane11	nav1_swap	sim/radios/nav1_standy_flip	new	panel	occasional	profile style 2026-11-04
+XPlane11	nosewheel_steering_axis	axis/nosewheel_tiller	new	none	occasional	profile style 2026-11-04
+XPlane11	nozzle_angle_mixture_control	axis/thrust_vector	new	throttle	occasional	profile style 2026-11-04
+XPlane11	pitot_heat	sim/ice/pitot_heat0_tog	new	panel	occasional	profile style 2026-11-04
+XPlane11	rotor_brake	sim/flight_controls/rotor_brake_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	rotor_clutch	sim/engines/clutch_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	rotor_governor	sim/engines/governor_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	target_management_system_left	sim/autopilot/heading_down	new	stick	frequent	profile style 2026-11-04
+XPlane11	target_management_system_right	sim/autopilot/heading_up	new	stick	frequent	profile style 2026-11-04
+XPlane11	tow_release	sim/flight_controls/glider_tow_release	new	panel	occasional	profile style 2026-11-04
+XPlane11	trim_axis_aileron	axis/aileron_trim	new	none	occasional	profile style 2026-11-04
+XPlane11	trim_axis_elevator	axis/elevator_trim	new	none	occasional	profile style 2026-11-04
+XPlane11	trim_axis_rudder	axis/rudder_trim	new	none	occasional	profile style 2026-11-04
+XPlane11	trimreset	sim/flight_controls/aileron_trim_center	new	stick	occasional	profile style 2026-11-04
+XPlane11	trimreset	sim/flight_controls/rudder_trim_center	new	stick	occasional	profile style 2026-11-04
+XPlane11	trimrudderleft	sim/flight_controls/rudder_trim_left	new	panel	occasional	profile style 2026-11-04
+XPlane11	trimrudderright	sim/flight_controls/rudder_trim_right	new	panel	occasional	profile style 2026-11-04
+XPlane11	water_rudder	sim/flight_controls/water_rudder_toggle	new	panel	occasional	profile style 2026-11-04
+XPlane11	yaw_left_button	sim/flight_controls/rudder_lft	new	panel	occasional	profile style 2026-11-04
+XPlane11	yaw_right_button	sim/flight_controls/rudder_rgt	new	panel	occasional	profile style 2026-11-04
+XPlane11	electrics_battery_on	sim/electrical/battery_1_on	new	panel	occasional	panel: labelled switch position (round 4)
+XPlane11	electrics_battery_off	sim/electrical/battery_1_off	new	panel	occasional	panel: labelled switch position (round 4)
+XPlane11	electrics_alternator_on	sim/electrical/generator_1_on	new	panel	occasional	panel: labelled switch position (round 4)
+XPlane11	electrics_alternator_off	sim/electrical/generator_1_off	new	panel	occasional	panel: labelled switch position (round 4)
+XPlane11	electrics_avionics_on	sim/systems/avionics_on	new	panel	occasional	panel: labelled switch position (round 4)
+XPlane11	electrics_avionics_off	sim/systems/avionics_off	new	panel	occasional	panel: labelled switch position (round 4)
+XPlane11	autopilot_heading_hold	sim/autopilot/heading	new	panel	occasional	panel: labelled switch position (round 4)

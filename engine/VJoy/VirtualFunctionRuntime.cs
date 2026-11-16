@@ -61,6 +61,9 @@ namespace JoyPro.Engine.VJoy
         public ushort XboxOwnedButtons;
         public readonly double[] XboxAxes = new double[6];
         public readonly bool[] XboxAxisOwned = new bool[6];
+        // A pad axis a button output drives (pressed = full, e.g. a High-G turn button on both triggers): it adds to the
+        // table's value (the larger one wins) instead of replacing it, so the throttle on the triggers keeps working.
+        public readonly bool[] XboxAxisAdds = new bool[6];
 
         private readonly Dictionary<string, VfFunction> compiledById = new Dictionary<string, VfFunction>(StringComparer.OrdinalIgnoreCase);
         private HashSet<string> chainedOutputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -599,6 +602,8 @@ namespace JoyPro.Engine.VJoy
             string kind = function == null ? "button" : VirtualFunctionCatalog.OutputKind(function, role);
             compiled.Class = kind == "axis" ? ClassAxis : kind == "hat" ? ClassHat : ClassButton;
             compiled.Level = compiled.Class == ClassAxis ? 0.5 : 0.0;
+            if (compiled.Kind == OutXAxis && compiled.Class != ClassAxis && compiled.Index >= 4)
+                XboxAxisAdds[compiled.Index] = true;
             // An output another function reads works without a virtual target (internal).
             if (compiled.Kind == OutNone && function != null && chainedOutputs.Contains((function.Id ?? string.Empty) + "|" + (role ?? string.Empty).ToLowerInvariant()))
                 compiled.Kind = OutInternal;
@@ -914,6 +919,7 @@ namespace JoyPro.Engine.VJoy
                 case VirtualFunctionCatalog.Curve: compiled = new CurveFunction(rt, function); break;
                 case VirtualFunctionCatalog.AxesHat: compiled = new AxesHatFunction(rt, function); break;
                 case VirtualFunctionCatalog.ButtonsAxis: compiled = new ButtonsAxisFunction(rt, function); break;
+                case VirtualFunctionCatalog.HatAxes: compiled = new HatAxesFunction(rt, function); break;
                 case VirtualFunctionCatalog.Encoder: compiled = new EncoderFunction(rt, function); break;
                 case VirtualFunctionCatalog.Turbo: compiled = new TurboFunction(rt, function); break;
                 case VirtualFunctionCatalog.Macro: compiled = new MacroFunction(rt, function); break;
@@ -1539,6 +1545,42 @@ namespace JoyPro.Engine.VJoy
         }
     }
 
+    // A hat as two axes (camera look on a hat when no thumb stick is free): a direction holds its axis out by the
+    // deflection while held, a diagonal both; centred = both in the middle. Y follows DirectInput (up = smaller), like
+    // every axis JoyPro reads, so on the Xbox pad hat up is the stick pushed up (MergeFunctions turns Y over).
+    internal sealed class HatAxesFunction : VfFunction
+    {
+        private static readonly int[] StepX = { 0, 1, 1, 1, 0, -1, -1, -1 };
+        private static readonly int[] StepY = { -1, -1, 0, 1, 1, 1, 0, -1 };
+        private readonly VfIn hat;
+        private readonly double deflection;
+
+        public HatAxesFunction(VfRuntime rt, VirtualFunction f)
+        {
+            hat = rt.MakeInput(f.InputOf("hat"));
+            deflection = Math.Min(1.0, Math.Max(0.05, f.Param("deflection", 1.0)));
+            AddOut(rt, f, "x");
+            AddOut(rt, f, "y");
+            Finish();
+        }
+
+        internal override void Tick(VfRuntime rt, long now)
+        {
+            uint value = rt.Hat(hat);
+            int direction = value == VfRuntime.HatCentred ? -1 : VfRuntime.Direction8(value);
+            State = direction;
+            Input = direction < 0 ? 0 : 1;
+            double x = direction < 0 ? 0.5 : 0.5 + StepX[direction] * deflection / 2;
+            double y = direction < 0 ? 0.5 : 0.5 + StepY[direction] * deflection / 2;
+            rt.SetAxis(Outs[0], x);
+            rt.SetAxis(Outs[1], y);
+            if (direction >= 0 && StepX[direction] != 0)
+                MarkAxis(0);
+            if (direction >= 0 && StepY[direction] != 0)
+                MarkAxis(1);
+        }
+    }
+
     // Incremental axis from two buttons (rate in travel per second); "back to start" and an optional spring back.
     internal sealed class ButtonsAxisFunction : VfFunction
     {
@@ -1794,6 +1836,9 @@ namespace JoyPro.Engine.VJoy
             }
             List<KeyValuePair<long, KeyValuePair<int, bool>>> events = new List<KeyValuePair<long, KeyValuePair<int, bool>>>();
             long cursor = 0;
+            // "Pressed together": every step starts at the same moment (its delay ignored) and lets go after its own hold
+            // time, a chord such as L3 + R3.
+            bool together = f.Param("together", 0) >= 0.5;
             foreach (VfStep step in f.Steps ?? new List<VfStep>())
             {
                 string name = (step.Output ?? string.Empty).Trim();
@@ -1806,14 +1851,18 @@ namespace JoyPro.Engine.VJoy
                     target = AddOut(rt.MakeKey(scan), name.ToUpperInvariant());
                     byRole[name] = target;
                 }
-                cursor += Math.Max(0, step.DelayMs) * 1000L;
+                if (!together)
+                    cursor += Math.Max(0, step.DelayMs) * 1000L;
+                long at = cursor;
                 string action = (step.Action ?? "tap").Trim().ToLowerInvariant();
                 if (action == "press" || action == "tap")
-                    events.Add(new KeyValuePair<long, KeyValuePair<int, bool>>(cursor, new KeyValuePair<int, bool>(target, true)));
+                    events.Add(new KeyValuePair<long, KeyValuePair<int, bool>>(at, new KeyValuePair<int, bool>(target, true)));
                 if (action == "tap")
-                    cursor += Math.Max(1, step.HoldMs) * 1000L;
+                    at += Math.Max(1, step.HoldMs) * 1000L;
                 if (action == "release" || action == "tap")
-                    events.Add(new KeyValuePair<long, KeyValuePair<int, bool>>(cursor, new KeyValuePair<int, bool>(target, false)));
+                    events.Add(new KeyValuePair<long, KeyValuePair<int, bool>>(at, new KeyValuePair<int, bool>(target, false)));
+                if (!together)
+                    cursor = at;
             }
             Finish();
             // Stable by time: the order of the steps stays for events at the same time.
@@ -2618,6 +2667,8 @@ namespace JoyPro.Engine.VJoy
                     return "100:trigger=1; 200:trigger=0";
                 case VirtualFunctionCatalog.HatButtons:
                     return "100:hat=0; 300:hat=45; 500:hat=90; 700:hat=-1; 900:hat=225; 1100:hat=-1";
+                case VirtualFunctionCatalog.HatAxes:
+                    return "100:hat=0; 400:hat=-1; 600:hat=90; 900:hat=-1; 1100:hat=225; 1400:hat=-1";
                 case VirtualFunctionCatalog.ButtonsHat:
                     return "100:up=1; 300:right=1; 500:up=0; 700:right=0; 900:left=1; 1100:left=0";
                 case VirtualFunctionCatalog.Remap:

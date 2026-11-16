@@ -144,7 +144,8 @@ public sealed class QualityGateCatalogTests
                 bool found = vm.BuilderSearchResults.Any(r => string.Equals(r.Game, game, StringComparison.OrdinalIgnoreCase));
                 if (!found)
                     Gate.Fail("I3", "a catalog title of the game does not find the game in the search", game, "'" + Gate.Short(sample.Display, 60) + "'",
-                        vm.BuilderSearchResults.Count + " results in " + vm.BuilderSearchGames.Count + " games; status: " + Gate.Short(vm.BuilderSearchStatus, 100));
+                        vm.BuilderSearchResults.Count + " results in " + vm.BuilderSearchGames.Count + " games (" +
+                        string.Join(", ", vm.BuilderSearchResults.Select(r => r.Game + ":" + r.Title).Distinct().Take(4)) + "); status: " + Gate.Short(vm.BuilderSearchStatus, 100));
             }
         });
         Gate.Finish("I3");

@@ -20,7 +20,7 @@ namespace JoyPro.Engine.Games
     //    reads the input assets from the installed game's IoStore container (UnrealIoStore) with the game's own Oodle
     //    library, or, only with the user's consent (--oodle-dll), one another installed game ships (FindOodle,
     //    AllowedForeignOodle); the build of 2026-10 ships none, so without a yes the table is used.
-    internal sealed class HllVietnamIntegration : IGameIntegration, IGameGamepadLayout, IGameDeviceLimit
+    internal sealed class HllVietnamIntegration : IGameIntegration, IGameGamepadLayout, IGameDeviceLimit, IGameBuiltInCatalog
     {
         public int MaxJoysticks { get { return 0; } }
         public string SuggestedMode { get { return "xbox"; } }
@@ -363,6 +363,13 @@ namespace JoyPro.Engine.Games
             }
             catalog.GameId = GameId;
             return catalog;
+        }
+
+        // Before engine hllv refresh-db wrote a catalog: the built-in table, so the Setup wizard and Auto Group find the pad's
+        // helicopter axes (DB/Functions/HLLVietnam.tsv) on a fresh install too.
+        GameCatalog IGameBuiltInCatalog.BuiltInCatalog()
+        {
+            return BuiltInCatalog();
         }
 
         public static GameCatalog BuiltInCatalog()

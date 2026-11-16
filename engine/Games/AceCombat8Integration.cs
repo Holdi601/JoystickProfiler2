@@ -16,7 +16,7 @@ namespace JoyPro.Engine.Games
     //  - the catalog (engine ac8 refresh-db) holds one "Pad_*" action per gamepad control with that key in the 5th
     //    column, so the virtual-pad planner pins the HOTAS input to the control the game uses. The sticks (pitch, roll,
     //    camera) are fixed in the game and come from JoyPro's own table.
-    internal sealed class AceCombat8Integration : IGameIntegration, IGameDeviceLimit, IGameBuiltInCatalog
+    internal sealed class AceCombat8Integration : IGameIntegration, IGameDeviceLimit, IGameBuiltInCatalog, IGamePadConventions
     {
         public string GameId { get { return "AceCombat8"; } }
         public string DisplayName { get { return "ACE COMBAT 8: Wings of Theve"; } }
@@ -44,6 +44,53 @@ namespace JoyPro.Engine.Games
         public string DeviceLimitNote { get { return "Reads Xbox controllers (XInput) and a few licensed sticks, no generic joystick: fly it with the virtual Xbox pad."; } }
         public IReadOnlyList<string> AvoidVJoyAxes { get { return new string[0]; } }
 
+        // Flares: L3 + R3 pressed together. UNCONFIRMED (not checked in game yet,
+        // docs/games/ace-combat.md): JoyPro maps it from the user's flare / CMS forward relation as a 120 ms chord.
+        private static readonly PadChord[] Chords =
+        {
+            new PadChord { Name = "Flares", Functions = new[] { "flare", "cms_switch:fwd", "cm_dispense" }, Controls = new[] { "XB_LS", "XB_RS" }, HoldMs = 120, Confirmed = false,
+                NodeIds = new[] { "AceCombat8:Pad_Flares" } }
+        };
+
+        public IReadOnlyList<PadChord> PadChords { get { return Chords; } }
+
+        // The D-pad gives the wingmen their orders: fed from the user's comm switch or AI-menu hat.
+        public IReadOnlyList<string> DPadFunctions { get { return new[] { "wingman", "comm_menu", "comm_switch" }; } }
+
+        // High-G turn: both triggers fully pressed together (the game's controller help). A button of the user's relation
+        // named "High-G" holds them; the throttle on the triggers keeps working (the larger value wins).
+        private static readonly PadChord[] Holds =
+        {
+            new PadChord { Name = "High-G turn", Functions = new string[0], Controls = new[] { "XB_LT", "XB_RT" }, HoldMs = 0, Confirmed = true, NamePattern = "high.?g",
+                // The "Cobra button": DCS's ASC Direct Control (Su-27, Su-33, J-11A). Not F-16 MPO or the Mirage switches.
+                NodeIds = new[] { "DCS:d121pnilunilcdnilvdnilvpnilvunil", "AceCombat8:Pad_HighGTurn" } }
+        };
+
+        public IReadOnlyList<PadChord> PadHolds { get { return Holds; } }
+
+        // Fly and fight: what pad-check (and the Setup wizard's pad persona) asks for besides the throttle on the triggers.
+        private static readonly string[][] Essentials =
+        {
+            new[] { "pitch", "Pad_Pitch" }, new[] { "roll", "Pad_Roll" }, new[] { "gun", "Pad_FireMachineGun" },
+            new[] { "missile", "Pad_FireMissile" }, new[] { "target", "Pad_SwitchTarget" }
+        };
+
+        public IReadOnlyList<string[]> PadEssentials { get { return Essentials; } }
+
+        // Look around: the right stick. Without an axis on it (no free ministick), the pad's auto setup puts it on a free
+        // hat (the owner, 2026-11-14: "on the topmost hat of my stick").
+        private static readonly string[] LookActions = { "Pad_CameraYaw", "Pad_CameraPitch" };
+
+        public IReadOnlyList<string> PadLookActions { get { return LookActions; } }
+
+        // Pitch: with the game's default "Pitch Controls" setting the pad stick pushed up pitches the nose up (checked
+        // in game, 2026-11-14), so a HOTAS stick pushed forward must give the pad stick down: Pad_Pitch is reversed by
+        // default. With "Pitch Controls: Inverted" in the game, untick Invert for ACE COMBAT 8 in Axis response.
+        public bool? PadInvertDefault(string action)
+        {
+            return string.Equals(action, "Pad_Pitch", StringComparison.OrdinalIgnoreCase) ? true : (bool?)null;
+        }
+
         public const string PadPrefix = "Pad_";
         private const string ControllerSuffix = "Key_Controller";
 
@@ -54,7 +101,16 @@ namespace JoyPro.Engine.Games
             new[] { "Pad_Pitch", "Pitch (left stick up/down)", "axis", "Gamepad_LeftY" },
             new[] { "Pad_Roll", "Roll (left stick left/right)", "axis", "Gamepad_LeftX" },
             new[] { "Pad_CameraYaw", "Look left/right (right stick)", "axis", "Gamepad_RightX" },
-            new[] { "Pad_CameraPitch", "Look up/down (right stick)", "axis", "Gamepad_RightY" }
+            new[] { "Pad_CameraPitch", "Look up/down (right stick)", "axis", "Gamepad_RightY" },
+            // The D-pad gives the wingmen their orders (the owner, 2026-11-14): the user's comm switch drives it.
+            new[] { "Pad_WingmanUp", "Wingman order up (D-pad up)", "button", "Gamepad_DPad_Up" },
+            new[] { "Pad_WingmanDown", "Wingman order down (D-pad down)", "button", "Gamepad_DPad_Down" },
+            new[] { "Pad_WingmanLeft", "Wingman order left (D-pad left)", "button", "Gamepad_DPad_Left" },
+            new[] { "Pad_WingmanRight", "Wingman order right (D-pad right)", "button", "Gamepad_DPad_Right" },
+            // Two controls at once, no pad key of their own: the pad's auto setup presses them for the relation's button
+            // (PadChords: flares = L3 + R3, unconfirmed; PadHolds: High-G turn = LT + RT full).
+            new[] { "Pad_Flares", "Flares (left + right stick click, not confirmed in game)", "button", "" },
+            new[] { "Pad_HighGTurn", "High-G turn (both triggers full)", "button", "" }
         };
 
         // The player-mappable gamepad keys (System.sav <Name>Key_Controller) with their defaults (build of 2026-10).

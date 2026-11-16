@@ -52,7 +52,9 @@ public sealed partial class MainWindowViewModel
         ["XPlane12"] = "X-Plane 12",
         ["XPlane11"] = "X-Plane 11",
         ["MSFS2024"] = "MSFS 2024",
-        ["MSFS2020"] = "MSFS 2020"
+        ["MSFS2020"] = "MSFS 2020",
+        ["AceCombat8"] = "ACE COMBAT 8",
+        ["HLLVietnam"] = "Hell Let Loose: Vietnam"
     };
 
     public ObservableCollection<AxisTuningScopeItem> AxisTuningScopes { get; } = [];
@@ -130,7 +132,7 @@ public sealed partial class MainWindowViewModel
     // A ticked row (not the base) has a curve of its own to remove.
     public bool CanClearAxisTuning => AxisTuningLoaded && AxisTuningClearRows().Count > 0;
 
-    public bool CanSaveAxisTuning => AxisTuningLoaded && SelectedAxisTuningScope != null && AxisTuningValidation.Length == 0 && axisTuningHasBind;
+    public bool CanSaveAxisTuning => AxisTuningLoaded && SelectedAxisTuningScope != null && AxisTuningValidation.Length == 0 && axisTuningHasBind && !AxisTuningDetentLocked;
 
     private string axisTuningRelation = string.Empty;
     private bool axisTuningHasBind;
@@ -164,6 +166,8 @@ public sealed partial class MainWindowViewModel
     partial void OnSelectedAxisTuningScopeChanged(AxisTuningScopeItem? value)
     {
         OnPropertyChanged(nameof(AxisTuningSupportsControlPoints));
+        OnPropertyChanged(nameof(AxisTuningXboxPadNote));
+        OnPropertyChanged(nameof(HasAxisTuningXboxPadNote));
         RaiseAxisTuningCommandState();
         if (axisTuningTicking)
             return;
@@ -191,9 +195,69 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(CanCopyAxisTuning));
     }
 
+    // Multi-bind: which input of the relation the section tunes (1 = the main bind, 2.. = its other inputs, engine
+    // binds tuning --bind n); the picker shows only for an axis relation with other inputs.
+    public ObservableCollection<AxisTuningInputChoice> AxisTuningInputChoices { get; } = [];
+
+    [ObservableProperty]
+    private AxisTuningInputChoice? selectedAxisTuningInput;
+
+    private bool rebuildingAxisTuningInputs;
+
+    public bool HasAxisTuningInputChoices => AxisTuningInputChoices.Count > 1;
+
+    private int AxisTuningInputNumber => SelectedAxisTuningInput?.Number ?? 1;
+
+    // "--bind n" for an other input of the relation (nothing for the main bind: the commands as before).
+    private IEnumerable<string> AxisTuningBindArgs() =>
+        AxisTuningInputNumber > 1 ? ["--bind", AxisTuningInputNumber.ToString(CultureInfo.InvariantCulture)] : [];
+
+    // keep: the input picked before stays picked while the relation still has it (a refresh of the binds).
+    private void RebuildAxisTuningInputChoices(bool keep = false)
+    {
+        int kept = keep ? AxisTuningInputNumber : 1;
+        rebuildingAxisTuningInputs = true;
+        try
+        {
+            AxisTuningInputChoices.Clear();
+            BindListItem? bind = SelectedBind;
+            if (bind != null && SelectedBindIsAxis && bind.HasExtraBinds)
+            {
+                AxisTuningInputChoices.Add(new AxisTuningInputChoice(1, T("Input 1 (main): {0}", bind.BindLabel)));
+                foreach (ExtraBindRow extra in bind.ExtraBinds)
+                    AxisTuningInputChoices.Add(new AxisTuningInputChoice(extra.Number, extra.NumberText + ": " + extra.Label));
+            }
+            SelectedAxisTuningInput = AxisTuningInputChoices.FirstOrDefault(c => c.Number == kept) ?? AxisTuningInputChoices.FirstOrDefault();
+        }
+        finally
+        {
+            rebuildingAxisTuningInputs = false;
+        }
+        OnPropertyChanged(nameof(HasAxisTuningInputChoices));
+        // The tuned input is gone (removed or made the main input): the main input's curves load.
+        if (keep && kept != AxisTuningInputNumber && SelectedBindIsAxis && SelectedBind != null)
+        {
+            axisTuningScopesVersion++;
+            axisTuningLoadVersion++;
+            _ = LoadAxisTuningScopesAsync();
+        }
+    }
+
+    // Another input picked: its own curves load (each input has its own axis tuning).
+    partial void OnSelectedAxisTuningInputChanged(AxisTuningInputChoice? value)
+    {
+        if (rebuildingAxisTuningInputs || value == null)
+            return;
+        axisTuningScopesVersion++;
+        axisTuningLoadVersion++;
+        if (SelectedBindIsAxis && SelectedBind != null)
+            _ = LoadAxisTuningScopesAsync();
+    }
+
     // Called when the bind selection changes (not for a re-selection after a list rebuild).
     private void OnAxisTuningBindSelectionChanged()
     {
+        RebuildAxisTuningInputChoices();
         StopAxisTuningMonitor();
         axisTuningScopesVersion++;
         axisTuningLoadVersion++;
@@ -202,6 +266,9 @@ public sealed partial class MainWindowViewModel
         ClearAxisTuningRows();
         axisTuningStored = new(StringComparer.OrdinalIgnoreCase);
         axisTuningUses = new(StringComparer.OrdinalIgnoreCase);
+        axisTuningXboxPadGames = new(StringComparer.OrdinalIgnoreCase);
+        OnPropertyChanged(nameof(AxisTuningXboxPadNote));
+        OnPropertyChanged(nameof(HasAxisTuningXboxPadNote));
         AxisTuningEditors.Clear();
         ClearAxisTuningControlPoints();
         AxisTuningCurve = [];
@@ -240,7 +307,7 @@ public sealed partial class MainWindowViewModel
         }
 
         // What each game and aircraft uses today: the default ticks depend on it (aircraft with an own curve stay unticked).
-        EngineCommandResult? show = await RunEngineAsync(["binds", "tuning", "show", relation], includeProfile: true, mutatesProfile: false,
+        EngineCommandResult? show = await RunEngineAsync(["binds", "tuning", "show", relation, .. AxisTuningBindArgs()], includeProfile: true, mutatesProfile: false,
             busyLabel: N("Loading axis tuning..."), forceText: false);
         if (version != axisTuningScopesVersion)
             return;
@@ -296,7 +363,7 @@ public sealed partial class MainWindowViewModel
     // when two of their games are in the relation; one stored for the relation shows after the load too).
     internal static List<AxisTuningScopeItem> BuildAxisTuningScopes(IEnumerable<(string Game, IReadOnlyList<string> Planes)> nodes)
     {
-        List<AxisTuningScopeItem> scopes = [new AxisTuningScopeItem("base", T("All games"), "DCS", string.Empty)];
+        List<AxisTuningScopeItem> scopes = [new AxisTuningScopeItem("base", T("Default curve"), "DCS", string.Empty)];
         List<string> games = [];
         Dictionary<string, SortedSet<string>> planes = new(StringComparer.OrdinalIgnoreCase);
         foreach ((string game, IReadOnlyList<string> nodePlanes) in nodes)
@@ -338,7 +405,7 @@ public sealed partial class MainWindowViewModel
     internal static string AxisTuningScopeLabelNow(AxisTuningScopeItem item)
     {
         if (item.IsBase)
-            return T("All games");
+            return T("Default curve");
         if (item.Scope.StartsWith("game:", StringComparison.Ordinal))
             return AxisTuningGameLabel(item.Game);
         if (item.Scope.StartsWith("plane:", StringComparison.Ordinal))
@@ -360,7 +427,7 @@ public sealed partial class MainWindowViewModel
         if (item != null)
             return item.Label;
         if (scope == "base")
-            return T("All games");
+            return T("Default curve");
         string[] parts = scope.Split(':');
         if (parts.Length >= 2 && parts[0] == "game")
             return AxisTuningGameLabel(parts[1]);
@@ -381,13 +448,16 @@ public sealed partial class MainWindowViewModel
         int version = ++axisTuningLoadVersion;
         AxisTuningLoaded = false;
 
-        List<string> args = ["binds", "tuning", "show", relation];
+        List<string> args = ["binds", "tuning", "show", relation, .. AxisTuningBindArgs()];
         bool resolves = scope.Scope.StartsWith("game:", StringComparison.Ordinal) || scope.Scope.StartsWith("plane:", StringComparison.Ordinal);
         if (resolves)
         {
             args.AddRange(["--game", scope.Game]);
-            if (scope.Plane.Length > 0)
-                args.AddRange(["--plane", scope.Plane]);
+            // A game with aircraft rows whose ticked aircraft detent mode bends: the curve shown is the one the first of
+            // them gets (2.6.5 report: show the detent's curve, not the one it starts from).
+            string plane = scope.Plane.Length > 0 ? scope.Plane : AxisTuningBentRows(AxisTuningPlan()).FirstOrDefault()?.Plane ?? string.Empty;
+            if (plane.Length > 0)
+                args.AddRange(["--plane", plane]);
         }
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false,
             busyLabel: N("Loading axis tuning..."), forceText: false);
@@ -730,7 +800,7 @@ public sealed partial class MainWindowViewModel
     private void DragAxisTuningHandle(AxisCurveHandleMove? move)
     {
         AxisModel? model = SelectedAxisTuningScope?.Model;
-        if (move == null || model == null || !AxisTuningLoaded)
+        if (move == null || model == null || !AxisTuningLoaded || AxisTuningDetentLocked)
             return;
         AxisTuning tuning = axisTuningCurrent;
         List<(double Travel, Action<AxisTuning, double> SetOutput)> points = AxisTuningHandlePoints(tuning);
@@ -843,7 +913,7 @@ public sealed partial class MainWindowViewModel
         AxisTuningHasEdits = tuning.Format() != axisTuningEditorBaseline;
         AxisModel model = SelectedAxisTuningScope?.Model ?? AxisModels.Get(AxisModels.Dcs);
         AxisTuningCurve = SampleAxisCurve(model, tuning);
-        AxisTuningHandles = BuildAxisTuningHandles(model, tuning);
+        AxisTuningHandles = AxisTuningDetentLocked ? null : BuildAxisTuningHandles(model, tuning);
         UpdateAxisTuningLiveOutput();
     }
 
@@ -856,7 +926,7 @@ public sealed partial class MainWindowViewModel
     private async Task SaveAxisTuningAsync()
     {
         AxisTuningScopeItem? scope = SelectedAxisTuningScope;
-        if (scope == null || axisTuningRelation.Length == 0)
+        if (scope == null || axisTuningRelation.Length == 0 || AxisTuningDetentLocked)
             return;
         List<string>? args = BuildAxisTuningSetArguments(out string error);
         if (args == null)
@@ -873,7 +943,8 @@ public sealed partial class MainWindowViewModel
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Saving axis tuning..."));
         if (result?.ExitCode != 0)
             return;
-        if (plan.Kind == "base")
+        // The bind editor's invert / slider are the main bind's: another input's base curve leaves them alone.
+        if (plan.Kind == "base" && AxisTuningInputNumber == 1)
             SyncBaseTuningToBindEditor(axisTuningCurrent);
         // Opened again later (another relation in between, a restart): these ticks come back.
         RememberAxisTuningTicks();
@@ -902,6 +973,9 @@ public sealed partial class MainWindowViewModel
             return null;
 
         List<string> args = ["binds", "tuning", "set", string.IsNullOrWhiteSpace(targetRelation) ? axisTuningRelation : targetRelation];
+        // The input picked in the section (multi-bind); a copy to another relation goes to that relation's main bind.
+        if (string.IsNullOrWhiteSpace(targetRelation) || string.Equals(targetRelation, axisTuningRelation, StringComparison.OrdinalIgnoreCase))
+            args.AddRange(AxisTuningBindArgs());
         foreach (string ticked in AxisTuningPlan().Set)
             args.AddRange(["--scope", ticked]);
         bool userCurve = AxisTuningEditors.Any(e => e.IsUserCurve && e.IsOn);
@@ -965,7 +1039,7 @@ public sealed partial class MainWindowViewModel
         List<AxisTuningScopeItem> own = AxisTuningClearRows();
         if (own.Count == 0 || axisTuningRelation.Length == 0)
             return;
-        List<string> args = ["binds", "tuning", "clear", axisTuningRelation];
+        List<string> args = ["binds", "tuning", "clear", axisTuningRelation, .. AxisTuningBindArgs()];
         foreach (AxisTuningScopeItem row in own)
             args.AddRange(["--scope", row.Scope]);
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Clearing axis tuning..."));

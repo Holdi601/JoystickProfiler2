@@ -1,11 +1,11 @@
 ---
 title: Dialogs and notices
 status: full
-summary: What shows over every page: confirmation windows, the game watcher's changes, Move to another button, and the update prompt.
+summary: What shows over every page: confirmation windows, the game watcher's changes, Move to another button, Move to another relation, and the update prompt.
 ---
 Some windows and panels show over whatever page is open: a question before JoyPro changes game files or the profile,
-the changes a game made to its controls (the game watcher), **Move to another button** for a single action, and the
-update prompt. This page describes each of them and every button in them.
+the changes a game made to its controls (the game watcher), **Move to another button** for a single action, **Move
+to...** for several actions or relations, and the update prompt. This page describes each of them and every button in them.
 
 :::video dialogs "Dialogs and notices"
 :::
@@ -40,6 +40,13 @@ A relation is one button with all its actions. To move only one of them (one gam
 the action (Relations page) or a bind row (Binds page) and choose **Move to another button...**. Press the new button
 (or pick device and input), then **Move**.
 
+## Move to another relation
+
+Selected actions of a relation (Ctrl/Shift+click, **Move to...**) or the actions of several selected relations
+(**Move actions to...** in the Relations list) go to another relation. Pick **New relation** and type its name (it gets
+the kind, axis or button, of the actions), or **Existing relation (same kind)** and pick it from the list (the search
+box narrows it). **Move** does it in one step; Ctrl+Z undoes it.
+
 ## Updates
 
 At start (and with **More > Check for updates**) JoyPro asks GitHub for a newer version. The prompt shows what is new
@@ -59,33 +66,25 @@ with **Update now**, **Later**, **Skip this version** and **Release page**.
   - **Keep both**: the moved action gets its own relation on the same button; both fire when you press it.
 - A preview line says what will happen; **Move** is one undo step (Ctrl+Z).
 
-```mermaid
-flowchart TD
-  A["Move to another button...<br/>(action or bind row)"] --> R["Record: press the new button<br/>or type device + input"]
-  R --> T{"Is the button taken<br/>for these aircraft?"}
-  T -->|no| J["Join the relation on that button<br/>or a new relation"]
-  T -->|yes| C{"Swap / Replace / Keep both"}
-  C --> J
-  J --> E["engine relations item move-to-input<br/>(one undo step)"]
-  E --> X["Next export: the action is<br/>on the new button in the game"]
-```
+In four steps:
+
+1. **Move to another button...** on an action or a bind row.
+2. Record: press the new button, or type the device and input.
+3. Is the button taken for these aircraft? Then choose **Swap**, **Replace** or **Keep both**.
+4. **Move**: the action joins the relation on that button, or gets a new relation (one undo step). After the next
+   export the action is on the new button in the game.
 
 ## The game watcher in detail
 
-```mermaid
-sequenceDiagram
-  participant G as Game
-  participant W as JoyPro watcher
-  participant E as engine
-  participant U as You
-  G->>G: you change binds, close the game
-  W->>E: sync status / sync diff
-  E-->>W: changes against the last export or import
-  W->>U: panel "DCS changed its controls"
-  U->>W: Take over (ticked changes, chosen relations)
-  W->>E: sync apply
-  E-->>W: profile updated (one undo step)
-```
+After the game closes, the watcher compares its controls with the last export and asks you:
+
+| # | Who | What happens |
+|---|---|---|
+| 1 | You | Change binds in the game and close it. |
+| 2 | JoyPro | Compares the game's controls with the last export or import. |
+| 3 | JoyPro | Shows the panel "DCS changed its controls". |
+| 4 | You | Tick the changes, pick the relations and press **Take over**. |
+| 5 | JoyPro | Updates the profile (one undo step). |
 
 Where several relations use the changed button, each row has a box to pick the relation, or **New relation** with a
 name. Unticked rows count as ignored.
@@ -107,6 +106,8 @@ name. Unticked rows count as ignored.
 - Game watcher: `MainWindowViewModel.GameSync.cs`; engine [[cli:sync status]], [[cli:sync diff]], [[cli:sync apply]],
   [[cli:sync accept]] ([[doc:sync-watcher]]).
 - Move to another button: `MainWindowViewModel.MoveAction.cs`; engine [[cli:relations item move-to-input]].
+- Move to another relation: `MainWindowViewModel.RelationMultiSelect.cs`; engine [[cli:relations item move-to]],
+  [[cli:relations mass move-actions]] ([[doc:relation-multi-select]]).
 - Updates: `MainWindowViewModel.Updates.cs`, the GitHub releases API ([[doc:updates]]).
 :::
 
@@ -139,6 +140,31 @@ after the next export).
 <!-- entry: bind:IsMoveActionKeepBoth -->
 The new button is taken: the moved action gets a relation of its own on the same button, so both actions fire when you
 press it in the game.
+
+<!-- entry: bind:IsMoveNodesToNew -->
+**New relation** (Move to...): the actions go to a new relation with the name typed below (suggested: the old name with
+"(2)"). It has the kind of the actions (axis or button), no bind yet and no groups; bind it on the Binds page. A name
+that is taken is refused with a note.
+
+<!-- entry: bind:IsMoveNodesToExisting -->
+**Existing relation (same kind)** (Move to...): the actions go to the relation picked in the list below. Only
+relations of the same kind are listed, without the ones the actions come from; an action the target already has gains
+the aircraft it lacked.
+
+<!-- entry: bind:MoveNodesNewName -->
+The name of the new relation (Move to... > New relation).
+
+<!-- entry: bind:MoveNodesSearch -->
+Narrows the list of relations (Move to... > Existing relation): every word must be in the name.
+
+<!-- entry: CancelMoveNodesCommand -->
+Closes **Move to...** without a change.
+
+<!-- entry: ApplyMoveNodesCommand -->
+**Move** (Move to...): moves the actions with their aircraft to the chosen relation in one step (Ctrl+Z undoes it). From
+the Relations list, the relations left without an action are deleted with their binds. Engine:
+[[cli:relations item move-to]], [[cli:relations mass move-actions]]. In the game: after the next export the actions
+are on the input of the relation they went to.
 
 <!-- entry: CancelMoveActionCommand -->
 Closes **Move to another button** without a change (a recording that runs is stopped).

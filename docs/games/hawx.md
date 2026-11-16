@@ -7,9 +7,9 @@ Ubisoft account (see below). Not integrated.** Best route: **vJoy, one device.**
 - **Ubisoft Connect is required** [OBS, SRC]: Steam's install script (`48180_install.vdf`, "Run Process" >
   `gamelauncher`) runs `redist\GameLauncher\UbisoftGameLauncherInstaller.exe` on the first start, and `HAWX2.exe`
   talks to the Ubisoft launcher ("Orbit": `ubiorbitapi_r2.dll`, `MgOrbitdllGetLoginDetails`, "Orbit session created.
-  Start Ubisoft Launcher"). Ubisoft Connect is not installed on this PC, so the first start means an installer with its
-  licence terms and an Ubisoft account login. **The user has to do that once** (install Ubisoft Connect, log in, start
-  H.A.W.X 2 once and close it). JoyPro's test kit never accepts terms or logs in, so nothing was started.
+  Start Ubisoft Launcher"). Without Ubisoft Connect the first start runs its installer and asks for an Ubisoft account
+  login. **The player does that once** (install Ubisoft Connect, log in, start
+  H.A.W.X 2 once and close it). JoyPro never logs in for the player.
 - **Files** [OBS]: `<install>\Data_PC\Settings\settings.ini` (written by the installer's auto-detection:
   `[Input] MouseSensitivity = 0.5`, `DeadZone = 0.2`; `[Video] windowed = false` ...) and `setting.lua`, which
   registers the settings the game stores: `Input.InvertYAxis`, `Input.InvertYaw`, `Input.InvertThrottle`,

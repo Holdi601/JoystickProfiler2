@@ -18,17 +18,23 @@ settings; both can be installed side by side.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E["engine xplane12 export<br/>(or xplane11)"]
-  D["Device slots<br/>VID:PID + HID path"] --> E
-  E --> J["Output / preferences /<br/>X-Plane Joystick Settings.prf"]
-  E --> C["control profiles /<br/>&lt;Name&gt; - Joysticks.prf"]
-  J --> G["X-Plane: Settings > Joystick"]
-  C --> G
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep X-Plane closed
+:::
+
+**Before**: start X-Plane once with your devices connected, then quit.
+
+**Then**: calibrate your devices in X-Plane (**Settings > Joystick**). Your assignments show there too.
+
+Did you bind buttons in X-Plane before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for X-Plane
 
 - **Import**: the axis uses, button commands, reverse flags and response curves of your devices come into your
@@ -57,9 +63,9 @@ games. Use the [[page:flows/relations.html|relations flow]] to join them, then p
 
 1. **Close X-Plane.** It rewrites its preferences when the settings window closes and when it quits. Both versions run
    as `X-Plane.exe`, so JoyPro refuses while either runs.
-2. Open **Export**. Each installed version has its own tile.
+2. Open **Export**. Each installed version has its own card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your devices.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 :::ingame What you see in X-Plane
 Start X-Plane and open **Settings > Joystick**, then pick your device. Every axis shows the use JoyPro wrote, buttons
@@ -122,7 +128,7 @@ folder. Another folder is set in **Settings > Games**.
 - **Granularity**: one file for all aircraft (X-Plane can link aircraft to control profiles; JoyPro writes the files
   it finds).
 - **Response curves** (axis model `xplane`): any number of stops with LINEAR, CATMULL_ROM or CUBIC_AVG, and the fixed
-  ranges of throttle, prop and mixture axes (beta, feather, cutoff, FADEC ...). A curve set for all games becomes
+  ranges of throttle, prop and mixture axes (beta, feather, cutoff, FADEC ...). The **Default curve** becomes
   stops; an unchanged curve keeps its bytes. Tuning can be set for one version or for both (`family:xplane`).
 - **Reverse**: `_joy_rev_axis`, your invert unchanged (X-Plane reverses throttles by itself).
 - **Game settings** (Settings > **Force feedback settings of the games**): control response of pitch, roll and yaw;
@@ -135,6 +141,17 @@ folder. Another folder is set in **Settings > Games**.
 
 :::layer technical
 ## Inside the X-Plane integration
+
+```mermaid
+%% caption: Each X-Plane version has its own preferences file. Calibration and the null zone stay X-Plane's.
+flowchart LR
+  P["Your profile<br/>(relations + binds)"] --> E["engine xplane12 export<br/>(or xplane11)"]
+  D["Device slots<br/>VID:PID + HID path"] --> E
+  E --> J["Output / preferences /<br/>X-Plane Joystick Settings.prf"]
+  E --> C["control profiles /<br/>Name - Joysticks.prf"]
+  J --> G["X-Plane: Settings > Joystick"]
+  C --> G
+```
 
 Code: `engine\Games\XPlaneIntegration.cs` (one instance per version), `engine\Games\XPlanePrf.cs`,
 `engine\AxisModels\XPlane.cs`, `engine\FfbModels\XPlane.cs`, `engine\Games\LegacyGameIds.cs` (profiles from before

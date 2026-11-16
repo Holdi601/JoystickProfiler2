@@ -3,7 +3,7 @@
 JoyPro checks which of its games are installed, and where. A game that is neither found nor set by you is blocked:
 
 - **Commands that refuse it:** import, scan, export, DB refresh, the DCS stick-defaults commands and restoring a backup. The engine refuses them with a message saying how to set the folder.
-- **In the GUI:** its buttons are off (their tooltips and the card say why). The registry game lists show "(not installed)". The export page has no tile for it and names it in a hint.
+- **In the GUI:** its buttons are off (their tooltips and the card say why). The registry game lists show "(not installed)". The export page has no card for it and names it in a hint.
 
 `engine games installs` also counts the actions JoyPro knows of each game (`Actions`: its command list, or JoyPro's own
 table for ACE COMBAT 7/8 and Battlefield 6/2042; DCS: the aircraft lists) and says why there are none
@@ -95,7 +95,12 @@ profiles together); only copies, never deletes:
 - the program folder's `source-version.txt` is newer (a higher game version or Steam build; the same version with more
   DCS modules; else a later "recorded" time when other fields differ): the program folder's list is copied over the
   game-data copy; the old copy is first saved to `GameData\Replaced\<yyyyMMdd-HHmmss>\`. A list without a build stamp
-  is never replaced.
+  is never replaced;
+- known wrong titles an older JoyPro wrote into a list it built are corrected in the game-data copy: the FSX /
+  Prepar3D lists (`DB\FSX`, `FSXSE`, `P3D4`-`P3D6`) of versions before November 2026 had the elevator's nose up and
+  nose down reversed (`ELEV_UP`, `ELEV_DOWN`, `ELEV_TRIM_UP`, `ELEV_TRIM_DN`). Only a row that still has exactly the
+  old title changes; the old list is first saved to `GameData\Replaced\<yyyyMMdd-HHmmss>\`. A refresh of these lists
+  corrects the same titles.
 
 `engine db paths` shows both folders and, per game folder, where it is read from (`game-data` or `program`) and its
 recorded build; `engine db summary` shows the DCS list and clean profile folders in use.
@@ -121,7 +126,7 @@ binds for it stay in the profile. The GUI leaves it out of:
 
 - the Start page's game cards, the "games installed" count, "Watch all" and the game config watcher (the engine's
   `sync status` leaves it out, also for the tray helper), and the setup wizard's games,
-- the export page (no tile, no "not installed" warning; a short note names it),
+- the export page (no card, no "not installed" warning; a short note names it),
 - the game lists of Start > Other Games and Settings (registry games),
 - the game picker of the relation node search,
 - the DB games list (Settings) and the game choices of the layout picture,

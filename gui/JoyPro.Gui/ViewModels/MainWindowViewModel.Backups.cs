@@ -49,7 +49,7 @@ public sealed partial class MainWindowViewModel
         GameBackups.Clear();
         foreach (GameBackupItem set in sets.Where(s => SelectedGameBackupGame == AllGameBackups || s.Game == SelectedGameBackupGame))
             GameBackups.Add(set);
-        // The export tiles offer "Undo last export" only for a game with a backup.
+        // The export cards offer "Undo last export" only for a game with a backup.
         gamesWithBackups.Clear();
         foreach (GameBackupItem set in sets)
             gamesWithBackups.Add(set.Game);

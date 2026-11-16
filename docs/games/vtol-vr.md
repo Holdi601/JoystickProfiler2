@@ -11,9 +11,9 @@ Catalogs: `EngineOnly_Runtime/DB/VTOLVR` (`actions.tsv`, `seats.tsv`), `DB/VTOLV
 
 Native export rules as implemented: only maps of devices VTOL VR has listed (map, calibration or assignment entry) are written; the device element is the n-th axis the device has (unverified); only add writes free axes only (a profile bind on an axis with another action is listed under "Binds Not Written, Button Taken In The Game"), merge replaces that action (the conflict) and keeps everything else, merge-overwrite also removes the profile's actions from their other axes on connected devices, clean (merge +) clears the other actions of the devices it writes and leaves the other devices alone, nuke clears connected devices without binds in the export; button maps and devices that are not connected are never touched; the toe brakes get the `axisRange` of the relation's `vtolnative` tuning (0 Full, 1 Positive); `HARDWARE_RUDDER` and the other Settings > Controls values are written to `gameSettings.cfg` when the profile sets them (`engine ffb set --device * --game VTOLVR`), otherwise a missing/off `HARDWARE_RUDDER` gives a warning. See "Every setting the game offers" below.
 
-Tags: **[OBS]** seen in real files on a test PC · **[OBS-bin]** seen in the installed game's own assemblies and data files (`Assembly-CSharp.dll`, `Rewired_Core.dll`, `Rewired_Windows.dll`; the Rewired `InputManager` and `HardwareJoystickMap` objects in `level0` / `sharedassets0.assets`), looked at for interoperability only, nothing modified · **[SRC]** third-party source or post with URL · **[INF]** inferred · **[UNVERIFIED]** needs one check with the running game. Research 2026-10-01 on VTOL VR **1.13.4f1** (Steam build 25514272, `globalgamemanagers` PlayerSettings; changelog head "v1.13.0fX"). The game has never been started on a test PC (`appmanifest_667970.acf` `LastPlayed 0`, no `%APPDATA%\Boundless Dynamics, LLC`, no `LocalLow\Boundless Dynamics, LLC`).
+Tags: **[OBS]** seen in real files of an installed game · **[OBS-bin]** seen in the installed game's own assemblies and data files (`Assembly-CSharp.dll`, `Rewired_Core.dll`, `Rewired_Windows.dll`; the Rewired `InputManager` and `HardwareJoystickMap` objects in `level0` / `sharedassets0.assets`), looked at for interoperability only, nothing modified · **[SRC]** third-party source or post with URL · **[INF]** inferred · **[UNVERIFIED]** needs one check with the running game. Research 2026-10-01 on VTOL VR **1.13.4f1** (Steam build 25514272, `globalgamemanagers` PlayerSettings; changelog head "v1.13.0fX"). The checked copy had never been started (`appmanifest_667970.acf` `LastPlayed 0`, no `%APPDATA%\Boundless Dynamics, LLC`, no `LocalLow\Boundless Dynamics, LLC`).
 
-The maintainer's research notes (Rewired hardware definitions, sample generators) are not part of the repo. At run time JoyPro reads only the user's save files, the installed `level0` (native action list) and, after the user installed it, the BYOJoystick mod.
+Research notes (Rewired hardware definitions, sample generators) are not part of the repo. At run time JoyPro reads only the user's save files, the installed `level0` (native action list) and, after the user installed it, the BYOJoystick mod.
 
 ## Summary
 - VTOL VR is VR-only. Pitch/roll, throttle, weapons, switches, MFDs etc. are operated with the VR controllers on the virtual stick, throttle and cockpit; there is **no native HOTAS support** [OBS-bin; SRC developer quoted in https://steamcommunity.com/app/667970/discussions/0/5287797783032612392/ : "VTOL VR will remain VR-only"].
@@ -160,20 +160,18 @@ Same container format, root `GAMESETTINGS`, child node `PLAYAREA`, values `RADIO
 
 ## BYOJoystick mod (optional second target)
 
-### License and source (checked 2026-10-12)
-- **No license.** github.com/sicsix/BYOJoystick has no LICENSE file and the GitHub API reports `license: null`; the
-  README and the Workshop description name none either. So the code and the mod are "all rights reserved" by the
-  author (sicsix): free to use, but nobody may redistribute it or parts of it without permission. That includes its
-  target list (433 names taken from the mod's code): **JoyPro does not ship it** (`DB\VTOLVR\actions.tsv`,
-  `seats.tsv` are left out of releases).
+### Source (checked 2026-10-12)
+- The mod is by sicsix (source code: github.com/sicsix/BYOJoystick). **JoyPro does not ship it or its target list**
+  (433 names from the mod's code): `DB\VTOLVR\actions.tsv` and `seats.tsv` are built on the user's PC from the
+  installed mod.
 - **Official binary source: the Steam Workshop only**, item 3276352374 "BYO Joystick" (version 1.3.2, updated
   2024-09-08, 1.435 MB as Steam lists it), for the free "VTOL VR Mod Loader" (Steam app 3018410; the item's
   `consumer_app_id`). The GitHub repository has tags but no release files. The Workshop item is SteamPipe content
   (Steam's `GetPublishedFileDetails` gives no file address), so only the Steam client can download it.
 
 ### One-click install (GUI: VTOL VR card > Install BYOJoystick; CLI `engine vtolvr mod status|prepare`)
-1. JoyPro shows what the mod is, the official source (Workshop page, source code), the size Steam lists and the license
-   situation (`VtolVrMod.LicenseText`), and the Mod Loader and mod status of this PC.
+1. JoyPro shows what the mod is, the official source (Workshop page, source code), the size Steam lists
+   (`VtolVrMod`), and the Mod Loader and mod status of this PC.
 2. Only after the tick "I have read what BYOJoystick is and its license situation, and I want to install it from the
    Steam Workshop" is **Install BYOJoystick** enabled (the tick is used up by one install).
 3. `vtolvr mod prepare --accept-license` backs up the user's `<install>\SaveData\BYOJ_*.xml` into the backup store
@@ -243,7 +241,7 @@ Source: https://github.com/sicsix/BYOJoystick (last commit ffc106e 2024-09-08), 
   SaveData; `--path` with the SaveData folder, a file in it or the VTOL VR folder): the mod drops targets a vehicle does
   not have when it loads a file, so every target there exists in that seat. Targets found only in the files come in
   with title = target, category `Misc`, axis when bound to axes only (else button); `seats.tsv` gets their seats and
-  the seats a known target was found in; files of unknown seats are reported and skipped. Run on a test PC
+  the seats a known target was found in; files of unknown seats are reported and skipped. Run on a PC without the mod
   (2026-10-12): neither the mod nor a `BYOJ_*.xml` is there, so the refresh says to install the mod.
 - Older mods: VTOLVRPhysicalInput (evilC/solidshadow1126, last 2022, XML `Mappings` by device name, legacy Mod Loader) and TriquetraInput 2 (muskit, 2024-06, `<install>\SaveData\triquetrainput.xml`, unmaintained) [SRC github.com/solidshadow1126-zz/VTOLVRPhysicalInput, github.com/muskit/TriquetraInput2]. Not worth supporting.
 

@@ -18,18 +18,24 @@ BYOJoystick mod. JoyPro handles both as two games: **VTOL VR (BYOJoystick mod)**
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile"] --> B["engine vtolvr export<br/>(BYOJoystick)"]
-  P --> N["engine vtolvr-native export"]
-  B --> X["&lt;install&gt; / SaveData /<br/>BYOJ_&lt;seat&gt;.xml<br/>(one per seat)"]
-  N --> I["Roaming / VTOLVR / SaveData /<br/>inputbindings.cfg<br/>(rudder, toe brakes)"]
-  N --> S["gameSettings.cfg<br/>(Hardware Control Rudder)"]
-  X --> M["BYOJoystick<br/>(VTOL VR Mod Loader)"]
-  I --> G["VTOL VR: Settings > Bindings"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep VTOL VR closed
+:::
+
+**Before**: press **Install BYOJoystick** on the VTOL VR card (once, see below). Start VTOL VR once with your
+pedals connected and leave **Settings** with OK.
+
+**Then**: switch **Hardware Control Rudder** on in the game's settings, or the game ignores your rudder.
+
+Did you bind buttons in VTOL VR before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for VTOL VR
 
 - **With BYOJoystick**: every target the mod offers (stick and throttle axes, gear, flaps, weapons, countermeasures,
@@ -66,7 +72,7 @@ know the BYOJoystick targets. Then run the [[page:flows/check.html|Check]] on th
 1. **Close VTOL VR.** JoyPro refuses to write while the game runs (process `VTOLVR`).
 2. Open **Export** and keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set
    up your devices.
-3. Press **Export now** on the VTOL VR tile (BYOJoystick) and, for the pedals, on the native tile.
+3. Press **Export now** on the VTOL VR card (BYOJoystick) and, for the pedals, on the native card.
 
 :::ingame What you see in VTOL VR
 In the game, **Settings** shows **Hardware Control Rudder** switched on when your profile sets it, and **Bindings**
@@ -150,6 +156,18 @@ atomically (temporary file, then replace): the game replaces a broken `inputbind
 
 :::layer technical
 ## Inside the VTOL VR integration
+
+```mermaid
+%% caption: Two games in JoyPro: the BYOJoystick mod's files (one BYOJ_seat.xml per seat in the game's SaveData) and the game's own rudder and toe brakes (inputbindings.cfg, and Hardware Control Rudder in gameSettings.cfg).
+flowchart LR
+  P["Your profile"] --> B["engine vtolvr export"]
+  P --> N["engine vtolvr-native<br/>export"]
+  B --> X["BYOJ_seat.xml"]
+  N --> I["inputbindings.cfg"]
+  N --> S["gameSettings.cfg"]
+  X --> M["BYOJoystick mod"]
+  I --> G["VTOL VR:<br/>Bindings"]
+```
 
 Code: `engine\Games\VtolVrIntegration.cs` (BYOJoystick), `VtolVrMod.cs` (install status, target list),
 `ClrMetadata.cs`, `VtolVrNativeIntegration.cs`, `engine\AxisModels\VtolVr.cs` (`byoj`, `vtolnative`),

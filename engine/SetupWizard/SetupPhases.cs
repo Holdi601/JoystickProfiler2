@@ -164,7 +164,46 @@ namespace JoyPro.Setup
         public static bool IsFunctionLabel(string label)
         {
             string text = (label ?? string.Empty).Trim();
-            return text.Length > 0 && !GenericLabel.IsMatch(text);
+            return text.Length > 0 && !GenericLabel.IsMatch(text) && !DescribesControlOnly(text);
+        }
+
+        // Words a device catalog uses to describe a control (where it sits, what it is), not a function printed on it
+        // (review 6 B10: "4-way hat Left (buttons 5-8)", "8-way POV hat", "Left position button" are descriptions; the
+        // "4" took the UFC key 4, "position" the position lights). Printed panel labels are written in capitals.
+        private static readonly HashSet<string> ControlWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "hat", "hats", "pov", "povs", "button", "buttons", "btn", "rocker", "switch", "switches", "toggle", "toggles", "lever", "levers", "paddle",
+            "trigger", "triggers", "ministick", "mini", "thumbstick", "joystick", "stick", "encoder", "dial", "wheel", "knob", "knobs", "slider", "detent",
+            "detents", "position", "positions", "pos", "way", "grip", "base", "pinky", "thumb", "index", "scroll", "axis", "axes", "cover", "flip", "press",
+            "pressed", "push", "pushbutton", "side", "top", "front", "rear", "back", "upper", "lower", "middle", "centre", "center", "central", "left", "right",
+            "bottom", "up", "down", "fwd", "aft", "forward", "backward", "cw", "ccw", "red", "black", "white", "grey", "gray", "silver", "ring", "mode", "modes",
+            "the", "of", "a", "an", "and", "or", "with", "on", "off", "in", "out", "near", "next", "to", "below", "above", "under", "behind", "at", "single",
+            "dual", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "first", "second", "third", "stage", "half", "full", "small",
+            "large", "big", "round", "metal", "folding", "rotary", "momentary", "latched", "upleft", "upright", "downleft", "downright"
+        };
+        // Control abbreviations a description writes in capitals ("8-way POV hat").
+        private static readonly HashSet<string> ControlAbbreviations = new HashSet<string>(StringComparer.Ordinal) { "POV", "BTN", "TGL", "SW", "ENC", "ROT", "HAT" };
+
+        private static bool ControlWord(string token)
+        {
+            return ControlWords.Contains(token) || token.Length == 1 || Regex.IsMatch(token, @"^\d+(way|pos|position|st|nd|rd|th)?$", RegexOptions.IgnoreCase);
+        }
+
+        private static bool PrintedWord(string token)
+        {
+            return token.Length >= 2 && token.Any(char.IsLetter) && !token.Any(char.IsLower) && !ControlAbbreviations.Contains(token);
+        }
+
+        // A catalog description that only says which control it is ("4-way hat Left (buttons 5-8)", "Left position button",
+        // "Mode dial position 2", "2 (middle, below the hat)"): written in lower case and every word describes the control.
+        // A word in capitals among them is printed ("POSITION left" on the MOZA MTP is the position lights knob).
+        public static bool DescribesControlOnly(string label)
+        {
+            string text = (label ?? string.Empty).Trim();
+            if (text.Length == 0 || !text.Any(char.IsLower))
+                return false;
+            string[] tokens = Regex.Split(text, @"[^A-Za-z0-9]+").Where(t => t.Length > 0).ToArray();
+            return tokens.Length > 0 && tokens.All(t => ControlWord(t) && !PrintedWord(t));
         }
 
         // A function that never goes on a cockpit label naming another system: time-critical (instant) or a weapon
@@ -220,11 +259,25 @@ namespace JoyPro.Setup
             if (string.IsNullOrEmpty(keyword) || string.IsNullOrEmpty(label))
                 return false;
             string text = label.Trim();
+            Match match;
             if (keyword[0] == '=')
-                return string.Equals(text, keyword.Substring(1), StringComparison.OrdinalIgnoreCase);
-            if (keyword[0] == '^')
-                return Regex.IsMatch(text, "^" + Regex.Escape(keyword.Substring(1)) + @"($|[^A-Za-z0-9])", RegexOptions.IgnoreCase);
-            return Regex.IsMatch(text, @"(^|[^A-Za-z0-9])" + Regex.Escape(keyword) + @"($|[^A-Za-z0-9])", RegexOptions.IgnoreCase);
+                match = string.Equals(text, keyword.Substring(1), StringComparison.OrdinalIgnoreCase) ? Regex.Match(text, "^.*$", RegexOptions.Singleline) : Match.Empty;
+            else if (keyword[0] == '^')
+                match = Regex.Match(text, "^(" + Regex.Escape(keyword.Substring(1)) + @")($|[^A-Za-z0-9])", RegexOptions.IgnoreCase);
+            else
+                match = Regex.Match(text, @"(^|[^A-Za-z0-9])(" + Regex.Escape(keyword) + @")($|[^A-Za-z0-9])", RegexOptions.IgnoreCase);
+            if (!match.Success)
+                return false;
+            // A keyword made of words that also describe controls ("POSITION", the UFC's "4" and "8") names a function on a
+            // description in lower case only where it is printed in capitals: "POSITION left" yes, "Left position button" and
+            // "4-way hat" no (review 6 B10).
+            string body = keyword.TrimStart('=', '^');
+            if (text.Any(char.IsLower) && Regex.Split(body, @"[^A-Za-z0-9]+").Where(t => t.Length > 0).All(ControlWord))
+            {
+                string found = keyword[0] == '=' ? match.Value : match.Groups[keyword[0] == '^' ? 1 : 2].Value;
+                return found.Any(char.IsLetter) && !found.Any(char.IsLower);
+            }
+            return true;
         }
 
         // Words that change what a printed label means: "LDG GEAR WARN SILENCE" silences the gear warning horn, it does not
@@ -397,7 +450,15 @@ namespace JoyPro.Setup
         // A printed position that is not the function's ("LDG GEAR CENTER" for gear up, "MASTER ARM SAFE" for arm on).
         public static bool DirectionClash(string functionDirection, string labelDirection)
         {
-            return functionDirection.Length > 0 && labelDirection.Length > 0 && functionDirection != labelDirection;
+            return functionDirection.Length > 0 && labelDirection.Length > 0 && !SameDirection(functionDirection, labelDirection);
+        }
+
+        // On is up and off is down on a switch ("Switch 2 up" = on), as in every cockpit.
+        public static bool SameDirection(string a, string b)
+        {
+            if (a == b)
+                return true;
+            return (a == "on" && b == "up") || (a == "up" && b == "on") || (a == "off" && b == "down") || (a == "down" && b == "off");
         }
 
         // How much of a printed label a function's keywords explain (position words left out): "JETT SAFE" explains
@@ -434,7 +495,17 @@ namespace JoyPro.Setup
             if (!string.Equals(type, "latched", StringComparison.OrdinalIgnoreCase))
                 return false;
             bool modeLabel = Regex.IsMatch(label ?? string.Empty, @"\bmode\b", RegexOptions.IgnoreCase);
-            if (!modeLabel && c.StartsWith("panel.", StringComparison.Ordinal) && IsFunctionLabel(label))
+            // (a switch labelled for a function - ENG OPER L, ENG 1 MASTER, L GEN, ATEM ARMED - is that function's on a base
+            // and a grip too, never the mode switch)
+            if (!modeLabel && (IsCockpitLabel(label) || (c.StartsWith("panel.", StringComparison.Ordinal) && IsFunctionLabel(label))))
+                return false;
+            // (a guarded switch - under a cover, for something that must not be flipped by accident - and a switch whose
+            // label names anything but the control itself - MOZA MTP "RUD TRIM (3-way switch) EXTEND / RETRACT" - is never
+            // the mode switch either)
+            string text = label ?? string.Empty;
+            if (Regex.IsMatch(text, @"guard|cover", RegexOptions.IgnoreCase))
+                return false;
+            if (!modeLabel && text.Trim().Length > 0 && !SetupPlanner.ControlNameLabel(Regex.Replace(text, @"\((\d-way )?(switch|toggle)[^)]*\)", " ", RegexOptions.IgnoreCase)))
                 return false;
             Match m = Regex.Match(c, @"^((stick|throttle|collective|yoke)\.base\.toggle3?\.[^.]+|(collective|yoke)\.switch\.[^.]+|panel\.toggle3?\.[^.]+)\.(up|down|left|right)$");
             if (m.Success)

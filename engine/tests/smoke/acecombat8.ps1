@@ -47,7 +47,8 @@ try {
     $acMode = Run-Engine @("--profile", $acProfile, "vjoy", "mode", "AceCombat8", "xbox", "--text")
     Assert-True ($acMode.ExitCode -eq 0) "vjoy mode AceCombat8 xbox failed. Output: $($acMode.Output)"
     Assert-Match $acMode.Output "VJ Throttle \{11111111-2222-3333-4444-000000000002\} JOY_Z -> Xbox XB_TRIGGERS" "The throttle on up + down must become the centre-split triggers."
-    Assert-Match $acMode.Output "VJ Stick \{11111111-2222-3333-4444-000000000001\} JOY_Y -> Xbox XB_LY \(Left stick Y\)" "Pitch on the left stick Y."
+    # Reversed by the game's convention (default Pitch Controls: pad up = nose up), never by DCS's invert.
+    Assert-Match $acMode.Output "VJ Stick \{11111111-2222-3333-4444-000000000001\} JOY_Y -> Xbox XB_LY~ \(Left stick Y \(reversed\)\)" "Pitch on the left stick Y, reversed for a HOTAS."
     Assert-Match $acMode.Output "VJ Stick \{11111111-2222-3333-4444-000000000001\} JOY_X -> Xbox XB_LX \(Left stick X\)" "Roll on the left stick X."
     Assert-Match $acMode.Output "VJ Stick \{11111111-2222-3333-4444-000000000001\} JOY_BTN2 -> Xbox XB_Y \(Y\)" "The missile on the key the player set (Y)."
     Assert-Match $acMode.Output "VJ Stick \{11111111-2222-3333-4444-000000000001\} JOY_BTN1 -> Xbox XB_A \(A\)" "The gun on A."
@@ -58,6 +59,14 @@ try {
     Assert-True ($acExport.ExitCode -eq 0) "ac8 export failed. Output: $($acExport.Output)"
     Assert-Match $acExport.Output "nothing is written \(the game's settings are checksummed" "The export must say that nothing is written."
     Assert-True ([System.Linq.Enumerable]::SequenceEqual([byte[]]$acOriginal, [byte[]][System.IO.File]::ReadAllBytes($acSave))) "System.sav must stay byte-identical."
+
+    # ---- 4. no HidHide for a game that reads only Xbox controllers: it never sees the sticks, so no administrator
+    # prompt (owner report 2026-11-14: a prompt at every Start for ACE COMBAT 8).
+    $acHide = Run-Engine @("--profile", $acProfile, "vjoy", "apply-hidhide", "--owner-pid", "$PID", "--text")
+    Assert-True ($acHide.ExitCode -eq 0) "apply-hidhide for an Xbox-only game must succeed without doing anything. Output: $($acHide.Output)"
+    Assert-Match $acHide.Output "HidHide is not needed" "apply-hidhide must say that an Xbox-only game needs no HidHide."
+    Assert-True (-not (Test-Path (Join-Path $acFake "hidhide-calls.txt"))) "apply-hidhide must not call HidHideCLI for an Xbox-only game."
+    Assert-True ([System.IO.File]::ReadAllText((Join-Path $acFake "hidhide-state.txt")) -eq "--cloak-off`r`n--inv-on`r`n") "HidHide must stay as it was."
     $acStatus = Run-Engine @("--profile", $acProfile, "vjoy", "mode", "AceCombat8", "native", "--text")
     Assert-Match $acStatus.Output "one-device game: .*Suggested: engine vjoy mode AceCombat8 xbox" "Native mode must suggest the Xbox pad."
 }

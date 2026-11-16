@@ -73,7 +73,9 @@ public sealed class SettingsExportHiddenGamesTests : IDisposable
         Assert.Contains("confirmations", ids);
         Assert.Contains("about", ids);
         Assert.Equal(["games"], vm.SettingsSections.Where(s => s.IsExpanded).Select(s => s.Id));
-        Assert.Equal("1 of 24 sections open", vm.SettingsSectionsSummary);
+        Assert.Equal("1 of 25 sections open", vm.SettingsSectionsSummary);
+        Assert.Contains("looking", ids);
+        Assert.Contains("tours", ids);
         Assert.Contains("relations", ids);
         Assert.Contains("appearance", ids);
         Assert.Contains(MainWindowViewModel.UsageSettingsSectionId, ids);

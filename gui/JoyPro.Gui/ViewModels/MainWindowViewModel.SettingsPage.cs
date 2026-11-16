@@ -20,6 +20,8 @@ public sealed partial class MainWindowViewModel
         ("games", N("Games"), "hidden games hide show installed folder portable watch config detect setup war thunder archives hell let loose vietnam oodle vjoy tunnel voiceattack", N("Games")),
         ("binds", N("Binds"), "follow input record button held pressed switch binds page", N("Binds")),
         ("relations", N("Relations"), "relations add actions search same meaning same function related synonyms name matches every word", N("Relations")),
+        ("looking", N("Looking around: head tracking or VR"), "head tracking trackir vr tobii face tracking look around view snap views hat", N("Looking around")),
+        ("tours", N("Tours"), "tour tours welcome help first start guide show around f1 help mode essentials every feature joypro 1 new beginner", N("Tours")),
         ("startup", N("Startup"), "last profile open start autosave history versions", N("Startup")),
         ("pages", N("Pages in the bottom bar"), "pages tabs navigation bottom bar menu hide show order reorder move drag", N("Pages")),
         ("language", N("Language"), "language translation locale english deutsch windows", N("Language")),
@@ -40,7 +42,6 @@ public sealed partial class MainWindowViewModel
         ("command-lists", N("Command lists of DCS, Star Citizen and IL-2 (for experts)"), "refresh dcs star citizen il-2 il2 command list db", N("Command lists")),
         ("ffb-games", N("Force feedback settings of the games"), "ffb force feedback strength effects game settings", N("Game force feedback")),
         ("dcs-ffb", N("DCS force feedback: swap and invert per device"), "dcs ffb swap invert axis force feedback", N("DCS force feedback")),
-        (ExperimentalSettingsSectionId, N("Experimental"), "experimental several inputs per relation multi bind two devices same grip two bases second input copy device", N("Experimental")),
     ];
 
     // Open at the first start: the games (the rest is a click away).

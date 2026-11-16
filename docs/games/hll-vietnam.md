@@ -66,26 +66,24 @@ JoyPro does not ship extracted game data. In Xbox-pad mode only the pad keys of 
 knows them: the catalog is **JoyPro's own table** (the layouts above and the keyboard pilot keys, JoyPro's wording,
 action ids and Unreal key names only), unless an Oodle library may be used to read the game's files (see "Oodle").
 
-### Oodle (user decision 2026-10-12: like the device photos, with the user's consent)
-The game's input assets are Oodle-compressed. Until 2026-10-11 the refresh silently decompressed them with an
-`oo2core_*_win64.dll` it found next to *another* installed game (on a test PC: Battlefield 6). Now:
+### Oodle
+The game's input assets are Oodle-compressed. JoyPro reads them only with an Oodle library that is already on the PC,
+and it asks once before it uses another game's library:
 
 1. **The game's own library** (an `oo2core_*_win64.dll` inside Hell Let Loose: Vietnam's folder) is used without a
-   question. The build of 2026-10 ships none (Oodle is linked into the game's executable; checked 2026-10-12: no
-   `oo2core*` or `*oodle*` file in the install).
+   question. The current build ships none (Oodle is part of the game's executable: no `oo2core*` or `*oodle*` file
+   in the install).
 2. **Another installed game's library only with the user's yes.** `engine hllv oodle` names it (the other game's folder
-   and the file, found in the same Steam library). When the GUI builds or updates the HLL Vietnam list it asks once:
-   JoyPro found an Oodle library in another game installed on this PC (game, file); it can use it on this PC only to
-   read Hell Let Loose: Vietnam's files; the library belongs to its maker (RAD Game Tools / Epic Games) and is licensed
-   with that other game; by agreeing the user confirms the use is private and for themselves only; JoyPro never copies
-   or ships it. Yes / No; the answer is remembered for that file (UI settings), Settings > Games changes it ("use the
+   and the file, found in the same Steam library). When the GUI builds or updates the HLL Vietnam list it asks once
+   whether JoyPro may use that library on this PC to read Hell Let Loose: Vietnam's files. JoyPro never copies or
+   ships it. Yes / No; the answer is remembered for that file (UI settings), Settings > Games changes it ("use the
    Oodle library of another installed game", "Ask again"). Without a window to ask in nothing is assumed.
 3. With the yes the GUI passes `refresh-db --oodle-dll <path>`: the engine checks the name (`oo2core_<n>_win64.dll`),
    loads it **from where it is** (never copied), only in the refresh process, and logs it (steps and `JoyProLog`).
    Without it (no yes, no file, or `JOYPRO_OODLE_DLL=none` in tests) nothing is loaded.
 4. **Fallback: JoyPro's own table** (the pad keys of the three layouts and the pilot keys). In Xbox-pad mode only the
-   pad keys matter, so the fallback is complete for that mode. Fresh build on a test PC without the yes: 28 actions,
-   the same rows the game files gave with the borrowed library (the two medic pad actions were added to the table).
+   pad keys matter, so the fallback is complete for that mode. Fresh build without the yes: 28 actions, the
+   same rows the game files give (the two medic pad actions are in the table).
 
 Tests: `smoke\hllv.ps1` (a synthetic Steam library with a stand-in library: no load without `--oodle-dll`, a load
 attempt with it, the fallback either way, the game's own library first) and the GUI test
@@ -109,7 +107,7 @@ The reader (with the game's own library or the allowed one):
    only for the refresh.
 5. Without one, JoyPro writes its built-in table of the layouts above (build of 2026-10) and says so in the steps.
 
-Measured on a test PC on 2026-10-11 with the borrowed DLL: 313 mappings and 28 actions in 0.26 s.
+Measured with an Oodle library: 313 mappings and 28 actions in 0.26 s.
 
 ## Keyboard file
 `%LOCALAPPDATA%\HLLVietnam\Saved\SaveGames\EnhancedInputUserSettings.sav` (UE GVAS). Only changed mappings are stored.
@@ -146,7 +144,7 @@ Menus only: JoyPro's xbox mode with vJoy standing in for the HOTAS (relations on
 Checked: the planner pins layout A (Medic = A, Stability hold = B, Supply drop = D-pad right, cyclic pitch = left
 stick Y), XInput shows the pad and the forwarded stick, the pad's A passes "PRESS ANY BUTTON TO CONTINUE", B opens QUIT
 GAME, D-pad right moves the focus from ACCEPT to DISMISS (the orange focus box), A on DISMISS closes it, and B, A quit
-the game. 19/19 on 2026-10-11 (run `C:\Temp\jp2-e2e\runs\20261011-214410-release\hllv-xbox`). vJoy and HidHide were
+the game. 19/19 on 2026-10-11. vJoy and HidHide were
 unchanged afterwards, the save folders restored.
 
 Facts: a pad created **before** the game starts never reached the game in the first run (Steam Input or the game's
@@ -154,9 +152,9 @@ startup probably takes pads present at launch); the script creates the pad once 
 pad the main menu shows "B EXIT"; the main menu has "BROWSE ALL AVAILABLE DLC" (a store link: the script never presses
 A there).
 
-## Live check with the user (open)
+## Not checked in flight yet
 - Layout A with the virtual pad: collective on the triggers, cyclic, yaw, stability (B), supply drop.
 - Whether the right-stick yaw/look overlap in layout A disturbs flying.
 
-Research: real files and IoStore containers on a test PC (read-only), worldeka HLLV flight stick guide,
+Sources: the installed game's files and IoStore containers (read-only), worldeka HLLV flight stick guide,
 hllvtools.com/helicopter-controls.

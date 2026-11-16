@@ -14,18 +14,21 @@ Settings > Games > **Run setup again**. The walk-through for a new user is on
 
 ![The first-start setup: found, linked and missing games](shot:first-start)
 
-```mermaid
-flowchart TD
-  S["JoyPro starts"] --> D["engine games installs<br/>(Steam, launchers, Windows apps list,<br/>your own links)"]
-  D --> W["Window: one row per game<br/>found ones ticked"]
-  W --> T{"Your choice per game"}
-  T -->|untick a found game| H["hidden everywhere"]
-  T -->|Browse... / .exe...| L["linked folder =<br/>the installation"]
-  T -->|Controls saved in > Browse...| C["own config location"]
-  W -->|Done| E["engine games install set/clear<br/>games config set/clear<br/>games install disable/enable"]
-  E --> R["detect again, build the<br/>missing command lists"]
-  W -->|Later| N["nothing changes"]
-```
+| In each row | What happens |
+|---|---|
+| Untick **I have this game** | JoyPro hides the game everywhere. Your binds for it stay. |
+| **Browse...** or **.exe...** next to **Installation** | That folder is the game. Good for a copy on another drive. |
+| **Browse...** next to **Controls saved in** | JoyPro reads and writes the game's controls there. |
+
+Then press one of the three buttons at the bottom:
+
+:::flow
+| You press | What comes next |
+|---|---|
+| **Done** | JoyPro saves your games. At the first start, the welcome asks what you want to do. |
+| **Done, and set everything up for me** | JoyPro saves your games. Then the quick setup puts the important functions on your stick. |
+| **Later** | Nothing changes. At the first start, the welcome comes next. |
+:::
 
 :::layer beginner
 ## One row per game
@@ -39,12 +42,14 @@ Each row has the game's cover, its name and a status:
 What you can do:
 
 1. **Untick a found game** you do not have or do not care about: it is hidden everywhere in JoyPro (game cards, export
-   tiles, the watcher, game lists). Your binds for it stay in the profile.
+   cards, the watcher, game lists). Your binds for it stay in the profile.
 2. **A game installed somewhere else** (a portable copy, another drive): tick it and press **Browse...** next to
    **Installation** to pick its folder, or **.exe...** to pick the game's program or launcher.
 3. **Controls saved in**: some games keep their controls in your user folders. If yours are elsewhere, for example
    `Saved Games\DCS.openbeta` instead of `Saved Games\DCS`, press **Browse...** there.
 4. Press **Done**. **Later** closes the window and changes nothing.
+5. Or press **Done, and set everything up for me**: JoyPro saves your games and sets up your stick by itself. See
+   [[page:getting-started/quick-start.html|Quick start]].
 
 :::tip
 After **Done** JoyPro builds the command list of every game you have from your own installation. The Start page shows
@@ -78,6 +83,7 @@ row, [[cli:games install set]] (or `clear`), [[cli:games config set]] (or `clear
 :::
 
 <!-- entry: click:DoneClicked -->
+<!-- easy: Saves your games and closes this window. -->
 Saves your choices and closes the window: linked folders and config locations are written
 ([[cli:games install set]], [[cli:games config set]]), unticked found games are hidden and ticked ones shown
 ([[cli:games install disable]] / `enable`), then JoyPro detects the games again and builds the command lists of the
@@ -117,6 +123,22 @@ Written with **Done** ([[cli:games config set]]).
 Shown when the row has your own config location: forgets it, so JoyPro looks for the game's controls in the detected
 place again. Takes effect with **Done**.
 
+<!-- entry: bind:EasyWords -->
+<!-- easy: Big text and short sentences in tours and help. -->
+Only at the first start: **Easy words** switches on big cards and the shortest texts in the tours and the help. The first
+start's **Done, and set everything up for me** skips the welcome, where this switch is offered too; it is the same
+switch as in Settings > Tours and stays after a restart.
+
+<!-- entry: click:QuickPathClicked -->
+<!-- easy: Saves your games. Then JoyPro sets up your stick for you. -->
+Only at the first start: **Done, and set everything up for me** saves your games like **Done**, then JoyPro sets up your
+devices by itself for the games where nothing is assigned yet. It finds your stick, throttle and pedals, gives each its
+usual job and puts the important functions where pilots expect them (flying, engine, weapons, gear, flaps, brakes, trim,
+looking around, radio). You see the result in the setup window: **Use these buttons** puts them into JoyPro, **Write to my
+game** writes them to the game. A device JoyPro does not know is set up like a usual stick or throttle, and the window
+says so. Same as **Set it all up for me** on the Start page.
+
 <!-- entry: click:LaterClicked -->
+<!-- easy: Closes this window. Nothing changes. -->
 Closes the window and changes nothing: no folder is linked and no game is hidden. The window does not open by itself
 again at the next start; Settings > Games > **Run setup again** brings it back.

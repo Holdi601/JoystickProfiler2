@@ -6,7 +6,7 @@
 > device: Settings > Controls > device > category > cogwheel of the profile > Import (see "Getting the binds into the sim").
 
 ## Two games: MSFS 2020 and MSFS 2024
-JoyPro handles the two sims as two games side by side (both can be installed; a test PC has both on Steam):
+JoyPro handles the two sims as two games side by side (both can be installed at the same time):
 
 | | MSFS 2020 (`MSFS2020`) | MSFS 2024 (`MSFS2024`) |
 |---|---|---|
@@ -15,7 +15,7 @@ JoyPro handles the two sims as two games side by side (both can be installed; a 
 | Export target (`paths`) | the Steam `remote` folders of app 1250410 (`inputprofile_*`); the Store version's profiles are imported, not written | JoyPro's preset package `Community2024\joypro-input-profiles`, then the Steam `remote` folders of app 2537590; the export to the package also writes your own profiles the sim uses (Steam `remote` folder or Microsoft Store save, see "Writing your own MSFS 2024 profiles") and import files where those cannot be written (`Documents\JoyPro2\MSFS 2024 import files (2.2.7: Documents\JoyPro, moved at the next export)`, see "Getting the binds into the sim") |
 | Process (export refused while it runs) | `FlightSimulator` | `FlightSimulator2024` |
 | Catalog | `DB\MSFS2020\actions.tsv` | `DB\MSFS2024\actions.tsv` |
-| Aircraft list | `DB\MSFS2020\aircraft.tsv` (44 aircraft on a test PC) | `DB\MSFS2024\aircraft.tsv` (81) |
+| Aircraft list | `DB\MSFS2020\aircraft.tsv` (for example 44 aircraft) | `DB\MSFS2024\aircraft.tsv` (81) |
 | `refresh-db` reads | MSFS 2020's presets (`<install>\Input`, its Official packages) and locPak | MSFS 2024's presets (`fs-input-profiles`, `asobo-input-profiles-pc`) and locPak |
 
 Both use the same code (`engine\Games\MsfsIntegration.cs`, one instance per sim) and file reader, so either game
@@ -108,23 +108,23 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     put back fixed it.
 - **Getting the binds into the sim (since 2026-10-19, 2.2.6 report, MSFS 2024 Store):** "MSFS does not recognise any
   new relations generated from JP": relations made in JoyPro never showed up in Controls. Cause: the package preset
-  applies only where the sim has no record yet (above), and the tester's profile_00 (read only, copy) has records for
-  every connected device in every aircraft he flew: VMAX throttle, MOZA AB9, Total Controls MFBB and VPC Panel #2 with
-  his own profiles (slot flag 3, `inputprofile_<n>`) or with no preset, the T-Pendular-Rudder on its shipped preset,
-  the MFDs on theirs. So JoyPro's presets reached only aircraft he had never used with a device. The Store keeps his
+  applies only where the sim has no record yet (above), and a user's profile_00 (read only, copy) has records for
+  every connected device in every aircraft the user flew: VMAX throttle, MOZA AB9, Total Controls MFBB and VPC Panel #2 with
+  their own profiles (slot flag 3, `inputprofile_<n>`) or with no preset, the T-Pendular-Rudder on its shipped preset,
+  the MFDs on theirs. So JoyPro's presets reached only aircraft the user had never used with a device. The Store keeps the user's
   own profiles in its save containers, which JoyPro did not write before 2.2.9 (now it does: "Writing your own MSFS 2024 profiles").
   - **Import files** (`engine\Games\MsfsIntegration.ImportFiles.cs`): every export to the package (not a dry run) also
     writes, per device and category with binds, a profile in the sim's own format into
     `Documents\JoyPro2\MSFS 2024 import files` (`<JOYPRO_DATA_DIR>\MSFS 2024 import files` when set):
     `<device>_<guid8>_Airplanes.xml` / `_General.xml`. Base: the user's newest own profile of that device and category
-    (Steam remote folder or Store save, read only), so his other binds and the listing stay; JoyPro's binds go in by
+    (Steam remote folder or Store save, read only), so the user's other binds and the listing stay; JoyPro's binds go in by
     the export mode and ownership (kept per import file). Without an own profile: a new profile (`<Version Num="-1"/>`,
     `<FriendlyName>`, `<Device DeviceName GUID ProductID>` with the decimal product ID the sim noted or the USB PID,
     `<AircraftInfo CategoryName="AIRPLANE"/>` for airplanes) listing every action of the command list for the category.
     The name is "JoyPro <device> Airplanes|General". A step per file says what the sim does with the device now (from
     its records: "the sim keeps its own settings of this device for N aircraft ... import this file"), and the export
     ends with the steps: Settings > Controls, pick the device and the category (Airplanes or General), the cogwheel of
-    the profile (not the preset's; tester report on 2.2.7) > Import, pick the file (the sim imports only a file of the
+    the profile (not the preset's; report on 2.2.7) > Import, pick the file (the sim imports only a file of the
     same device and category). A step lists the files that are new or changed since the last export (only those need
     importing again). The GUI (Other
     Games, Export) shows the folder with "Open folder" and these steps. Test:
@@ -133,15 +133,15 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     for a device and category JoyPro could not update there (`--import-files` / GUI "Also write MSFS import files for
     every device": always). An import file of a device whose active profile JoyPro knows carries that profile's name
     (`<FriendlyName>`): the sim's Import then asks "a profile with that name already exists, overwrite?" and Yes puts
-    the binds into the user's profile (tester finding, MSFS 2024 Store; Import creates a new "JoyPro ..." profile
+    the binds into the user's profile (report, MSFS 2024 Store; Import creates a new "JoyPro ..." profile
     otherwise). The step says so ("Import it and confirm 'overwrite': your profile 'X' then has JoyPro's binds").
     Every bind goes into the category the sim lists its action in (the user's own profiles list every action of
     their contexts: `KEY_ACTIVE_PAUSE_TOGGLE` is in `INGAME_UI`, a General bind, also when the shared command list has
-    it in `PLANE` from MSFS 2020; tester report "Active Pause not in the sim"), and the file is read back: a bind that
+    it in `PLANE` from MSFS 2020; report "Active Pause not in the sim"), and the file is read back: a bind that
     did not land is named ("not written: <relation> (<action>) (General) - <reason>").  - Not verified in the sim: that its Import takes these files (format as its own profiles and exports; the menu path
     from the MS support article and the in-game help); not checked on a real Store install.
   - Re-import of JoyPro's own relations: relations made before 2.2.6 ("Microsoft Flight Simulator 2024 <action>") are
-    matched by node, not by name: an import into such a profile (tester's copy, 28 relations) added only the 2 new binds
+    matched by node, not by name: an import into such a profile (user's copy, 28 relations) added only the 2 new binds
     and kept every old name.
 - **2024 `profile_00`** (Steam `remote`): a binary tree. A node is an 8-byte name hash, a uint32 size (header included)
   and a payload: a container holds a uint32 count and child nodes, a leaf holds a value (strings NUL-terminated).
@@ -155,7 +155,7 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     composite ID `419c4be1028db14a`, preset file `e5374a443ee0986e`, category `dd0e07ae6ad0a4fc`, aircraft
     `6ef48b11820c125d`; slots `ae7f5b37a56a781c` (general), `8b57821791389404` (category), `6bc4c835749736a7`
     (aircraft) inside a record that carries the device fields itself. The file ends with 5 bytes after the tree.
-  - more fields (a tester's Store profile_00, 2026-10-19): slot flag `00d10becc027d54f` (0 none, 1 shipped preset, 3
+  - more fields (a user's Store profile_00, 2026-10-19): slot flag `00d10becc027d54f` (0 none, 1 shipped preset, 3
     own profile: the preset field then holds `inputprofile_<n>` and the name field its name), display name
     `877ddf5aa523fd04` (the preset's name, "TT:GENERIC.NONE" for none; often empty, also for the keyboard on the test
     PC's Steam copy, so it is not used), aircraft path `a8df1050ac9f14e5`. Under the root container `a532ec6925941962`:
@@ -173,8 +173,8 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
 - Cloud (Steam, Xbox, 2024 server) can revert local edits. New `inputprofile_*` files are not picked up (profile_00 references specific files): only edit existing ones.
 
 ## Writing your own MSFS 2024 profiles (since 2026-10-20)
-Tester (MSFS 2024 Microsoft Store): importing JoyPro's file in Controls worked but made a second profile "JoyPro <device>
-Airplanes"; his default profile should have the binds. The export (`engine\Games\MsfsIntegration.UserProfiles.cs`) now
+A user's report (MSFS 2024 Microsoft Store): importing JoyPro's file in Controls worked but made a second profile "JoyPro <device>
+Airplanes"; the default profile should have the binds. The export (`engine\Games\MsfsIntegration.UserProfiles.cs`) now
 writes the profile the sim uses for every device and category of the export; `--user-profiles false` (GUI: "Write into
 my MSFS profiles", on by default, remembered in `export-settings.json`) turns it off. JoyPro's package presets stay (they
 reach aircraft the sim has not set up for a device yet).
@@ -183,7 +183,7 @@ reach aircraft the sim has not set up for a device yet).
   flag 3 and the name `inputprofile_<n>`, which is the Steam file name and the Store container name. Per device and
   category every own profile the records name is written (Airplanes: the category slot of the records with category
   AIRPLANE; General: the general slot), each for the aircraft of its records (see "Per-aircraft binds"). On the
-  tester's save every VMAX record (4 aircraft) names `inputprofile_0674863296` ("Iain's VMAX Prime General") and
+  user's save every VMAX record (4 aircraft) names `inputprofile_0674863296` ("Iain's VMAX Prime General") and
   `inputprofile_1407711872` ("Iain's VMAX Prime Airplane"). Aircraft-specific slots are not written, profile_00 never,
   and JoyPro makes no new profile. No record or none naming an own profile: no direct write, the import file has the
   binds (with the reason).
@@ -209,7 +209,7 @@ reach aircraft the sim has not set up for a device yet).
   logbooks, other profiles) and other titles are never touched. Write layout as libNOM.io (No Man's Sky save library,
   `PlatformMicrosoft_Write.cs`: container number + 1, synced -> modified, index sync state "modified", the old cloud
   blob id in the first slot) and GamePassStorage (`docs/wgs-format.md`: states, flags, write order, strictly growing
-  index time). Verified on a copy of the tester's real save (21 containers): JoyPro's write changed exactly the two
+  index time). Verified on a copy of a user's real save (21 containers): JoyPro's write changed exactly the two
   entries and the two profile blobs (a 5-line XML diff each, ATC Panel Choice 0 on button 2 into the General profile,
   gear into the Airplanes profile), the index re-parses with every other byte equal, JoyPro's own reader and a second
   write (state 2, ids differing) work.
@@ -224,11 +224,11 @@ reach aircraft the sim has not set up for a device yet).
   conflict: the sim or the Xbox app asks which save to keep; keep the one of this PC to keep JoyPro's binds (the other
   one drops them; export again). JoyPro refuses to write while the conflict flag is set. Not verified with a live sync.
 - **Steam (app 2537590):** the Store container names are the file names of the sim's save layer (`profile_00`,
-  `inputprofile_<n>`, `sr_logbook`; the test PC's Steam remote folder holds `profile_00`, `localprofile`, `datausage`,
+  `inputprofile_<n>`, `sr_logbook`; a Steam install's remote folder holds `profile_00`, `localprofile`, `datausage`,
   `sr_logbook` and lists them in `remotecache.vdf`), and a Store profile blob is the same plain XML as 2020's Steam
   file. So a profile made in Controls is `remote\inputprofile_<n>`, named in profile_00 like in the Store save; the
   export edits that file in place (backup `.jpbak` and backup set first, read back, put back on failure). Steam Cloud
-  uploads the changed file on the next sync. The test PC's Steam install has no own profile yet, so this is not checked
+  uploads the changed file on the next sync. A Steam install without an own profile does not show this, so this is not checked
   with a real Steam profile (only the layout of the remote folder and the Store's names).
 - **Result:** per profile a line with its aircraft ("MSFS 2024 'VPC VMAX Prime Throttle' (General): your profile 'Iain's
   VMAX Prime General' (C172, Bonanza G36): 6 bind(s) ..."), the JSON `ProfileUpdates` (device, category, profile, the
@@ -254,7 +254,7 @@ reach aircraft the sim has not set up for a device yet).
   catalog lacks are listed in a step (refresh the DB). Limited relations never go into JoyPro's preset package or the
   import files (both apply to every aircraft); `--aircraft <key>` still writes the ones limited to that aircraft for all.
   Import / scan: several own profiles of a device and category that the records name are all read. Relations are
-  general (all aircraft) unless the user splits them (decision 2026-10-20): a bind in only some of the profiles is
+  general (all aircraft) unless the user splits them: a bind in only some of the profiles is
   imported for all aircraft too and listed in the result (JSON `OnlyInAircraft`: relation, action, device, input, the
   aircraft and `LimitCommand`; text "Only in the sim's profile(s) of C172, Bonanza: <relation> (<device> <input>),
   imported for all aircraft. Limit: engine relations aircraft set "<relation>" --node MSFS2024:<id> --only "<a>|<b>""),
@@ -285,11 +285,11 @@ reach aircraft the sim has not set up for a device yet).
   with no aircraft in the node) ticks those aircraft alone: the only case JoyPro splits on its own, since the action
   exists only there. The import limits a relation of such an action to those aircraft too, without listing it. Test:
   `Steam2024_RefreshDb_ReadsAddonPackagePresets_ActionsTaggedWithTheirAircraft` (synthetic Community2024 aircraft
-  package with a preset, a packed .fsarchive package). Not checked against a real add-on (none installed on a test PC): the
+  package with a preset, a packed .fsarchive package). Not checked against a real add-on (none was at hand): the
   ids and contexts real add-ons use in their presets are unverified; lowercase ids would be left out.
 - **Import, scan and the watcher's diff** read the user's own profile as the truth of its device and category: JoyPro's
   package preset of the same device and category is not read beside it, and a package preset of a device the sim has
-  records of counts only where a record names it (tester: deleted ATC Panel Choice 0 in the sim, the diff showed 0
+  records of counts only where a record names it (a user deleted ATC Panel Choice 0 in the sim, the diff showed 0
   changes; an import into a clean profile brought back two JoyPro-made relations the sim shows nowhere). With several
   own profiles of a device and category the one the records name wins over the newest. A Community2024 folder given as
   the export path means the package (one watcher record; an export there and an import kept two, and the diff compared
@@ -306,7 +306,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   int32 length + UTF-16LE) lists the containers; `<folder GUID>\container.<n>` lists the blobs (uint32 4, int32 count;
   per blob 64 UTF-16 characters of name, file GUID, the GUID again); a blob is the file named by its GUID (32 hex
   digits). Format as the Store-save tools document it [SRC XGP-save-extractor]; not checked against a real MSFS Store
-  install (none on a test PC). Every listed blob whose content is an input profile is read (plain XML, UTF-16 with BOM,
+  install (none was at hand). Every listed blob whose content is an input profile is read (plain XML, UTF-16 with BOM,
   or zlib/gzip-compressed, decompressed into `<data>\Cache\MSFS\wgs`); an index of another layout makes JoyPro check
   every GUID-named file instead (warning). The engine is a .NET Framework program: paths over 260 characters are not
   read (a real blob path is about 205 characters plus the user name).
@@ -325,17 +325,17 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   `KEY_ACTIVE_PAUSE_TOGGLE` in PLANE from MSFS 2020; MSFS 2024 binds it in `INGAME_UI`) gets the general context, so the
   export writes it into the Transversal preset.
 - **Unbound actions too (since 2026-10-19, 2.2.6 report):** the relation editor found only "ATC Panel Choice 0/1" and
-  "Display ATC" for "atc", while the sim lists ATC PANEL CHOICE 0 ... 9: the tester's command list was built by an
+  "Display ATC" for "atc", while the sim lists ATC PANEL CHOICE 0 ... 9: a user's command list was built by an
   older JoyPro (flight contexts only) and an import added only bound actions. A user's MSFS 2024 profile (Steam, Store,
   an exported file; not a preset) lists every action of its contexts, unbound ones as empty `<Action/>`, so import and
   scan now add every listed action of a managed context with the context the sim lists it in (title from the locPak),
   and give a known action whose context the sim lists only elsewhere (general) that context (`KEY_PUSHBACK_SET`:
   PLANE from MSFS 2020, `SIM_SHORTCUT` in 2024); flight contexts are never moved. Menu, world map and developer contexts
-  stay out (`KEY_ATC_MENU_OPEN` is listed only in `DEBUG`). On the tester's copy (8 profiles of connected devices): his
+  stay out (`KEY_ATC_MENU_OPEN` is listed only in `DEBUG`). On a user's copy (8 profiles of connected devices): his
   list 1399 -> 2007 actions after one scan. Test: `MsfsProfileImportTests.Store2024_UnboundActionsTheProfilesList_JoinTheCommandList`.
 - **Devices that are not connected (since 2026-10-19):** MSFS keeps a profile of every device it ever saw (Store saves,
   Steam remote files) while the sim lists only the connected ones; a 2.2.1 import brought relations of four devices the
-  tester no longer had. Import and scan now take the profiles of connected devices (the profile's instance GUID among
+  user no longer had. Import and scan now take the profiles of connected devices (the profile's instance GUID among
   the connected DirectInput devices) and name the others in a step ("Profiles of N device(s) that are not connected were
   left out ..."). `--include-disconnected` (GUI: "Also import devices that are not connected" on the import wizard and
   the Other Games form, off by default, remembered with the export settings) imports them too. With no device
@@ -344,7 +344,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   they do not have this problem and keep their import as it was.
 - **Devices on the sim's default preset (since 2026-10-19):** MSFS saves a device's profile only once the user changes
   something; an untouched device runs on the preset the sim ships for it. A 2.2.3 import (MSFS 2024) brought only the
-  four devices the tester had customized, not his T-Pendular-Rudder (brakes L-Axis Y / X, rudder L-Axis Z, sidebar
+  four devices the user had customized, not their T-Pendular-Rudder (brakes L-Axis Y / X, rudder L-Axis Z, sidebar
   "T-Pendular-Rudder presets config"). Now import and scan (`engine\Games\MsfsSimDefaults.cs`) take, for every
   connected device and category without an own profile, the default preset the sim uses: the shipped presets
   (`MsfsGameData.PresetFiles`: 2024 `fs-input-profiles`, `asobo-input-profiles-pc`, `InputProfiles\Categories\<Category>\*.xml`)
@@ -359,14 +359,14 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   (Airplanes)"). The preset's `<Axes>` page is not imported as tuning (the sim ignores it); invert flags are. Not with
   `--path <file>` or `--game-profile`. With no saved profile at all the import no longer fails when defaults were
   found (otherwise a step adds that none of the connected devices has a default preset). Read only: the shipped presets are never written; export goes to JoyPro's package as before (the defaults
-  are written there like any other bind). Checked 2026-10-19 on the Steam install of a test PC: 100 airplane and 78
+  are written there like any other bind). Checked 2026-10-19 on a Steam install: 100 airplane and 78
   transversal presets; none of the connected devices there (VKB 231D:0125, Virpil 3344:80CB, WinWing 4098:BE04,
   MFG, VPforce, vJoy) has one, a TPR (044F:B68F) and a Logitech Extreme 3D (C215, also a Transversal preset) given as
   test devices got theirs. MSFS 2020: same code over its presets (no categories); its shipped presets were not checked
-  on a real install (none on a test PC), so a 2020 preset must also carry the device's name. Test:
+  on a real install (none was at hand), so a 2020 preset must also carry the device's name. Test:
   `MsfsProfileImportTests.Steam2024_DevicesOnTheSimsDefaultPreset_AreImported` (fixture `engine\tests\fixtures\msfs\shipped-presets`).
-- **Only presets the sim really uses (since 2026-10-19, after 2.2.4):** a 2.2.4 import (MSFS 2024 Microsoft Store) gave a tester relations
-  for his two Thrustmaster MFD Cougar panels from their shipped presets, while the sim shows no binds for them.
+- **Only presets the sim really uses (since 2026-10-19, after 2.2.4):** a 2.2.4 import (MSFS 2024 Microsoft Store) gave a user relations
+  for their two Thrustmaster MFD Cougar panels from their shipped presets, while the sim shows no binds for them.
   Evidence (MSFS 2024 install, read only): the MFD presets look like the TPR's: `MFD_COUGAR_Left_2024_Planes.xml`
   (`ProductID="B351"`, also a Transversal one) and `MFD_COUGAR_Right_2024_Planes.xml` (`B352`, no Transversal one;
   Left and Right have their own product IDs), `Primary="1"` like `T-Pendular-Rudder_2024_Planes.xml` (`B68F`), and
@@ -374,18 +374,18 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   files cannot tell why the sim applies one and not the other. What the sim applies is in profile_00: per device and
   aircraft the three preset slots (general, category with its category name, aircraft) each hold the file name of the
   preset the sim applies, in lower case (`keyboard_2024_planes.xml`, `mouse_2024_transversal.xml`), or a 0 byte; a
-  flag beside it is 1 when a preset is set. On the test PC's Steam profile_00 the keyboard and mouse slots name their
+  flag beside it is 1 when a preset is set. On a Steam profile_00 the keyboard and mouse slots name their
   presets in 52 airplane / 61 transversal records, the slots of the 13 joysticks (none with a shipped preset) are all
   empty.
-  **2.2.5 report (same tester, Store):** the MFDs still came in, because one record named their presets. His
+  **2.2.5 report (same user, Store):** the MFDs still came in, because one record named their presets. His
   profile_00 (read only, copy): the current T-Pendular-Rudder (044F:B68F) has 4 records (Bonanza G36, C172 cargo,
   C172 passengers, A320neo), the category slot of every one names `t-pendular-rudder_2024_planes.xml` with the display
   name "T-Pendular-Rudder 2024 Planes", general slot none ("TT:GENERIC.NONE": no Transversal preset), aircraft slot
   none. F16 MFD 1 (B351) and MFD 2 (B352) have 4 records each: in 3 the general (MFD 1) and category slots carry flag 1
-  with an empty file (a state seen nowhere else, also not on the test PC), only the A320neo record names
+  with an empty file (a state seen nowhere else), only the A320neo record names
   `mfd_cougar_left_2024_transversal.xml` / `mfd_cougar_left_2024_planes.xml` (MFD 2: `mfd_cougar_right_2024_planes.xml`)
   without a display name, its aircraft slot "TT:GENERIC.NONE". The per-device entries outside the records are empty
-  for all three (also for the keyboard on the test PC, which runs on its preset), and "TT:GENERIC.NONE" in an
+  for all three (also for a keyboard that runs on its preset), and "TT:GENERIC.NONE" in an
   aircraft slot also sits beside the VMAX throttle's own profile that the sim uses, so neither marks "none". The
   sim does not use the MFD presets (no binds in Controls), so a preset counts only when the records agree.
   Rule (`MsfsSimProfile.cs` records, `MsfsSimDefaults.ForConnectedDevices` / `Votes`):
@@ -398,7 +398,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   - some do, some do not (or different ones): not known, not imported, a step: "F16 MFD 1: the sim's records of this
     device (one per aircraft) name its default preset 'MFD COUGAR Left 2024 Planes' (Airplanes) in only 1 of 4, ...";
     `--include-sim-defaults` takes the one most records name ("(--include-sim-defaults: the sim's records name it
-    for 1 of 4 aircraft)"). On his copy: the rudder's preset is imported, the MFDs get nothing.
+    for 1 of 4 aircraft)"). On that copy: the rudder's preset is imported, the MFDs get nothing.
   - no records of the device or none of that category (no profile_00 found, a format JoyPro cannot read): unknown, not imported, a step names the
     preset and the opt-in: `--include-sim-defaults` (GUI: "Also import default presets the sim may not use" beside
     "Also import devices that are not connected", import wizard and Other Games page, remembered in
@@ -406,7 +406,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
     records that all name no preset.
   - profile_00 sources: `<Steam>\userdata\<id>\<app>\remote\profile_00` and every blob of the Store save folder whose
     content (plain or zlib/gzip-compressed) is the same tree (a step says which were read). The Store blob was not
-    checked against a real Store install (none on a test PC): the tester's TPR keeps its preset by default only if his
+    checked against a real Store install (none was at hand): a user's TPR keeps its preset by default only if his
     Store profile_00 is found and names it; otherwise the opt-in brings it back.
   Tests: `MsfsProfileImportTests.Steam2024_DevicesOnTheSimsDefaultPreset_AreImported` (rudder and throttle named,
   MFD slots empty), `..._WithoutTheSimsRecords_DefaultPresetsOnlyOnRequest_StoreRecordsAreRead` (profile_00 built
@@ -415,7 +415,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
 - **Skipped devices:** the profiles of devices that are not connected are left out before JoyPro picks one profile per
   device, so "Device 'VPC CM3 Throttle' has 2 MSFS profiles; imported the most recently saved one" no longer appears
   for a device that was not imported (2.2.5 report).
-- A tester's case as a test (`MsfsProfileImportTests.Steam2024_GeneralBindsAreImported_...`): VPC VMAX Prime Throttle
+- A user's case as a test (`MsfsProfileImportTests.Steam2024_GeneralBindsAreImported_...`): VPC VMAX Prime Throttle
   with flaps / throttle 1 / throttle 2 axes (airplanes) and cockpit view zoom axis, reset / toggle cockpit view, toggle
   external view and active pause (General), plus an old MT-50CM3 stick that is not connected.
 - Nothing found: the error names every folder searched (package, Steam remote folders, the Store save folder with the
@@ -426,7 +426,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
 - Config watcher (`engine sync`): besides the export target it watches `inputprofile_*` of the Steam remote folders and
   `containers.index` of the Store save folder (any container save changes it; an empty diff is accepted silently), and
   `sync diff` reads the game as import does.
-  **2.2.6 report ("JP does not always detect changes made in-game"):** the tester's logs show MSFS 2024 "untracked"
+  **2.2.6 report ("JP does not always detect changes made in-game"):** a user's logs show MSFS 2024 "untracked"
   all day: the export's record failed ("Could not record the exported config of MSFS2024": a file of the package was
   refused by Windows, "not encrypted as expected", the EFS refusal of a Store install), and a game only imported had no
   record, so the watcher never watched it. Now a file Windows does not let JoyPro read gets a fingerprint stamp from
@@ -435,7 +435,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   is reported once after the writes; a later write of the sim or the Xbox app after the game closed starts a new
   check. Tests: `MsfsProfileImportTests.Store2024_WatcherRecord_SurvivesUnreadableFiles_AndASimSaveIsDetected`,
   `GameConfigWatcherTests.StoreSave_NewBlobNamesAndReplacedIndex_IsReportedOnce`.
-  **2.2.7 / 2.2.8 report ("no prompt came up in JP at all"):** the tester's logs show the chain working up to the diff:
+  **2.2.7 / 2.2.8 report ("no prompt came up in JP at all"):** a user's logs show the chain working up to the diff:
   MSFS 2024 tracked and watched, containers.index deleted and created again on every save (also 3 to 8 s apart for
   ~15 s after the sim closed: the Xbox app), `FlightSimulator2024` found and its exit awaited, `sync status` "changed";
   added binds were offered, but a bind removed in the sim gave "Diff MSFS2024: 0 change(s)" and was accepted silently
@@ -510,7 +510,7 @@ Scheme [INF]: base 0x100 POV, 0x200 slider, 0x300 R-axis, 0x400 L-axis; +0x10 pe
 AIRCRAFT, BASIC_CONTROL(_HELICOPTER/_LIGHTER_THAN_AIR), INSTRUMENTS_CONTROL, PLANE, HELICOPTER, GLIDER, LIGHTER_THAN_AIR, RUDDER_AXIS, SURFACES(_HELICOPTER/_LIGHTER_THAN_AIR), THROTTLE; 2024 also AIRCRAFT_PC, SURFACES_GYRO, AIRCRAFT_ACTIVE_INTERACTION, HELICOPTER_ACTIVE_INTERACTION. Everything else (cameras, MENU, MODES, DRONE, SLEW, DEBUG, ATC) is general.
 
 ## Managed contexts (since 2026-10-19)
-Until 2.2.1 JoyPro read and wrote only the flight contexts; a tester's cockpit view zoom axis, view toggles and active
+Until 2.2.1 JoyPro read and wrote only the flight contexts; a user's cockpit view zoom axis, view toggles and active
 pause (the sim's "General" page) were not imported. Now JoyPro manages every context except the sim's own navigation
 and developer ones (`MsfsIntegration.IsManagedContext`):
 - **Left alone:** `MENU`, `MENU_*` (menu navigation), `WORLDMAP_*` (world map), `DEBUG`, `DEVMODE*`, `EDITOR_*`
@@ -552,7 +552,7 @@ and developer ones (`MsfsIntegration.IsManagedContext`):
   after the new title. The lists already on a PC get the readable titles with the next `refresh-db` (GUI: Games > DB
   refresh); nothing is renamed on load. Where the locPak is: Steam `<MSFS 2024 install>\Packages\fs-base\en-US.locPak`
   (2.2 MB, 2026-10), MSFS 2020 `%APPDATA%\Microsoft Flight Simulator\Packages\Official\Steam\fs-base\en-US.locPak` (the
-  `InstalledPackagesPath` of UserCfg.opt). Fresh build on a test PC (2026-10-12, temp data folder): MSFS 2024 1715
+  `InstalledPackagesPath` of UserCfg.opt). Fresh build (2026-10-12, temp data folder): MSFS 2024 1715
   menu names + 52 from the event name, MSFS 2020 1555 + 201. Every search hit carries the event id next to the title
   (`Id`); the relation editor finds the primary flight axes first (docs/relation-builder.md "Primary axes"). **Since 2026-10-12 the refresh also adds every flight event the
   locPak names but no preset binds** (most aircraft systems: autopilot, radios, lights, fuel, engines, G1000 and GPS
@@ -562,7 +562,7 @@ and developer ones (`MsfsIntegration.IsManagedContext`):
   multiplayer, the on-foot character, failures and blockages, recording; the context is LIGHTER_THAN_AIR (airship,
   balloon, burner), HELICOPTER (heli, rotor, collective, cyclic, auto hover), GLIDER (water ballast, tow plane), PLANE
   (the plane-only systems of the presets: liquid dropping, grapple hook, skydive lights, G limiter, ...), else AIRCRAFT.
-  Fresh build on a test PC (2026-10-12): MSFS 2024 1739 actions (presets 360 + 1379 named), MSFS 2020 1580; of the
+  Fresh build (2026-10-12): MSFS 2024 1739 actions (presets 360 + 1379 named), MSFS 2020 1580; of the
   development list (from real exports) 1343 / 1195 ids are rebuilt, and the guessed context matches it for 91 % of the
   locPak-only events (most others are MSFS 2020 INSTRUMENTS_CONTROL rows of the shared development list). Check 2026-10-10 (2024 build of 2026-10-04): the 720 presets of both sims bind 1197 actions; every flight-context one was already in the catalog except 4 MSFS 2020 PLANE actions (back to fly, flashlight, pushback, UI window mode), now added. The locPak names 2736 KEY_ events; most of the rest are camera, menu, debug, VR and SimConnect-only events (e.g. `KEY_AXIS_THROTTLE_SET`; the 2024 Controls menu offers `KEY_THROTTLE_AXIS_SET_EX1`).
   **General events only the locPak names (since 2026-10-19):** with a full General profile of the user read (it lists
@@ -570,11 +570,11 @@ and developer ones (`MsfsIntegration.IsManagedContext`):
   Steam with no own profile) an event joins with the context of the known general actions sharing at least its first
   two name words, when two thirds of them agree (`KEY_INSTRUMENT_LOOK_UP` -> `INSTRUMENTS_CAMERA` like
   `KEY_INSTRUMENT_LOOK_DOWN`; `MsfsGameData.GuessGeneralContext`), else it stays out. Checked against a full General
-  listing of a tester's profile: of the 720 general events only the locPak names, 490 sit in the sim's debug
+  listing of a user's profile: of the 720 general events only the locPak names, 490 sit in the sim's debug
   contexts, 170 in managed ones; the rule places 63 right and 14 wrong (mostly debug ones), the rest stays out; an
-  import of a General profile later corrects a wrong guess. Counts (2026-10-19): a test PC's Steam install without own
-  profiles: development list 1378 -> refresh 2165 before, 2420 now (ATC Panel Choice 0 ... 9 in both); with the
-  tester's 18 Store profiles 2398 (no guesses: his General profile lists everything). Test:
+  import of a General profile later corrects a wrong guess. Counts (2026-10-19): a Steam install without own
+  profiles: development list 1378 -> refresh 2165 before, 2420 now (ATC Panel Choice 0 ... 9 in both); with
+  18 Store profiles 2398 (no guesses: their General profile lists everything). Test:
   `MsfsProfileImportTests.Refresh2024_LocPakOnlyGeneralEvents_TakeTheContextOfTheirNameGroup`.
 
 ## Aircraft lists (`DB\MSFS2020\aircraft.tsv`, `DB\MSFS2024\aircraft.tsv`, `engine\Games\MsfsAircraft.cs`)

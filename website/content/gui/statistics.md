@@ -16,28 +16,28 @@ bottom bar**.
 
 ![The Statistics page](shot:statistics)
 
+| Game | What JoyPro reads (never changes) |
+|---|---|
+| DCS World | its log, logbook and tracks |
+| IL-2 | the mission reports |
+| X-Plane | the logbook |
+| Elite Dangerous | the journals |
+| Star Citizen | its game log |
+| Tacview | the recorded flights |
+| Steam | the playtime of your games |
+
 ```mermaid
-flowchart LR
-  subgraph Games["Your games write (read only)"]
-    A["DCS dcs.log, logbook, tracks"]
-    B["IL-2 mission reports"]
-    C["X-Plane logbook"]
-    D["Elite journals, Star Citizen Game.log"]
-    E["Tacview .acmi"]
-    F["Steam playtime"]
-  end
-  Games --> H["engine usage harvest<br/>(at start, after a game closed,<br/>Read the games' logs now)"]
-  H --> S["Usage store in JoyPro's data folder<br/>sessions, totals, exports"]
-  S --> T["engine usage stats"]
-  T --> P["Statistics page"]
-  S --> R["engine usage ranking"]
-  R --> X["Auto Assign, Auto Group, Setup wizard:<br/>new aircraft laid out like your most used one"]
+flowchart TD
+  G["Your games' logs<br/>(the table above)"] --> S["JoyPro reads them:<br/>at start, after a game closes,<br/>or with the button<br/>Read the games' logs now"]
+  S --> P["The Statistics page"]
+  S --> R["Your most used aircraft:<br/>new aircraft can be<br/>laid out like it"]
+%% caption: JoyPro only reads what your games wrote. Everything stays on your PC.
 ```
 
 :::layer beginner
 ## What is on the page
 
-- **Tiles** at the top: hours played in total (and how many of them your games logged themselves), sessions, the most
+- **Cards** at the top: hours played in total (and how many of them your games logged themselves), sessions, the most
   played game, the longest streak.
 - **Hours per game**: one bar per game, from the game's own log or Steam's playtime, whichever is higher.
 - **Top 10 aircraft, ships and vehicles**: only games that log what you fly (DCS, IL-2, X-Plane, Falcon BMS, Elite

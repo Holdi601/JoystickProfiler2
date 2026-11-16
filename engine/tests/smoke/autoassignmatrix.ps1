@@ -45,7 +45,7 @@ try {
             Assert-NotMatch $amPlan.Output "\(mfd\.(left|right)\.osb\.[TBLR]\d+\) => (?!MFD__)" "an MFD key got a function that is no MFD function."
         }
         if ($amSet -eq "mode-switch-small") {
-            Assert-Match $amPlan.Output "phase layer\(s\) on a mode switch" "--phase-layers on made no phase layer on the X56 throttle's switch."
+            Assert-Match $amPlan.Output "phase layer\(s\) on a mode switch" "--phase-layers on made no phase layer on the Bravo's toggle switch (the X56's toggles spring back)."
             Assert-Match $amPlan.Output "\[phase layer: Air to (air|ground)\]" "the plan does not name the phase of its layer."
         }
     }
@@ -57,7 +57,7 @@ try {
     Assert-True ($amApply.ExitCode -eq 0) ("setup apply failed: " + $amApply.Output)
     $amAuto = Run-Engine @("--profile", $amProfile, "relations", "auto-assign", "--overwrite", "--no-style", "--phase-layers", "on", "--dry-run", "--text")
     Assert-True ($amAuto.ExitCode -eq 0) ("relations auto-assign --phase-layers on failed: " + $amAuto.Output)
-    Assert-Match $amAuto.Output "JoyPro Mode A2(A|G) = X56 Rhino Throttle" "Auto Assign made no phase layer on the throttle's mode switch."
+    Assert-Match $amAuto.Output "JoyPro Mode A2(A|G) = Bravo Throttle Quadrant" "Auto Assign made no phase layer on the throttle's mode switch."
     $amBadPhase = Run-Engine @("--profile", $amProfile, "relations", "auto-assign", "--phase-layers", "sometimes", "--dry-run")
     Assert-True ($amBadPhase.ExitCode -ne 0) "relations auto-assign accepted --phase-layers sometimes."
 

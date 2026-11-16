@@ -266,19 +266,22 @@ public sealed class SetupWizardPlannerTests
         f16First.Functions["radar_unlock"] = hatLover;
         f16First.Options.Priorities = [["F-16C_50"], ["FA-18C_hornet"]];
         SetupPlan a = SetupPlanner.Plan(f16First);
-        Assert.Equal("stick.hat.cms.up", Placed(a, "cms_fwd").Control);
-        Assert.NotEqual("stick.hat.cms.up", Placed(a, "radar_unlock").Control);
+        // (countermeasures are planned per aircraft: the F-16's CMS FWD wins the hat)
+        Assert.Equal("stick.hat.cms.up", Placed(a, "cms_fwd", "F-16C_50").Control);
+        // (the F-15C's own CMS FWD and the radar unlock share the F-15C: never both on the hat)
+        Assert.False(Placed(a, "radar_unlock").Control == "stick.hat.cms.up" && Placed(a, "cms_fwd", "F-15C").Control == "stick.hat.cms.up");
         SetupQuality f16 = a.Quality.Single(q => q.Aircraft == "F-16C_50");
         SetupQuality f18 = a.Quality.Single(q => q.Aircraft == "FA-18C_hornet");
         Assert.Equal(0, f16.Tier);
-        Assert.True(f16.Score > f18.Score);
+        // (with per-aircraft countermeasures the F/A-18's radar unlock may share the hat with the F-16's CMS FWD)
+        Assert.True(f16.Score >= f18.Score);
 
         SetupRequest f18First = Request(devices, inputs, commands);
         f18First.Functions["radar_unlock"] = hatLover;
         f18First.Options.Priorities = [["FA-18C_hornet"], ["F-16C_50"]];
         SetupPlan b = SetupPlanner.Plan(f18First);
         Assert.Equal("stick.hat.cms.up", Placed(b, "radar_unlock").Control);
-        Assert.NotEqual("stick.hat.cms.up", Placed(b, "cms_fwd").Control);
+        Assert.NotEqual("stick.hat.cms.up", Placed(b, "cms_fwd", "F-15C").Control);
 
         // Unordered = equal weight: both aircraft in one tier.
         Dictionary<string, int> tierOf;
@@ -324,6 +327,41 @@ public sealed class SetupWizardPlannerTests
         Assert.Equal("throttle.hat.1.up", f18.Control);
         Assert.Equal(1.0, f16.RealMatch);
         Assert.Contains("cockpit database", one.CockpitSource);
+    }
+
+    // ---- head tracking (docs/setup-wizard.md#head-tracking) ----
+
+    [Fact]
+    public void HeadTracking_YesSpendsNoInputOnLookingAround_NoPutsTheSnapViewsOnAHat()
+    {
+        List<SetupDevice> devices = [Device(Stick, "stick", "right"), Device(Throttle, "throttle", "left")];
+        List<SetupInput> inputs = [.. StickInputs(Stick, 4), .. ThrottleInputs(Throttle)];
+        (string, string)[] commands = [("view_snap_forward", "F-16C_50"), ("view_snap_back", "F-16C_50"), ("view_snap_left", "F-16C_50"), ("view_snap_right", "F-16C_50"), ("view_center", "F-16C_50")];
+        Func<bool, SetupPlan> plan = tracking =>
+        {
+            SetupRequest request = Request(devices, inputs);
+            foreach ((string id, string role) in new[] { ("view_snap_forward", "up"), ("view_snap_back", "down"), ("view_snap_left", "left"), ("view_snap_right", "right") })
+            {
+                SetupFunction snap = Function(id, id, "throttle", "throttle.hat.*." + role + ",stick.hat.*." + role, group: "snapview:" + role);
+                snap.Crit = "instant";
+                request.Functions[id] = snap;
+            }
+            request.Functions["view_center"] = Function("view_center", "View Center", "panel", "panel.button.*,stick.button.*", "occasional");
+            foreach ((string function, string aircraft) in commands)
+                request.Commands.Add(new SetupCommand { Function = function, Aircraft = aircraft, Game = "DCS", Action = "cmd_" + function, Status = "confirmed", Frequency = request.Functions[function].Frequency });
+            request.Options = new SetupOptions { Games = ["DCS"], Modifiers = 0, PreferFewer = true, HeadTracking = tracking };
+            return SetupPlanner.Plan(request);
+        };
+
+        SetupPlan without = plan(false);
+        List<SetupPlanRelation> snaps = without.Placed.Where(r => r.Function.StartsWith("view_snap_", StringComparison.Ordinal)).ToList();
+        Assert.Equal(4, snaps.Count);
+        Assert.All(snaps, r => Assert.Equal(string.Empty, r.Modifier));
+        Assert.Single(snaps.Select(r => r.Device + "|" + r.Control.Substring(0, r.Control.LastIndexOf('.'))).Distinct());
+
+        SetupPlan with = plan(true);
+        Assert.DoesNotContain(with.Relations, r => r.Function.StartsWith("view_snap_", StringComparison.Ordinal));
+        Assert.Contains(with.Relations, r => r.Function == "view_center");
     }
 
     // ---- panels, existing binds, determinism, the plan file and the review ----

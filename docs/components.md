@@ -8,14 +8,13 @@ runs it. Nothing is downloaded or installed at startup, in the background or wit
 |---|---|---|---|
 | vJoy | virtual joystick driver | Virtual Joystick page: games set to "vJoy" | everything else |
 | HidHide | hides chosen game controllers from chosen programs (Nefarius) | Virtual Joystick page: "Hide the real devices" | everything else |
-| ViGEmBus | virtual Xbox 360 controller driver (Nefarius) | Virtual Joystick page: games set to "Xbox pad" | everything else |
+| ViGEmBus | virtual Xbox 360 controller driver (Nefarius); the card calls it "a small free helper" that makes the pretend controller | Virtual Joystick page: games set to "Xbox pad" | everything else |
 | Local AI model (llama.cpp + GGUF) | optional language model (Settings > Local AI) | free sentences in Manage/Edit with AI, the JoyPro assistant, Group by description | the offline rules (always work) |
 | .NET Framework 4.8 | Windows component | the engine (needed by JoyPro) | - |
 | BYOJoystick (VTOL VR mod, with the free VTOL VR Mod Loader) | HOTAS support inside VTOL VR | VTOL VR beyond rudder and toe brakes | every other game |
 
-BYOJoystick is not downloaded by JoyPro: it has no license (all rights reserved by its author) and its only official
-binary source is the Steam Workshop. The VTOL VR card's **Install BYOJoystick** shows what it is, the source, the size
-Steam lists and the license situation; after the user's tick JoyPro backs up the user's BYOJ files and opens Steam on
+BYOJoystick is not downloaded by JoyPro: its only official binary source is the Steam Workshop. The VTOL VR card's **Install BYOJoystick** shows what it is, the source, the size
+Steam lists; after the user's tick JoyPro backs up the user's BYOJ files and opens Steam on
 the Mod Loader (when missing) and the Workshop item, where the user subscribes; Steam downloads and verifies it.
 **Check again** shows the SHA-256 of the installed `BYOJoystick.dll` and builds JoyPro's target list from it
 (docs/games/vtol-vr.md "One-click install").
@@ -78,7 +77,7 @@ The original project (shauleiz/vJoy, Shaul Eizikovich) has had no release since 
 (2020) is unsigned for current Windows. Two signed continuations exist:
 
 - **jshafer817/vJoy v2.1.9.1** (July 2019): signed Windows 10/11 build of the original 2.1.9 code; the version the
-  JoyPro docs name, the one on the development PC (vJoy Device Driver 2.1.9.1, Windows 11), and the one JoyPro's
+  JoyPro docs name, the one checked on Windows 11 (vJoy Device Driver 2.1.9.1), and the one JoyPro's
   forwarder (`gui/JoyPro.VJoy`, `JOYSTICK_POSITION_V2`) and the in-game test kit were verified with.
 - **BrunnerInnovation/vJoy v2.2.2.0** (December 2023, Windows 10/11 only, EV-signed by Brunner Elektronik AG): a fork
   of njz3/vJoy with force-feedback work; Brunner sponsored the signing and says it does not intend to maintain it
@@ -165,5 +164,5 @@ On a PC (or VM) without the component, for each of vJoy, HidHide, ViGEmBus:
 5. Decline the UAC prompt once: the card says so, nothing is installed.
 6. `Windows apps` opens Installed apps; uninstall from there and `Check again` shows "Not installed".
 
-On the development PC all three are already installed (vJoy 2.1.9.1, HidHide 1.5.230, ViGEmBus 1.22.0): there the live
+On a PC where all three are already installed (vJoy 2.1.9.1, HidHide 1.5.230, ViGEmBus 1.22.0) the live
 check is detection only (all green, no Install button), unless a component is uninstalled first.

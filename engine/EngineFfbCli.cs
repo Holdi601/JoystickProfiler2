@@ -31,7 +31,7 @@ namespace JoyPro.Engine
                 plane = PopOptionValue(args, "--plane");
                 paramOptions = PopOptionValues(args, "--param");
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException ex) when (!IsMissingOptionValue(ex))
             {
                 return Fail(ex.Message);
             }
@@ -208,7 +208,7 @@ namespace JoyPro.Engine
                         return Fail("engine ffb telemetry status|config show|config set|config clear|setup|effects");
                 }
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException ex) when (!IsMissingOptionValue(ex))
             {
                 return Fail(ex.Message);
             }

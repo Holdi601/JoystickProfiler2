@@ -271,7 +271,7 @@ namespace JoyPro.Engine
         // Rows of JoyPro's function table of the game (DB\Functions\<game>.tsv), the base of Auto Assign and the setup wizard.
         private const string DerivedTableNote = "No hand-made function table yet: JoyPro derives one from the function map (the game's own titles and categories).";
 
-        private static int FunctionRows(string gameId, out bool derived)
+        internal static int FunctionRows(string gameId, out bool derived)
         {
             derived = false;
             string folder = Environment.GetEnvironmentVariable("JOYPRO_FUNCTIONS_DB");
@@ -660,7 +660,7 @@ namespace JoyPro.Engine
             blocks.Add(new Block { Kind = "ol", Items = footnotes });
 
             blocks.Add(new Block { Kind = "h2", Text = "Details per title" });
-            blocks.Add(new Block { Kind = "p", Text = "Bind file and command list: where JoyPro reads and writes on your PC and what it builds the game's command list from (list size measured on the development PC, " +
+            blocks.Add(new Block { Kind = "p", Text = "Bind file and command list: where JoyPro reads and writes on your PC and what it builds the game's command list from (list size of a full install, " +
                 "see [README.md](README.md#command-lists-on-a-fresh-install)). Device limits: what the game reads of your devices; the input limits with their confidence " +
                 "(verified = from the game's files or JoyPro's own code, documented = the game's docs, reported = players) warn in the virtual joystick planner ([../virtual-joystick.md](../virtual-joystick.md))." });
             foreach (Category category in categories)
@@ -874,7 +874,7 @@ namespace JoyPro.Engine
             if (at >= 0)
             {
                 if (at + 1 >= args.Count)
-                    throw new ArgumentException("--notes needs a file.");
+                    throw Program.MissingOptionValue("--notes");
                 notes = args[at + 1];
                 args.RemoveRange(at, 2);
             }

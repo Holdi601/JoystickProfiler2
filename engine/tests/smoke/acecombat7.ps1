@@ -1,6 +1,6 @@
 # ACE COMBAT 7 (native, several devices) on a synthetic Input.ini (docs/games/ace-combat.md). Dot-sourced by
-# engine_smoke_test.ps1 (Run-Engine, Assert-*, $tempDir, $engineDir, $engineBin). The game is not installed on the
-# development PC; the fixture follows the published samples (one section per device model, Flight_* keys).
+# engine_smoke_test.ps1 (Run-Engine, Assert-*, $tempDir, $engineDir, $engineBin). The fixture
+# follows the published samples (one section per device model, Flight_* keys).
 #  1. ac7 refresh-db: the Flight_* names from the file, axes and buttons.
 #  2. scan: simple values ("Y:R", "Button1", "POV_U1") per device; a combination is reported, not read.
 #  3. export: values per device section, Invert as ":R", a hat direction as POV_<dir><n>; add skips and reports a bind on

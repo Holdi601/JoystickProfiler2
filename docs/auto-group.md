@@ -14,6 +14,9 @@ WARDOGS. `--planes` also takes a game id (`StarCitizen`, `X4`, `EliteDangerous`,
 - To build one relation step by step (one action, then what fits with one click), use the
   [relation editor](relation-builder.md); its suggestions use the same catalog and your learned style.
 - CLI: `engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2] [--replace] [--dry-run] [--no-map]`.
+- Head tracking: when the profile's head-tracking answer is *yes* (the Setup wizard's question,
+  [setup-wizard.md](setup-wizard.md#head-tracking)), no look-around relation (snap views, look axes) is made for the
+  sims that support head tracking or VR; the recenter stays. The suggestions follow the same answer.
 
 ## Presets
 
@@ -63,6 +66,13 @@ WARDOGS. `--planes` also takes a game id (`StarCitizen`, `X4`, `EliteDangerous`,
 - `aircraft.json`: wing type, era and variants.
 - `<Game>.tsv` (`DCS.tsv`, `StarCitizen.tsv`, `FalconBMS.tsv` ...): aircraft (or game), function, command, status,
   HOTAS position, frequency and control.
+- Rows and functions learned from a reworked profile come from `tools/relations/learn_catalog.py` (relation exports
+  before and after; every action switched on since becomes a row of its relation, a new relation a new function,
+  status `new`). The 2026-11-04 rework added 151 functions (look and view buttons, autopilot modes, anti-ice,
+  electrics, magnetos, G1000 keys ...) and rows for FSX, Prepar3D, IL-2 1946, Cliffs of Dover, Tiny Combat Arena,
+  ACE COMBAT 7/8, Battlefield 2042/6, Project Wingman and the other games. Actions still to be tested in the game
+  (MSFS 2024's G1000 keys in the NS430 relations, its TDC vertical and canopy) and Auto Group's ignored mods are left
+  out.
 - `<Game>.rejected.tsv`: old profile entries the manuals or game docs proved wrong. They are for guesses: a catalog
   substitute or a function map row on that list is not used. What you put into your own relations is your style and
   counts even when the list rejects it (2.6.0).

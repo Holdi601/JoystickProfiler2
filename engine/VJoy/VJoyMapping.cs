@@ -19,7 +19,8 @@ namespace JoyPro.Engine.VJoy
         public const int MaxPovs = 4;
 
         public int Version { get; set; }
-        // Game id -> "virtual" (games without an entry use their physical devices).
+        // Game id -> "virtual", "xbox" or "native" (the user's choice). Games without an entry use their physical devices,
+        // except games that read only Xbox controllers: the virtual Xbox pad (ModeOf).
         public Dictionary<string, string> Games { get; set; }
         // The vJoy devices JoyPro may use (1..16).
         public int FirstDevice { get; set; }
@@ -28,6 +29,9 @@ namespace JoyPro.Engine.VJoy
         public bool AutoStart { get; set; }
         // Hide the physical devices from the games with HidHide (off: the games see both).
         public bool HideDevices { get; set; }
+        // Several games on the Xbox pad: each keeps its own table (XboxSlots), one pad is live at a time. The game whose
+        // table a manual Start uses when none of them runs (the user's last pick on the page); empty = the first.
+        public string XboxPadGame { get; set; }
         public List<VJoySlot> Slots { get; set; }
         // Games with the virtual Xbox 360 pad (mode "xbox"): per game its own table (Target = XB_* tokens, see
         // XboxControls), because an XInput game takes one pad and its own layout.
@@ -42,6 +46,7 @@ namespace JoyPro.Engine.VJoy
         public VJoySettings()
         {
             Version = 1;
+            XboxPadGame = string.Empty;
             Games = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             FirstDevice = 1;
             LastDevice = MaxDevices;
@@ -100,13 +105,74 @@ namespace JoyPro.Engine.VJoy
 
         public const string ModeVJoy = "virtual";
         public const string ModeXbox = "xbox";
+        public const string ModeNative = "native";
+
+        // Games that read no generic joystick at all, only Xbox controllers (XInput): the game's device limit says
+        // "0 joysticks, use the Xbox pad" (IGameDeviceLimit) and its input limits say it reads no joystick input
+        // (GameInputLimits XInputOnly). Without a mode the user chose, they use the virtual Xbox pad by themselves.
+        public static bool ReadsOnlyXbox(string gameId)
+        {
+            if (string.IsNullOrWhiteSpace(gameId))
+                return false;
+            IGameIntegration game;
+            if (!GameRegistry.TryResolve(gameId.Trim(), out game))
+                return false;
+            IGameDeviceLimit limit = game as IGameDeviceLimit;
+            return limit != null && limit.MaxJoysticks == 0 && string.Equals(limit.SuggestedMode, ModeXbox, StringComparison.OrdinalIgnoreCase) &&
+                   GameInputLimits.For(game.GameId).XInputOnly;
+        }
+
+        // Every game that reads only Xbox controllers (ReadsOnlyXbox).
+        public static List<string> XboxOnlyGames()
+        {
+            return GameRegistry.All.Select(g => g.GameId).Where(ReadsOnlyXbox).OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        // The mode the user chose for the game ("native", "virtual", "xbox"), empty when he chose none.
+        public string StoredMode(string gameId)
+        {
+            string mode;
+            if (string.IsNullOrWhiteSpace(gameId) || Games == null || !Games.TryGetValue(gameId.Trim(), out mode) || string.IsNullOrWhiteSpace(mode))
+                return string.Empty;
+            mode = mode.Trim().ToLowerInvariant();
+            return mode == ModeVJoy || mode == ModeXbox || mode == ModeNative ? mode : string.Empty;
+        }
+
+        // The mode the game runs with: the user's choice, else the virtual Xbox pad for a game that reads only Xbox
+        // controllers, else its physical devices. Used everywhere a mode counts (status, plan, forwarder, HidHide, export).
+        public string ModeOf(string gameId)
+        {
+            string stored = StoredMode(gameId);
+            if (stored.Length > 0)
+                return stored;
+            return ReadsOnlyXbox(gameId) ? ModeXbox : ModeNative;
+        }
+
+        // The game is on the Xbox pad by itself (no mode chosen, ReadsOnlyXbox).
+        public bool IsAutoXbox(string gameId)
+        {
+            return StoredMode(gameId).Length == 0 && ReadsOnlyXbox(gameId);
+        }
+
+        // Stores the user's choice. "native" is kept as a word only where it differs from what the game would get
+        // without a choice (an Xbox-only game); elsewhere no entry means native.
+        public void SetMode(string gameId, string mode)
+        {
+            if (Games == null)
+                Games = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            string id = (gameId ?? string.Empty).Trim();
+            if (id.Length == 0)
+                return;
+            if (string.Equals(mode, ModeNative, StringComparison.OrdinalIgnoreCase) && !ReadsOnlyXbox(id))
+                Games.Remove(id);
+            else
+                Games[id] = (mode ?? string.Empty).Trim().ToLowerInvariant();
+        }
 
         // The game uses the virtual Xbox 360 pad (ViGEmBus).
         public bool IsXbox(string gameId)
         {
-            string mode;
-            return !string.IsNullOrWhiteSpace(gameId) && Games != null &&
-                   Games.TryGetValue(gameId.Trim(), out mode) && string.Equals(mode, ModeXbox, StringComparison.OrdinalIgnoreCase);
+            return !string.IsNullOrWhiteSpace(gameId) && ModeOf(gameId) == ModeXbox;
         }
 
         // Any virtual target (vJoy or Xbox).
@@ -117,11 +183,25 @@ namespace JoyPro.Engine.VJoy
 
         public List<string> XboxGames()
         {
-            return (Games ?? new Dictionary<string, string>())
-                .Where(g => string.Equals(g.Value, ModeXbox, StringComparison.OrdinalIgnoreCase))
-                .Select(g => g.Key)
+            return (Games ?? new Dictionary<string, string>()).Keys
+                .Concat(XboxOnlyGames())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Where(IsXbox)
                 .OrderBy(g => g, StringComparer.OrdinalIgnoreCase)
                 .ToList();
+        }
+
+        // The Xbox game whose pad table goes live when no game was named: the user's pick if it is still on the pad,
+        // else the first with something to forward (a table or a function), else the first; empty without Xbox games.
+        public string DefaultXboxPadGame()
+        {
+            List<string> games = XboxGames();
+            if (games.Count == 0)
+                return string.Empty;
+            string picked = games.FirstOrDefault(g => string.Equals(g, XboxPadGame, StringComparison.OrdinalIgnoreCase));
+            if (picked != null)
+                return picked;
+            return games.FirstOrDefault(g => XboxTable(g).Count > 0 || (Functions != null && Functions.ContainsKey(g) && Functions[g] != null && Functions[g].Any(f => f != null && f.Enabled))) ?? games[0];
         }
 
         public List<string> AllVirtualGames()
@@ -137,15 +217,13 @@ namespace JoyPro.Engine.VJoy
 
         public bool IsVirtual(string gameId)
         {
-            string mode;
-            return !string.IsNullOrWhiteSpace(gameId) && Games != null &&
-                   Games.TryGetValue(gameId.Trim(), out mode) && string.Equals(mode, "virtual", StringComparison.OrdinalIgnoreCase);
+            return !string.IsNullOrWhiteSpace(gameId) && StoredMode(gameId) == ModeVJoy;
         }
 
         public List<string> VirtualGames()
         {
             return (Games ?? new Dictionary<string, string>())
-                .Where(g => string.Equals(g.Value, "virtual", StringComparison.OrdinalIgnoreCase))
+                .Where(g => string.Equals(g.Value, ModeVJoy, StringComparison.OrdinalIgnoreCase))
                 .Select(g => g.Key)
                 .OrderBy(g => g, StringComparer.OrdinalIgnoreCase)
                 .ToList();
@@ -153,6 +231,7 @@ namespace JoyPro.Engine.VJoy
 
         public void Normalize()
         {
+            XboxPadGame = (XboxPadGame ?? string.Empty).Trim();
             if (Games == null)
                 Games = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             else if (!Equals(Games.Comparer, StringComparer.OrdinalIgnoreCase))
@@ -231,7 +310,7 @@ namespace JoyPro.Engine.VJoy
         [System.Web.Script.Serialization.ScriptIgnore]
         public bool IsEmpty
         {
-            get { return AllVirtualGames().Count == 0 && (Slots == null || Slots.Count == 0) && (XboxSlots == null || XboxSlots.Count == 0) && (Functions == null || Functions.Count == 0) && (Modes == null || Modes.Count == 0) && FirstDevice == 1 && LastDevice == MaxDevices && !AutoStart && HideDevices; }
+            get { return (Games == null || Games.Count == 0) && (Slots == null || Slots.Count == 0) && (XboxSlots == null || XboxSlots.Count == 0) && (Functions == null || Functions.Count == 0) && (Modes == null || Modes.Count == 0) && FirstDevice == 1 && LastDevice == MaxDevices && !AutoStart && HideDevices && string.IsNullOrWhiteSpace(XboxPadGame); }
         }
 
         private static VJoySettings Fresh()

@@ -27,10 +27,10 @@ import tempfile
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB = os.path.join(REPO, "EngineOnly_Runtime", "DB")
 DEVICES = os.path.join(DB, "Devices")
-KINDS = {"stick", "throttle", "hotas", "base", "pedals", "collective", "yoke", "quadrant", "panel", "mfd", "buttonbox", "controller", "other"}
+KINDS = {"stick", "throttle", "hotas", "base", "pedals", "collective", "yoke", "quadrant", "panel", "mfd", "buttonbox", "controller", "gamepad", "other"}
 HANDS = {"right", "left", "either", "none"}
 CONFIDENCES = {"high", "medium", "low"}
-TYPES = {"momentary", "latched", "rotary", "analog"}
+TYPES = {"momentary", "latched", "rotary", "analog", "centring", "detent", "selector"}
 FINGERS = {"index", "middle", "thumb", "pinky", "palm", "hand", "ring"}
 VIEWS = re.compile(r"^(main|front|side|left|right|back|top|base|three-quarter|sheet|gallery-\d+)$")
 INPUT = re.compile(r"^JOY_(X|Y|Z|RX|RY|RZ|SLIDER1|SLIDER2|BTN\d+|BTN_POV[1-4]_(U|UR|R|DR|D|DL|L|UL))$")
@@ -63,11 +63,16 @@ def catalog():
 
 
 def host_ok(url, hosts):
-    match = re.match(r"^https://([^/]+)/", url or "")
+    match = re.match(r"^https://([^/]+)/([^?#]*)", url or "")
     if not match:
         return False
-    host = match.group(1).lower()
-    return any(host == h or host.endswith("." + h) for h in hosts)
+    host, path = match.group(1).lower(), match.group(2)
+    for h in hosts:
+        # A host may carry a path prefix for a shared CDN (cdn.shopify.com/s/files/1/0802/6266/0351/ = one maker's shop).
+        name, _, prefix = h.lower().partition("/")
+        if (host == name or host.endswith("." + name)) and path.startswith(prefix):
+            return True
+    return False
 
 
 def engine_path():

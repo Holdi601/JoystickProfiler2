@@ -17,17 +17,23 @@ dead zone and the **Enable HOTAS** switch. Keyboard, mouse and every other part 
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E["engine wardogs export"]
-  E --> S["GameUserSettings.ini<br/>joystick section:<br/>6 axes + flight actions"]
-  E --> H["Enable HOTAS on<br/>(when binds are written)"]
-  E --> M[".joypro-meta.json<br/>(names, groups)"]
-  S --> G["WARDOGS: Settings ><br/>GAMEPAD > HOTAS"]
-  H --> G
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep WARDOGS closed
+:::
+
+**Before**: open **Settings > GAMEPAD > HOTAS** in the game once. Then close it.
+
+**Then**: **Enable HOTAS** is on, and your binds are on the HOTAS page.
+
+Did you bind buttons in WARDOGS before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for WARDOGS
 
 - **Import**: the binds of the HOTAS page come into your profile: Pitch, Roll, Yaw, the collective (Throttle), the two
@@ -56,9 +62,9 @@ two things in WARDOGS before the game does.
 ## Export to WARDOGS
 
 1. **Close WARDOGS.** The game rewrites its whole settings file when it quits, so JoyPro refuses to write while it runs.
-2. Open **Export** and tick the WARDOGS tile.
+2. Open **Export** and tick the WARDOGS card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks. Press
-   **Export now** on the tile.
+   **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -148,6 +154,17 @@ An export of a profile without WARDOGS binds writes only the game-wide settings 
 
 :::layer technical
 ## Inside the WARDOGS integration
+
+```mermaid
+%% caption: JoyPro writes the joystick section of GameUserSettings.ini (6 axes and the flight actions), switches Enable HOTAS on when binds are written, and keeps names and groups in .joypro-meta.json.
+flowchart LR
+  P["Your profile"] --> E["engine wardogs export"]
+  E --> S["GameUserSettings.ini"]
+  E --> H["Enable HOTAS on"]
+  E --> M[".joypro-meta.json"]
+  S --> G["Settings > GAMEPAD<br/>> HOTAS"]
+  H --> G
+```
 
 Code: `engine\Games\WardogsIntegration.cs`, `engine\AxisModels\Wardogs.cs` (axis model `wardogs`),
 `engine\FfbModels\Wardogs.cs` (the two game-wide switches).

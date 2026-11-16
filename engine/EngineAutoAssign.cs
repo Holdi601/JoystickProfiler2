@@ -303,6 +303,9 @@ namespace JoyPro.Engine
                 // devices that are not connected stay, unless --include-missing moves the latter (a replaced device).
                 bool onSetup = bound && usable.Any(d => d.JoyProName == MapDevice(bind.Joystick, usable));
                 bool movable = onSetup || (bound && options.IncludeMissing && !IsKeyboardOrVirtual(bind.Joystick));
+                // The relation's other inputs (multi-bind) stay where they are: their inputs are taken.
+                foreach (Bind extra in MultiBind.ActiveExtras(relation).Where(e => MultiBind.IsBound(relation, e)))
+                    occupancy.Add(BindKey(extra, relation.ISAXIS, usable), planes.Bits(relation));
                 if (bound && (!options.Overwrite || !movable))
                 {
                     occupancy.Add(BindKey(bind, relation.ISAXIS, usable), planes.Bits(relation));

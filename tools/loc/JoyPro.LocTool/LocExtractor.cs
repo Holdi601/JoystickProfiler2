@@ -89,6 +89,28 @@ public static class LocExtractor
             else
                 found.AddRange(ScanCSharp(rel, content));
         }
+        // F1's help texts (Resources/help-controls.json, made from the wiki by website/build.py --help-catalog): shown
+        // through T() like any wrapped text.
+        string help = Path.Combine(guiRoot, "Resources", "help-controls.json");
+        if (File.Exists(help))
+            found.AddRange(ScanHelpCatalog("Resources/help-controls.json", File.ReadAllText(help)));
+        return found;
+    }
+
+    public static List<FoundText> ScanHelpCatalog(string file, string json)
+    {
+        List<FoundText> found = [];
+        using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(json);
+        int row = 0;
+        foreach (System.Text.Json.JsonElement entry in doc.RootElement.EnumerateArray())
+        {
+            row++;
+            foreach (string field in new[] { "w", "x", "e" })
+            {
+                if (entry.TryGetProperty(field, out System.Text.Json.JsonElement value) && value.GetString() is { Length: > 0 } text)
+                    found.Add(new FoundText(text, null, true, file, row, "help"));
+            }
+        }
         return found;
     }
 

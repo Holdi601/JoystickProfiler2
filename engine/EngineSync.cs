@@ -2376,8 +2376,10 @@ namespace JoyPro.Engine
         private static string PopValue(List<string> args, string name)
         {
             int index = args.FindIndex(a => string.Equals(a, name, StringComparison.OrdinalIgnoreCase));
-            if (index < 0 || index + 1 >= args.Count)
+            if (index < 0)
                 return string.Empty;
+            if (index + 1 >= args.Count)
+                throw Program.MissingOptionValue(name);
             string value = args[index + 1];
             args.RemoveRange(index, 2);
             return value;

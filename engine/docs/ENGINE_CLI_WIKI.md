@@ -115,7 +115,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   --history-note <text>  Name of this change in the profile history (default: the command's name)
   --vjoy-tunnel <1-16>|none  The vJoy device JoyPro tunnels into: virtual mode writes there (the first vJoy device of the table, function outputs, forwarder, Gremlin import); imports and scans (dcs, il2, starcitizen, the other games) of games in native mode leave only that vJoy device out; every other vJoy device is read like any device (default: none)
   --usage-style on|off   Auto Assign, Auto Group, Setup wizard, Lay out with AI: new aircraft follow your most used one (usage ranking; default on)
-  --multi-bind on|off    Experimental: a relation can have several inputs (binds extra); exports, checks and pages use them (default off: only the main bind, as always; JOYPRO_MULTI_BIND=1 also switches it on)
+  --multi-bind on|off    A relation can have several inputs (binds extra); exports, checks and pages use them (default on; off: only the main binds for this call, extra binds stay in the profile; JOYPRO_MULTI_BIND=0 also switches it off)
 ```
 
 ### Commands
@@ -127,6 +127,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine profile new <path.pr0file>
   engine profile save-last
   engine profile validate [--fail-on-warnings true|false]
+  engine profile head-tracking [yes|no|clear]   (the Setup wizard's head-tracking / VR answer kept in the profile: with yes Auto Group and the suggestions make no look-around relations in the sims that support head tracking; the recenter stays)
   engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)
   engine export-marks list [--game <id>]   (binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free)
   engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks; --game takes the game id or an alias (il2, wt); --aircraft: only the marks of that aircraft; a warning when no open mark matches)
@@ -178,7 +179,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine version
   engine games integrations
   engine games support [--markdown | --html | --json] [--notes <file>]   (how far JoyPro supports each game: the feature matrix from the code plus the verification notes, docs/games/support.md; exit 1 when the notes miss a game or claim more than the code)
-  engine hud devices [--grip <device>=<catalog id>]... [--no-device-photos]   (connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out (the user said never); the engine downloads no device photo, the GUI does per device after the user's yes)
+  engine hud devices [--grip <device>=<catalog id>]... [--no-device-photos]   (connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out; the engine downloads no device photo, the GUI does per device after the user's yes)
   engine overlay map [--game <id>] [--plane <name>] [--unit <DCS unit type>]   (bound buttons with modifiers and titles, for the overlay; warnings also in the --text output)
   engine overlay dcs-hook status|install|remove [--path <Saved Games\DCS>] [--dry-run]   (Export.lua addition that tells JoyPro the aircraft; backed up)
   engine media [games|aircraft|sources] [--no-internet-pictures]   (official pictures: game covers from Steam on this PC, else downloaded once from Steam's store or the publisher's site, else the game's executable icon; DCS aircraft pictures from the modules; sources = the web source per game; warnings also in the --text output)
@@ -190,14 +191,15 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine sync apply --game <id> --choices <file.json> [--path <config>]   (per change id: Target = relation name, "new" (+ Name) or "ignore"; then the config counts as known)
   engine sync pending --game <id> [--path <config>]   (what you changed in JoyPro since the last export of the game and the game does not have yet: an import before the next export brings the old binds back)
   engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history, the games' current bind files and JoyPro 1's profiles (Documents\JoyPro); user folder replaced, nothing uploaded; --list only shows the contents)
-  engine support unpack <file.zip> --to <folder>   (a maintainer's copy of a support file: the profile to <folder>\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\data)
+  engine support unpack <file.zip> --to <folder>   (unpacks a support file someone sent: the profile to <folder>\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\data)
   engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)
-  engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad))
+  engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad); without a choice a game that reads only Xbox controllers (ACE COMBAT 8, Hell Let Loose: Vietnam) is on the Xbox pad by itself)
   engine vjoy plan [--reset] [--prune]   (the mapping table and the vJoy configuration it needs; nothing is saved)
   engine vjoy map [--reset] [--prune] [--dry-run]   (saves the mapping table in the profile; slots never move unless --reset; --prune drops unused slots)
-  engine vjoy settings [--first-device N] [--last-device N] [--auto-start on|off] [--hide-devices on|off] [--dry-run]   (which vJoy devices JoyPro may use, GUI auto start, HidHide on/off)
+  engine vjoy settings [--first-device N] [--last-device N] [--auto-start on|off] [--hide-devices on|off] [--xbox-pad-game <game>|none] [--dry-run]   (which vJoy devices JoyPro may use, GUI auto start, HidHide on/off; several games on the Xbox pad: whose pad table a manual Start uses when none of them runs)
   engine vjoy exe <game> [--add <path>] [--remove <path>]   (the game executables HidHide blocks in virtual mode: found in the installation + your own)
-  engine vjoy forwarder-config [--out <file>] [--xbox-game <game>] [--game <game>]   (the mapping table for JoyPro.VJoy.exe, the forwarding process; one Xbox game's pad table; with --game only that game's virtual functions)
+  engine vjoy pad-check [--game <game>]   (per game on the virtual Xbox pad, what the profile reaches there with the auto setup: throttle split on both triggers, yaw, chords such as flares, the menu D-pad; a score 0..1; read-only)
+  engine vjoy forwarder-config [--out <file>] [--xbox-game <game>] [--game <game>]   (the mapping table for JoyPro.VJoy.exe, the forwarding process; one Xbox game's pad table (default: settings --xbox-pad-game) with the axis curves JoyPro applies on the pad; with --game only that game's virtual functions)
   engine vjoy functions types   (the virtual function types: axis bands, button cycle, toggle, switch pulses, short/long/double press, shift layer, merge, split, curve, axis ends, axes to hat, buttons to axis, encoder, turbo, macro, hat to buttons, buttons to hat, remap, mode switch)
   engine vjoy functions list [--game <game>]   (the virtual functions per game with inputs, outputs (bind device and input), problems, limit warnings and the physical devices for inputs)
   engine vjoy functions add --game <game> --type <type> [--name <name>] [--input role=<device>|<input>]... [--output role=<target>[@<vJoy device>][:hold|enter|leave|both]]... [--param key=value]... [--edges 0.1,0.9] [--count n] [--tuning <axis tuning>] [--keyboard on|off] [--modes <mode,...>] [--switch-modes <mode,...>] [--spec <json>|@<file>] [--no-auto-outputs] [--dry-run]   (adds a function; an input may read another function's output: --input role=fn:<id>|<output>; loops are refused; outputs left empty get free vJoy buttons/axes/hats (or Xbox pad controls), reserved in the table; --modes: the modes it works in (none: every mode))
@@ -413,6 +415,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine p3d6 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the sheet style options colour the page, tables, lines, markers and labels, a device's own style in its layout wins; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)
   engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (tables around the device picture with orthogonal lines; exit code 1 when the sheet check finds problems, the picture and file are written all the same; --check-all [query] checks every model)
+  engine layout kneeboard [--target dcs|folder] [--saved-games <folder>] [--folder <folder>] [--game <name>] [--plane <name>] [--planes <csv>] [--include-easy] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<layout file>] [--postfix <text>] [--size <px>] [--page list|portrait|original] [--picture top|none] [--combine true|false] [--style dark|light] [--remove-old] [--dry-run] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>]   (kneeboard pages of each aircraft, by default a list of the bound controls in large text grouped by control (more pages when needed: _p2), with the device picture at the top; portrait|original: the cheat sheet picture. DCS <Saved Games>\DCS*\Kneeboard\<aircraft>\JoyPro_<aircraft>_<device>.png, also read by OpenKneeboard; --target folder: <folder>\<game>\<aircraft>\; default: every aircraft the devices have binds in; only JoyPro's own pictures are written or replaced, other files stay untouched)
   engine layout titles --device <name>   (the game's own menu titles of the device's binds, per game and aircraft)
   engine layout image <device> [--set <layout file>|--clear]   (the layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back)
   engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)
@@ -424,7 +427,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine devices inputs [--include-off]   (aliases: catalog, input-catalog)
   engine devices exchange <old-device> <new-device> [--old <name>] [--new <name>] [--confirm true|false]   (alias: swap; renames the device, inputs stay)
   engine devices replace <old-device> <new-device> [--old <name>] [--new <name>] [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same = the same input ids, layout = by the part on the device (device catalog), auto = same for the same product, else layout; --merge where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins, replace = the old device's bind wins; --old/--from and --new/--to name the devices instead of the positions; --dry-run previews)
-  engine devices copy-to <device-A> <device-B> [--mode auto|same|layout] [--map OLD=NEW]... [--grip <device>=<grip id>]... [--merge skip|add] [--dry-run]   (experimental, needs --multi-bind on to apply: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step)
+  engine devices copy-to <device-A> <device-B> [--mode auto|same|layout] [--map OLD=NEW]... [--grip <device>=<grip id>]... [--merge skip|add] [--dry-run]   (not with --multi-bind off: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step)
   engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)
   engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)
   engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)
@@ -441,6 +444,8 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]
   engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)
   engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--if-taken ask|swap|replace|keep-both] [--dry-run]  (one action to another button: joins the relation on that input, else a new one; --if-taken: when the aircraft has another action there)
+  engine relations item copy-to <relation-name> (--node game:id [--node ...] | --all) --to <relation> [--force]   (copies the actions with their aircraft (switched-off ones too) into another relation of the same kind; an action it already has gains the missing aircraft; --force: a relation of the other kind (axis/button); one undo step)
+  engine relations item move-to <relation-name> (--node game:id [--node ...] | --all) (--to <relation> | --new <name>) [--delete-empty] [--force]   (moves the actions to another relation of the same kind, or to a new relation of this kind without a bind; --delete-empty deletes the source when no action is left; one undo step)
   engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--no-bind]
   engine relations mass merge <name> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
@@ -448,11 +453,12 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations mass add-prefix <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass add-postfix <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass remove-part <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass move-actions (--to <relation> | --new <name>) [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--delete-empty] [--force]   (every action of the selected relations goes to one relation; the relations must be of one kind (axis or button) as the target, --force moves them anyway; --delete-empty deletes the emptied relations with their binds; one undo step)
   engine relations mass export <path.rl|path.json> [--format rl|json] [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations export <path.json> [filter]   (every relation with its bind as JSON, a missing folder is created; a filter word writes only the matching relations; with --text the file is the readable view, which relations import cannot read)
   engine relations import <path.json> [--replace]   (the file's relations and binds replace all of the profile's; a file without some of the profile's relations (a filtered or mass export) is refused unless --replace, which removes them; profile history undo brings them back)
   engine relations edit   (no args; exports temp relations JSON, opens editor, re-imports on close; uses --editor or notepad)
-  engine relations suggest <relation>|--relation <relation> [--min high|medium|low] [--limit N] [--game g1|g2] | --all [--missing [--per-relation N]] [--min ...]
+  engine relations suggest <relation>|--relation <relation> [--min high|medium|low] [--limit N] [--game g1|g2] | --all [--missing [--per-relation N] [--game g1|g2]] [--min ...]
   engine relations suggest apply <relation> [--add game:id:plane1|plane2]... [--never game:id:plane1|plane2]... [--remove game:id:planes]... [--move game:id:planes=>relation]... [--take game:id:planes]...
   engine relations search "<words>" [--game g1|g2] [--plane p1|p2] [--category <name>] [--axis|--button] [--limit N] [--per-game N] [--batch <file>]
   engine relations browse [--game <game> [--plane p1|p2]] [--axis|--button]   (alias: relations catalog)
@@ -477,7 +483,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]
   engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --ignore | --remove-actions | --forget-kept] [--include-kept | --list-kept]
   engine relations merge-copies [--dry-run] [--name <relation>]
-  engine relations join-inputs [--game <id>] [--relation <name>] [--apply]   (experimental, --apply needs --multi-bind on: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on)
+  engine relations join-inputs [--game <id>] [--relation <name>] [--apply]   (--apply not with --multi-bind off: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on)
   engine relations meanings [--game g] [--top N]
   engine relations action-info --coverage [--game g] [--all-examples]
   engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]   (--replace first removes the relations tagged AutoGroup (an earlier Auto Group) with their binds; your other relations stay)
@@ -496,13 +502,17 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine llm fake-server [--port N] [--port-file <path>] [--response <file>] [--serve <folder>] [--log <file>] [--lifetime <s>]
   engine setup devices [--grip <device>=<grip id>]... [--role <device|VID:PID>=<role>]... [--add-device <catalog id>]...
   engine setup aircraft --games <g1,g2>   (the aircraft / games for the priority list)
-  engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers] [--realism 0..1] [--seed N] [--replace-existing] [--phase-layers on|off|auto] [--role <device|VID:PID>=<role>]... [--grip <device>=<grip id>]... [--add-device <catalog id>]... [--cockpit-file <json>]... [--out-plan <plan.json> | --plan-file <plan.json>]
+  engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers] [--placement same-button|real-aircraft|0..1] (old name --realism) [--head-tracking yes|no] [--seed N] [--only-aircraft <a1,a2>] [--replace-existing] [--phase-layers on|off|auto] [--role <device|VID:PID>=<role>]... [--grip <device>=<grip id>]... [--add-device <catalog id>]... [--cockpit-file <json>]... [--out-plan <plan.json> | --plan-file <plan.json>]
   engine arrange ask "<your preferences in words>" [--llm auto|on|off] [--games <g1,g2>] [--add-missing] [--forget-saved] [--proposal <file>] [--role ...] [--grip ...] [--add-device ...]
   engine arrange apply --proposal <file> [--skip <change id>]... [--dry-run]   (applies the preview in one history version; keeps the preferences in the profile)
   engine arrange prefs [show | clear | remove <key>]   (the layout preferences kept in the profile)
   engine setup check --plan <plan.json> [--modifiers N]   (the rules every plan keeps: conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers; exit code 1 when a rule fails)
   engine setup apply --plan <plan.json> [--dry-run] [--force]   (writes the plan's relations, binds and modifiers in one step)
   engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a callout sheet per device; --aircraft: only the binds of that aircraft, labelled with its function names; --width: picture width, default 1800; the --drawing-* options paint JoyPro's drawings of the devices, default: the GUI's settings)
+  engine setup games [--games <ids>] [--path <game>=<config folder>]... [--status-only]   (per game: empty = nothing assigned, game = binds of your own in the game (import first, then fill the gaps), profile = already in the profile; the Start page's auto setup; only reads the game's control files)
+  engine setup preview (--plan <plan.json> | --from-profile) [--game <id>] [--aircraft <key>] [--out-dir <folder>] [--live-data] [--light] [--width <px>]   (the layout window: the games and aircraft with binds; with --aircraft and --out-dir one sheet per device, or with --live-data each device's drawing, callout sheet and row texts)
+  engine setup eval [--random N] [--seed N] [--setups popular|random|regression|<ids>] [--regression-file <file>] [--no-regression] [--games <ids>|none] [--families <aircraft>|none] [--no-stress] [--out-dir <folder>] [--baseline <results.json>] [--min-coverage <pct>] [--min-ergonomics <pct>] [--min-popular-coverage <pct>] [--min-row-coverage <pct>] [--min-flight <pct>] [--no-pipeline] [--min-pipeline-coverage <pct>] [--max-wrong N] [--no-persona] [--no-typical] [--no-pad-alone] [--head-tracking yes|no] [--placement same-button|real-aircraft|0..1] [--placement-sweep <positions>] [--min-hard-pass <pct>] [--min-popular-hard-pass <pct>] [--max-destructive N] [--popular-zero-gates <gates>] [--min-typical-hard-pass <pct>] [--min-pad-hard-pass <pct>] [--min-regression-hard-pass <pct>] [--min-pipeline-hard-pass <pct>] [--max-pipeline-destructive N] [--max-pipeline-lost N] [--max-all-games-lost N] [--pipeline-zero-gates <gates>] [--min-all-games-hard-pass <pct>] [--gate-baseline <json>] [--write-gate-baseline <json>]   (setup eval --help prints this)
+  engine setup eval-pad [--out-dir <folder>]   (ACE COMBAT 8 player: the Setup wizard alone must put every flight control on the virtual Xbox pad; exit 1 when a pad gate fails)
   engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]
   engine devices kb [list [words] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign; list: the devices whose id, name or maker contains every word)
   engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host or an allowed review site> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <web.archive.org url>] [--width <px>] [--height <px>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir> | detect <model> [--photo <file|view|sha>] [--photos <folder>] [--max <n>] [--eval]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions (layout-check: exit code 1 on a problem), JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing, detect: where the controls of a device photo probably are (experimental))
@@ -511,10 +521,10 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine binds show <bind-or-relation>
   engine binds set <bind-or-relation> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>] [--clear-modifiers] [--clear-input] [--inverted true|false] [--slider true|false] [--curvature <csv>] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--double-tap true|false]
   engine binds clear <bind-or-relation> [--input-only]
-  engine binds extra list <relation>   (experimental, changes need --multi-bind on: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning)
+  engine binds extra list <relation>   (changes not with --multi-bind off: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning)
   engine binds extra add <relation> --device <name> --input <value> [--format dcs|il2] [--modifier <name>]... [--copy-tuning true|false] [--inverted true|false] [--slider true|false] [--deadzone <v>] [--saturation-x <v>] [--saturation-y <v>] [--curvature <v>]   (another input that does the same; an axis starts with the main bind's tuning unless --copy-tuning false; a relation without a bind gets it as its bind)
   engine binds extra set <relation> <n> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>]... [--clear-modifiers] [--inverted true|false] [--slider true|false] [--deadzone <v>] [--saturation-x <v>] [--saturation-y <v>] [--curvature <v>]   (changes input n (2 or more); scoped axis tuning of it: binds tuning set <relation> --bind <n>)
-  engine binds extra remove <relation> <n>|--all   (works also with the setting off)
+  engine binds extra remove <relation> <n>|--all   (works also with --multi-bind off)
   engine binds extra move <relation> <n> --to <m> | --to-relation <name>   (--to 1 makes it the main bind and the main bind takes its place; --to-relation moves the input to another relation of the same kind)
   engine binds modifier list [bind-or-relation]
   engine binds modifier add <bind-or-relation> <mod1> [mod2] [...]
@@ -852,6 +862,27 @@ Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile validate --text
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile validate --fail-on-warnings true --text
+```
+
+### `engine profile head-tracking [yes|no|clear]   (the Setup wizard's head-tracking / VR answer kept in the profile: with yes Auto Group and the suggestions make no look-around relations in the sims that support head tracking; the recenter stays)`
+What it does: Shows or sets the answer to the Setup wizard's question 'Do you use head tracking or VR?' that the profile keeps. yes: you look around with head tracking, a face tracking webcam, an eye tracker or VR, so the setup, Auto Group and the suggestions put no look-around buttons on the HOTAS in the sims that support head tracking; only the recenter stays (zoom, padlock and the camera views too). no: looking around goes on a hat of the stick or throttle, with a high priority. clear removes the answer (not asked: planned like no). Without a value it only shows the answer.
+
+Arguments and example values:
+- No command-specific arguments.
+
+How arguments interact:
+- Without a value: read-only, prints the answer (yes, no, or not asked).
+- yes (also true, on, 1): no look-around buttons on the HOTAS in the sims that support head tracking, only the recenter; Auto Group makes no look-around relations there and the suggestions propose no look commands.
+- no (also false, off, 0): looking around goes on a hat with a high priority (right after the fight essentials and the trim).
+- clear: removes the answer; the setup then plans like no until the question is answered.
+- With a value the profile is saved (one profile version). engine setup plan without --head-tracking uses this answer, engine setup apply writes the plan's answer here, and Settings > Looking around runs this command.
+- Look relations the profile already has stay as they are.
+
+Examples:
+```powershell
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile head-tracking --text
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile head-tracking yes --text
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile head-tracking clear
 ```
 
 ### `engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)`
@@ -1891,8 +1922,8 @@ engine games support --markdown --notes docs\games\support-notes.json --out docs
 engine games support --html --out 'C:\JoyPro\supported-games.html'
 ```
 
-### `engine hud devices [--grip <device>=<catalog id>]... [--no-device-photos]   (connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out (the user said never); the engine downloads no device photo, the GUI does per device after the user's yes)`
-What it does: Connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out (the user said never); the engine downloads no device photo, the GUI does per device after the user's yes.
+### `engine hud devices [--grip <device>=<catalog id>]... [--no-device-photos]   (connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out; the engine downloads no device photo, the GUI does per device after the user's yes)`
+What it does: Connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out; the engine downloads no device photo, the GUI does per device after the user's yes.
 
 Arguments and example values:
 - `--grip`: Command argument. See examples for typical values.
@@ -2067,7 +2098,7 @@ engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --out 'C:\JoyPro\JoyPro
 engine support bundle --game MSFS2024 --include-profile false --out 'C:\JoyPro\JoyPro2-support.zip'
 ```
 
-### `engine support unpack <file.zip> --to <folder>   (a maintainer's copy of a support file: the profile to <folder>\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\data)`
+### `engine support unpack <file.zip> --to <folder>   (unpacks a support file someone sent: the profile to <folder>\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\data)`
 What it does: For maintainers: unpacks a support file to <folder>\support, the profile to <folder>\profile and its history to <folder>\data\ProfileHistory\<id of that path>, so engine profile history list / show / restore work on the copy with JOYPRO_DATA_DIR=<folder>\data (docs/logging.md "Restoring a version from a support file"). Nothing of this PC's JoyPro is touched.
 
 Arguments and example values:
@@ -2094,7 +2125,7 @@ Examples:
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vjoy status --text
 ```
 
-### `engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad))`
+### `engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad); without a choice a game that reads only Xbox controllers (ACE COMBAT 8, Hell Let Loose: Vietnam) is on the Xbox pad by itself)`
 What it does: Switches a game between its physical devices (native), the virtual joystick (virtual, vJoy) and the virtual Xbox 360 pad (xbox, ViGEmBus: for games that only read XInput or one device; the game's gamepad layout pins actions to their controls, the rest fills sticks, triggers, 14 buttons and the D-pad, what does not fit is listed). Virtual gives every input the game's relations use (axes, buttons, hats, modifier buttons) a fixed vJoy slot; export, import and sync of the game then work on the vJoy slots.
 
 Arguments and example values:
@@ -2143,7 +2174,7 @@ engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vjoy map --text
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vjoy map --prune --dry-run --text
 ```
 
-### `engine vjoy settings [--first-device N] [--last-device N] [--auto-start on|off] [--hide-devices on|off] [--dry-run]   (which vJoy devices JoyPro may use, GUI auto start, HidHide on/off)`
+### `engine vjoy settings [--first-device N] [--last-device N] [--auto-start on|off] [--hide-devices on|off] [--xbox-pad-game <game>|none] [--dry-run]   (which vJoy devices JoyPro may use, GUI auto start, HidHide on/off; several games on the Xbox pad: whose pad table a manual Start uses when none of them runs)`
 What it does: Which vJoy devices JoyPro may use (--first-device/--last-device), the GUI's auto start, and whether HidHide hides the physical devices.
 
 Arguments and example values:
@@ -2151,6 +2182,8 @@ Arguments and example values:
 - `--last-device`: Command argument. See examples for typical values.
 - `--auto-start`: Command argument. See examples for typical values.
 - `--hide-devices`: Command argument. See examples for typical values.
+- `--xbox-pad-game`: Command argument. See examples for typical values.
+- `<game>`: Command argument. See examples for typical values.
 - `--dry-run`: Report what the command would do; nothing is written or changed.
 
 How arguments interact:
@@ -2179,7 +2212,22 @@ engine vjoy exe DCS --text
 engine vjoy exe DCS --add 'D:\DCS World\bin-mt\DCS.exe' --text
 ```
 
-### `engine vjoy forwarder-config [--out <file>] [--xbox-game <game>] [--game <game>]   (the mapping table for JoyPro.VJoy.exe, the forwarding process; one Xbox game's pad table; with --game only that game's virtual functions)`
+### `engine vjoy pad-check [--game <game>]   (per game on the virtual Xbox pad, what the profile reaches there with the auto setup: throttle split on both triggers, yaw, chords such as flares, the menu D-pad; a score 0..1; read-only)`
+What it does: Per game on the virtual Xbox pad, what the profile reaches there with the auto setup: throttle split on both triggers, yaw, chords such as flares, the menu D-pad; a score 0..1; read-only.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+
+How arguments interact:
+- Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
+
+Examples:
+```powershell
+engine vjoy pad-check --text
+```
+
+### `engine vjoy forwarder-config [--out <file>] [--xbox-game <game>] [--game <game>]   (the mapping table for JoyPro.VJoy.exe, the forwarding process; one Xbox game's pad table (default: settings --xbox-pad-game) with the axis curves JoyPro applies on the pad; with --game only that game's virtual functions)`
 What it does: Writes the mapping table for JoyPro.VJoy.exe, the process that forwards the physical inputs to vJoy.
 
 Arguments and example values:
@@ -2188,6 +2236,7 @@ Arguments and example values:
 - `--xbox-game`: Command argument. See examples for typical values.
 - `<game>`: Command argument. See examples for typical values.
 - `--game`: Game filter value. Example: DCS or IL2Game.
+- `--xbox-pad-game`: Command argument. See examples for typical values.
 
 How arguments interact:
 - Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
@@ -5818,6 +5867,78 @@ Examples:
 engine layout callouts (--model <catalog id> --text
 ```
 
+### `engine layout kneeboard [--target dcs|folder] [--saved-games <folder>] [--folder <folder>] [--game <name>] [--plane <name>] [--planes <csv>] [--include-easy] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<layout file>] [--postfix <text>] [--size <px>] [--page list|portrait|original] [--picture top|none] [--combine true|false] [--style dark|light] [--remove-old] [--dry-run] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>]   (kneeboard pages of each aircraft, by default a list of the bound controls in large text grouped by control (more pages when needed: _p2), with the device picture at the top; portrait|original: the cheat sheet picture. DCS <Saved Games>\DCS*\Kneeboard\<aircraft>\JoyPro_<aircraft>_<device>.png, also read by OpenKneeboard; --target folder: <folder>\<game>\<aircraft>\; default: every aircraft the devices have binds in; only JoyPro's own pictures are written or replaced, other files stay untouched)`
+What it does: Puts the binds of each aircraft on its kneeboard (a large-text list of the bound controls, or the cheat sheet picture): DCS (Saved Games\\DCS and DCS.openbeta, Kneeboard\\<aircraft folder DCS uses>, also read by OpenKneeboard) or a folder of choice. Writes or replaces only JoyPro's own pages (JoyPro_*, with JoyPro's mark in the PNG); other kneeboard files are never changed.
+
+Arguments and example values:
+- `--target`: dcs (default): the DCS kneeboard (Saved Games\\DCS*\\Kneeboard\\<aircraft>); folder: the folder of --folder.
+- `--saved-games`: A DCS Saved Games folder whose Kneeboard folder gets the pages; repeatable (default: every Saved Games\\DCS* folder with DCS's Config folder).
+- `<folder>`: Folder path. Example: C:\Cases\case1.
+- `--folder`: With --target folder: the folder for the pages (<folder>\\<game>\\<aircraft>). Example: C:\\Kneeboard.
+- `--game`: With --target folder: the game whose aircraft get pages (default DCS).
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--plane`: Only this aircraft; repeatable (default: every aircraft the devices have binds in). Example: --plane F-16C_50.
+- `--planes`: Only these aircraft as CSV. Example: --planes F-16C_50,FA-18C_hornet.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--include-easy`: Also the game-mode copies (F-16C_50_easy) while their aircraft has binds (they share its kneeboard).
+- `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
+- `--devices`: Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.
+- `--layout-map`: Map joystick name to layout/image file path. Example: --layout-map 'VKB Gladiator NXT=C:\\JoyPro\\LayoutImages\\VKB.layout'.
+- `<joystick>`: Command argument. See examples for typical values.
+- `<layout file>`: Command argument. See examples for typical values.
+- `--postfix`: Text added to the file names, to keep a second set apart. Example: --postfix _VR.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
+- `--size`: The page height (list, portrait) or longest side (original) in pixels, 512 to 8192 (default 2048). The list's font is at least 20 px per 1024 px of page height.
+- `<px>`: Command argument. See examples for typical values.
+- `--page`: list (default): a 3:4 page with only the bound controls in large text, grouped by control, more pages (_p2, _p3) when needed; portrait: the cheat sheet picture on a 3:4 page (the shape DCS stretches every page to); original: the cheat sheet in its own shape.
+- `--picture`: With --page list: top (default) puts the device picture with numbered controls above the list, none leaves it out for more room.
+- `--combine`: true: the pages of an aircraft with all devices, each a section (default false: pages per device).
+- `--style`: Command argument. See examples for typical values.
+- `--remove-old`: Also remove JoyPro's own pages of the same postfix that this run did not write again (a device that left the profile). Nothing else is removed.
+- `--dry-run`: List the pages that would be written; nothing is written.
+- `--sheet-style`: Command argument. See examples for typical values.
+- `<style.json>`: Command argument. See examples for typical values.
+- `--font`: Command argument. See examples for typical values.
+- `<family>`: Command argument. See examples for typical values.
+- `--font-size`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--font-weight`: Command argument. See examples for typical values.
+- `--text-color`: Command argument. See examples for typical values.
+- `<#RRGGBB|#AARRGGBB>`: Command argument. See examples for typical values.
+- `--outline-color`: Command argument. See examples for typical values.
+- `<color|none>`: Command argument. See examples for typical values.
+- `--label-background`: Command argument. See examples for typical values.
+- `--page-background`: Command argument. See examples for typical values.
+- `<color>`: Command argument. See examples for typical values.
+- `--table-background`: Command argument. See examples for typical values.
+- `--table-border`: Command argument. See examples for typical values.
+- `--header-background`: Command argument. See examples for typical values.
+- `--header-text`: Command argument. See examples for typical values.
+- `--table-text`: Command argument. See examples for typical values.
+- `--line-color`: Command argument. See examples for typical values.
+- `--marker-color-button`: Command argument. See examples for typical values.
+- `--marker-color-axis`: Command argument. See examples for typical values.
+- `--marker-color-hat`: Command argument. See examples for typical values.
+- `--marker-color-slider`: Command argument. See examples for typical values.
+- `--modifier-colors`: Command argument. See examples for typical values.
+- `<modifier=#RRGGBB,...>`: Command argument. See examples for typical values.
+- `--drawing-style`: JoyPro's drawings of the devices: lines (line art) or cel (shaded). Default: the GUI's setting.
+- `--drawing-preset`: The colours of JoyPro's drawings: joypro, manual, blueprint, print or custom (then --drawing-ink / --drawing-paper / --drawing-accent). Default: the GUI's setting.
+- `<p>`: Command argument. See examples for typical values.
+- `--drawing-ink`: Line colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `--drawing-paper`: Paper colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `--drawing-accent`: Accent colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `<#RRGGBB>`: Command argument. See examples for typical values.
+- `<Saved Games>`: Command argument. See examples for typical values.
+- `<aircraft>`: Command argument. See examples for typical values.
+- `<device>`: Command argument. See examples for typical values.
+- `<game>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine layout kneeboard --text
+```
+
 ### `engine layout titles --device <name>   (the game's own menu titles of the device's binds, per game and aircraft)`
 What it does: The game's own menu titles of the device's binds, per game and aircraft.
 
@@ -6053,8 +6174,8 @@ engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace 'Old St
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace --from 'Old Stick' --to 'New Stick' --mode layout --merge keep --text
 ```
 
-### `engine devices copy-to <device-A> <device-B> [--mode auto|same|layout] [--map OLD=NEW]... [--grip <device>=<grip id>]... [--merge skip|add] [--dry-run]   (experimental, needs --multi-bind on to apply: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step)`
-What it does: Experimental, needs --multi-bind on to apply: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step.
+### `engine devices copy-to <device-A> <device-B> [--mode auto|same|layout] [--map OLD=NEW]... [--grip <device>=<grip id>]... [--merge skip|add] [--dry-run]   (not with --multi-bind off: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step)`
+What it does: Not with --multi-bind off: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step.
 
 Arguments and example values:
 - `<device-A>`: Command argument. See examples for typical values.
@@ -6326,6 +6447,41 @@ Examples:
 engine relations item move-to-input <relation-name> --node game:id --device <device> --input <input> --text
 ```
 
+### `engine relations item copy-to <relation-name> (--node game:id [--node ...] | --all) --to <relation> [--force]   (copies the actions with their aircraft (switched-off ones too) into another relation of the same kind; an action it already has gains the missing aircraft; --force: a relation of the other kind (axis/button); one undo step)`
+What it does: Copies the actions with their aircraft (switched-off ones too) into another relation of the same kind; an action it already has gains the missing aircraft; --force: a relation of the other kind (axis/button); one undo step.
+
+Arguments and example values:
+- `<relation-name>`: Name of target relation. Example: Gear Toggle.
+- `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
+- `--all`: Apply operation to all matches (or select all relations/devices where supported).
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
+- `<relation>`: Command argument. See examples for typical values.
+- `--force`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine relations item copy-to <relation-name> (--node game:id --text
+```
+
+### `engine relations item move-to <relation-name> (--node game:id [--node ...] | --all) (--to <relation> | --new <name>) [--delete-empty] [--force]   (moves the actions to another relation of the same kind, or to a new relation of this kind without a bind; --delete-empty deletes the source when no action is left; one undo step)`
+What it does: Moves the actions to another relation of the same kind, or to a new relation of this kind without a bind; --delete-empty deletes the source when no action is left; one undo step.
+
+Arguments and example values:
+- `<relation-name>`: Name of target relation. Example: Gear Toggle.
+- `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
+- `--all`: Apply operation to all matches (or select all relations/devices where supported).
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
+- `<relation>`: Command argument. See examples for typical values.
+- `--new`: Target device name for devices exchange. Example: --new 'RIGHT VPC Throttle'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--delete-empty`: Command argument. See examples for typical values.
+- `--force`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine relations item move-to <relation-name> (--node game:id --text
+```
+
 ### `engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]`
 What it does: Deletes many relations in one command using explicit names, query filter, or --all.
 
@@ -6478,6 +6634,31 @@ Examples:
 engine relations mass remove-part 'TEMP_' --query 'TEMP_' --text
 ```
 
+### `engine relations mass move-actions (--to <relation> | --new <name>) [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--delete-empty] [--force]   (every action of the selected relations goes to one relation; the relations must be of one kind (axis or button) as the target, --force moves them anyway; --delete-empty deletes the emptied relations with their binds; one undo step)`
+What it does: Every action of the selected relations goes to one relation; the relations must be of one kind (axis or button) as the target, --force moves them anyway; --delete-empty deletes the emptied relations with their binds; one undo step.
+
+Arguments and example values:
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
+- `<relation>`: Command argument. See examples for typical values.
+- `--new`: Target device name for devices exchange. Example: --new 'RIGHT VPC Throttle'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
+- `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--query`: Select relations by substring query for mass operations. Example: --query Startup.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
+- `--all`: Apply operation to all matches (or select all relations/devices where supported).
+- `--delete-empty`: Command argument. See examples for typical values.
+- `--force`: Command argument. See examples for typical values.
+
+How arguments interact:
+- Selection supports explicit --relation/--relations, filter --query, and --all.
+
+Examples:
+```powershell
+engine relations mass move-actions (--to <relation> --text
+```
+
 ### `engine relations mass export <path.rl|path.json> [--format rl|json] [--relation <name>] [--relations <csv>] [--query <text>] [--all]`
 What it does: Exports selected relations in legacy .rl or JSON format.
 
@@ -6547,7 +6728,7 @@ Examples:
 engine --editor 'code --wait {file}' relations edit
 ```
 
-### `engine relations suggest <relation>|--relation <relation> [--min high|medium|low] [--limit N] [--game g1|g2] | --all [--missing [--per-relation N]] [--min ...]`
+### `engine relations suggest <relation>|--relation <relation> [--min high|medium|low] [--limit N] [--game g1|g2] | --all [--missing [--per-relation N] [--game g1|g2]] [--min ...]`
 What it does: Proposes what a relation is still missing, each with the reason: the functions of its commands, your style, the function map, the same DCS command id in more aircraft, similar titles in any game. Also lists what you dismissed. --all lists every relation with suggestions; --all --missing per relation the free actions of games and aircraft it lacks.
 
 Arguments and example values:
@@ -6933,8 +7114,8 @@ Examples:
 engine relations merge-copies --text
 ```
 
-### `engine relations join-inputs [--game <id>] [--relation <name>] [--apply]   (experimental, --apply needs --multi-bind on: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on)`
-What it does: Experimental, --apply needs --multi-bind on: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on.
+### `engine relations join-inputs [--game <id>] [--relation <name>] [--apply]   (--apply not with --multi-bind off: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on)`
+What it does: --apply not with --multi-bind off: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -7206,7 +7387,7 @@ Examples:
 engine setup aircraft --games <g1,g2> --text
 ```
 
-### `engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers] [--realism 0..1] [--seed N] [--replace-existing] [--phase-layers on|off|auto] [--role <device|VID:PID>=<role>]... [--grip <device>=<grip id>]... [--add-device <catalog id>]... [--cockpit-file <json>]... [--out-plan <plan.json> | --plan-file <plan.json>]`
+### `engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers] [--placement same-button|real-aircraft|0..1] (old name --realism) [--head-tracking yes|no] [--seed N] [--only-aircraft <a1,a2>] [--replace-existing] [--phase-layers on|off|auto] [--role <device|VID:PID>=<role>]... [--grip <device>=<grip id>]... [--add-device <catalog id>]... [--cockpit-file <json>]... [--out-plan <plan.json> | --plan-file <plan.json>]`
 What it does: Setup wizard: plans relations and binds for the important functions of the chosen games' aircraft on your devices (priorities, modifier budget, realism, phase layers); deterministic for a --seed. Writes nothing to the profile; --out-plan saves the plan for setup check, apply and render.
 
 Arguments and example values:
@@ -7217,8 +7398,12 @@ Arguments and example values:
 - `--modifiers`: How many modifier buttons the plan may use, 0..8 (default 0).
 - `--prefer-fewer`: Use a modifier only when the essential functions do not fit (default).
 - `--use-all-modifiers`: Use the whole modifier budget.
+- `--placement`: Command argument. See examples for typical values.
 - `--realism`: 0 = group by function, 1 = like the real aircraft's HOTAS (cockpit database or knowledge map); 0..1 or 0..100 %.
+- `--head-tracking`: Command argument. See examples for typical values.
 - `--seed`: The seed of the plan's local search (default 1): the same seed gives the same plan.
+- `--only-aircraft`: Only these DCS aircraft (the modules you own), comma-separated; the DCS input layers and the other games stay. Example: --only-aircraft F-16C_50,FA-18C_hornet.
+- `<a1,a2>`: Command argument. See examples for typical values.
 - `--replace-existing`: Lay out your bound relations again; without it they keep their binds.
 - `--phase-layers`: Two combat phases on a latched mode switch: on, off or auto (default: when the inputs are too few for one phase).
 - `--role`: The role of a device (device or VID:PID = role), as for setup devices.
@@ -7338,6 +7523,116 @@ Arguments and example values:
 Examples:
 ```powershell
 engine setup render --plan 'C:\JoyPro\setup-plan.json' --out-dir 'C:\JoyPro\sheets' --aircraft F-16C_50 --text
+```
+
+### `engine setup games [--games <ids>] [--path <game>=<config folder>]... [--status-only]   (per game: empty = nothing assigned, game = binds of your own in the game (import first, then fill the gaps), profile = already in the profile; the Start page's auto setup; only reads the game's control files)`
+What it does: Per game whether you already have binds there: empty (nothing assigned: the Start page offers the setup), game (binds of your own in the game: import them first, then the setup fills the gaps), profile (already in the profile). Only reads the game's control files; --path gives a game's config folder; --status-only leaves the files of a game the profile already has binds for unread (the Start page's quick look).
+
+Arguments and example values:
+- `--games`: Game filter values as CSV. Example: DCS,IL2Game,StarCitizen.
+- `<ids>`: Command argument. See examples for typical values.
+- `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `<game>`: Command argument. See examples for typical values.
+- `<config folder>`: Command argument. See examples for typical values.
+- `--status-only`: Only the status: a game the profile already has binds for (or imported from / exported to) keeps its control files unread (GameBindsRead false, GameBinds 0). What the Start page asks.
+
+Examples:
+```powershell
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' setup games --games DCS,WarThunder,StarCitizen --text
+```
+
+### `engine setup preview (--plan <plan.json> | --from-profile) [--game <id>] [--aircraft <key>] [--out-dir <folder>] [--live-data] [--light] [--width <px>]   (the layout window: the games and aircraft with binds; with --aircraft and --out-dir one sheet per device, or with --live-data each device's drawing, callout sheet and row texts)`
+What it does: The layout window's data: the games and aircraft of a saved plan (--plan) or of the profile's binds on the connected devices (--from-profile); with --aircraft and --out-dir one sheet per device (PNG), or with --live-data each device's drawing, callout sheet (JSON) and row texts. Read-only.
+
+Arguments and example values:
+- `--plan`: Command argument. See examples for typical values.
+- `<plan.json>`: Command argument. See examples for typical values.
+- `--from-profile`: Command argument. See examples for typical values.
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<id>`: Command argument. See examples for typical values.
+- `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
+- `<key>`: Command argument. See examples for typical values.
+- `--out-dir`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
+- `--live-data`: Command argument. See examples for typical values.
+- `--light`: Command argument. See examples for typical values.
+- `--width`: Command argument. See examples for typical values.
+- `<px>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine setup preview --plan 'C:\JoyPro\setup-plan.json' --game DCS --aircraft F-16C_50 --out-dir 'C:\JoyPro\preview' --text
+```
+
+### `engine setup eval [--random N] [--seed N] [--setups popular|random|regression|<ids>] [--regression-file <file>] [--no-regression] [--games <ids>|none] [--families <aircraft>|none] [--no-stress] [--out-dir <folder>] [--baseline <results.json>] [--min-coverage <pct>] [--min-ergonomics <pct>] [--min-popular-coverage <pct>] [--min-row-coverage <pct>] [--min-flight <pct>] [--no-pipeline] [--min-pipeline-coverage <pct>] [--max-wrong N] [--no-persona] [--no-typical] [--no-pad-alone] [--head-tracking yes|no] [--placement same-button|real-aircraft|0..1] [--placement-sweep <positions>] [--min-hard-pass <pct>] [--min-popular-hard-pass <pct>] [--max-destructive N] [--popular-zero-gates <gates>] [--min-typical-hard-pass <pct>] [--min-pad-hard-pass <pct>] [--min-regression-hard-pass <pct>] [--min-pipeline-hard-pass <pct>] [--max-pipeline-destructive N] [--max-pipeline-lost N] [--max-all-games-lost N] [--pipeline-zero-gates <gates>] [--min-all-games-hard-pass <pct>] [--gate-baseline <json>] [--write-gate-baseline <json>]   (setup eval --help prints this)`
+What it does: Scores the Setup wizard's planner on 20 popular and --random N random device setups against every wizard game and the main DCS families (docs/auto-setup-eval.md): can every major operation be done, are the hand rules kept. Then per setup one profile through Auto Group and Fill all (Suggest missing, every suggestion taken), scored again with the rule 'no wrong-kind matches' (--no-pipeline skips it), and the novice case IL-2 + WinWing URSA MINOR on its own (persona.md, --no-persona skips it). Writes report.md, results.json, rows.csv and setups/*.md to --out-dir; exit 1 when a --min-* / --max-wrong threshold fails. Read-only (the profiles live in memory).
+
+Arguments and example values:
+- `--random`: Command argument. See examples for typical values.
+- `--seed`: Command argument. See examples for typical values.
+- `--setups`: Command argument. See examples for typical values.
+- `<ids>`: Command argument. See examples for typical values.
+- `--regression-file`: Command argument. See examples for typical values.
+- `<file>`: Command argument. See examples for typical values.
+- `--no-regression`: Command argument. See examples for typical values.
+- `--games`: Game filter values as CSV. Example: DCS,IL2Game,StarCitizen.
+- `--families`: Command argument. See examples for typical values.
+- `<aircraft>`: Command argument. See examples for typical values.
+- `--no-stress`: Command argument. See examples for typical values.
+- `--out-dir`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
+- `--baseline`: Command argument. See examples for typical values.
+- `<results.json>`: Command argument. See examples for typical values.
+- `--min-coverage`: Command argument. See examples for typical values.
+- `<pct>`: Command argument. See examples for typical values.
+- `--min-ergonomics`: Command argument. See examples for typical values.
+- `--min-popular-coverage`: Command argument. See examples for typical values.
+- `--min-row-coverage`: Command argument. See examples for typical values.
+- `--min-flight`: Command argument. See examples for typical values.
+- `--no-pipeline`: Command argument. See examples for typical values.
+- `--min-pipeline-coverage`: Command argument. See examples for typical values.
+- `--max-wrong`: Command argument. See examples for typical values.
+- `--no-persona`: Command argument. See examples for typical values.
+- `--no-typical`: Command argument. See examples for typical values.
+- `--no-pad-alone`: Command argument. See examples for typical values.
+- `--head-tracking`: Command argument. See examples for typical values.
+- `--placement`: Command argument. See examples for typical values.
+- `--placement-sweep`: Command argument. See examples for typical values.
+- `<positions>`: Command argument. See examples for typical values.
+- `--min-hard-pass`: Command argument. See examples for typical values.
+- `--min-popular-hard-pass`: Command argument. See examples for typical values.
+- `--max-destructive`: Command argument. See examples for typical values.
+- `--popular-zero-gates`: Command argument. See examples for typical values.
+- `<gates>`: Command argument. See examples for typical values.
+- `--min-typical-hard-pass`: Command argument. See examples for typical values.
+- `--min-pad-hard-pass`: Command argument. See examples for typical values.
+- `--min-regression-hard-pass`: Command argument. See examples for typical values.
+- `--min-pipeline-hard-pass`: Command argument. See examples for typical values.
+- `--max-pipeline-destructive`: Command argument. See examples for typical values.
+- `--max-pipeline-lost`: Command argument. See examples for typical values.
+- `--max-all-games-lost`: Command argument. See examples for typical values.
+- `--pipeline-zero-gates`: Command argument. See examples for typical values.
+- `--min-all-games-hard-pass`: Command argument. See examples for typical values.
+- `--gate-baseline`: Command argument. See examples for typical values.
+- `<json>`: Command argument. See examples for typical values.
+- `--write-gate-baseline`: Command argument. See examples for typical values.
+- `--help`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine setup eval --random 20 --seed 2026 --out-dir 'C:\JoyPro\autosetup-eval' --min-coverage 86 --text
+```
+
+### `engine setup eval-pad [--out-dir <folder>]   (ACE COMBAT 8 player: the Setup wizard alone must put every flight control on the virtual Xbox pad; exit 1 when a pad gate fails)`
+What it does: ACE COMBAT 8 player: the Setup wizard alone must put every flight control on the virtual Xbox pad; exit 1 when a pad gate fails.
+
+Arguments and example values:
+- `--out-dir`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
+
+Examples:
+```powershell
+engine setup eval-pad --text
 ```
 
 ### `engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]`
@@ -7581,8 +7876,8 @@ engine binds clear 'Gear Toggle' --text
 engine binds clear 'Gear Toggle' --input-only --text
 ```
 
-### `engine binds extra list <relation>   (experimental, changes need --multi-bind on: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning)`
-What it does: Experimental, changes need --multi-bind on: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning.
+### `engine binds extra list <relation>   (changes not with --multi-bind off: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning)`
+What it does: Changes not with --multi-bind off: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning.
 
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
@@ -7645,13 +7940,14 @@ Examples:
 engine binds extra set <relation> <n> --text
 ```
 
-### `engine binds extra remove <relation> <n>|--all   (works also with the setting off)`
-What it does: Works also with the setting off.
+### `engine binds extra remove <relation> <n>|--all   (works also with --multi-bind off)`
+What it does: Works also with --multi-bind off.
 
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
 - `<n>`: Integer numeric value. Example: 45.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
+- `--multi-bind`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

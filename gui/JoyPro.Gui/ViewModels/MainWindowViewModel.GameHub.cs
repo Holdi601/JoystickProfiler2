@@ -118,6 +118,7 @@ public sealed partial class MainWindowViewModel
         if (ImportWizardGame != null)
             ImportWizardGame = GameCards.FirstOrDefault(c => c.GameId == ImportWizardGame.GameId) ?? ImportWizardGame;
         _ = LoadGameCardCoversAsync(cards);
+        RequestAutoSetupStatus();
 
         // The games of the registry (WARDOGS, MSFS, ...) need the engine's integration list once.
         if (!registryGamesRequestedForCards && allRegistryGames.Count == 0 && OwnedGameInstalls.Any(g => GameCardKind(g.GameId).Kind.Length == 0))
@@ -284,6 +285,8 @@ public sealed partial class MainWindowViewModel
         game.ResultFailed = !ok;
         game.Result = ok ? T("Imported {0}", DateTime.Now.ToString("HH:mm", CultureInfo.CurrentCulture)) : T("Import failed");
         ImportWizardStep = 3;
+        OnPropertyChanged(nameof(OffersFillGapsAfterImport));
+        RequestAutoSetupStatus(true);
         // The import opens the Relations page; the wizard stays on its result.
         if (CurrentStage != stageBefore)
             CurrentStage = stageBefore;
@@ -293,6 +296,8 @@ public sealed partial class MainWindowViewModel
     // games as always.
     private void OnStartPageLeft()
     {
+        // The background look at the games stops (its answer is asked again on the next visit).
+        CancelAutoSetupStatus();
         if (ImportWizardStep == 3)
             RestartImportWizard();
     }
@@ -401,7 +406,7 @@ public sealed partial class MainWindowViewModel
         game.Result = result.ExitCode == 0 ? T("Last export undone") : T("Undo failed: {0}", BuildFailureStatus(result));
     }
 
-    // "Export" on a card: the Export page with this game's tile.
+    // "Export" on a card: the Export page with this game's card.
     [RelayCommand]
     private async Task ExportGameCardAsync(GameCardItem? game)
     {

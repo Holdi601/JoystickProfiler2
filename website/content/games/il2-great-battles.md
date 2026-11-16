@@ -17,20 +17,30 @@ starts, so nothing of JoyPro runs while you fly.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E["engine il2 export"]
-  E --> A["data / input / global.actions<br/>(your binds, game order kept)"]
-  E --> D["devices.txt<br/>(joy number per device)"]
-  E --> R["current.responses<br/>global.pitch (curves)"]
-  E --> J["jp.actions<br/>(names, groups)"]
-  A --> G["IL-2 compiles current.map<br/>at start"]
-  D --> G
-  R --> G
-  G --> K["Settings > Key mapping"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep IL-2 closed
+:::
+
+**Before**: let IL-2 write its key mapping once. Open **Settings > Key mapping** and press **ACCEPT**. Close
+IL-2.
+
+**Then**: your binds are in **Settings > Key mapping**, in every IL-2 aircraft.
+
+Did you bind buttons in IL-2 before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
+## Look around without head tracking
+
+No TrackIR, no VR? The setup puts the snap views on one hat of your stick: forward, back, left and right. The look
+axes go on the mini stick of your throttle, when it has one. See
+[[page:how-do-i/head-tracking.html|Head tracking and looking around]].
+
 ## What JoyPro does for IL-2 Great Battles
 
 - **Import**: every action of the key mapping that sits on a stick, throttle, pedals or panel comes into your profile,
@@ -59,9 +69,9 @@ button that does two things in IL-2 before the game does ([[page:flows/check.htm
 ## Export to IL-2
 
 1. **Close IL-2.** JoyPro refuses to write while `Il-2.exe` runs.
-2. Open **Export**. The IL-2 tile shows how many of its relations are bound.
+2. Open **Export**. The IL-2 card shows how many of its relations are bound.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the IL-2 tile.
+   Press **Export now** on the IL-2 card.
 
 ![The Export page](shot:export)
 
@@ -132,8 +142,8 @@ feedback and noise filter values JoyPro set show on **Settings > Input devices**
 
 - **Granularity**: global. One key mapping and one response row per action cover every aircraft.
 - **Axis curves** (axis model `il2`): centre dead zone, edge dead zone and the curve ("sensitivity balance") for
-  centred axes; low and high dead zones for one-sided axes such as the throttle; a centre shift for pitch. A curve
-  set for all games is fitted to IL-2's model; you can also set one for IL-2 only, or for the IL-2 family (Great
+  centred axes; low and high dead zones for one-sided axes such as the throttle; a centre shift for pitch. The
+  **Default curve** is fitted to IL-2's model; you can also set one for IL-2 only, or for the IL-2 family (Great
   Battles and Korea read each other's values). Invert is written on the action's line.
 - **Game settings** (Settings > **Force feedback settings of the games**): joystick noise filter, force feedback on,
   feedback power and shaking. An export without IL-2 binds still writes them.
@@ -146,6 +156,19 @@ feedback and noise filter values JoyPro set show on **Settings > Input devices**
 
 :::layer technical
 ## Inside the IL-2 integration
+
+```mermaid
+%% caption: IL-2 compiles these files (data/input: your binds in global.actions with the game's order kept, names and groups in jp.actions, the joy number per device in devices.txt, the curves in current.responses and global.pitch) into its key mapping at its next start.
+flowchart LR
+  P["Your profile"] --> E["engine il2 export"]
+  E --> A["global.actions<br/>+ jp.actions"]
+  E --> D["devices.txt"]
+  E --> R["current.responses<br/>global.pitch"]
+  A --> G["current.map<br/>(at start)"]
+  D --> G
+  R --> G
+  G --> K["Settings ><br/>Key mapping"]
+```
 
 Code: `engine\EngineIl2.cs` (import, export, files), `engine\EngineIl2DbRefresh.cs` (command list),
 `engine\AxisModels` (model `il2`), `engine\EngineFfbTelemetry.cs` (telemetry setup).

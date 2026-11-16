@@ -111,7 +111,7 @@ namespace JoyPro.Engine
                     result.CommandsMissingInDatabase++;
                     continue;
                 }
-                if (isAxis.Value != slot.Axis)
+                if (isAxis.Value != slot.Axis && !PadButtonsOnAxis(row.Game, slot.Axis, isAxis.Value))
                 {
                     AddUnique(result.Warnings, "Skipped " + row.Plane + " " + row.Action + ": axis/button does not match slot '" + slot.Name + "'.");
                     continue;
@@ -167,6 +167,13 @@ namespace JoyPro.Engine
                     continue;
                 foreach (Slot slot in slots.Values)
                 {
+                    // With head tracking or VR (the profile's wizard answer) no look-around relation in the sims that
+                    // support it; the recenter stays.
+                    if (EngineSetupWizard.SkipForHeadTracking(slot.Id, plane.Value.Game))
+                    {
+                        result.HeadTrackingSkipped++;
+                        continue;
+                    }
                     List<string> actions = Lookup(own, plane.Key, slot.Id);
                     string status = "own";
                     if (actions.Count == 0 && includeSubstitutes && slot.Substitutable)
@@ -278,6 +285,8 @@ namespace JoyPro.Engine
 
             HashSet<string> planesCovered = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             EngineFunctionMap.Map functionMap = useMap ? EngineFunctionMap.Load(result.Warnings) : null;
+            // A relation already bound to an input keeps the auto setup's rules for it (EngineBindGuard).
+            EngineBindGuard guard = EngineBindGuard.Load(result.Warnings, functionMap);
             foreach (Group group in groups.Values.OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase))
             {
                 Relation relation;
@@ -360,6 +369,13 @@ namespace JoyPro.Engine
                     {
                         result.KeptYourAction++;
                         AddUnique(result.Kept, row.Plane + " " + row.Action + " not added to '" + group.Name + "': " + row.Plane + " already has your action there");
+                        continue;
+                    }
+                    string inputRule = exists && guard != null ? guard.Veto(relation, row.Game, row.Action, row.Plane) : string.Empty;
+                    if (inputRule.Length > 0)
+                    {
+                        result.KeptForInputRules++;
+                        AddUnique(result.Kept, row.Plane + " " + row.Action + " not added to '" + group.Name + "': " + inputRule);
                         continue;
                     }
                     List<string> buttonOwners = buttons.OthersOn(group.Name, row.Game, row.Plane, row.Action);
@@ -902,6 +918,14 @@ namespace JoyPro.Engine
 
         // Commands of the other games: their own catalog (Star Citizen, IL-2, registry games) says whether the command
         // exists and whether it is an axis. Null = unknown to the local database.
+        // A game on the virtual Xbox pad that has an axis function only on pad buttons (ACE COMBAT 8 yaw = LB / RB): its
+        // button actions go into the axis relation (rudder, twist) and the pad's auto setup presses them at the axis ends
+        // (EngineVJoy.AxisToPadButtons).
+        internal static bool PadButtonsOnAxis(string game, bool slotIsAxis, bool actionIsAxis)
+        {
+            return slotIsAxis && !actionIsAxis && !IsDcs(game) && VJoy.VJoySettings.ReadsOnlyXbox(game);
+        }
+
         internal static bool? GameCommandAxis(string game, string id)
         {
             try
@@ -1048,11 +1072,14 @@ namespace JoyPro.Engine
             sb.AppendLine("Kept Disabled By You: " + result.KeptDisabled.ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("Left Out, Button Already Used For The Aircraft: " + result.KeptForButtonConflicts.ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("Left Out, Aircraft Has Your Action There: " + result.KeptYourAction.ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine("Left Out, Not For The Bound Input: " + result.KeptForInputRules.ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("Left Out, Same Id Means Something Else: " + result.MeaningExcluded.ToString(CultureInfo.InvariantCulture));
             foreach (string note in result.MeaningNotes.Take(20))
                 sb.AppendLine("  ~ " + note);
             sb.AppendLine("Aircraft Covered: " + result.AircraftCovered.ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("Substitutes From Your Style: " + result.LearnedSubstitutes.ToString(CultureInfo.InvariantCulture));
+            if (result.HeadTrackingSkipped > 0)
+                sb.AppendLine("Left Out For Head Tracking: " + result.HeadTrackingSkipped.ToString(CultureInfo.InvariantCulture) + " look-around functions (snap views, look axes; the recenter stays)");
             if (result.UseMap)
                 sb.AppendLine("Function Map: " + result.MapRows.ToString(CultureInfo.InvariantCulture) + " actions the catalog does not list" +
                               (result.MapAircraft.Count > 0 ? "; aircraft and games: " + string.Join(", ", result.MapAircraft) : string.Empty));
@@ -1125,12 +1152,17 @@ namespace JoyPro.Engine
         public int KeptDisabled { get; set; }
         // Placements left out because the relation's button already does another relation's action for the aircraft.
         public int KeptForButtonConflicts { get; set; }
+        // Commands left out of a bound relation because its input must not do them (a lever detent, a latched switch, a
+        // grip: EngineBindGuard).
+        public int KeptForInputRules { get; set; }
         // Commands left out of a relation where the aircraft already has the user's action (a second one would be two
         // actions of one aircraft on one input).
         public int KeptYourAction { get; set; }
         public int AircraftCovered { get; set; }
         public int CommandsMissingInDatabase { get; set; }
         public int LearnedSubstitutes { get; set; }
+        // Look-around functions left out for head tracking / VR (Pr0file.HeadTracking "yes"), per aircraft and function.
+        public int HeadTrackingSkipped { get; set; }
         // The function map: whether it was used, how many rows it added, the aircraft and games it brought in.
         public bool UseMap { get; set; }
         public int MapRows { get; set; }

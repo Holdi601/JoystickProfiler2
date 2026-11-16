@@ -130,7 +130,9 @@ public sealed class UiDesignRenderTests
             await Task.Delay(10);
     }
 
-    internal static void RenderWindow(MainWindowViewModel vm, int width, int height, string file)
+    // prepare: runs on the laid-out window before the render (selections of the window's own lists); detach: the window
+    // lets go of the view model afterwards, so its lists' selection bindings do not answer the next window's.
+    internal static void RenderWindow(MainWindowViewModel vm, int width, int height, string file, Action<MainWindow>? prepare = null, bool detach = false)
     {
         MainWindow main = new() { DataContext = vm, Width = width, Height = height };
         Size size = new(width, height);
@@ -150,6 +152,13 @@ public sealed class UiDesignRenderTests
             page.Measure(size);
             page.Arrange(new Rect(size));
             AvaloniaRenderThread.Pump();
+            // Offscreen nothing runs the layout queue: what prepare shows or hides is measured again from the root.
+            if (pass == 2 && prepare != null)
+            {
+                prepare(main);
+                foreach (Avalonia.Layout.Layoutable layoutable in Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(main).OfType<Avalonia.Layout.Layoutable>())
+                    layoutable.InvalidateMeasure();
+            }
         }
         // The window's own background (Fluent's region color, or JoyPro's page background) in the theme of the render.
         IBrush background = main.TryFindResource("JP.PageBackgroundBrush", main.ActualThemeVariant, out object? page2) && page2 is IBrush own
@@ -166,6 +175,27 @@ public sealed class UiDesignRenderTests
         }
         bitmap.Save(file);
         Assert.True(new FileInfo(file).Length > 1000);
+        if (detach)
+            main.DataContext = null;
+    }
+
+    // A window laid out by the caller (HelpModeTests): the page onto its background as a PNG.
+    internal static void RenderLaidOut(MainWindow main, int width, int height, string file)
+    {
+        Size size = new(width, height);
+        Control page = (Control)main.Content!;
+        IBrush background = main.TryFindResource("JP.PageBackgroundBrush", main.ActualThemeVariant, out object? found) && found is IBrush own
+            ? own
+            : new SolidColorBrush(main.ActualThemeVariant == ThemeVariant.Light ? Color.Parse("#F3F3F3") : Color.Parse("#202020"));
+        using RenderTargetBitmap content = new(new PixelSize(width, height));
+        content.Render(page);
+        using RenderTargetBitmap bitmap = new(new PixelSize(width, height));
+        using (DrawingContext context = bitmap.CreateDrawingContext())
+        {
+            context.FillRectangle(background, new Rect(size));
+            context.DrawImage(content, new Rect(size), new Rect(size));
+        }
+        bitmap.Save(file);
     }
 
     // A profile with relations of DCS, IL-2 Korea and War Thunder, binds on a Warthog stick and throttle with two

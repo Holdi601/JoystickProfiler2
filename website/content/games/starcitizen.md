@@ -17,19 +17,23 @@ gave it, so your binds do not jump from one stick to another.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(ship relations)"] --> E["engine starcitizen export"]
-  A[("actionmaps.xml<br/>joystick slots js1 ... js8")] --> S{"Slot per device"}
-  D["Connected devices"] --> S
-  S --> R["known device: same slot<br/>new device: first free slot<br/>stale duplicate: removed"]
-  R --> E
-  E --> X["actionmaps.xml<br/>ship rebinds, edited in place"]
-  E --> T["attributes.xml<br/>game-wide settings"]
-  X --> G["Star Citizen:<br/>Options > Controls"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep Star Citizen closed
+:::
+
+**Before**: plug in every device you use.
+
+**Then**: your binds are in **Options > Controls**.
+
+Did you bind buttons in Star Citizen before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Star Citizen
 
 - **Import**: your ship binds on sticks, throttles and pedals come into your profile, with their dead zones, curves
@@ -58,9 +62,9 @@ two things on your ship before the game does.
 ## Export to Star Citizen
 
 1. **Close Star Citizen.** The game rewrites `actionmaps.xml` when it quits, so JoyPro refuses to write while it runs.
-2. Open **Export** and tick the Star Citizen tile.
+2. Open **Export** and tick the Star Citizen card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -185,6 +189,18 @@ Replace + Also clear, leaves `actionmaps.xml` as it was.
 :::layer technical
 ## Inside the Star Citizen integration
 
+```mermaid
+%% caption: A known device keeps its joystick slot (js1 ... js8 in actionmaps.xml). A new device gets the first free slot; a stale duplicate is removed. The ship rebinds are edited in place, the game-wide settings go to attributes.xml.
+flowchart LR
+  A[("actionmaps.xml")] --> S["Slot per device"]
+  D["Connected devices"] --> S
+  P["Your profile"] --> E["engine starcitizen export"]
+  S --> E
+  E --> X["actionmaps.xml"]
+  E --> T["attributes.xml"]
+  X --> G["Options ><br/>Controls"]
+```
+
 Code: `engine\EngineStarCitizen.cs`, `engine\EngineStarCitizenTuning.cs`, the axis model
 `engine\AxisModels\StarCitizen.cs` and the settings model `engine\FfbModels\StarCitizen.cs`.
 
@@ -206,7 +222,7 @@ Code: `engine\EngineStarCitizen.cs`, `engine\EngineStarCitizenTuning.cs`, the ax
   axis with different values give a warning, and the first relation by name wins.
 - **Game settings**: `engine ffb set --device * --game StarCitizen --param <Attr name>=<value>`; an existing line gets
   the value, a new one goes to its sorted place.
-- **Backups**: [[cli:backups list]] lists the copies; **Undo last export** on the tile restores the newest.
+- **Backups**: [[cli:backups list]] lists the copies; **Undo last export** on the card restores the newest.
 
 ### Known limits
 

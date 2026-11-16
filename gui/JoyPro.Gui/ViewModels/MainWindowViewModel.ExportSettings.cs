@@ -43,7 +43,7 @@ public sealed partial class MainWindowViewModel
     // itself changes a value (a dry-run preview, "Export" on a card).
     private bool exportSettingsReady;
     private int exportSettingsSuppressed;
-    // The profile the export tiles belong to (their ticks are not carried over to another profile).
+    // The profile the export cards belong to (their ticks are not carried over to another profile).
     private string exportTilesProfile = string.Empty;
 
     // After the paths are prefilled (constructor): the remembered choices on top.

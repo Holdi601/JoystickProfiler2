@@ -39,17 +39,20 @@ Where the code lives in JoyPro 2 (C# code lines): engine {{stat:jp2.engine.code}
 tests {{stat:jp2.guitests.code}}, force feedback {{stat:jp2.ffb.code}}.
 
 ```mermaid
+%% caption: JoyPro 1: one window that did everything, for DCS.
 flowchart LR
-  subgraph JP1["JoyPro 1"]
-    W["WPF window<br/>(UI + logic in one)"] --> D1["DCS files"]
-  end
-  subgraph JP2["JoyPro 2"]
-    G["Avalonia GUI<br/>(.NET 9)"] -->|"every action"| E["engine.exe<br/>(command line)"]
-    T["Tray watcher"] --> E
-    F["JoyPro.Ffb<br/>(force feedback)"]
-    V["JoyPro.VJoy<br/>(virtual joystick)"]
-    E --> D2["DCS, IL-2, Star Citizen,<br/>MSFS, X-Plane, BMS, ...<br/>(30+ games)"]
-  end
+  W["One window<br/>(screen and logic<br/>in one)"] --> D1["DCS files"]
+```
+
+```mermaid
+%% caption: JoyPro 2: a window that hands every action to the engine, with helpers for force feedback, the virtual joystick and the watcher.
+flowchart TB
+  G["The window"] --> E["The engine<br/>(does every action)"]
+  G --> F["Force feedback<br/>helper"]
+  G --> V["Virtual joystick<br/>helper"]
+  T["Watcher<br/>in the tray"] --> E
+  E --> D2["{{stat:games.handled}} games"]
+  F ~~~ V
 ```
 
 :::layer beginner
@@ -64,13 +67,17 @@ flowchart LR
   byte for byte. Every change in JoyPro is saved automatically and can be undone, even after a restart (profile
   history).
 - **It tells you what would go wrong.** The Check explains problems in game words and fixes them with one click.
+- **It sets itself up.** **Set it all up for me** puts the important functions on your stick, throttle and pedals.
+  You look at the list and press **Use these buttons** and **Write to my game**.
 - **Less clicking.** Suggestions, Auto Group, Auto Assign, the setup wizard and a JoyPro assistant build relations and
   binds for you; a learned "your style" follows how you did it before.
 - **It notices changes.** When you rebind something inside a game, JoyPro asks after the game closes whether to take
   it into your profile.
 - **Your language.** The interface speaks {{stat:languages}} languages.
 - **More than binds.** Device pictures and cheat sheets, a HUD and stream overlay, force feedback from telemetry, a
-  virtual joystick for games that read only one device, a cockpit database, statistics of what you fly.
+  virtual joystick for games that read only one device, a pretend controller (virtual Xbox pad) for games that only
+  know an Xbox controller, a cockpit database, statistics of what you fly.
+- **Help on every button.** F1 explains any button, tours point at the real buttons, and Easy words keeps it short.
 - **No extra runtimes to hunt.** The release is one zip with everything inside; no SlimDX, no C++ runtimes.
 :::
 

@@ -156,11 +156,18 @@ namespace JoyPro.Engine.Games
                     child.Kind = BlkChildKind.Block;
                     child.Name = OpenBlock.Match(line).Groups["name"].Value;
                     child.EndLine = FindClose(i);
+                    // The block's own params (depth 0 inside it), the nesting counted as the lines go by: a new count from
+                    // the block's start for every line made big files (War Thunder's controls) quadratic.
+                    int depth = 0;
                     for (int j = i + 1; j < child.EndLine; j++)
                     {
-                        Match param = ParamLine.Match(lines[j]);
-                        if (param.Success && Depth(i + 1, j) == 0)
-                            child.Params.Add(new BlkParam { Name = param.Groups["name"].Value, Type = param.Groups["type"].Value, Value = param.Groups["value"].Value });
+                        if (depth == 0)
+                        {
+                            Match param = ParamLine.Match(lines[j]);
+                            if (param.Success)
+                                child.Params.Add(new BlkParam { Name = param.Groups["name"].Value, Type = param.Groups["type"].Value, Value = param.Groups["value"].Value });
+                        }
+                        depth += Count(lines[j], '{') - Count(lines[j], '}');
                     }
                 }
                 else if (ParamLine.IsMatch(line))
@@ -181,15 +188,6 @@ namespace JoyPro.Engine.Games
                 i = child.EndLine;
             }
             return children;
-        }
-
-        // Depth of nested blocks between two lines, used to skip params of grandchildren.
-        private int Depth(int from, int to)
-        {
-            int depth = 0;
-            for (int i = from; i < to; i++)
-                depth += Count(lines[i], '{') - Count(lines[i], '}');
-            return depth;
         }
 
         private int FindClose(int header)

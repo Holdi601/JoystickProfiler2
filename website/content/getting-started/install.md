@@ -1,7 +1,7 @@
 ---
 title: Download and install
 status: full
-order: 1
+order: 2
 summary: Get JoyPro 2 from GitHub, unzip it, start it. What it needs, where it keeps its data, and how updates work.
 ---
 JoyPro 2 is free and open source (GPL-3.0). There is no account, no sign-up and no telemetry.
@@ -16,9 +16,19 @@ JoyPro 2 is free and open source (GPL-3.0). There is no account, no sign-up and 
    `JoyPro2-<version>-win-x64.zip` (under **Assets**).
 2. Right-click the zip, **Extract All...**, and choose a folder you can write to, for example `C:\JoyPro2` or a folder
    in your Documents. (Not `C:\Program Files`: JoyPro updates itself in its own folder.)
-3. Open the folder and double-click **JoyPro.Gui.exe**.
+3. Open the folder and double-click **JoyPro.Gui** (the program with the joystick icon; with file extensions shown it
+   reads **JoyPro.Gui.exe**).
 
-On the first start JoyPro looks for your games and shows them in a window: see [[page:getting-started/first-start.html|First start]].
+Windows says **Windows protected your PC**? Click **More info**, then **Run anyway**. Windows asks this once for a
+program downloaded from the internet that it does not know yet.
+
+On the first start JoyPro looks for your games and shows them in a window: see
+[[page:getting-started/first-start.html|First start]]. New to JoyPro? Press **Done, and set everything up for me**
+there, and follow [[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
+Then a welcome asks what you want to do and starts the tour that fits you. **JoyPro 2 - Tour** in the same folder opens
+that welcome again any time. Want big text and short sentences? Tick **Easy words: big text, short sentences** in the
+welcome ([[page:how-do-i/easy-words-and-help.html|Easy words, tours and F1]]).
 
 ### What you need
 
@@ -37,18 +47,9 @@ stay.
 :::layer advanced
 ## Where JoyPro keeps things
 
-| What | Where |
-|---|---|
-| The program | the folder you unzipped (with `engine\engine.exe`, `vjoy\`, `tray\`, the data JoyPro ships in `DB\`) |
-| Your profiles | `Documents\JoyPro2` (or wherever you save them) |
-| Settings | `%APPDATA%\JoyPro2` (`ui-settings.json`, `export-settings.json`, `hud.json` ...) |
-| Game command lists built on your PC | `%LOCALAPPDATA%\JoyPro2\GameData` |
-| Game file backups | `%LOCALAPPDATA%\JoyPro2\GameBackups` (the newest 30 per game) |
-| Profile history (undo across restarts) | `%LOCALAPPDATA%\JoyPro2\ProfileHistory` |
-| Logs | `%LOCALAPPDATA%\JoyPro2\Logs` (delete themselves after a few days) |
-| Problem reports | `Documents\JoyPro2\Problem Reports` |
-
-An update replaces only the program folder; the command lists, backups and history stay.
+Your profiles are in your Documents folder, in `JoyPro2`. Problem reports go there too. An update replaces only the
+program folder: your profiles, settings, command lists, backups and history stay. The full list of folders is under
+Technical internals.
 
 ### Optional components
 
@@ -65,9 +66,23 @@ components and a missing .NET Framework installer. These sites see your IP addre
 :::
 
 :::layer technical
+## All of JoyPro's folders
+
+| What | Where |
+|---|---|
+| The program | the folder you unzipped (with `engine\engine.exe`, `vjoy\`, `tray\`, the data JoyPro ships in `DB\`) |
+| Your profiles | `Documents\JoyPro2` (or wherever you save them) |
+| Settings | `%APPDATA%\JoyPro2` (`ui-settings.json`, `export-settings.json`, `hud.json` ...) |
+| Game command lists built on your PC | `%LOCALAPPDATA%\JoyPro2\GameData` |
+| Game file backups | `%LOCALAPPDATA%\JoyPro2\GameBackups` (the newest 30 per game) |
+| Profile history (undo across restarts) | `%LOCALAPPDATA%\JoyPro2\ProfileHistory` |
+| Logs | `%LOCALAPPDATA%\JoyPro2\Logs` (delete themselves after a few days) |
+| Problem reports | `Documents\JoyPro2\Problem Reports` |
+
 ## Inside the package
 
 - `JoyPro.Gui.exe`: the Avalonia app (.NET 9, self-contained).
+- `JoyPro 2 - Tour.cmd`: starts `JoyPro.Gui.exe --welcome`, the welcome with its tours (hands it to a running JoyPro).
 - `engine\engine.exe`: the engine (.NET Framework 4.8). The GUI runs it for every action; you can also run it in a
   console ([[page:cli/index.html|engine command line]]).
 - `vjoy\JoyPro.VJoy.exe` (virtual joystick forwarder), `JoyPro.Ffb.exe` (telemetry force feedback),

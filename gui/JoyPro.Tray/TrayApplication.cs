@@ -19,6 +19,7 @@ internal sealed class TrayApplication : ApplicationContext, ITrayView
     private readonly NotifyIcon icon;
     private readonly ContextMenuStrip menu;
     private readonly ToolStripMenuItem openItem;
+    private readonly ToolStripMenuItem layoutItem;
     private readonly ToolStripMenuItem reviewItem;
     private readonly ToolStripMenuItem watchingItem;
     private readonly ToolStripMenuItem exitItem;
@@ -32,11 +33,12 @@ internal sealed class TrayApplication : ApplicationContext, ITrayView
         SynchronizationContext.SetSynchronizationContext(context);
 
         openItem = new ToolStripMenuItem(WatchText.T("Open JoyPro2"), null, (_, _) => host!.Open());
+        layoutItem = new ToolStripMenuItem(WatchText.T("Where is what?"), null, (_, _) => host!.OpenLayout());
         reviewItem = new ToolStripMenuItem(WatchText.T("Review"), null, (_, _) => host!.Review()) { Visible = false };
         watchingItem = new ToolStripMenuItem("Watching game configs", null, (_, _) => host!.ToggleWatching()) { CheckOnClick = false };
         exitItem = new ToolStripMenuItem(WatchText.T("Exit"), null, (_, _) => host!.Exit());
         menu = new ContextMenuStrip();
-        menu.Items.AddRange([openItem, reviewItem, watchingItem, new ToolStripSeparator(), exitItem]);
+        menu.Items.AddRange([openItem, layoutItem, reviewItem, watchingItem, new ToolStripSeparator(), exitItem]);
         openItem.Font = new Font(openItem.Font, FontStyle.Bold);
 
         using (System.IO.Stream? stream = typeof(TrayApplication).Assembly.GetManifestResourceStream("JoyPro.Tray.icon.ico"))

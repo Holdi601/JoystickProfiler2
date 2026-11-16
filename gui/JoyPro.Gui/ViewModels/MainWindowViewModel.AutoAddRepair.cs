@@ -72,13 +72,28 @@ public sealed partial class MainWindowViewModel
         EngineCommandResult? result = await RunEngineAsync(["profile", "auto-added"], includeProfile: true, mutatesProfile: false,
             busyLabel: N("Looking for aircraft JoyPro added by itself..."), forceText: false, background: true);
         // The list names the aircraft as the modules do; the relation list's load of those names may still be on its way.
-        if (result != null && result.ExitCode == 0 && RelationListItem.AircraftNames.Count == 0)
+        // Waited for only when there is a list to show: the usual answer (nothing found) does not hold up the profile's
+        // opening behind the media index (0.6 s in a process of its own).
+        if (result != null && result.ExitCode == 0 && RelationListItem.AircraftNames.Count == 0 && AutoAddRepairFound(result.StandardOutput))
         {
             MediaIndex index = await GetMediaIndexAsync();
             if (index.AircraftNames.Count > 0)
                 RelationListItem.AircraftNames = new Dictionary<string, string>(index.AircraftNames, StringComparer.OrdinalIgnoreCase);
         }
         ApplyAutoAddRepair(result == null || result.ExitCode != 0 ? string.Empty : result.StandardOutput);
+    }
+
+    private static bool AutoAddRepairFound(string output)
+    {
+        try
+        {
+            using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(output));
+            return doc.RootElement.ValueKind == JsonValueKind.Object && ReadJsonBool(doc.RootElement, "Found");
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
     }
 
     // The engine's answer -> the notice and its rows (empty: no notice).

@@ -57,17 +57,13 @@ already binds for that game and aircraft, so you see at a glance what is still m
 
 ## Where the pictures come from
 
-```mermaid
-flowchart TD
-  V["A variant is opened"] --> G{"Pictures from<br/>your games?"}
-  G -->|yes| P["Game pictures: overview,<br/>grips, one page per panel"]
-  G -->|no| K{"Picture pack in<br/>JoyPro's releases?"}
-  K -->|yes| O["Offer: Download / Not now<br/>(Settings > Privacy: ask, always, never)"]
-  O --> P
-  K -->|no| F{"Verified photos<br/>known?"}
-  F -->|yes| D["Download photos: a page per photo<br/>with JoyPro's numbered labels"]
-  F -->|no| J["JoyPro's own drawings"]
-```
+When you open a variant, JoyPro shows the first of these that exists:
+
+1. **Pictures from your games**: overview, grips, one page per panel.
+2. **A picture pack from JoyPro's releases**: JoyPro asks first (**Download** / **Not now**; Settings > Privacy: ask,
+   always or never). Then it shows the game pictures of step 1.
+3. **Verified photos**: downloaded, a page per photo with JoyPro's numbered labels.
+4. **JoyPro's own drawings.**
 
 - **Build pictures from my games** reads the games' own files (DCS, X-Plane 12, MSFS 2020, IL-2 Great Battles, Nuclear
   Option, Star Citizen, War Thunder) and renders the cockpits on this PC. It takes about two seconds per picture; a

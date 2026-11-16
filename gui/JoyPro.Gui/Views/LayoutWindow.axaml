@@ -1,0 +1,98 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:JoyPro.Gui.Localization"
+        xmlns:vm="using:JoyPro.Gui.ViewModels"
+        xmlns:controls="using:JoyPro.Gui.Views.Controls"
+        x:Class="JoyPro.Gui.Views.LayoutWindow"
+        x:DataType="vm:LayoutWindowViewModel"
+        Title="{l:T 'JoyPro2 - Where is what?'}"
+        Icon="/Assets/joypro2_gui.ico"
+        Width="1280"
+        Height="900"
+        MinWidth="520"
+        MinHeight="400"
+        WindowStartupLocation="Manual">
+    <!-- The layout window (LayoutWindowViewModel, docs/setup-wizard.md#layout-window): a game and an aircraft, and every
+         device with the function on each control (JoyPro's drawings with tables and lines, CalloutSheetCanvas). A pressed
+         button, a moved axis or hat lights its row up; its function is named in big letters at the top. A window of its
+         own (a second monitor too); its place, size and choices are kept. Read-only. -->
+    <Border Background="{DynamicResource JP.PageBackgroundBrush}">
+    <Grid x:Name="LayoutRoot" RowDefinitions="Auto,Auto,*,Auto" Margin="12">
+        <!-- Game, aircraft, device and the options -->
+        <WrapPanel ItemSpacing="12" LineSpacing="8" Margin="0,0,0,8">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{l:T 'Game'}" VerticalAlignment="Center" />
+                <ComboBox x:Name="LayoutGameBox" ItemsSource="{Binding Games}" SelectedItem="{Binding SelectedGame}" MinWidth="200" MaxWidth="360">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:LayoutPreviewChoice">
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding ShowsAircraft}">
+                <TextBlock Text="{l:T 'Aircraft'}" VerticalAlignment="Center" />
+                <ComboBox x:Name="LayoutAircraftBox" ItemsSource="{Binding Aircraft}" SelectedItem="{Binding SelectedAircraft}" MinWidth="200" MaxWidth="360" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasDevices}">
+                <TextBlock Text="{l:T 'Device'}" VerticalAlignment="Center" />
+                <ComboBox x:Name="LayoutDeviceBox" ItemsSource="{Binding DeviceChoices}" SelectedItem="{Binding SelectedDevice}" MinWidth="200" MaxWidth="360">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:LayoutPreviewChoice">
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <CheckBox Content="{l:T 'Light up what I press'}" IsChecked="{Binding LightUp}" VerticalAlignment="Center"
+                      ToolTip.Tip="{l:T 'Press a button, move an axis or a hat: its row lights up and its function is named at the top. Reads your devices only while this window is open.'}" />
+            <CheckBox Content="{l:T 'Follow the game'}" IsChecked="{Binding FollowGame}" VerticalAlignment="Center"
+                      ToolTip.Tip="{l:T 'Switches to the game you are playing and, in DCS, to the aircraft you fly (needs JoyPro\'s DCS hook). Without it your choice stays.'}" />
+            <Button Content="{l:T 'Look again'}" Command="{Binding LoadCommand}" IsEnabled="{Binding !IsWorking}"
+                    ToolTip.Tip="{l:T 'Reads the binds again (after you changed something)'}" />
+        </WrapPanel>
+
+        <!-- The function of the control pressed last, readable from a distance -->
+        <Border Grid.Row="1" Classes="raised" Padding="12,6" Margin="0,0,0,8" IsVisible="{Binding HasLastFunction}">
+            <StackPanel Spacing="2">
+                <TextBlock x:Name="LastFunctionText" Text="{Binding LastFunction}" FontSize="{DynamicResource JP.FontSize.30}" FontWeight="Bold" TextWrapping="Wrap" />
+                <TextBlock Classes="caption" Text="{Binding LastControl}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <!-- The devices, each as wide as the window -->
+        <ScrollViewer x:Name="SheetScroller" Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="12">
+                <Border Classes="emptyState" IsVisible="{Binding IsEmpty}">
+                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                        <TextBlock Classes="h3" HorizontalAlignment="Center" Text="{l:T 'Nothing to show yet'}" />
+                        <TextBlock Classes="caption" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding Status}" />
+                    </StackPanel>
+                </Border>
+                <ItemsControl ItemsSource="{Binding ShownDevices}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:LayoutWindowDevice">
+                            <StackPanel Spacing="4" Margin="0,0,0,12">
+                                <TextBlock Classes="h3" Text="{Binding Title}" TextWrapping="Wrap" />
+                                <controls:AspectBox Aspect="{Binding Aspect}" MaxBoxHeight="{Binding #SheetScroller.Bounds.Height}">
+                                    <controls:CalloutSheetCanvas Callouts="{Binding Callouts}" Source="{Binding Picture}" Mode="View" LiveInput="{Binding Live}" />
+                                </controls:AspectBox>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="80" IsVisible="{Binding IsWorking}" />
+                <TextBlock Text="{Binding Status}" TextWrapping="Wrap" VerticalAlignment="Center" IsVisible="{Binding !IsEmpty}" />
+                <TextBlock Classes="caption" Text="{Binding FollowText}" VerticalAlignment="Center" IsVisible="{Binding FollowGame}" />
+                <TextBlock Classes="caption" Text="{Binding SourceText}" VerticalAlignment="Center" TextWrapping="Wrap" />
+            </StackPanel>
+            <Button Grid.Column="1" Content="{l:T 'Close'}" Click="CloseClicked" />
+        </Grid>
+    </Grid>
+    </Border>
+</Window>

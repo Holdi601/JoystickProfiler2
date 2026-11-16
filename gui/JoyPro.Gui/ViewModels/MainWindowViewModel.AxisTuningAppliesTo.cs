@@ -58,6 +58,31 @@ public sealed partial class MainWindowViewModel
 
     public bool HasAxisTuningReplaceText => AxisTuningReplaceText.Length > 0;
 
+    // Detent mode makes the curve of the ticked rows (2.6.5 report): it is shown as the game gets it and cannot be edited
+    // here; a curve saved for them would win over detent mode and switch it off for them.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AxisTuningEditable))]
+    private bool axisTuningDetentLocked;
+
+    public bool AxisTuningEditable => !AxisTuningDetentLocked;
+
+    partial void OnAxisTuningDetentLockedChanged(bool value)
+    {
+        RaiseAxisTuningCommandState();
+        // No points to drag on a curve detent mode makes.
+        if (AxisTuningLoaded && AxisTuningEditors.Count > 0)
+            AxisTuningHandles = value ? null : BuildAxisTuningHandles(SelectedAxisTuningScope?.Model ?? AxisModels.Get(AxisModels.Dcs), axisTuningCurrent);
+    }
+
+    // The ticked rows without a curve of their own that detent mode bends (never the default curve: detent mode bends it).
+    internal List<AxisTuningScopeItem> AxisTuningBentRows(AxisTuningSavePlan plan)
+    {
+        if (plan.Lead == null || plan.Lead.IsBase)
+            return [];
+        IEnumerable<AxisTuningScopeItem> rows = plan.Kind is "aircraft" or "gameAll" ? plan.Aircraft : [plan.Lead];
+        return rows.Where(r => !r.IsOwn && axisTuningUses.TryGetValue(r.Scope, out (string Source, bool Detent) use) && use.Detent).ToList();
+    }
+
     // What a save writes now: the scopes set, the scopes cleared in the same run, the row whose curve is shown.
     internal sealed record AxisTuningSavePlan(string Kind, AxisTuningScopeItem? Lead, IReadOnlyList<string> Set, IReadOnlyList<string> Clear,
         IReadOnlyList<AxisTuningScopeItem> Aircraft, IReadOnlyList<AxisTuningScopeItem> Replaced, int Following, int Total, IReadOnlyList<AxisTuningScopeItem> KeepOwn)
@@ -127,8 +152,10 @@ public sealed partial class MainWindowViewModel
         OnAxisTuningTicksChanged();
     }
 
-    // A game row with aircraft is ticked when its curve is what a save writes: all aircraft that use it are ticked (or,
-    // when none uses it any more, the row was ticked by itself and no aircraft is).
+    // A game row with aircraft is ticked when its curve is what a save writes: it was ticked (by a click or by default)
+    // and every aircraft that uses its curve still is, or every aircraft of the game is ticked. Ticking aircraft one by
+    // one never ticks the game by itself while one of them is left out (2.6.5 report: ticking the one aircraft that
+    // used DCS's curve ticked DCS and saved DCS's curve instead of the aircraft's).
     private void SyncAxisTuningGameRows()
     {
         bool was = axisTuningTicking;
@@ -137,9 +164,10 @@ public sealed partial class MainWindowViewModel
         {
             foreach (AxisTuningScopeItem game in AxisTuningScopes.Where(IsAxisTuningAircraftGame).ToList())
             {
-                List<AxisTuningScopeItem> ticked = AxisTuningAircraftOf(game.Game).Where(a => a.IsChecked).ToList();
+                List<AxisTuningScopeItem> all = AxisTuningAircraftOf(game.Game);
+                List<AxisTuningScopeItem> ticked = all.Where(a => a.IsChecked).ToList();
                 List<AxisTuningScopeItem> defaults = AxisTuningDefaultSet(game.Game);
-                game.IsChecked = defaults.Count > 0 ? defaults.All(ticked.Contains) : game.IsChecked && ticked.Count == 0;
+                game.IsChecked = ticked.Count == all.Count || game.IsChecked && defaults.All(ticked.Contains);
             }
         }
         finally
@@ -291,7 +319,7 @@ public sealed partial class MainWindowViewModel
     // ---- what each row uses ---------------------------------------------------------------------------------------
 
     // binds tuning show's "Scopes" and "Uses" (Uses: per game / DCS aircraft the scope its curve comes from).
-    private void ReadAxisTuningShow(JsonElement root)
+    internal void ReadAxisTuningShow(JsonElement root)
     {
         Dictionary<string, string> stored = new(StringComparer.OrdinalIgnoreCase);
         if (root.TryGetProperty("Scopes", out JsonElement scopes) && scopes.ValueKind == JsonValueKind.Object)
@@ -315,7 +343,43 @@ public sealed partial class MainWindowViewModel
         }
         axisTuningStored = stored;
         axisTuningUses = uses;
+        HashSet<string> pad = new(StringComparer.OrdinalIgnoreCase);
+        if (root.TryGetProperty("XboxPadGames", out JsonElement padGames) && padGames.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement game in padGames.EnumerateArray())
+            {
+                if (game.ValueKind == JsonValueKind.String && game.GetString() is { Length: > 0 } id)
+                    pad.Add(id);
+            }
+        }
+        axisTuningXboxPadGames = pad;
+        OnPropertyChanged(nameof(AxisTuningXboxPadNote));
+        OnPropertyChanged(nameof(HasAxisTuningXboxPadNote));
     }
+
+    // The relation's games on the virtual Xbox pad (binds tuning show "XboxPadGames"): they get no export, JoyPro's
+    // forwarder applies the curve itself before the pad gets the axis.
+    private HashSet<string> axisTuningXboxPadGames = new(StringComparer.OrdinalIgnoreCase);
+
+    // Said plainly in the axis panel: for a game row on the pad, and for "All games" while a pad game takes that curve.
+    public string AxisTuningXboxPadNote
+    {
+        get
+        {
+            AxisTuningScopeItem? scope = SelectedAxisTuningScope;
+            if (scope == null || axisTuningXboxPadGames.Count == 0)
+                return string.Empty;
+            List<string> games = scope.IsBase
+                ? axisTuningXboxPadGames.Where(g => !axisTuningStored.ContainsKey("game:" + g)).ToList()
+                : !scope.IsFamily && axisTuningXboxPadGames.Contains(scope.Game) ? [scope.Game] : [];
+            if (games.Count == 0)
+                return string.Empty;
+            return T("JoyPro applies this curve itself on the virtual Xbox pad for {0}: the game gets no export, so the forwarder bends the axis before the pad gets it.",
+                string.Join(", ", games.Select(AxisTuningGameLabel).OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
+        }
+    }
+
+    public bool HasAxisTuningXboxPadNote => AxisTuningXboxPadNote.Length > 0;
 
     // Where a row's curve comes from today: the engine's answer, else the order plane, game, family, all games.
     internal static (string Source, bool Detent) AxisTuningSourceOf(AxisTuningScopeItem row, IReadOnlyDictionary<string, string> stored,
@@ -366,10 +430,16 @@ public sealed partial class MainWindowViewModel
             }
             if (!own)
             {
-                string from = AxisTuningScopeLabel(source);
+                // The base is "the default curve" (2.6.5 report: "uses All games" read as if All games were ticked).
+                bool usesDefault = string.Equals(source, "base", StringComparison.OrdinalIgnoreCase);
+                string from = usesDefault ? T("the default curve") : AxisTuningScopeLabel(source);
                 row.UsesText = detent ? T("uses {0}, bent at the detent", from) : T("uses {0}", from);
-                row.UsesTip = T("{0} has no curve of its own and uses the one of {1}: a change there changes it too. Tick it and save to give it its own.", row.Label, from) +
+                row.UsesTip = (usesDefault
+                                  ? T("{0} has no curve of its own and uses the default curve: a change there changes it too. Tick it and save to give it its own.", row.Label)
+                                  : T("{0} has no curve of its own and uses the one of {1}: a change there changes it too. Tick it and save to give it its own.", row.Label, from)) +
                               (detent ? " " + T("Detent mode bends it so your throttle's detent is where this aircraft's afterburner starts.") : string.Empty);
+                if (IsAxisTuningAircraftGame(row))
+                    row.UsesTip += " " + T("{0} here is only this relation, for its aircraft listed below.", row.Label);
                 continue;
             }
             // Aircraft of one game with the same own curve: "same as".
@@ -384,12 +454,18 @@ public sealed partial class MainWindowViewModel
                 row.UsesText = T("same as {0}", string.Join(", ", same));
                 row.UsesTip = T("{0} has its own curve, the same as {1}. Tick them together to change them in one step.", row.Label, string.Join(", ", same));
             }
+            else if (IsAxisTuningAircraftGame(row))
+            {
+                // A game with aircraft rows: its curve is the one of the aircraft listed below that have none of their own.
+                row.UsesText = T("own curve, for the aircraft below without one");
+                row.UsesTip = T("{0} here is only this relation, for its aircraft listed below.", row.Label);
+            }
             else
             {
                 row.UsesText = T("own curve");
                 row.UsesTip = row.IsAircraft
-                    ? T("{0} has its own curve: a change for its game or for all games does not reach it.", row.Label)
-                    : T("{0} has its own curve: a change for all games does not reach it.", row.Label);
+                    ? T("{0} has its own curve: a change for its game or for the default curve does not reach it.", row.Label)
+                    : T("{0} has its own curve: a change for the default curve does not reach it.", row.Label);
             }
         }
         BuildAxisTuningGroups();
@@ -436,8 +512,8 @@ public sealed partial class MainWindowViewModel
         switch (plan.Kind)
         {
             case "base":
-                AxisTuningSaveText = T("Save for all games");
-                AxisTuningSavePlanText = T("Save stores it for all games.");
+                AxisTuningSaveText = T("Save as default curve");
+                AxisTuningSavePlanText = T("Save stores it as the default curve: for every game and aircraft without a curve of its own.");
                 break;
             case "game":
             case "family":
@@ -447,7 +523,7 @@ public sealed partial class MainWindowViewModel
             case "gameAll":
                 AxisTuningSaveText = T("Save for {0}", lead!.Label);
                 AxisTuningSavePlanText = plan.KeepOwn.Count == 0
-                    ? T("Save stores it for {0}, all its aircraft ({1}).", lead.Label, plan.Total)
+                    ? T("Save stores it for {0}: all {1} aircraft listed here.", lead.Label, plan.Total)
                     : T("Save stores it for {0}: {1} of its {2} aircraft follow it; {3} keep their own curve.", lead.Label, plan.Following, plan.Total,
                         string.Join(", ", plan.KeepOwn.Select(a => a.Label)));
                 break;
@@ -461,8 +537,10 @@ public sealed partial class MainWindowViewModel
                 break;
         }
         AxisTuningReplaceText = plan.Replaced.Count == 0 ? string.Empty : T("This replaces the own curve of {0}.", string.Join(", ", plan.Replaced.Select(a => a.Label)));
+        List<AxisTuningScopeItem> bent = AxisTuningBentRows(plan);
+        AxisTuningDetentLocked = bent.Count > 0;
         List<AxisTuningScopeItem> clearing = AxisTuningClearRows();
-        AxisTuningClearText = clearing.Count > 0 && clearing.All(t => t.IsAircraft) ? T("Use the game's curve again") : T("Use the curve for all games again");
+        AxisTuningClearText = clearing.Count > 0 && clearing.All(t => t.IsAircraft) ? T("Use the game's curve again") : T("Use the default curve again");
         RaiseAxisTuningCommandState();
         OnPropertyChanged(nameof(AxisTuningCopyText));
         if (lead == null)
@@ -475,8 +553,14 @@ public sealed partial class MainWindowViewModel
         bool differ = plan.Kind == "aircraft" && plan.Aircraft
             .Select(t => AxisTuningCurveKey(AxisTuningSourceOf(t, axisTuningStored, axisTuningUses).Source)).Distinct(StringComparer.Ordinal).Count() > 1;
         bool fitted = axisTuningFitted && string.Equals(axisTuningFittedScope, lead.Scope, StringComparison.OrdinalIgnoreCase);
+        if (bent.Count > 0)
+        {
+            AxisTuningStatus = T("Shown: the curve detent mode makes for {0}. Detent mode sets it, so it cannot be changed here: change the default curve it bends, or switch detent mode off.",
+                bent[0].Label);
+            return;
+        }
         AxisTuningStatus = differ ? T("Shown: the curve of {0}. The ticked aircraft have different curves today.", lead.Label)
-            : lead.IsBase ? T("Shown: the curve for all games.")
+            : lead.IsBase ? T("Shown: the default curve.")
             : lead.IsOwn ? T("Shown: the own curve of {0}.", lead.Label)
             : T("Shown: the curve {0} uses now ({1}{2}).", lead.Label, lead.UsesText, fitted ? T(" — fitted to this game's model") : string.Empty);
     }
@@ -488,7 +572,7 @@ public sealed partial class MainWindowViewModel
     internal string AxisTuningTickedLabels()
     {
         AxisTuningSavePlan plan = AxisTuningPlan();
-        return plan.Kind == "aircraft" ? string.Join(", ", plan.Aircraft.Select(a => a.Label)) : plan.Lead?.Label ?? T("All games");
+        return plan.Kind == "aircraft" ? string.Join(", ", plan.Aircraft.Select(a => a.Label)) : plan.Lead?.Label ?? T("Default curve");
     }
 
     // A DCS aircraft by the module's name (from the media index) with its seat ("AH-64D BLK.II CPG"), else its id.

@@ -19,6 +19,9 @@ namespace JoyPro.Engine
         public string Label = string.Empty;
         public string Type = "momentary";
         public string Finger = string.Empty;
+        // The real-HOTAS position this control stands in for by convention (DB\Devices "hotas": the game's own default
+        // profile of the device, the vendor's map): the setup planner's real-position match, not its name.
+        public List<string> Hotas = new List<string>();
     }
 
     internal sealed class KbDevice
@@ -31,6 +34,7 @@ namespace JoyPro.Engine
         public string Base = string.Empty;
         public string Image = string.Empty;
         public string Confidence = string.Empty;
+        public bool Incomplete;      // the catalog lists only part of its controls ("incomplete": true)
         public List<string> VidPids = new List<string>();
         public List<string> Names = new List<string>();
         public List<KbControl> Axes = new List<KbControl>();
@@ -104,7 +108,8 @@ namespace JoyPro.Engine
                             Hand = Text(item, "hand").Length > 0 ? Text(item, "hand") : "none",
                             Base = Text(item, "base"),
                             Image = Text(item, "image"),
-                            Confidence = Text(item, "confidence")
+                            Confidence = Text(item, "confidence"),
+                            Incomplete = string.Equals(Text(item, "incomplete"), "true", StringComparison.OrdinalIgnoreCase)
                         };
                         Dictionary<string, object> identify = item.ContainsKey("identify") ? item["identify"] as Dictionary<string, object> : null;
                         if (identify != null)
@@ -394,11 +399,19 @@ namespace JoyPro.Engine
             string[] stickAxes = { "stick.axis.roll", "stick.axis.pitch", "stick.axis.slider", "stick.axis.rotary.1", "stick.axis.rotary.2", "stick.axis.twist", "stick.axis.slider", "stick.axis.rotary.3" };
             string[] throttleAxes = { "throttle.axis.ministick.x", "throttle.axis.ministick.y", "throttle.axis.main", "throttle.axis.rotary.1", "throttle.axis.rotary.2", "throttle.axis.rotary.3", "throttle.axis.slider.1", "throttle.axis.slider.2" };
             string[] pedalAxes = { "pedals.axis.brake_left", "pedals.axis.brake_right", "pedals.axis.rudder", "pedals.axis.brake_left", "pedals.axis.brake_right", "pedals.axis.rudder", "pedals.axis.rudder", "pedals.axis.rudder" };
-            foreach (int axis in device.AxisSlots.Distinct().OrderBy(a => a))
+            // A throttle's lever: Z when it reports one, else its first other axis (levers on Rx / Ry, a slider), X only
+            // when that is all it has; the other axes keep their usual places. A throttle that reports Rx and Ry but no X / Y
+            // has its two levers there (every such throttle of the catalog: WinWing URSA MINOR Combat and Airline, Virpil
+            // CM3); its Z is then a wheel or knob, not the lever.
+            List<int> reported = device.AxisSlots.Distinct().Where(a => a >= 0 && a <= 7).OrderBy(a => a).ToList();
+            bool rxRyLevers = kind == "throttle" && reported.Contains(3) && reported.Contains(4) && !reported.Contains(0) && !reported.Contains(1);
+            int lever = rxRyLevers ? 3 : reported.Contains(2) ? 2 : reported.Where(a => a >= 3).Select(a => (int?)a).FirstOrDefault() ?? (reported.Count > 0 ? reported[0] : -1);
+            foreach (int axis in reported)
             {
-                if (axis < 0 || axis > 7)
-                    continue;
-                string control = kind == "stick" ? stickAxes[axis] : kind == "throttle" ? throttleAxes[axis] : kind == "pedals" ? pedalAxes[axis] :
+                // A stick without Rz has its twist on Z (WinWing, many twist sticks); with Rz, Z is a slider or knob.
+                string throttleControl = rxRyLevers ? (axis == 3 ? "throttle.axis.left" : axis == 4 ? "throttle.axis.right" : axis == 2 ? "throttle.axis.rotary.1" : throttleAxes[axis])
+                    : axis == lever ? "throttle.axis.main" : throttleAxes[axis];
+                string control = kind == "stick" ? (axis == 2 && !reported.Contains(5) ? "stick.axis.twist" : stickAxes[axis]) : kind == "throttle" ? throttleControl : kind == "pedals" ? pedalAxes[axis] :
                     kind == "collective" ? (axis == 1 || axis == 2 ? "collective.axis.main" : "collective.axis.rotary." + (axis + 1).ToString(CultureInfo.InvariantCulture)) :
                     "panel.axis." + (axis + 1).ToString(CultureInfo.InvariantCulture);
                 model.Axes.Add(new KbControl { Input = GameInputTokens.AxisToken(axis), Control = control, Type = "analog" });
@@ -412,6 +425,7 @@ namespace JoyPro.Engine
                     control = "throttle.base.button." + (b + 1).ToString(CultureInfo.InvariantCulture);
                 model.Controls.Add(new KbControl { Input = GameInputTokens.ButtonToken(b), Control = control });
             }
+            BorrowFromSameShape(model, device, kind, reported);
             string[] dirs = { "up", null, "right", null, "down", null, "left", null };
             for (int h = 0; h < device.PovCount; h++)
             {
@@ -427,6 +441,63 @@ namespace JoyPro.Engine
             return model;
         }
 
+        // A device JoyPro does not know but whose maker (USB vendor id) has catalog devices of the same kind that report
+        // exactly the same axes (a new firmware id of the WinWing URSA MINOR, a renamed unit): their axis roles and the
+        // trigger's button numbers are taken over when all of them agree; the rest stays generic. The setup still says that
+        // it does not know the device.
+        private static void BorrowFromSameShape(KbDevice model, GameDevice device, string kind, List<int> reported)
+        {
+            if (device == null || device.VendorId < 0 || reported.Count == 0 || (kind != "stick" && kind != "throttle"))
+                return;
+            string vendor = device.VendorId.ToString("X4", CultureInfo.InvariantCulture) + ":";
+            HashSet<string> tokens = new HashSet<string>(reported.Select(GameInputTokens.AxisToken), StringComparer.OrdinalIgnoreCase);
+            List<KbDevice> same = Load(new List<string>()).Where(k => !k.IsGrip && k.Kind == kind && k.VidPids.Any(v => v.StartsWith(vendor, StringComparison.OrdinalIgnoreCase)) &&
+                                                                     k.Axes.Count > 0 && k.Axes.All(a => a.Input.Length > 0) &&
+                                                                     new HashSet<string>(k.Axes.Select(a => a.Input), StringComparer.OrdinalIgnoreCase).SetEquals(tokens)).ToList();
+            if (same.Count == 0)
+                return;
+            Func<KbDevice, string> axisKey = k => string.Join(",", k.Axes.OrderBy(a => a.Input, StringComparer.OrdinalIgnoreCase).Select(a => a.Input.ToUpperInvariant() + "=" + a.Control));
+            if (same.Select(axisKey).Distinct(StringComparer.Ordinal).Count() == 1)
+            {
+                foreach (KbControl axis in model.Axes)
+                {
+                    KbControl known = same[0].Axes.First(a => string.Equals(a.Input, axis.Input, StringComparison.OrdinalIgnoreCase));
+                    axis.Control = known.Control;
+                }
+            }
+            // Every button that all same-shape devices have at the same number with the same position (base buttons, grip
+            // buttons, lever detents, printed labels): the planner then knows a base button from a grip button and keeps a
+            // detent free of other functions. Buttons where they differ stay generic.
+            foreach (KbControl known in same[0].Controls.Where(c => c.Input.Length > 0 && !c.Control.StartsWith("stick.trigger.", StringComparison.Ordinal)))
+            {
+                if (!same.All(k => k.Controls.Any(c => string.Equals(c.Input, known.Input, StringComparison.OrdinalIgnoreCase) && c.Control == known.Control)))
+                    continue;
+                KbControl slot = model.Controls.FirstOrDefault(c => string.Equals(c.Input, known.Input, StringComparison.OrdinalIgnoreCase));
+                if (slot == null)
+                    continue;
+                slot.Control = known.Control;
+                // (the printed label only when every one of them has the same)
+                slot.Label = same.All(k => k.Controls.Any(c => string.Equals(c.Input, known.Input, StringComparison.OrdinalIgnoreCase) && (c.Label ?? string.Empty) == (known.Label ?? string.Empty))) ? known.Label ?? string.Empty : string.Empty;
+                slot.Type = known.Type;
+            }
+            if (kind != "stick")
+                return;
+            Func<KbDevice, string> triggerKey = k => string.Join(",", k.Controls.Where(c => c.Control.StartsWith("stick.trigger.", StringComparison.Ordinal)).OrderBy(c => c.Control, StringComparer.Ordinal).Select(c => c.Control + "=" + c.Input.ToUpperInvariant()));
+            List<string> triggers = same.Select(triggerKey).Distinct(StringComparer.Ordinal).ToList();
+            if (triggers.Count != 1 || triggers[0].Length == 0)
+                return;
+            foreach (KbControl trigger in same[0].Controls.Where(c => c.Control.StartsWith("stick.trigger.", StringComparison.Ordinal)))
+            {
+                KbControl slot = model.Controls.FirstOrDefault(c => string.Equals(c.Input, trigger.Input, StringComparison.OrdinalIgnoreCase));
+                if (slot == null)
+                    continue;
+                // The generic trigger (button 1) becomes a plain button; the borrowed one is the trigger.
+                foreach (KbControl old in model.Controls.Where(c => c.Control == trigger.Control))
+                    old.Control = "stick.button.thumb." + old.Input.Replace("JOY_BTN", string.Empty);
+                slot.Control = trigger.Control;
+            }
+        }
+
         // Name first (keyboards, wheels, pedals, throttles, sticks, panels by their usual names), capabilities last.
         private static string GuessKind(string name, GameDevice device)
         {
@@ -438,7 +509,7 @@ namespace JoyPro.Engine
                 return "collective";
             if (Regex.IsMatch(name, @"throttle|twcs|stecs|quadrant|\btqs\b|mt-50 cm(?!.*stick)|\bcm3 throttle"))
                 return "throttle";
-            if (Regex.IsMatch(name, @"stick|joystick|grip|warbrd|rhino|gunfighter|gladiator|constellation|mongoos|hotas|fssb|orion|cls-e|\bab9\b"))
+            if (Regex.IsMatch(name, @"stick|joystick|grip|warbrd|rhino|gunfighter|gladiator|constellation|mongoos|hotas|fssb|orion|cls-e|\bab9\b|ursa minor|fighter|sidestick"))
                 return "stick";
             if (Regex.IsMatch(name, @"panel|box|button|bbi|mfd|icp|ufc|takeoff|pto|combat ready|bodnar|arduino|leonardo"))
                 return "panel";
@@ -457,7 +528,8 @@ namespace JoyPro.Engine
                 Control = Text(item, "control"),
                 Label = Text(item, "label"),
                 Type = Text(item, "type").Length > 0 ? Text(item, "type") : "momentary",
-                Finger = Text(item, "finger")
+                Finger = Text(item, "finger"),
+                Hotas = Strings(item, "hotas").Select(s => s.Trim()).Where(s => s.Length > 0).ToList()
             };
         }
 

@@ -229,7 +229,7 @@ public partial class MainWindowViewModel
         try
         {
             ReplaceOldChoices.Clear();
-            foreach (string device in allBinds.Where(b => b.Device.Length > 0 && !IsKeyboardLike(b.Device)).Select(b => b.Device)
+            foreach (string device in allBinds.SelectMany(b => b.AllInputs()).Where(b => b.Device.Length > 0 && !IsKeyboardLike(b.Device)).Select(b => b.Device)
                          .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(d => IsConnectedDevice(d) ? 1 : 0).ThenBy(d => d, StringComparer.OrdinalIgnoreCase))
                 ReplaceOldChoices.Add(device);
             string? pickOld = oldDevice == null ? null : ReplaceOldChoices.FirstOrDefault(d => SameDevice(d, oldDevice)) ?? oldDevice;

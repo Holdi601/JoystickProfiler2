@@ -5,70 +5,94 @@ order: 30
 category: arcade
 support: HLLVietnam,doc:HellLetLoose,doc:Squad
 docs: hll-vietnam.md, one-device-games.md
-summary: Hell Let Loose: Vietnam with JoyPro: fly its helicopters with your HOTAS through a virtual Xbox pad that follows the game's pad layout A, B or C, plus the keyboard pilot keys; and why Hell Let Loose and Squad are documented only.
+summary: Hell Let Loose: Vietnam with JoyPro: fly its helicopters with your HOTAS through a pretend controller (a virtual Xbox pad, ViGEmBus only) that follows the game's pad layout A, B or C, plus the keyboard pilot keys; and why Hell Let Loose and Squad are documented only.
 ---
 Hell Let Loose: Vietnam is an infantry shooter on Unreal Engine 5 with flyable helicopters, but it reads no joystick
-at all: only keyboard, mouse and Xbox pads. Its pad layouts are fixed (you pick A, B or C in the game). So JoyPro flies
-it through a **virtual Xbox pad**: your stick, throttle and pedals drive the pad controls that the chosen layout uses
-for each helicopter action. JoyPro writes nothing for the pad; it only writes the keyboard pilot keys, when you ask
-for them.
+at all: only keyboard, mouse and Xbox controllers. Its pad layouts are fixed (you pick A, B or C in the game). So
+JoyPro flies it through a **pretend controller** (a virtual Xbox pad): your stick, throttle and pedals drive the pad
+controls that your layout uses for each helicopter action. JoyPro writes nothing for the pad. It writes only the
+keyboard pilot keys, when you ask for them.
 
 :::video game-hll-vietnam "Hell Let Loose: Vietnam: import, relations, export"
 :::
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  L["GameUserSettings.ini<br/>layout A / B / C"] --> T["Pad table<br/>(follows the layout)"]
-  R["Stick, throttle, pedals"] --> F["JoyPro.VJoy forwarder"]
-  T --> F
-  F --> V["Virtual Xbox 360 pad<br/>(ViGEmBus)"]
-  V --> G["Hell Let Loose: Vietnam"]
-  H["HidHide"] -.->|hides the real devices<br/>from the game only| G
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Bind the helicopter**<br>on the Relations page
+2. **Install ViGEmBus**<br>then **Test**
+3. **Start the game**<br>at its title screen: Alt+Tab, **Start**
+:::
+
+## Set it up once
+
+1. Open **Start**. If the Hell Let Loose: Vietnam card asks for a command list, press **Build List**. JoyPro writes its
+   own table of the three pad layouts and the pilot keys.
+2. Open **Relations**. Put your stick, throttle and pedals on the helicopter's pad actions: collective, cyclic, yaw.
+   For the collective, put one throttle axis on both **Collective up** and **Collective down**. JoyPro splits it at the
+   centre onto the two triggers.
+3. Open the [[gui:vjoy|Virtual Joystick]] page. The pretend controller needs a free helper called ViGEmBus. Tick the
+   box below its license. Then press **Install ViGEmBus**. Windows asks for permission: click **Yes**. You do this
+   only once.
+4. Press **Test**. Move your stick. The controller picture moves with it.
+
+![The Virtual Joystick page with the pretend controller](shot:vjoy-pad)
+
+You do not need to switch anything. The game uses the pretend controller by itself. The page says "On the Xbox pad by
+itself: the game reads only Xbox controllers". You need no HidHide for this game: it never sees your real sticks
+anyway.
+
+:::note The quick setup knows only the pilot keys
+**Set it all up for me** knows only the game's keyboard pilot keys so far, not its pad actions. So bind the pad
+actions yourself, as in step 2. The welcome's answer **Play ACE COMBAT with my flight stick** shows the same
+pretend-controller steps as a tour.
+:::
+
+## Every time you play
+
+1. Start Hell Let Loose: Vietnam. Wait until it shows its title screen.
+2. Hold Alt and press Tab. You are back in JoyPro.
+3. Press **Start**.
+4. Press Alt+Tab again. You are back in the game. Fly!
+5. When you are done, press **Stop**.
+
+:::warn Start comes after the game
+Press **Start** only when the game shows its title screen. Too early? JoyPro says "Too early". Press **Stop**, then
+**Start**. Do this every time you play.
+:::
+
 ## What JoyPro does for Hell Let Loose: Vietnam
 
-- **Helicopter on the pad**: JoyPro knows the helicopter actions of the three pad layouts (collective, cyclic, yaw,
-  stability hold, auto-level, supply drop, recon flare, look, seat, medic). Bind your HOTAS to them, and the virtual
-  pad moves the stick, trigger or button the game expects.
+- **Helicopter on the pretend controller**: JoyPro knows the helicopter actions of the three pad layouts (collective,
+  cyclic, yaw, stability hold, auto-level, supply drop, recon flare, look, seat, medic). Bind your HOTAS to them, and
+  the pretend controller moves the stick, trigger or button the game expects.
 - **Keyboard pilot keys**: on request, JoyPro reads and writes the game's keyboard keys of the pilot actions.
 - **Hell Let Loose** (the original) has nothing to fly, and **Squad** reads one merged device: both are documented
   only (see Advanced).
 
-## Import
+## Import your pilot keys
 
-1. Open **Start**. If the card asks for a command list, press **Build List**: JoyPro writes its own table of the
-   three pad layouts and the pilot keys.
-2. Press **Import** on the Hell Let Loose: Vietnam card. Tick **Also take the keyboard keys** if you want the pilot
-   keys; there are no joystick binds in the game to import.
+There are no joystick binds in the game to import. Only the keyboard pilot keys come in:
+
+1. Press **Import** on the Hell Let Loose: Vietnam card.
+2. Tick **Also take the keyboard keys**.
 3. Press **Import now**.
 
 ![The Start page with your games](shot:start)
 
-## Set up the virtual Xbox pad
-
-1. Open the [[gui:vjoy|Virtual Joystick]] page. Under **What this page needs**, install **ViGEmBus** and **HidHide**
-   if they are missing.
-2. Under **Games**, switch Hell Let Loose: Vietnam to **Xbox pad** (JoyPro suggests it with **Use it**).
-3. On the **Relations** page, bind your HOTAS to the helicopter pad actions. For the collective, put one throttle axis
-   on both **Collective up** and **Collective down**: JoyPro splits it at the centre onto the two triggers.
-4. Press **Start**, then play. **Stop** when you are done.
-
-![The Virtual Joystick page](shot:vjoy)
-
 ## Build and check relations
 
 The [[page:flows/relations.html|relations flow]] works as for every game. A relation can hold the helicopter action
-of this game and the same function of your flight sims, so "Collective" is one throttle lever everywhere.
+of this game and the same function of your flight sims. Then "Collective" is one throttle lever everywhere.
 
 ## Export
 
-The pad needs no export: **Start** on the Virtual Joystick page builds the pad table from your relations. An export
-writes only the keyboard pilot keys, and only when you ticked the keyboard at the import (the choice is kept per game):
-**close the game**, open **Export**, press **Export now** on its tile.
+The pretend controller needs no export: **Start** on the Virtual Joystick page builds its table from your relations.
+An export writes only the keyboard pilot keys, and only when you ticked the keyboard at the import (the choice is kept
+per game): **close the game**, open **Export**, press **Export now** on its card.
 
 :::ingame What you see in Hell Let Loose: Vietnam
 The game sees one Xbox controller: its menus show pad buttons (for example "B EXIT" in the main menu). Your stick,
@@ -81,22 +105,49 @@ show in the game's key settings.
 
 ## What you do yourself in Hell Let Loose: Vietnam
 
+- **Press Start at the title screen**, every time you play (see above).
 - **Pick the pad layout** (A, B or C) in **Options > Controls**. After a change, press **Update mapping** on the Virtual
-  Joystick page (or Stop and Start): the pad table follows the new layout.
+  Joystick page (or **Stop** and **Start**). JoyPro then follows the new layout.
 - **The game's pad buttons cannot be rebound**, so the layout decides which pad control each action has. JoyPro
-  follows it; there is nothing to set in the game for the pad.
-- If the game does not react to the pad, press **Stop** and **Start** once the title screen shows: in JoyPro's tests a
-  pad created before the game had started did not reach it.
+  follows it. There is nothing to set in the game for the pad.
 
 ## Common pitfalls
 
+- **The game does not react**: was **Start** pressed too early? Press **Stop**, then **Start** at the title screen.
+- **No ViGEmBus**: without it, the game cannot see your stick. Install it on the Virtual Joystick page.
 - **Yaw and look move together** in layouts A and B: the game puts yaw and look left / right on the same stick axis
   and decides by context. JoyPro pins one physical axis there and warns about the second.
-- **The collective goes the wrong way**: tick *Invert* on the collective relation; it swaps the two triggers.
+- **The collective goes the wrong way**: tick *Invert* on the collective relation. It swaps the two triggers.
 - **A pilot key was not written**: keyboard keys are written only with the keyboard choice of the import.
+
+More: [[page:how-do-i/xbox-only-games.html|Play an Xbox-only game with a HOTAS]].
 :::
 
 :::layer advanced
+## How the pretend controller works
+
+```mermaid
+%% caption: Start the game, then Start at the title screen. JoyPro follows the pad layout you picked in the game and writes nothing for the pad.
+flowchart LR
+  R["Stick, throttle,<br/>pedals"] --> J["JoyPro<br/>(the pretend controller)"]
+  L["Your pad layout<br/>A, B or C"] --> J
+  J --> G["Hell Let Loose: Vietnam<br/>sees an Xbox controller"]
+```
+
+- **No HidHide.** The game reads only Xbox controllers, so it never sees your real sticks. Nothing has to be hidden,
+  and Windows asks for no administrator rights. HidHide is only for games set to vJoy.
+- **The mode switches itself.** While you have not picked a mode, the game uses the Xbox pad. Pick another mode on the
+  Virtual Joystick page, and JoyPro keeps your choice.
+- **Your curve reaches the pad.** The game gets no export, so JoyPro applies the dead zone, saturation, curve and
+  invert of **Axis response** (Binds page) to the pad stick or trigger itself. Tick only this game under **Applies to**
+  for a curve of its own. Else the **Default curve** counts.
+- **Auto start** makes the pad within about 3 seconds of the game's start, before its title screen. In JoyPro's tests
+  a pad made before the title screen never reached this game. Then press **Stop** and **Start** at the title screen.
+- **Several games on the pad**: each game keeps its own table. With auto start the running game's table goes live.
+  Else pick it under **Xbox pad table for Start and Test**.
+- **Experts**: vJoy, HidHide, the forwarding rate and the modes are under **Show details for experts (vJoy, HidHide,
+  modes)**.
+
 ## Files JoyPro reads and writes
 
 | File | What it is |
@@ -137,13 +188,12 @@ One key per pilot action. A mouse button on a pilot action always stays; infantr
 
 - The game's pad layouts: they are fixed and JoyPro writes no pad binds.
 - Infantry and vehicle keys, mouse buttons, every other byte of the save file.
-- HidHide hides your real devices only from this game, only while the virtual pad runs; **Stop** gives HidHide back
-  exactly its previous setup.
+- HidHide: the pretend controller needs none for this game.
 
 ## Pad, curves, other settings
 
-- **Invert** on an axis relation reverses that pad axis in JoyPro's forwarder. Curves and dead zones are the game's
-  own pad settings.
+- **Invert** on an axis relation reverses that pad axis in JoyPro's forwarder. JoyPro applies your axis curve to the
+  pad too (see above); the game's own pad settings apply after it.
 - An action without a pad key in the layout gets the next free pad control; what does not fit is listed on the
   Virtual Joystick page. [[doc:virtual-joystick|Virtual functions]] work on the pad too.
 - **Settings > Games: Hell Let Loose: Vietnam: use the Oodle library of another installed game**: the game's files are
@@ -176,7 +226,11 @@ Code: `engine\Games\HllVietnamIntegration.cs`, `engine\Games\GvasKeyMappings.cs`
   refresh process). [[cli:hllv oodle]] names the library it would use.
 - **Pad plan**: the planner reads the layout from `GameUserSettings.ini`, pins each action to its key in that layout
   (`Gamepad_LeftY` to `XB_LY`, `Gamepad_FaceButton_Right` to `XB_B` ...); a relation on both collective actions becomes
-  `XB_TRIGGERS`; *Invert* adds `~`. [[cli:vjoy mode]] `HLLVietnam xbox`, [[cli:vjoy map]].
+  `XB_TRIGGERS`; *Invert* adds `~` (with a curve, the curve carries it). The game declares `MaxJoysticks` 0 and the
+  suggested mode xbox, so without a stored choice its mode is xbox; [[cli:vjoy mode]] `HLLVietnam xbox` stores one.
+  [[cli:vjoy map]]. No HidHide step: [[cli:vjoy apply-hidhide]] says "HidHide is not needed" for such games.
+- **Setup tables**: `DB\Functions\HLLVietnam.tsv` lists only the `Driver_*` keyboard pilot actions so far, so the setup
+  wizard and the quick setup do not place the `Pad_*` actions.
 - **Keyboard file**: Unreal GVAS with the Enhanced Input tail (profiles, mappings with name, key, hardware class and
   slot). JoyPro rewrites only the `<Action>_Keyboard` mappings of the pilot actions; key names are turned into Unreal
   key names (`Space` to `SpaceBar`, `D1` to `One`).

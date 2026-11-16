@@ -197,13 +197,30 @@ namespace JoyPro.Setup
             SetupCheck sets = Add(report, "C11", "Directional sets together on one hat's matching directions");
             HashSet<string> directional = SetupPhases.DirectionalGroups(functions.Values.Select(f => f.Group));
             List<Tuple<SetupPlanRelation, string, string>> members = new List<Tuple<SetupPlanRelation, string, string>>();
+            // (a set needs only the members its aircraft have: the only member of a set for its aircraft - ACE COMBAT's
+            // target switch, one sensor direction - is a plain function and may sit on any button)
+            Dictionary<string, int> perPlane = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            foreach (SetupPlanRelation r in plan.Relations.Where(x => !x.IsAxis))
+            {
+                SetupFunction f = functionOf(r);
+                string key, role;
+                if (f != null && SetupPhases.DirectionalMember(f.Group, directional, out key, out role))
+                    foreach (string plane in r.Aircraft.Distinct(StringComparer.OrdinalIgnoreCase))
+                        perPlane[key + "|" + plane] = (perPlane.ContainsKey(key + "|" + plane) ? perPlane[key + "|" + plane] : 0) + 1;
+            }
             foreach (SetupPlanRelation r in placed.Where(r => r.Reason.IndexOf("your own control", StringComparison.Ordinal) < 0))
             {
                 SetupFunction f = functionOf(r);
                 string key, role;
                 if (f == null || !SetupPhases.DirectionalMember(f.Group, directional, out key, out role))
                     continue;
+                if (r.Aircraft.Count > 0 && r.Aircraft.All(plane => perPlane.ContainsKey(key + "|" + plane) && perPlane[key + "|" + plane] <= 1))
+                    continue;
                 string control = RuleControl(r, devices);
+                // (the planner's last resort for the fly-and-fight functions - flares on a grip button when no hat is
+                // free - is a placement of its own, not a split set)
+                if (!SetupPhases.MatchesDirection(role, control) && SetupPlanner.LastResortButton(f.Id, control))
+                    continue;
                 if (!SetupPhases.MatchesDirection(role, control))
                     sets.Problems.Add(r.Name + " (" + key.ToUpperInvariant() + " " + role + ") on " + r.Control);
                 members.Add(Tuple.Create(r, key, r.Device + "|" + r.Modifier + "|" + SetupPhases.HatOf(control)));
@@ -215,7 +232,8 @@ namespace JoyPro.Setup
                 {
                     for (int j = i + 1; j < list.Count; j++)
                     {
-                        if (list[i].Item3 != list[j].Item3 && SetupPlanEdit.Overlap(list[i].Item1, list[j].Item1))
+                        // (one aircraft's set split over two hats; a DCS input layer's set next to an aircraft's own is not one)
+                        if (list[i].Item3 != list[j].Item3 && list[i].Item1.Aircraft.Intersect(list[j].Item1.Aircraft, StringComparer.OrdinalIgnoreCase).Any())
                             sets.Problems.Add(list[i].Item1.Name + " and " + list[j].Item1.Name + " (" + group.Key.ToUpperInvariant() + ") on different hats: " + list[i].Item1.Control + " / " + list[j].Item1.Control);
                     }
                 }

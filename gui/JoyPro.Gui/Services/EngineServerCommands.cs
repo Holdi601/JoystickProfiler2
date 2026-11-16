@@ -17,7 +17,8 @@ public static class EngineServerCommands
         ["relations"] = Set("list", "show", "add", "group", "item", "mass", "search", "browse", "catalog", "pair", "functions", "resolve", "rename",
             "function", "aircraft", "check-aircraft", "suggest", "meanings", "action-info", "duplicates", "conflicts", "merge-copies"),
         ["binds"] = Set("list", "show", "set", "clear", "tuning", "detent", "modifier", "unbind"),
-        ["profile"] = Set("summary", "load", "save", "games", "validate"),
+        // auto-added: the notice after every profile load (the profile history read; 0.5 s in a process of its own).
+        ["profile"] = Set("summary", "load", "save", "games", "validate", "auto-added"),
         ["layout"] = Set("titles", "suggest", "template-inspect"),
         ["devices"] = Set("list", "inputs", "alias", "aliases", "auto-remap"),
         ["games"] = Set("installs", "integrations", "support"),
@@ -46,6 +47,12 @@ public static class EngineServerCommands
         ["support"] = Set("*"),
         // The usage harvest reads game logs into the usage store only (its own process: the first one reads a year of logs).
         ["usage"] = Set("harvest", "restore"),
+        // The Start page's look at the games (read-only: the profile and the games' control files); it runs in a process
+        // of its own in the background, so it never waits for the server or holds it up, and the server keeps running.
+        ["setup"] = Set("games"),
+        // The DB's game and aircraft lists (read-only; the catalog and the Start page ask for them): a new server after
+        // them made the next served call wait 2.5-3.5 s (the catalog overview).
+        ["db"] = Set("planes", "games"),
     };
 
     // Global options that take a value (engine Program.Run).

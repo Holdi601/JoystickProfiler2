@@ -51,7 +51,7 @@ public sealed class AxisTuningTests
             vm.AxisTuningScopes.Select(s => s.Scope).ToArray());
         Assert.Equal(
             // Aircraft by the module's name when the media index has it (another test may have loaded it), else the id.
-            ["All games", "DCS", MainWindowViewModel.AxisTuningAircraftLabel("A-10C"), MainWindowViewModel.AxisTuningAircraftLabel("F-16C_50"), "IL-2 Korea", "IL-2 family (Great Battles + Korea)"],
+            ["Default curve", "DCS", MainWindowViewModel.AxisTuningAircraftLabel("A-10C"), MainWindowViewModel.AxisTuningAircraftLabel("F-16C_50"), "IL-2 Korea", "IL-2 family (Great Battles + Korea)"],
             vm.AxisTuningScopes.Select(s => s.Label).ToArray());
         Assert.Equal("DCS", vm.AxisTuningScopes[0].Game);
         Assert.Equal("dcs", vm.AxisTuningScopes[0].Model.Id);
@@ -64,18 +64,18 @@ public sealed class AxisTuningTests
         // DCS's aircraft that use its curve are ticked first (a fresh relation: all of them); the curve shown is DCS's.
         Assert.Equal("game:DCS", vm.SelectedAxisTuningScope?.Scope);
         Assert.Equal(["game:DCS", "plane:DCS:A-10C", "plane:DCS:F-16C_50"], vm.AxisTuningTicked.Select(s => s.Scope).ToArray());
-        Assert.Equal("Shown: the curve DCS uses now (uses All games).", vm.AxisTuningStatus);
-        Assert.Equal("Save stores it for DCS, all its aircraft (2).", vm.AxisTuningSavePlanText);
+        Assert.Equal("Shown: the curve DCS uses now (uses the default curve).", vm.AxisTuningStatus);
+        Assert.Equal("Save stores it for DCS: all 2 aircraft listed here.", vm.AxisTuningSavePlanText);
         Assert.Equal("Save for DCS", vm.AxisTuningSaveText);
-        Assert.Equal("uses All games", vm.AxisTuningScopes.Single(s => s.Scope == "plane:DCS:A-10C").UsesText);
+        Assert.Equal("uses the default curve", vm.AxisTuningScopes.Single(s => s.Scope == "plane:DCS:A-10C").UsesText);
         Assert.Equal("for all without their own curve", vm.AxisTuningScopes[0].UsesText);
         Assert.Equal("own curve", vm.AxisTuningScopes.Single(s => s.Scope == "game:IL2Korea").UsesText);
         Assert.False(vm.CanClearAxisTuning);
         Assert.True(vm.CanSaveAxisTuning);
 
-        // All games: always "own", never cleared.
+        // The default curve: always "own", never cleared.
         await SelectScopeAsync(vm, "base");
-        Assert.Equal("Shown: the curve for all games.", vm.AxisTuningStatus);
+        Assert.Equal("Shown: the default curve.", vm.AxisTuningStatus);
         Assert.Equal(["base"], vm.AxisTuningTicked.Select(s => s.Scope).ToArray());
         Assert.False(vm.CanClearAxisTuning);
         Assert.Contains(fake.Calls, c => Seq(c, "binds", "tuning", "show", "Pitch") && !c.Contains("--game"));
@@ -159,7 +159,7 @@ public sealed class AxisTuningTests
 
         // DCS inherits the base (curvature 0.3, dead zone 0.05); the base is drawn dashed.
         await SelectScopeAsync(vm, "game:DCS");
-        Assert.Equal("Shown: the curve DCS uses now (uses All games).", vm.AxisTuningStatus);
+        Assert.Equal("Shown: the curve DCS uses now (uses the default curve).", vm.AxisTuningStatus);
         Assert.Equal(0.1646, vm.AxisTuningCurve[150].Y, 4);
         Assert.NotNull(vm.AxisTuningReferenceCurve);
         Assert.Equal(0.1646, vm.AxisTuningReferenceCurve![150].Y, 4);
@@ -179,7 +179,7 @@ public sealed class AxisTuningTests
         // Korea without own values: the base fitted to its model.
         fake.Scopes.Remove("game:IL2Korea");
         await SelectScopeAsync(vm, "game:IL2Korea");
-        Assert.Equal("Shown: the curve IL-2 Korea uses now (uses All games — fitted to this game's model).", vm.AxisTuningStatus);
+        Assert.Equal("Shown: the curve IL-2 Korea uses now (uses the default curve — fitted to this game's model).", vm.AxisTuningStatus);
         AxisTuning fitted = AxisModels.Inherit(AxisTuning.Parse(fake.Scopes["base"]), AxisModels.Get(AxisModels.Il2Korea));
         Assert.Equal(fitted.Native["sensitivity"], vm.AxisTuningEditors.Single(e => e.Key == "sensitivity").Value);
     }
@@ -240,7 +240,7 @@ public sealed class AxisTuningTests
         IReadOnlyList<string> clear = Assert.Single(fake.Calls, c => Seq(c, "binds", "tuning", "clear"));
         Assert.True(Seq(clear, "binds", "tuning", "clear", "Pitch", "--scope", "game:IL2Korea"));
         Assert.Contains("--profile", clear);
-        Assert.Equal("Shown: the curve IL-2 Korea uses now (uses All games — fitted to this game's model).", vm.AxisTuningStatus);
+        Assert.Equal("Shown: the curve IL-2 Korea uses now (uses the default curve — fitted to this game's model).", vm.AxisTuningStatus);
         Assert.False(vm.CanClearAxisTuning);
 
         // A DCS aircraft: the DCS options, a user curve as 11 points.

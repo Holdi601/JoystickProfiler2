@@ -5,8 +5,9 @@
 #   - default (same-name devices as one): one relation per function, no "__N", the older copies of an aircraft skipped
 #     and counted, the modifier moved to the live GUID; the scan reports the same.
 #   - the connected GUID is the live one (JOYPRO_FAKE_DEVICES); without a connected one the newest file.
-#   - two of them connected at once are twins: kept apart, nothing skipped.
-#   - --merge-same-name false: every GUID its own device, but one relation per GUID (no copy per aircraft).
+#   - two of them connected at once are twins: kept apart (one input each of the JPK-named relation), nothing skipped.
+#   - --merge-same-name false: every GUID its own device, one relation with an input per GUID (no copy per aircraft);
+#     with --multi-bind off one relation per GUID as before 2.6.6.
 #   - --only-connected true: the files of devices that are not connected are skipped and counted.
 #   - relations merge-copies repairs a profile an older import copied (dry run first, one undo step).
 $dcUtf8 = New-Object System.Text.UTF8Encoding($false)
@@ -108,7 +109,17 @@ try {
     Assert-Match $dcTwin.Output "Older Copies Of A Device Skipped: 0 bind\(s\) in 0 file\(s\)" "twin devices must not be collapsed."
     Assert-Match $dcTwin.Output "Twin Devices Kept Apart: Smoke Tartarus \(2 connected\)" "the import must say it kept the twins apart."
     $dcTwinRel = Get-DcRelations $dcTwinProfile
-    Assert-True ((Count-Dc $dcTwinRel "(?m)^Kneeboard Prev") -eq 3) ("twins: one 'Kneeboard Prev' per GUID expected (3):`n" + $dcTwinRel)
+    # Several inputs per relation (on by default since 2.6.6, docs/multi-bind.md "Import"): the JPK names the relation,
+    # so the other GUIDs' binds come back as its further inputs, one relation with every GUID kept apart.
+    Assert-True ((Count-Dc $dcTwinRel "(?m)^Kneeboard Prev") -eq 1) ("twins: one 'Kneeboard Prev' with an input per GUID expected:`n" + $dcTwinRel)
+    $dcTwinPrev = ([regex]::Match($dcTwinRel, "(?m)^Kneeboard Prev \|[^\r\n]*")).Value
+    foreach ($dcG in @($dcG1, $dcG2, $dcG3)) { Assert-Match $dcTwinPrev ([regex]::Escape($dcG)) ("twins: 'Kneeboard Prev' must keep the input of GUID " + $dcG + ":`n" + $dcTwinPrev) }
+    # With --multi-bind off the import is as before: one 'Kneeboard Prev' per GUID.
+    $dcTwinOffProfile = Join-Path $dcRoot "twins-off.pr0file"
+    $dcTwinOff = Run-Engine @("--multi-bind", "off", "--profile", $dcTwinOffProfile, "--remap-missing-devices", "false", "dcs", "import", $dcSaved, "--confirm", "false", "--text")
+    Assert-True ($dcTwinOff.ExitCode -eq 0) ("dcs import --multi-bind off with twin devices failed: " + $dcTwinOff.Output)
+    $dcTwinOffRel = Get-DcRelations $dcTwinOffProfile
+    Assert-True ((Count-Dc $dcTwinOffRel "(?m)^Kneeboard Prev") -eq 3) ("twins with --multi-bind off: one 'Kneeboard Prev' per GUID expected (3):`n" + $dcTwinOffRel)
 
     # ---- --merge-same-name false: one relation per GUID, never one per aircraft
     $env:JOYPRO_FAKE_DEVICES = $dcLive2
@@ -116,7 +127,16 @@ try {
     $dcApart = Run-Engine @("--profile", $dcApartProfile, "--remap-missing-devices", "false", "dcs", "import", $dcSaved, "--merge-same-name", "false", "--confirm", "false", "--text")
     Assert-True ($dcApart.ExitCode -eq 0) ("dcs import --merge-same-name false failed: " + $dcApart.Output)
     $dcApartRel = Get-DcRelations $dcApartProfile
-    Assert-True ((Count-Dc $dcApartRel "(?m)^Kneeboard Prev") -eq 3) ("--merge-same-name false: 3 'Kneeboard Prev' (one per GUID) expected:`n" + $dcApartRel)
+    # Every GUID its own device: one 'Kneeboard Prev' with an input per GUID (several inputs per relation), never a
+    # relation per aircraft.
+    Assert-True ((Count-Dc $dcApartRel "(?m)^Kneeboard Prev") -eq 1) ("--merge-same-name false: one 'Kneeboard Prev' with an input per GUID expected:`n" + $dcApartRel)
+    $dcApartPrev = ([regex]::Match($dcApartRel, "(?m)^Kneeboard Prev \|[^\r\n]*")).Value
+    foreach ($dcG in @($dcG1, $dcG2, $dcG3)) { Assert-Match $dcApartPrev ([regex]::Escape($dcG)) ("--merge-same-name false: 'Kneeboard Prev' must keep the input of GUID " + $dcG + ":`n" + $dcApartPrev) }
+    Assert-NotMatch $dcApartRel "__\d+ \|" "--merge-same-name false must not make __N copies."
+    $dcApartOffProfile = Join-Path $dcRoot "apart-off.pr0file"
+    $dcApartOff = Run-Engine @("--multi-bind", "off", "--profile", $dcApartOffProfile, "--remap-missing-devices", "false", "dcs", "import", $dcSaved, "--merge-same-name", "false", "--confirm", "false", "--text")
+    Assert-True ($dcApartOff.ExitCode -eq 0) ("dcs import --merge-same-name false --multi-bind off failed: " + $dcApartOff.Output)
+    Assert-True ((Count-Dc (Get-DcRelations $dcApartOffProfile) "(?m)^Kneeboard Prev") -eq 3) "--merge-same-name false with --multi-bind off: 3 'Kneeboard Prev' (one per GUID) expected."
     Assert-Match $dcApartRel "(?m)^Old Only" "--merge-same-name false must read every GUID's file."
 
     # ---- --only-connected true: the unrelated stick is skipped and counted, the merged Tartarus stays

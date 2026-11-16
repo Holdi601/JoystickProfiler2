@@ -21,7 +21,9 @@
           "03EB:2048",
           "03EB:2046",
           "03EB:2044",
-          "03EB:2042"
+          "03EB:2042",
+          "3344:40CC",
+          "3344:40D5"
         ],
         "names": [
           "R-VPC Stick WarBRD",
@@ -33,7 +35,8 @@
       "productUrl": "https://virpil-controls.eu/vpc-warbrd-d-base.html",
       "sources": [
         "https://www.edrefcard.info/devices",
-        "https://support.virpil.com/en/support/solutions/articles/47001285160-vpc-warbrd-grip"
+        "https://support.virpil.com/en/support/solutions/articles/47001285160-vpc-warbrd-grip",
+        "https://linux-hardware.org/?id=usb:3344-40cc"
       ],
       "confidence": "medium",
       "axes": [
@@ -107,7 +110,9 @@
           "3344:03F3",
           "3344:03F4",
           "3344:0390",
-          "3344:4390"
+          "3344:4390",
+          "3344:4391",
+          "3344:8390"
         ],
         "names": [
           "L-VPC Stick MT-50CM3",
@@ -121,7 +126,8 @@
       "sources": [
         "https://github.com/RavenX8/open-vpc",
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/33440388.buttonMap",
-        "https://www.edrefcard.info/devices"
+        "https://www.edrefcard.info/devices",
+        "https://linux-hardware.org/?id=usb:3344-4391"
       ],
       "confidence": "high",
       "axes": [
@@ -749,7 +755,8 @@
       "productUrl": "https://support.virpil.com/en/support/solutions/articles/47001250811-vpc-constellation-alpha-grip",
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/33440388.buttonMap",
-        "https://support.virpil.com/en/support/solutions/articles/47001250811-vpc-constellation-alpha-grip"
+        "https://support.virpil.com/en/support/solutions/articles/47001250811-vpc-constellation-alpha-grip",
+        "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/RIGHT VPC Stick WarBRD.diff.lua (HOTAS equivalence)"
       ],
       "confidence": "high",
       "axes": [
@@ -898,7 +905,8 @@
           "control": "stick.hat.1.press",
           "finger": "index",
           "label": "Index-side rocker push",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "stick.button.index_lower"
         },
         {
           "input": "JOY_BTN19",
@@ -3840,7 +3848,7 @@
           "input": "JOY_BTN31",
           "control": "stick.button.thumb.1",
           "finger": "thumb",
-          "label": "Round button next to the TRIM hat",
+          "label": "Round thumb button beside the hat",
           "type": "momentary"
         }
       ]
@@ -4375,31 +4383,31 @@
           "input": "JOY_BTN47",
           "control": "throttle.base.button.9",
           "label": "MODE 1",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN48",
           "control": "throttle.base.button.10",
           "label": "MODE 2",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN49",
           "control": "throttle.base.button.11",
           "label": "MODE 3",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN50",
           "control": "throttle.base.button.12",
           "label": "MODE 4",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN51",
           "control": "throttle.base.button.13",
           "label": "MODE 5",
-          "type": "latched"
+          "type": "selector"
         }
       ]
     },
@@ -4413,7 +4421,8 @@
           "3344:8194",
           "3344:8197",
           "3344:8198",
-          "3344:0197"
+          "3344:0197",
+          "3344:0194"
         ],
         "names": [
           "LEFT VPC Throttle MT-50CM3",
@@ -4426,7 +4435,10 @@
       "sources": [
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/VPCThrottle.buttonMap",
         "https://support.virpil.com/en/support/solutions/articles/47001155376-mongoost-50cm3-throttle-user-manual",
-        "https://github.com/LunaBaloona/Virpil_devices_on_Linux/blob/main/Linux_config_and_gaming.md"
+        "https://github.com/LunaBaloona/Virpil_devices_on_Linux/blob/main/Linux_config_and_gaming.md",
+        "https://linux-hardware.org/?id=usb:3344-0194",
+        "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/VPC Throttle MT-50CM3.diff.lua (HOTAS equivalence)",
+        "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/VPC Throttle MT-50CM3.diff.lua (HOTAS equivalence; coolie up/down follow this catalog's hat directions)"
       ],
       "confidence": "medium",
       "axes": [
@@ -4473,7 +4485,8 @@
           "control": "throttle.hat.1.press",
           "finger": "thumb",
           "label": "L POV press",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.button.laap"
         },
         {
           "input": "JOY_BTN5",
@@ -4508,28 +4521,32 @@
           "control": "throttle.hat.2.up",
           "finger": "thumb",
           "label": "R POV1 forward",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.coolie.up"
         },
         {
           "input": "JOY_BTN10",
           "control": "throttle.hat.2.right",
           "finger": "thumb",
           "label": "R POV1 right",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.coolie.right"
         },
         {
           "input": "JOY_BTN11",
           "control": "throttle.hat.2.down",
           "finger": "thumb",
           "label": "R POV1 back",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.coolie.down"
         },
         {
           "input": "JOY_BTN12",
           "control": "throttle.hat.2.left",
           "finger": "thumb",
           "label": "R POV1 left",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.coolie.left"
         },
         {
           "input": "JOY_BTN13",
@@ -4564,7 +4581,8 @@
           "control": "throttle.button.8",
           "finger": "thumb",
           "label": "R 2",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.knob.man_rng.press"
         },
         {
           "input": "JOY_BTN33",
@@ -4585,28 +4603,32 @@
           "control": "throttle.button.11",
           "finger": "thumb",
           "label": "R POV2 forward",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.hat.mic.right"
         },
         {
           "input": "JOY_BTN18",
           "control": "throttle.button.12",
           "finger": "thumb",
           "label": "R POV2 down",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.hat.mic.up"
         },
         {
           "input": "JOY_BTN19",
           "control": "throttle.button.13",
           "finger": "thumb",
           "label": "R POV2 back",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.hat.mic.left"
         },
         {
           "input": "JOY_BTN20",
           "control": "throttle.button.14",
           "finger": "thumb",
           "label": "R POV2 up",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.hat.mic.down"
         },
         {
           "input": "JOY_BTN22",
@@ -4627,7 +4649,8 @@
           "control": "throttle.button.17",
           "finger": "thumb",
           "label": "R POV3 back",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": ["throttle.dogfight.out", "throttle.china.aft"]
         },
         {
           "input": "JOY_BTN25",
@@ -4641,7 +4664,8 @@
           "control": "throttle.button.19",
           "finger": "thumb",
           "label": "R POV3 forward",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": ["throttle.dogfight.in", "throttle.china.fwd"]
         },
         {
           "input": "JOY_BTN27",
@@ -4662,7 +4686,8 @@
           "control": "throttle.button.22",
           "finger": "thumb",
           "label": "R POV4 back",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.aft"
         },
         {
           "input": "JOY_BTN30",
@@ -4676,7 +4701,8 @@
           "control": "throttle.button.24",
           "finger": "thumb",
           "label": "R POV4 forward",
-          "type": "momentary"
+          "type": "momentary",
+          "hotas": "throttle.speedbrake.fwd"
         },
         {
           "input": "JOY_BTN34",
@@ -5409,31 +5435,31 @@
           "input": "JOY_BTN60",
           "control": "throttle.base.selector.1.pos.1",
           "label": "MODE 1",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN61",
           "control": "throttle.base.selector.1.pos.2",
           "label": "MODE 2",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN62",
           "control": "throttle.base.selector.1.pos.3",
           "label": "MODE 3",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN63",
           "control": "throttle.base.selector.1.pos.4",
           "label": "MODE 4",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN64",
           "control": "throttle.base.selector.1.pos.5",
           "label": "MODE 5",
-          "type": "latched"
+          "type": "selector"
         }
       ],
       "note": "Handle buttons 1-33, base 34-64 as on the official template; the first MT-50 CM (03EB:2054) has another base and numbering (virpil-mongoost-50cm-throttle)."
@@ -5455,7 +5481,7 @@
       },
       "productUrl": "https://virpil-controls.eu/",
       "sources": [
-        "a real MT-50 CM throttle (03EB:2054) and its owner's button sheet"
+        "a real MT-50 CM throttle (03EB:2054) and a button sheet made for it"
       ],
       "confidence": "medium",
       "axes": [
@@ -5906,31 +5932,31 @@
           "input": "JOY_BTN85",
           "control": "throttle.base.selector.1.pos.1",
           "label": "MODE 1",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN86",
           "control": "throttle.base.selector.1.pos.2",
           "label": "MODE 2",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN87",
           "control": "throttle.base.selector.1.pos.3",
           "label": "MODE 3",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN88",
           "control": "throttle.base.selector.1.pos.4",
           "label": "MODE 4",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "input": "JOY_BTN89",
           "control": "throttle.base.selector.1.pos.5",
           "label": "MODE 5",
-          "type": "latched"
+          "type": "selector"
         }
       ]
     },
@@ -7262,7 +7288,7 @@
           "input": "JOY_BTN35",
           "control": "collective.button.7",
           "finger": "thumb",
-          "label": "Lower head button next to the JETT cover (PNVS per sc-mapper)",
+          "label": "Lower head button beside the guarded cover (PNVS per sc-mapper)",
           "type": "momentary"
         },
         {
@@ -7320,7 +7346,7 @@
           "input": "JOY_BTN43",
           "control": "collective.button.10",
           "finger": "index",
-          "label": "Lower head front button (JETT per sc-mapper)",
+          "label": "Lower head front button (jettison per sc-mapper, not printed)",
           "type": "momentary"
         },
         {
@@ -7346,7 +7372,8 @@
       "identify": {
         "vidPids": [
           "3344:825A",
-          "3344:025A"
+          "3344:025A",
+          "3344:025B"
         ],
         "names": [
           "Virpil Universal Control Panel #2",
@@ -7359,7 +7386,8 @@
       "sources": [
         "https://support.virpil.com/en/support/solutions/articles/47001250816-vpc-control-panel-2",
         "https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/3344025A.buttonMap",
-        "https://www.edrefcard.info/devices"
+        "https://www.edrefcard.info/devices",
+        "https://linux-hardware.org/?id=usb:3344-025b"
       ],
       "confidence": "high",
       "controls": [
@@ -8600,7 +8628,7 @@
         "names": [
           "VPC B-JET Yoke Handle"
         ],
-        "note": "Yoke handle for the Vector base; manual shows swappable left/right head modules (rocker module and hat/encoder module). No numbering sheet published, so no inputs."
+        "note": "Yoke handle for the Vector base; manual shows swappable left/right head modules (rocker module and hat/encoder module). No numbering sheet published, so no inputs. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
       },
       "image": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/b/j/bjet_01_1.jpg",
       "productUrl": "https://virpil-controls.eu/b-jet-yoke-handle.html",
@@ -8609,6 +8637,7 @@
         "https://support.virpil.com/en/support/solutions/articles/47001286739-b-jet-yoke-user-manual"
       ],
       "confidence": "low",
+      "incomplete": true,
       "controls": [
         {
           "control": "yoke.button.1",
@@ -8626,7 +8655,7 @@
         "names": [
           "VPC P-JET Yoke Handle"
         ],
-        "note": "Yoke handle; no numbering sheet found."
+        "note": "Yoke handle; no numbering sheet found. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
       },
       "image": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/p/j/pjet_01.jpg",
       "productUrl": "https://virpil-controls.eu/p-jet-yoke-handle.html",
@@ -8634,6 +8663,7 @@
         "https://virpil-controls.eu/p-jet-yoke-handle.html"
       ],
       "confidence": "low",
+      "incomplete": true,
       "controls": [
         {
           "control": "yoke.button.1",
@@ -8651,7 +8681,7 @@
         "names": [
           "VPC Constellation VEGA Yoke Handle"
         ],
-        "note": "Yoke handle; no numbering sheet found."
+        "note": "Yoke handle; no numbering sheet found. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
       },
       "image": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/e/vega_01.jpg",
       "productUrl": "https://virpil-controls.eu/constellation-vega-yoke-handle.html",
@@ -8659,6 +8689,7 @@
         "https://virpil-controls.eu/constellation-vega-yoke-handle.html"
       ],
       "confidence": "low",
+      "incomplete": true,
       "controls": [
         {
           "control": "yoke.button.1",
@@ -10162,27 +10193,27 @@
         {
           "control": "throttle.base.button.10",
           "label": "Mode dial position 1",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "control": "throttle.base.button.11",
           "label": "Mode dial position 2",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "control": "throttle.base.button.12",
           "label": "Mode dial position 3",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "control": "throttle.base.button.13",
           "label": "Mode dial position 4",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "control": "throttle.base.button.14",
           "label": "Mode dial position 5",
-          "type": "latched"
+          "type": "selector"
         },
         {
           "control": "throttle.base.encoder.1.cw",

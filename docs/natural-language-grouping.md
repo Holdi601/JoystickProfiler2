@@ -13,7 +13,7 @@ relations:
 - GUI: Relations → **Auto-build relations from all my actions...** → **By description** → type the description → **Preview** → untick what
   you do not want → **Create**.
 - For one open relation, its chat box does the same per relation (`engine relations chat`, see
-  [Relation editor](relation-builder.md#say-it-in-words-local-ai-model)).
+  [Relation editor](relation-builder.md#the-joypro-assistant)).
 - CLI: `engine relations from-text "<request>" [--games g1|g2] [--planes p1|p2] [--llm off|auto|on] [--substitutes]
   [--select <relation>]... [--skip-node game:id:plane1|plane2]... [--name <name>] [--min-confidence 0..1] [--dry-run]`.
 
@@ -193,7 +193,7 @@ graphics cards with their memory (display adapter registry, 64-bit memory size),
 
 A graphics card counts with 2 GB of own memory or more; integrated graphics share the system memory and do not count
 even when they report a memory size ("AMD Radeon(TM) Graphics" of Ryzen CPUs, Intel UHD/Iris/HD Graphics). You can
-pick another model in the list. All four are Apache-2.0 (Qwen2.5 3B is left out: its license is not Apache).
+pick another model in the list. All four are Apache-2.0.
 
 The runtime is llama.cpp (MIT). **auto** = the Vulkan build with a graphics card (NVIDIA, AMD, Intel Arc; about 60 MB
 and fast enough for one short answer), else the CPU build (about 30 MB). **cuda** (NVIDIA, optional) = the CUDA build
@@ -245,7 +245,7 @@ If you already have llama.cpp and a GGUF model, nothing needs to be downloaded:
 every request offline and with the model (temporary data folder, nothing downloaded) and prints a table. It kills
 every llama process it started also on errors and checks with `tasklist` that none is left.
 
-Result on the developer's PC (RTX 5080 16 GB, `C:\llama.cpp` CUDA build 11430, `Qwen3.8-27B-UD-Q3_K_XL.gguf`, your-own-model
+Result with a 16 GB NVIDIA graphics card (llama.cpp CUDA build 11430, `Qwen3.8-27B-UD-Q3_K_XL.gguf`, your-own-model
 path, `--llm on`; about 10-15 s per request including loading the 12 GB model; no llama process left afterwards):
 
 | Request | Offline rules | With the model |

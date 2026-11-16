@@ -191,9 +191,15 @@ namespace JoyPro.Engine.Axis
                     return new ResolvedTuning { Tuning = tuning, Model = model, Source = scope };
             }
             AxisTuning baseTuning = Base(bind);
-            if (model.Id == AxisModels.Dcs || model.Fit == null)
-                return new ResolvedTuning { Tuning = baseTuning, Model = model, Source = BaseScope };
-            return new ResolvedTuning { Tuning = AxisModels.Inherit(baseTuning, model), Model = model, Source = BaseScope, Fitted = true };
+            ResolvedTuning inherited = model.Id == AxisModels.Dcs || model.Fit == null
+                ? new ResolvedTuning { Tuning = baseTuning, Model = model, Source = BaseScope }
+                : new ResolvedTuning { Tuning = AxisModels.Inherit(baseTuning, model), Model = model, Source = BaseScope, Fitted = true };
+            // A game on the virtual Xbox pad: the base's invert is DCS's, not the pad's; the game's own convention decides
+            // (EngineVJoy.PadBaseInvert). The game's own scope (above) always wins.
+            bool? padInvert = JoyPro.Engine.EngineVJoy.PadBaseInvert(bind, game);
+            if (padInvert.HasValue)
+                inherited.Tuning.Inverted = padInvert.Value;
+            return inherited;
         }
     }
 }

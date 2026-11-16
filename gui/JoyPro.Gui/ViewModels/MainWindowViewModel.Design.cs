@@ -204,6 +204,7 @@ public sealed partial class MainWindowViewModel
                 OnPropertyChanged(nameof(HasRelationMultiSelection));
                 break;
             case nameof(SelectedRelation):
+                OnPropertyChanged(nameof(CanPasteRelationNodes));
                 OnPropertyChanged(nameof(HasRelationSelected));
                 OnPropertyChanged(nameof(HasNoRelationSelected));
                 OnPropertyChanged(nameof(ShowRelationNodeList));
@@ -282,6 +283,10 @@ public sealed partial class MainWindowViewModel
             if (CanOpenLastProfile)
                 steps.Add(new NextStepItem(T("Open your last profile"), LastProfilePath, "Icon.History", T("Open last"), OpenLastProfileCommand));
         }
+        else if (allRelations.Count == 0 && HasAutoSetupNewGames)
+        {
+            // The setup card above says "Set it all up for me" (the one blue button): no second start here (Auto Group).
+        }
         else if (allRelations.Count == 0)
         {
             steps.Add(new NextStepItem(T("No relations yet"), T("Start with Auto Group (the same function of every aircraft and game in one relation), or import a game."),
@@ -315,6 +320,9 @@ public sealed partial class MainWindowViewModel
             }
         }
 
+        // While the setup card shows its blue "Set it all up for me", no next step is blue too.
+        if (HasAutoSetupNewGames)
+            steps = steps.Select(s => s.IsPrimary ? new NextStepItem(s.Title, s.Detail, s.IconKey, s.ActionLabel, s.Command, s.CommandParameter) : s).ToList();
         NextSteps.Clear();
         foreach (NextStepItem step in steps.Take(4))
             NextSteps.Add(step);
@@ -403,7 +411,7 @@ public sealed partial class MainWindowViewModel
             return;
         }
         if (!await ConfirmAsync(T("Delete {0} relations?", names.Count),
-                T("{0}{1} and their binds leave the profile. Undo (Ctrl+Z) brings them back.", string.Join(", ", names.Take(8)), (names.Count > 8 ? " and " + (names.Count - 8) + " more" : string.Empty)), T("Delete"), isDanger: true))
+                T("These relations and their binds leave the profile: {0}. Undo (Ctrl+Z) brings them back.", JoinAnd(names.Count > 8 ? names.Take(8).Append(T("{0} more", names.Count - 8)) : names)), T("Delete"), isDanger: true))
             return;
         List<string> args = ["relations", "mass", "delete", "--relations", string.Join(",", names)];
         List<PendingModifierDefinition> modifiersBefore = SnapshotProfileModifiers();
@@ -421,6 +429,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task RefreshDashboardAsync()
     {
+        RequestAutoSetupStatus(true);
         await LoadDeviceCardsAsync();
         EngineCommandResult? result = await RunEngineAsync(["sync", "status"], includeProfile: false, mutatesProfile: false,
             busyLabel: N("Reading recent activity..."), forceText: false, background: true);

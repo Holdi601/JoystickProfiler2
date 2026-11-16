@@ -63,16 +63,25 @@ and the Check names such binds.
 - Several modifiers can be combined ("Shift A + Shift B"); the Layout page's Bind mode lists every combination of an
   input under **With modifiers**.
 
+**Make a modifier**
+
 ```mermaid
-flowchart LR
-  N["New modifier<br/>name + Record"] --> C{"Create Modifier"}
-  C -->|"no relation picked"| T["Temporary modifier<br/>(kept with the profile's history)"]
-  C -->|"a bind picked"| A["engine binds modifier add<br/>relation + modifier"]
-  T -->|"attach on the Binds page"| A
-  A --> P["Profile: bind with<br/>modifier 'Pinky'"]
-  P --> E["Export"]
-  E --> D["DCS: modifiers.lua +<br/>'Pinky + JOY_BTN1'"]
-  E --> O["Other games: their own<br/>combo format, or none"]
+flowchart TD
+  N["New modifier:<br/>name + Record"] --> C["Create Modifier"]
+  C --> A["On the bind<br/>you picked"]
+  C -.-> T["Temporary modifier:<br/>attach it on the Binds page"]
+  T -.-> A
+%% caption: Solid: with a bind picked on the Binds page. Dotted: only when no bind is picked; JoyPro keeps it until you attach it.
+```
+
+**On export**
+
+```mermaid
+flowchart TD
+  P["A bind with the<br/>modifier 'Pinky'"] --> E["Export"]
+  E --> D["DCS: the aircraft's<br/>modifier list,<br/>'Pinky + JOY_BTN1'"]
+  E --> O["Other games: their own<br/>combo form, or none"]
+%% caption: Each game gets the modifier in its own form. A game without modifiers gets the bind without it.
 ```
 
 ![The whole Modifiers page](shot:modifiers-tall)

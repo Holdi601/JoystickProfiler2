@@ -164,7 +164,56 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private string checkSummaryText = string.Empty;
 
-    partial void OnCheckSearchTextChanged(string value) => BuildCheckSections();
+    // A new search shows the first page of each section again ("Show more" pages of the old list are not rebuilt for
+    // the new one: 50 cards built at once blocked the UI for 0.3-0.5 s per key).
+    partial void OnCheckSearchTextChanged(string value)
+    {
+        checkShownCards.Clear();
+        // On the UI thread a page is built a few cards at a time (the rest follows in the next dispatcher turns).
+        bool stepwise = Avalonia.Threading.Dispatcher.UIThread.CheckAccess();
+        checkBuildStepwise = stepwise;
+        try
+        {
+            BuildCheckSections();
+        }
+        finally
+        {
+            checkBuildStepwise = false;
+        }
+        if (stepwise)
+            BuildPendingCheckCardsLater(++checkBuildGeneration);
+    }
+
+    private bool checkBuildStepwise;
+    private int checkBuildGeneration;
+
+    // Cards built per dispatcher turn: light cards and the heavy ones (their fixes, lists) cost about ten times more.
+    private const int CheckCardsPerStep = 6;
+    private const int HeavyCheckCardsPerStep = 1;
+
+    private int CheckBuildNow(int pageSize) =>
+        !checkBuildStepwise ? int.MaxValue : pageSize == CheckIssueSection.HeavyPageSize ? HeavyCheckCardsPerStep : CheckCardsPerStep;
+
+    private void BuildPendingCheckCardsLater(int generation)
+    {
+        if (!CheckSections.Any(s => s.HasPendingCards))
+            return;
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            // A newer search (or a rebuild) took over.
+            if (generation != checkBuildGeneration)
+                return;
+            foreach (CheckIssueSection section in CheckSections)
+            {
+                if (section.HasPendingCards)
+                {
+                    section.BuildPending(section.PageSize == CheckIssueSection.HeavyPageSize ? HeavyCheckCardsPerStep : CheckCardsPerStep);
+                    break;
+                }
+            }
+            BuildPendingCheckCardsLater(generation);
+        }, Avalonia.Threading.DispatcherPriority.Background);
+    }
     partial void OnSelectedCheckKindChanged(DuplicateRuleChoice? value) => BuildCheckSections();
     partial void OnSelectedCheckSortChanged(DuplicateRuleChoice? value) => BuildCheckSections();
 
@@ -476,7 +525,8 @@ public sealed partial class MainWindowViewModel
         int warningCards = duplicateCards.Count + copyCards.Count + exportSkipCards.Count;
         int noteCards = allValidationIssues.Count(i => i.Kind == "Warning");
         CheckSummaryText = errorCards == 0 && warningCards == 0 && noteCards == 0 ? string.Empty
-            : T("To look at: {0} errors, {1} warnings, {2} notes", errorCards, warningCards, noteCards);
+            : T("To look at: {0}, {1}, {2}", Plural("{0} error", "{0} errors", errorCards), Plural("{0} warning", "{0} warnings", warningCards),
+                Plural("{0} note", "{0} notes", noteCards));
         UpdateIgnoredWarnings(words);
 
         for (int i = CheckSections.Count - 1; i >= 0; i--)
@@ -503,7 +553,7 @@ public sealed partial class MainWindowViewModel
             {
                 section.CountLabel = countLabel?.Invoke(list) ?? string.Empty;
                 section.Breakdown = Breakdown(list);
-                section.SetCards(list, Math.Max(shown, section.PageSize));
+                section.SetCards(list, Math.Max(shown, section.PageSize), CheckBuildNow(section.PageSize));
                 next.Add(section);
                 return;
             }
@@ -518,7 +568,7 @@ public sealed partial class MainWindowViewModel
                 PageSize = list[0] is PlainCheckIssueCard ? CheckIssueSection.DefaultPageSize : CheckIssueSection.HeavyPageSize,
                 ShowMoreCommand = new RelayCommand(() => ShowMoreCheckCards(sectionKind))
             };
-            section.SetCards(list, Math.Max(shown, section.PageSize));
+            section.SetCards(list, Math.Max(shown, section.PageSize), CheckBuildNow(section.PageSize));
             section.IsExpanded = !previous.TryGetValue(sectionKind, out CheckIssueSection? old) || old.IsExpanded;
             next.Add(section);
         }

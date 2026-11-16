@@ -12,20 +12,6 @@ printed. It is the first place to look when something did not do what you expect
 
 ![The Output panel open under a page](shot:output)
 
-```mermaid
-sequenceDiagram
-  participant U as You
-  participant G as JoyPro (page)
-  participant E as engine.exe
-  participant O as Output panel
-  participant L as Session log
-  U->>G: press a button (e.g. Export now)
-  G->>E: engine --profile ... dcs export --mode clean ...
-  E-->>G: answer (text or JSON) + progress lines
-  G->>O: "$ engine ..." + the answer + [stderr]
-  G->>L: the same, kept in engine-output.log
-  G->>U: one status line
-```
 
 :::layer beginner
 ## Open and close it
@@ -62,6 +48,16 @@ problem**: it collects the Output's session log and everything else needed, so y
 
 :::layer technical
 ## Behind the panel
+
+One button press, from the command to the status line:
+
+| # | Who | What happens |
+|---|---|---|
+| 1 | You | Press a button (for example **Export now**). |
+| 2 | JoyPro | Runs the engine: `engine --profile ... dcs export --mode clean ...`. |
+| 3 | Engine | Answers (text or JSON) with progress lines. |
+| 4 | JoyPro | Shows "$ engine ...", the answer and `[stderr]` in the Output panel, and writes the same into the session log `engine-output.log`. |
+| 5 | JoyPro | Shows you one status line. |
 
 `MainWindow.axaml` (the `EngineOutputExpander` and its `GridSplitter`; the height is kept in `ui-layout.json` by
 `MainWindow.axaml.cs`), `MainWindowViewModel.cs`: `RunEngineAsync` sets `LastCommandText` and `OutputText` from

@@ -4,9 +4,9 @@ status: full
 summary: The bar above every page and the bottom bar: the open profile, Open / New, autosave, Back / Forward, Undo / Redo, History, More, Options, the page buttons and the device notice.
 ---
 The profile bar sits above every page. It names the open profile and holds what works everywhere: open or start a
-profile, the save state, Back and Forward, Undo and Redo, the profile's history, the **More** menu and the expert
-**Options**. The bottom bar below every page switches between the pages. A notice under the bar tells you when devices
-were moved to a new ID.
+profile, the save state, Back and Forward, Undo and Redo, the profile's history, the **More** menu, the expert
+**Options**. The banner above it has **Tour of this page** and **Help** next to the colour buttons. The bottom bar below
+every page switches between the pages. A notice under the bar tells you when devices were moved to a new ID.
 
 :::video profile-bar "The profile bar"
 :::
@@ -34,6 +34,10 @@ is on the left of the bar; hover it to see where the file is.
 - **History**: every saved version of the profile, to look at, compare, roll back to or keep.
 - **More**: open the last profile, save a copy, rename, add another profile, reload, close, check for updates, about.
 - **Options**: settings for experts (paths and how a profile is repaired when it loads).
+- **Tour of this page** (top right, in the banner): a short tour of the page that is open: what it is for, its main
+  parts, what comes next.
+- **Help** (top right, in the banner): a menu with **Help mode (F1)** (click anything to see what it does), **Tour of this page**, **Tours...**
+  (the welcome with every tour) and **Open the wiki**. See [[page:gui/help.html|Help mode and tours]].
 
 ## The bottom bar
 
@@ -65,14 +69,13 @@ Back and Forward also work with **Alt+Left** / **Alt+Right** and the mouse's bac
   JoyPro also does this by itself in the background. Kept versions always stay.
 
 ```mermaid
-flowchart LR
-  E["A change<br/>(button, import, drag)"] --> G["GUI view model"]
-  G -->|"engine command with<br/>--history-note"| X["engine.exe"]
-  X --> W["Profile written atomically<br/>(.tmp, then swapped in)"]
-  W --> V["New version in the<br/>ProfileHistory folder"]
-  G -->|"marker moves, tuning,<br/>temporary modifiers"| A["Autosave 2 s later"]
-  A --> X
+flowchart TD
+  E["A change<br/>(button, import, drag)"] --> X["JoyPro's engine<br/>saves it"]
+  A["Small changes<br/>(markers, tuning)<br/>saved 2 s later"] --> X
+  X --> W["The profile file,<br/>written safely"]
+  W --> V["A new version<br/>in the history"]
   V --> U["Undo / Redo / History"]
+%% caption: Every change becomes a version of the profile. Undo, Redo and History move between these versions.
 ```
 
 ## Device notice
@@ -130,6 +133,8 @@ device. With **Replace on my devices** the old device's binds are cleared in the
   `Views/MainWindow.Navigation.cs` ([[doc:ui/navigation]]).
 - Device notice and Replace device: `MainWindowViewModel.DeviceReplace.cs`, `Views/ReplaceDeviceWindow.axaml`.
 - Updates: `MainWindowViewModel.Updates.cs` ([[doc:updates]]).
+- Help and tours: `MainWindowViewModel.Help.cs`, `MainWindowViewModel.Tours.cs`, `Views/Controls/HelpLayer.axaml`
+  ([[doc:ui/help-and-tours]]).
 
 Every GUI action runs `engine.exe` with `--profile <file>`, `--status`, `--benchmark` and the load-correction options
 of **Options** (`--load-corrections`, `--auto-add-db-items`, `--remap-missing-devices`, `--correction-mode`,
@@ -210,15 +215,18 @@ Appearance; kept for the next start.
 start.
 
 <!-- entry: click:OpenProfileClicked -->
+<!-- easy: Opens a saved profile file. -->
 Picks a JoyPro profile (`.pr0file`) and opens it. Pending edits of the profile that is open now are saved first, so
 nothing is lost. Engine: [[cli:profile load]].
 
 <!-- entry: click:NewProfileClicked -->
+<!-- easy: Starts a new, empty profile. -->
 Starts an empty profile at once, without a dialog: it gets a name with the date in `Documents\JoyPro2\profiles`
 (**More > Rename...** gives it yours). Pending edits of the open profile are saved first. Easier for a first profile:
 import a game on the Start page, which makes one for you. Engine: [[cli:profile new]].
 
 <!-- entry: UndoLastChangeCommand -->
+<!-- easy: Takes back your last change. -->
 Takes back the last change of the profile (Ctrl+Z); the tooltip names it ("Undo Adding relation"). Edits not saved
 yet are saved first, so they are undone first. Works across restarts, one version of the History at a time. Your
 games change only with the next export.
@@ -344,26 +352,33 @@ you want to keep in that relation.
 only while the command still reads; the button says "Cancelling..." until it has stopped.
 
 <!-- entry: GoStartCommand -->
+<!-- easy: Opens the Start page with your games and sticks. -->
 Opens the Start page: your games with import, export, update and undo, the game watcher and the Setup wizard.
 
 <!-- entry: GoRelationsCommand -->
+<!-- easy: Opens the list of jobs, like landing gear up. -->
 Opens the Relations page: which game commands belong together, so one button does the same thing in every game and
 aircraft.
 
 <!-- entry: GoBindsCommand -->
+<!-- easy: Opens the page where you pick a button for each job. -->
 Opens the Binds page: which button or axis of your devices does what, with recording and axis curves.
 
 <!-- entry: GoModifiersCommand -->
+<!-- easy: Opens the shift buttons. Hold one, and buttons do more. -->
 Opens the Modifiers page: shift buttons, held down so the other buttons get a second job.
 
 <!-- entry: GoLayoutCommand -->
+<!-- easy: Opens a picture of your stick with every button. -->
 Opens the Layout page: pictures of your devices with what every button does.
 
 <!-- entry: GoExportCommand -->
+<!-- easy: Opens the page that sends your buttons into the game. -->
 Opens the Export page: write your binds into the games, the check, undo and the game config backups. Pressed while
 the page is open, it reads the backup list again ([[cli:backups list]]).
 
 <!-- entry: GoHudCommand -->
+<!-- easy: Opens the page that shows your buttons over the game. -->
 Opens the HUD page: the designer for an on-screen or streaming view of your sticks, throttles and pedals live.
 
 <!-- entry: GoFfbTelemetryCommand -->
@@ -371,8 +386,10 @@ Opens the Force Feedback page: force feedback from the game's telemetry, its set
 telemetry inspector.
 
 <!-- entry: GoVirtualJoystickCommand -->
-Opens the Virtual Joystick page: per game one virtual vJoy joystick or Xbox pad instead of your real devices, with
-HidHide and virtual functions.
+<!-- easy: Opens the pretend controller for games that need one. -->
+Opens the page of the pretend controller and the virtual joystick: per game your real devices, one vJoy joystick or
+a pretend Xbox controller, with HidHide and virtual functions. The button says **Pretend controller** when all your
+virtual games are on the pretend controller (ACE COMBAT), else **Virtual Joystick**.
 
 <!-- entry: GoStatisticsCommand -->
 Opens the Statistics page: your most played games, aircraft and ships, streaks and fun facts from your games' logs, on
@@ -383,6 +400,7 @@ Opens the Cockpits page: stick and throttle of real and fictional aircraft per v
 panels and sources.
 
 <!-- entry: GoSettingsCommand -->
+<!-- easy: Opens the settings of JoyPro. -->
 Opens the Settings page: games and their folders, devices, command lists, force feedback, appearance, updates and
 problem reports. It cannot be hidden from the bar.
 
@@ -422,3 +440,29 @@ and moves every bind and modifier of the old device to the new one as the previe
 window. The notice under the bar says how many moved and which stayed on the old device; its **Undo**
 (or Ctrl+Z) takes it back. Engine: [[cli:devices replace]]. In the game: the binds are on the new device after the
 next export.
+
+<!-- entry: StartPageTourCommand -->
+<!-- easy: Shows you this page, one step at a time. -->
+**Tour of this page** starts a short tour of the page that is open: what the page is for, its main parts and what
+comes next. The tour outlines each part and waits for you; **Next**, **Back**, **Skip** and **End tour** are on its
+card.
+
+<!-- entry: HelpButton -->
+<!-- easy: Opens the help: tours and help mode. -->
+**Help** opens a small menu: **Help mode (F1)**, **Tour of this page**, **Tours...** and **Open the wiki**. Pick
+**Help mode (F1)**, then click any button to see what it does without running it.
+
+<!-- entry: ToggleHelpModeCommand -->
+<!-- easy: Click this, then click any button to learn what it does. -->
+**Help mode (F1)** switches help mode on: a click on any button, field, list row or tab no longer runs it but shows
+what it does. A small window next to it explains where it fits and what happens next; F1, Esc or **End help mode**
+ends it.
+
+<!-- entry: OpenWelcomeCommand -->
+<!-- easy: Shows the welcome again, with all the tours. -->
+**Tours...** opens the welcome again, also when you answered it before: pick what you want to do and the tour that
+fits you. From there you can also start the quick setup that gets your buttons working.
+
+<!-- entry: OpenPageWikiCommand -->
+**Open the wiki** opens the wiki page of the page that is open, in your browser. There every button of the page is
+explained in detail.

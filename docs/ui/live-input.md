@@ -4,7 +4,7 @@
 
 Record (Bind Studio, modifiers, the marker assistant, the FFB graph editor) takes a button or hat that changes state,
 never one that was already pressed when recording started. Many devices have buttons that rest pressed: the middle of a
-3-way switch, a mode switch, VPC throttles' detents (the left MT-50 on a test PC rests on 10 buttons, the WinWing F18
+3-way switch, a mode switch, VPC throttles' detents (a left MT-50 rests on 10 buttons, the WinWing F18
 takeoff panel on 9).
 
 - `Services/RecordButtonTracker.cs` decides per device. Buttons pressed during the warmup are "held at start" and only

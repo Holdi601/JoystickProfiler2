@@ -44,7 +44,7 @@ powershell -ExecutionPolicy Bypass -File engine/tests/engine_smoke_test.ps1
 ```
 
 The engine smoke test runs the real engine against temporary fixture folders and never touches game installs or Saved Games.
-Many game checks read real game command lists that only the maintainer's development copy has (lists extracted from
+Many game checks read real game command lists that only a development copy has (lists extracted from
 installed games are not part of this repository); without them the smoke test skips those parts, names each one, and
 runs everything else.
 

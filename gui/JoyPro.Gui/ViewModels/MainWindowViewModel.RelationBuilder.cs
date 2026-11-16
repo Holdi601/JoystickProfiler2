@@ -138,8 +138,9 @@ public sealed partial class MainWindowViewModel
     {
         if (SelectedRelation != null && IsRelationsStage && !IsAnyRelationToolOpen && !string.Equals(BuilderRelationName, SelectedRelation.Name, StringComparison.Ordinal))
             _ = LoadBuilderSuggestionsAsync(SelectedRelation.Name);
-        // Actions with aircraft where the same id means something else (a notice with one-step repair).
-        if (IsRelationsStage)
+        // Actions with aircraft where the same id means something else (a notice with one-step repair). While a
+        // profile opens, it runs once the profile is open (LoadProfileAsync).
+        if (IsRelationsStage && !loadingProfile)
             _ = RefreshAircraftCheckAsync();
     }
 
@@ -330,7 +331,7 @@ public sealed partial class MainWindowViewModel
         IsBuilderSuggestLoading = true;
         try
         {
-            EngineCommandResult? result = await RunEngineAsync(["relations", "suggest", relation, "--min", "low"], includeProfile: true, mutatesProfile: false,
+            EngineCommandResult? result = await RunEngineAsync(["relations", "suggest", relation, "--min", "low", .. SuggestGameArgs()], includeProfile: true, mutatesProfile: false,
                 busyLabel: "Finding suggestions for '" + relation + "'...", forceText: false, background: true, stillWanted: () => version == builderSuggestVersion);
             if (version != builderSuggestVersion)
                 return;

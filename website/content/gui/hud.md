@@ -15,11 +15,12 @@ own widgets. This page is its designer.
 
 ```mermaid
 flowchart LR
-  D["Your devices<br/>(DirectInput, read in the background)"] --> P["HUD input pump<br/>newest report per device,<br/>at most 15/30/60 per second"]
-  O["engine overlay map<br/>binds of the running game"] --> P
-  P --> S["On my screen<br/>(window on top, click-through)"]
-  P --> B["Page for OBS<br/>127.0.0.1:8765/hud"]
-  P --> W["Stream window<br/>(Window Capture)"]
+  D["Your devices"] --> P["The HUD"]
+  O["Your binds in<br/>the game"] --> P
+  P --> S["On my screen"]
+  P --> B["Page for OBS"]
+  P --> W["Stream window"]
+%% caption: The HUD reads your devices and your binds in the running game, and shows them in up to three places at once: on your screen over the game, on a page for OBS, and in a stream window.
 ```
 
 :::layer beginner
@@ -86,18 +87,15 @@ scaled to the source. Port taken by another program? Pick another one under **Po
 colour). In OBS add *Window Capture* with *Capture Method: Windows 10 (1903 and up)*; with a colour add a *Chroma Key*
 filter in that colour. If a transparent background shows black in your OBS, use the Browser Source or a colour.
 
-```mermaid
-sequenceDiagram
-  participant J as JoyPro (HUD running)
-  participant O as OBS Browser Source
-  O->>J: GET http://127.0.0.1:8765/hud
-  J-->>O: the page (layout, styles as CSS, pictures)
-  O->>J: GET /hud/events (stays open)
-  loop at most 30 times a second, only when something changed
-    J-->>O: state (axes, buttons, what the button does)
-  end
-  J-->>O: layout (when widgets, places or styles change)
-```
+How the OBS Browser Source gets the HUD: one page, then only the changes.
+
+| # | Who | What happens |
+|---|---|---|
+| 1 | OBS | The Browser Source opens `http://127.0.0.1:8765/hud`. |
+| 2 | JoyPro | Sends the page: layout, styles and pictures. |
+| 3 | OBS | Opens `/hud/events`. It stays open. |
+| 4 | JoyPro | Sends the state (axes, buttons, what the button does), at most 30 times a second and only when something changed. |
+| 5 | JoyPro | Sends the layout again when widgets, places or styles change. |
 
 ## Widgets
 

@@ -17,15 +17,18 @@ and what you can do today.
 
 {{game-card}}
 
-```mermaid
-flowchart TD
-  Q{"How does the game<br/>read your devices?"}
-  Q -->|several joysticks| N["Native: JoyPro reads and<br/>writes the bind file<br/>(KSP 1 candidate)"]
-  Q -->|one joystick| V["One vJoy device + HidHide<br/>(Flyout, Squadrons, H.A.W.X)"]
-  Q -->|only Xbox pads| X["Virtual Xbox pad<br/>(No Man's Sky, Rising Storm 2,<br/>KSP 2)"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Find your game**<br>in the table below
+2. **Bind it in the game**<br>in its own controls menu
+3. **Ask for your game**<br>on Discord or GitHub
+:::
+
+JoyPro cannot set these games up yet. Bind your stick in the game's own controls menu. Some games work well only with
+one controller connected: the table says which.
+
 ## What JoyPro does for these games today
 
 Nothing in the game itself yet. These titles are not in JoyPro's game list, so you cannot import from them, export to
@@ -108,6 +111,18 @@ one device, "vJoy Device", with the binds you make there; with the virtual Xbox 
 :::
 
 :::layer advanced
+## The planned routes
+
+The planned route depends on how the game reads your devices:
+
+:::flow
+| The game reads | The planned route | Games |
+|---|---|---|
+| Several joysticks | JoyPro reads and writes the bind file | KSP 1 (candidate) |
+| One joystick | One vJoy device + HidHide | Flyout, Squadrons, H.A.W.X |
+| Only Xbox pads | The pretend controller | No Man's Sky, Rising Storm 2, KSP 2 |
+:::
+
 ## What is known about the files
 
 | Game | Binds | Notes |

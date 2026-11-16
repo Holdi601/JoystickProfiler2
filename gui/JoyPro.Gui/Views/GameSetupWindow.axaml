@@ -21,9 +21,16 @@
         <StackPanel>
         <StackPanel Spacing="6" Margin="0,0,0,10">
             <TextBlock Text="{Binding GameSetupTitle}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" />
-            <TextBlock Text="{Binding GameSetupSummary}" TextWrapping="Wrap" />
-            <TextBlock TextWrapping="Wrap" Opacity="0.8"
-                       Text="{l:T 'A found game you untick is hidden everywhere in JoyPro (export, game lists) until you bring it back in Settings &gt; Games. Games JoyPro did not find stay unticked but are not hidden: once installed, JoyPro finds them. Browse... links a folder, e.g. a portable install or one on another drive: JoyPro then uses that folder for everything (import, export, DB refresh) and detection never replaces it.'}" />
+            <!-- Two plain sentences first; the details behind "More". -->
+            <TextBlock x:Name="GameSetupPlainIntro" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold"
+                       Text="{l:T 'These are your games. The ticked ones are the games JoyPro found. Press Done, or let JoyPro set everything up for you.'}" />
+            <Expander x:Name="GameSetupMore" Header="{l:T 'More'}" HorizontalAlignment="Stretch">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{Binding GameSetupSummary}" TextWrapping="Wrap" />
+                    <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                               Text="{l:T 'A found game you untick is hidden everywhere in JoyPro (export, game lists) until you bring it back in Settings &gt; Games. Games JoyPro did not find stay unticked but are not hidden: once installed, JoyPro finds them. Browse... links a folder, e.g. a portable install or one on another drive: JoyPro then uses that folder for everything (import, export, DB refresh) and detection never replaces it.'}" />
+                </StackPanel>
+            </Expander>
         </StackPanel>
 
             <ItemsControl ItemsSource="{Binding GameSetupItems}">
@@ -55,29 +62,27 @@
                                     <TextBlock Text="{Binding DetectedText}" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" Opacity="0.75" />
                                     <CheckBox IsChecked="{Binding ExplicitlyHidden}" IsVisible="{Binding ShowHideChoice}" FontSize="{DynamicResource JP.FontSize.12}"
                                               Content="{l:T 'I don\'t have it (hide it everywhere)'}" ToolTip.Tip="{l:T 'Otherwise JoyPro finds the game once it is installed'}" />
-                                    <StackPanel Spacing="4" IsVisible="{Binding HasGame}">
-                                        <Grid ColumnDefinitions="120,*,90,60,110" ColumnSpacing="8">
-                                            <TextBlock Text="{l:T 'Installation'}" VerticalAlignment="Center" Opacity="0.8" />
-                                            <TextBlock Grid.Column="1" Text="{Binding InstallText}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="{DynamicResource JP.FontSize.12}" />
-                                            <Button Grid.Column="2" Content="{l:T 'Browse...'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseInstallClicked"
-                                                    ToolTip.Tip="{l:T 'Link the game\'s folder (portable install, other drive); it then counts as the installation'}" />
-                                            <Button Grid.Column="3" Content="{l:T '.exe...'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseInstallExeClicked"
-                                                    ToolTip.Tip="{l:T 'Pick the game\'s .exe or its launcher instead; JoyPro links the game\'s folder'}" />
-                                            <Button Grid.Column="4" Content="{l:T 'Use detected'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding UseDetectedFolderCommand}" IsVisible="{Binding HasLink}"
-                                                    ToolTip.Tip="{l:T 'Forget your folder; JoyPro detects the game again'}" />
-                                        </Grid>
-                                        <TextBlock Text="{Binding MarkerStatus}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" Foreground="{DynamicResource JP.OkTextBrush}" IsVisible="{Binding MarkerOk}" Margin="128,0,0,0" />
-                                        <TextBlock Text="{Binding MarkerStatus}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding MarkerProblem}" Margin="128,0,0,0" />
-                                        <Grid ColumnDefinitions="120,*,90,60,110" ColumnSpacing="8">
-                                            <TextBlock Text="{l:T 'Controls saved in'}" VerticalAlignment="Center" Opacity="0.8" />
-                                            <TextBlock Grid.Column="1" Text="{Binding ConfigText}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="{DynamicResource JP.FontSize.12}" />
-                                            <Button Grid.Column="2" Content="{l:T 'Browse...'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseConfigClicked" IsVisible="{Binding CanChangeConfig}"
-                                                    ToolTip.Tip="{l:T 'Where the game keeps its controls, e.g. Saved Games\\DCS.openbeta instead of Saved Games\\DCS'}" />
-                                            <Button Grid.Column="4" Content="{l:T 'Use detected'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding UseDetectedConfigCommand}" IsVisible="{Binding HasConfigLink}"
-                                                    ToolTip.Tip="{l:T 'Forget your config location; JoyPro finds it again'}" />
-                                        </Grid>
-                                        <TextBlock Text="{Binding ConfigNote}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" Opacity="0.7" IsVisible="{Binding HasConfigNote}" Margin="128,0,0,0" />
-                                    </StackPanel>
+                                    <!-- One grid per game: the labels and buttons take the width their text needs (a German "Steuerung
+                                         gespeichert in" or "Durchsuchen..." is never cut) and both rows line up. -->
+                                    <Grid IsVisible="{Binding HasGame}" ColumnDefinitions="Auto,*,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                                        <TextBlock Text="{l:T 'Installation'}" VerticalAlignment="Center" Opacity="0.8" MinWidth="120" />
+                                        <TextBlock Grid.Column="1" Text="{Binding InstallText}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="{DynamicResource JP.FontSize.12}" />
+                                        <Button Grid.Column="2" Content="{l:T 'Browse...'}" MinWidth="90" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseInstallClicked"
+                                                ToolTip.Tip="{l:T 'Link the game\'s folder (portable install, other drive); it then counts as the installation'}" />
+                                        <Button Grid.Column="3" Content="{l:T '.exe...'}" MinWidth="60" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseInstallExeClicked"
+                                                ToolTip.Tip="{l:T 'Pick the game\'s .exe or its launcher instead; JoyPro links the game\'s folder'}" />
+                                        <Button Grid.Column="4" Content="{l:T 'Use detected'}" MinWidth="110" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding UseDetectedFolderCommand}" IsVisible="{Binding HasLink}"
+                                                ToolTip.Tip="{l:T 'Forget your folder; JoyPro detects the game again'}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding MarkerStatus}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" Foreground="{DynamicResource JP.OkTextBrush}" IsVisible="{Binding MarkerOk}" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding MarkerStatus}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding MarkerProblem}" />
+                                        <TextBlock Grid.Row="3" Text="{l:T 'Controls saved in'}" VerticalAlignment="Center" Opacity="0.8" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ConfigText}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="{DynamicResource JP.FontSize.12}" />
+                                        <Button Grid.Row="3" Grid.Column="2" Content="{l:T 'Browse...'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseConfigClicked" IsVisible="{Binding CanChangeConfig}"
+                                                ToolTip.Tip="{l:T 'Where the game keeps its controls, e.g. Saved Games\\DCS.openbeta instead of Saved Games\\DCS'}" />
+                                        <Button Grid.Row="3" Grid.Column="4" Content="{l:T 'Use detected'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding UseDetectedConfigCommand}" IsVisible="{Binding HasConfigLink}"
+                                                ToolTip.Tip="{l:T 'Forget your config location; JoyPro finds it again'}" />
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding ConfigNote}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" Opacity="0.7" IsVisible="{Binding HasConfigNote}" />
+                                    </Grid>
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -87,10 +92,21 @@
         </StackPanel>
         </ScrollViewer>
 
-        <Grid x:Name="SetupFooter" Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Margin="0,10,0,0">
-            <TextBlock Text="{Binding GameSetupStatus}" TextWrapping="Wrap" Foreground="{DynamicResource JP.DangerTextBrush}" VerticalAlignment="Center" />
+        <Grid x:Name="SetupFooter" Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8" Margin="0,10,0,0">
+            <StackPanel Spacing="4" VerticalAlignment="Center">
+                <!-- Easy words on the first start too: its quick path skips the welcome, where the switch is offered. -->
+                <CheckBox x:Name="GameSetupEasyWords" IsChecked="{Binding EasyWords}" IsVisible="{Binding GameSetupFirstStart}"
+                          ToolTip.Tip="{l:T 'Big text and very short sentences in the tours and the help. Change it any time in Settings > Tours.'}">
+                    <TextBlock Text="{l:T 'Easy words: big text, short sentences'}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.15}" />
+                </CheckBox>
+                <TextBlock Text="{Binding GameSetupStatus}" TextWrapping="Wrap" Foreground="{DynamicResource JP.DangerTextBrush}" />
+            </StackPanel>
             <Button Grid.Column="1" Content="{l:T 'Later'}" Click="LaterClicked" ToolTip.Tip="{l:T 'Change nothing; Settings &gt; Games &gt; Run setup again shows this again'}" />
-            <Button Grid.Column="2" Content="{l:T 'Done'}" Classes="accent" Click="DoneClicked" IsEnabled="{Binding CanRun}" />
+            <Button Grid.Column="2" Content="{l:T 'Done'}" Click="DoneClicked" IsEnabled="{Binding CanRun}" Classes.accent="{Binding !GameSetupFirstStart}" />
+            <!-- The first start's quick path: the games are saved, then JoyPro sets up the devices by itself. -->
+            <Button x:Name="QuickPathButton" Grid.Column="3" Content="{l:T 'Done, and set everything up for me'}" Classes="accent" Click="QuickPathClicked" IsEnabled="{Binding CanRun}"
+                    IsVisible="{Binding GameSetupFirstStart}" FontSize="{DynamicResource JP.FontSize.15}"
+                    ToolTip.Tip="{l:T 'Saves your games, then JoyPro puts the important functions on your stick and throttle by itself and shows you the result'}" />
         </Grid>
     </Grid>
 </Window>

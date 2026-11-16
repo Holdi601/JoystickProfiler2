@@ -167,6 +167,7 @@ function Get-CommandSummaryForDocs {
         "profile save" { return "Saves current in-memory profile state to a `.pr0file`." }
         "profile new" { return "Creates an empty profile and saves it to the given `.pr0file` (overwrites an existing file)." }
         "profile save-last" { return "Saves to JoyPro's last-used profile path." }
+        "profile head-tracking" { return "Shows or sets the answer to the Setup wizard's question 'Do you use head tracking or VR?' that the profile keeps. yes: you look around with head tracking, a face tracking webcam, an eye tracker or VR, so the setup, Auto Group and the suggestions put no look-around buttons on the HOTAS in the sims that support head tracking; only the recenter stays (zoom, padlock and the camera views too). no: looking around goes on a hat of the stick or throttle, with a high priority. clear removes the answer (not asked: planned like no). Without a value it only shows the answer." }
         "profile validate" { return "Validates the loaded profile and reports both warnings and errors across relation items, binds, modifiers, and active-node states." }
         "dcs scan" { return "Parses DCS input files and previews what would be imported, without applying changes." }
         "dcs import" { return "Parses DCS input files and applies results to the in-memory profile." }
@@ -195,6 +196,7 @@ function Get-CommandSummaryForDocs {
         "games integrations" { return "Lists the games supported through the game registry (id, aliases, experimental flag, DB refresh support)." }
         "games support" { return "How far JoyPro supports each game (docs/games/support.md): one row per title with the feature marks taken from the code (import, export, keyboard, modifiers, list refresh, watcher, axis tuning, settings, force feedback, vJoy / Xbox modes, virtual functions, function tables, cockpits, cheat sheets) and the in-game test results, footnotes and per-title facts of docs/games/support-notes.json (built into engine.exe). JSON by default; --markdown writes the page (tools/game_support.ps1), --html the page the GUI opens. Exit 1 when the notes miss a registered game, name an unknown game or cell, claim more than the code or leave a partial mark without a reason." }
         "layout render" { return "Renders joystick layout images per game/plane (command descriptions) and overview images (relation names) from JoyPro .layout mappings." }
+        "layout kneeboard" { return "Puts the binds of each aircraft on its kneeboard (a large-text list of the bound controls, or the cheat sheet picture): DCS (Saved Games\\DCS and DCS.openbeta, Kneeboard\\<aircraft folder DCS uses>, also read by OpenKneeboard) or a folder of choice. Writes or replaces only JoyPro's own pages (JoyPro_*, with JoyPro's mark in the PNG); other kneeboard files are never changed." }
         "devices list" { return "Lists connected devices and/or devices referenced in profile data." }
         "devices inputs" { return "Lists full supported input-token catalogs (joystick axes/buttons/POV and keyboard key names for DCS/IL2)." }
         "devices exchange" { return "Replaces one device name with another across profile binds, modifiers, and device metadata." }
@@ -286,6 +288,9 @@ function Get-CommandSummaryForDocs {
         "llm download" { return "Downloads a model (positional or --model; default: the chosen model, else the recommended one) and llama.cpp's server, checks their SHA-256 and switches the model on; without --accept-license only the size and licenses are shown." }
         "setup plan" { return "Setup wizard: plans relations and binds for the important functions of the chosen games' aircraft on your devices (priorities, modifier budget, realism, phase layers); deterministic for a --seed. Writes nothing to the profile; --out-plan saves the plan for setup check, apply and render." }
         "setup render" { return "Draws a callout sheet per device of a saved plan into --out-dir; with --aircraft only the binds that cover that aircraft, labelled with its function names. The --drawing-* options paint JoyPro's drawings of the devices (default: the GUI's settings)." }
+        "setup games" { return "Per game whether you already have binds there: empty (nothing assigned: the Start page offers the setup), game (binds of your own in the game: import them first, then the setup fills the gaps), profile (already in the profile). Only reads the game's control files; --path gives a game's config folder; --status-only leaves the files of a game the profile already has binds for unread (the Start page's quick look)." }
+        "setup preview" { return "The layout window's data: the games and aircraft of a saved plan (--plan) or of the profile's binds on the connected devices (--from-profile); with --aircraft and --out-dir one sheet per device (PNG), or with --live-data each device's drawing, callout sheet (JSON) and row texts. Read-only." }
+        "setup eval" { return "Scores the Setup wizard's planner on 20 popular and --random N random device setups against every wizard game and the main DCS families (docs/auto-setup-eval.md): can every major operation be done, are the hand rules kept. Then per setup one profile through Auto Group and Fill all (Suggest missing, every suggestion taken), scored again with the rule 'no wrong-kind matches' (--no-pipeline skips it), and the novice case IL-2 + WinWing URSA MINOR on its own (persona.md, --no-persona skips it). Writes report.md, results.json, rows.csv and setups/*.md to --out-dir; exit 1 when a --min-* / --max-wrong threshold fails. Read-only (the profiles live in memory)." }
         "setup check" { return "Checks a saved plan against the rules every plan keeps (conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers); exit code 1 when a rule fails." }
         "cockpits" { return "The cockpit database (DB/Cockpits): stick and throttle of real and fictional aircraft per variant with their functions; list, search, get, check, render (sheets or the Cockpits page's manual pages), compare with the profile, photos, coverage, drawings, the cockpit guide and the pictures built from your installed games." }
         "devices kb" { return "The device catalog Auto Assign uses: list (devices whose id, name or maker contains every word of the query), show <id> (its axes and controls), identify (how the connected devices were recognised, grip choices)." }
@@ -463,6 +468,11 @@ function Get-CommandArgumentDocLine {
                 "--aircraft" { return "Only the marks of this aircraft (default: all of the relation's marks in the game). Example: --aircraft F-16C_50." }
             }
         }
+        "setup games" {
+            switch ($token) {
+                "--status-only" { return "Only the status: a game the profile already has binds for (or imported from / exported to) keeps its control files unread (GameBindsRead false, GameBinds 0). What the Start page asks." }
+            }
+        }
         "devices replace" {
             switch ($token) {
                 "--old" { return "The old device instead of the first position (also --from)." }
@@ -592,6 +602,24 @@ function Get-CommandArgumentDocLine {
                 "--llm" { return "auto (default): offline rules, the local model when they do not cover the request; on: always ask the model; off: offline rules only." }
             }
         }
+        "layout kneeboard" {
+            switch ($token) {
+                "--target" { return "dcs (default): the DCS kneeboard (Saved Games\\DCS*\\Kneeboard\\<aircraft>); folder: the folder of --folder." }
+                "--saved-games" { return "A DCS Saved Games folder whose Kneeboard folder gets the pages; repeatable (default: every Saved Games\\DCS* folder with DCS's Config folder)." }
+                "--folder" { return "With --target folder: the folder for the pages (<folder>\\<game>\\<aircraft>). Example: C:\\Kneeboard." }
+                "--game" { return "With --target folder: the game whose aircraft get pages (default DCS)." }
+                "--plane" { return "Only this aircraft; repeatable (default: every aircraft the devices have binds in). Example: --plane F-16C_50." }
+                "--planes" { return "Only these aircraft as CSV. Example: --planes F-16C_50,FA-18C_hornet." }
+                "--include-easy" { return "Also the game-mode copies (F-16C_50_easy) while their aircraft has binds (they share its kneeboard)." }
+                "--postfix" { return "Text added to the file names, to keep a second set apart. Example: --postfix _VR." }
+                "--size" { return "The page height (list, portrait) or longest side (original) in pixels, 512 to 8192 (default 2048). The list's font is at least 20 px per 1024 px of page height." }
+                "--page" { return "list (default): a 3:4 page with only the bound controls in large text, grouped by control, more pages (_p2, _p3) when needed; portrait: the cheat sheet picture on a 3:4 page (the shape DCS stretches every page to); original: the cheat sheet in its own shape." }
+                "--picture" { return "With --page list: top (default) puts the device picture with numbered controls above the list, none leaves it out for more room." }
+                "--combine" { return "true: the pages of an aircraft with all devices, each a section (default false: pages per device)." }
+                "--remove-old" { return "Also remove JoyPro's own pages of the same postfix that this run did not write again (a device that left the profile). Nothing else is removed." }
+                "--dry-run" { return "List the pages that would be written; nothing is written." }
+            }
+        }
         "relations plan apply" {
             switch ($token) {
                 "--relation" { return "The relation the plan was made for (Edit with AI); a step that would change another relation gets an error." }
@@ -633,6 +661,7 @@ function Get-CommandArgumentDocLine {
                 "--plan-file" { return "Another name for --out-plan." }
                 "--realism" { return "0 = group by function, 1 = like the real aircraft's HOTAS (cockpit database or knowledge map); 0..1 or 0..100 %." }
                 "--seed" { return "The seed of the plan's local search (default 1): the same seed gives the same plan." }
+                "--only-aircraft" { return "Only these DCS aircraft (the modules you own), comma-separated; the DCS input layers and the other games stay. Example: --only-aircraft F-16C_50,FA-18C_hornet." }
                 "--replace-existing" { return "Lay out your bound relations again; without it they keep their binds." }
                 "--phase-layers" { return "Two combat phases on a latched mode switch: on, off or auto (default: when the inputs are too few for one phase)." }
                 "--cockpit-file" { return "A cockpit entry (JSON, e.g. from engine cockpits get --json) used besides DB/Cockpits; repeatable." }
@@ -997,6 +1026,14 @@ function Get-CommandInteractionNotes {
         [void]$notes.Add("Use --all to remove every stored DCS FFB device setting.")
         [void]$notes.Add("You can clear a single device by positional name or --device/--devices.")
     }
+    if ($key -eq "profile head-tracking") {
+        [void]$notes.Add("Without a value: read-only, prints the answer (yes, no, or not asked).")
+        [void]$notes.Add("yes (also true, on, 1): no look-around buttons on the HOTAS in the sims that support head tracking, only the recenter; Auto Group makes no look-around relations there and the suggestions propose no look commands.")
+        [void]$notes.Add("no (also false, off, 0): looking around goes on a hat with a high priority (right after the fight essentials and the trim).")
+        [void]$notes.Add("clear: removes the answer; the setup then plans like no until the question is answered.")
+        [void]$notes.Add("With a value the profile is saved (one profile version). engine setup plan without --head-tracking uses this answer, engine setup apply writes the plan's answer here, and Settings > Looking around runs this command.")
+        [void]$notes.Add("Look relations the profile already has stay as they are.")
+    }
     if ($key -eq "profile validate") {
         [void]$notes.Add("Validation always reports both warnings and errors.")
         [void]$notes.Add("Default exit behavior fails only when errors exist.")
@@ -1164,6 +1201,7 @@ function Get-ExampleCommand {
         "profile save" { return @("engine profile save 'C:\JoyPro\profiles\pilot_main.pr0file'") }
         "profile new" { return @("engine profile new 'C:\JoyPro\profiles\new_setup.pr0file'") }
         "profile save-last" { return @("engine profile save-last") }
+        "profile head-tracking" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile head-tracking --text", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile head-tracking yes --text", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile head-tracking clear") }
         "profile validate" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile validate --text", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile validate --fail-on-warnings true --text") }
         "dcs scan" { return @("engine dcs scan 'C:\Users\Pilot\Saved Games\DCS.openbeta' --plane 'A-10C_2' --confirm false --text") }
         "dcs import" { return @("engine dcs import 'C:\Users\Pilot\Saved Games\DCS.openbeta' --device 'VKB Gladiator NXT' --merge --save-profile 'C:\JoyPro\profiles\dcs_import.pr0file' --text") }
@@ -1180,6 +1218,9 @@ function Get-ExampleCommand {
         "relations plan apply" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations plan apply --file 'C:\JoyPro\plan.json' --only 0,2 --dry-run --text") }
         "relations function" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations function 'Gear Toggle' --text", "engine relations function --list --button --query gear --text") }
         "setup plan" { return @("engine setup plan --games DCS --priorities 'F-16C_50>FA-18C_hornet' --modifiers 1 --realism 0.5 --out-plan 'C:\JoyPro\setup-plan.json' --text") }
+        "setup games" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' setup games --games DCS,WarThunder,StarCitizen --text") }
+        "setup preview" { return @("engine setup preview --plan 'C:\JoyPro\setup-plan.json' --game DCS --aircraft F-16C_50 --out-dir 'C:\JoyPro\preview' --text") }
+        "setup eval" { return @("engine setup eval --random 20 --seed 2026 --out-dir 'C:\JoyPro\autosetup-eval' --min-coverage 86 --text") }
         "setup render" { return @("engine setup render --plan 'C:\JoyPro\setup-plan.json' --out-dir 'C:\JoyPro\sheets' --aircraft F-16C_50 --text") }
         "devices kb" { return @("engine devices kb list vkb gladiator --text", "engine devices kb identify --text") }
         "dcs refresh preview-clicks" { return @("engine dcs refresh preview-clicks --ocr false --window-left 0 --window-top 0 --window-width 2560 --window-height 1440 --preview-image 'C:\JoyPro\logs\dcs_click_preview.png' --text") }

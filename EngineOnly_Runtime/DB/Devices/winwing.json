@@ -15,11 +15,14 @@
    "hand": "right",
    "identify": {
     "vidPids": [
-     "4098:BEA8"
+     "4098:BEA8",
+     "4098:BE48"
     ],
     "names": [
      "ORION JOYSTICK BASE II",
-     "WINWING Orion2 Joystick Base"
+     "WINWING Orion2 Joystick Base",
+     "JOYSTICK BASE2 + JGRIP-F16",
+     "Orion Joystick Base 2 + JGRIP-F16"
     ],
     "note": "VID:PID 4098:BEA8 per WinCtrl udev list (X-Plane plugin). The HID device is base+grip; the user picks the grip. Orion 1 base (J2) reports 4098:BEA1. Twist axis (Z-axis module) assumed JOY_Z (not confirmed)."
    },
@@ -28,7 +31,8 @@
    "sources": [
     "https://en.winwing.cn/static/file/J2-ORION%20JOYSTICK%20BASE-MANUAL%20EN%20V%201.0.pdf",
     "https://github.com/rswilem/winctrl-xplane-plugin",
-    "https://eu.winctrl.com/static/ipfs/QmQHHeiMhWatgMrJhm9QpHuQ7KDoHC6SuFG3aq39JyMAgx"
+    "https://eu.winctrl.com/static/ipfs/QmQHHeiMhWatgMrJhm9QpHuQ7KDoHC6SuFG3aq39JyMAgx",
+    "https://linux-hardware.org/?id=usb:4098-be48"
    ],
    "confidence": "medium",
    "axes": [
@@ -84,16 +88,20 @@
    "kind": "base",
    "hand": "right",
    "identify": {
-    "vidPids": [],
-    "names": [
-     "SUPER LIBRA JOYSTICK BASE"
+    "vidPids": [
+     "4098:BE11"
     ],
-    "note": "Discontinued base (\"F18 GRIP + J1 Super Libra\"). PID not found; grip numbering identical to NavyAce grip on Orion bases."
+    "names": [
+     "SUPER LIBRA JOYSTICK BASE",
+     "JOYSTICK BASE1 + F18 GRIP"
+    ],
+    "note": "Discontinued base (\"F18 GRIP + J1 Super Libra\"). 4098:BE11 'JOYSTICK BASE1 + F18 GRIP' per linux-hardware.org (the base with the F18 grip; other grips may report another id); grip numbering identical to NavyAce grip on Orion bases."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmPw8YC1MrWXpfHdZUnimqq9iPw9xdTsvqQ8onHQRHTqXv",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=307",
    "sources": [
-    "https://en.winwing.cn/static/file/J1-SUPER%20LIBRA%20JOYSTICK%20BASE-MANUAL%20EN%20V%201.1.pdf"
+    "https://en.winwing.cn/static/file/J1-SUPER%20LIBRA%20JOYSTICK%20BASE-MANUAL%20EN%20V%201.1.pdf",
+    "https://linux-hardware.org/?id=usb:4098-be11"
    ],
    "confidence": "low",
    "axes": [
@@ -117,7 +125,8 @@
     "vidPids": [
      "4098:BD64",
      "4098:BE62",
-     "4098:BE68"
+     "4098:BE68",
+     "4098:BD65"
     ],
     "names": [
      "ORION THROTTLE BASE II",
@@ -132,7 +141,8 @@
     "https://ratatoskr.run/linux-input/2026/04/8938200/t",
     "https://github.com/rswilem/winctrl-xplane-plugin",
     "https://en.winwing.cn/static/file/T2-ORION%20THROTTLE%20BASE-MANUAL%20EN%20V%201.0.pdf",
-    "https://eu.winctrl.com/static/ipfs/QmWTD6KLXTeybV5Brapf3RKXgrB52mBaF4poG67qhoMeoY"
+    "https://eu.winctrl.com/static/ipfs/QmWTD6KLXTeybV5Brapf3RKXgrB52mBaF4poG67qhoMeoY",
+    "https://github.com/torvalds/linux/blob/master/drivers/hid/hid-winwing.c"
    ],
    "confidence": "medium",
    "axes": [
@@ -466,16 +476,20 @@
    "kind": "base",
    "hand": "left",
    "identify": {
-    "vidPids": [],
+    "vidPids": [
+     "4098:BE22"
+    ],
     "names": [
-     "SUPER TAURUS THROTTLE BASE"
+     "SUPER TAURUS THROTTLE BASE",
+     "WINWING THROTTLE BASE1 + F18 HANDLE"
     ],
     "note": "Discontinued base with F/A-18 handles and factory-installed F18 Startup side panel. PID not found."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmUrjLoRv2JmtteEYfQc45C24po9e6xaYtAcGrkFYScyPX",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=308",
    "sources": [
-    "https://en.winwing.cn/static/file/T1-SUPER%20TARUS%20THROTTLE%20BASE-MANUAL%20EN%20V%201.1.pdf"
+    "https://en.winwing.cn/static/file/T1-SUPER%20TARUS%20THROTTLE%20BASE-MANUAL%20EN%20V%201.1.pdf",
+    "https://linux-hardware.org/?id=usb:4098-be22"
    ],
    "confidence": "low",
    "axes": [],
@@ -609,7 +623,9 @@
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=305",
    "sources": [
     "https://en.winwing.cn/static/file/J1-SUPER%20LIBRA%20JOYSTICK%20BASE-MANUAL%20EN%20V%201.1.pdf",
-    "https://en.winwing.cn/static/file/J2-ORION%20JOYSTICK%20BASE-MANUAL%20EN%20V%201.0.pdf"
+    "https://en.winwing.cn/static/file/J2-ORION%20JOYSTICK%20BASE-MANUAL%20EN%20V%201.0.pdf",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/WINWING JOYSTICK BASE2 + F18 GRIP.diff.lua (HOTAS equivalence)",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/WINWING JOYSTICK BASE2 + F18 GRIP.diff.lua (HOTAS equivalence: MMCB)"
    ],
    "confidence": "medium",
    "axes": [],
@@ -666,31 +682,36 @@
      "input": "JOY_BTN2",
      "control": "stick.hat.cms.press",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.pinky.button"
     },
     {
      "input": "JOY_BTN3",
      "control": "stick.hat.cms.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.up"
     },
     {
      "input": "JOY_BTN4",
      "control": "stick.hat.cms.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.right"
     },
     {
      "input": "JOY_BTN5",
      "control": "stick.hat.cms.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.down"
     },
     {
      "input": "JOY_BTN6",
      "control": "stick.hat.cms.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.left"
     },
     {
      "input": "JOY_BTN7",
@@ -995,18 +1016,24 @@
    "base": "winwing-orion2-joystick-base",
    "identify": {
     "vidPids": [
-     "4098:BEA8"
+     "4098:BEA8",
+     "4098:BE48"
     ],
     "names": [
      "F16 JOYSTICK GRIP",
-     "ViperAce"
+     "ViperAce",
+     "JOYSTICK BASE2 + JGRIP-F16",
+     "Orion Joystick Base 2 + JGRIP-F16"
     ],
     "note": "Orion 1/2 and Super Libra. Numbers from the manual. Axis Slider = pinky paddle (buttons 7/8 at its ends). POV hat 19. Hat names inferred from drawing: 9-13 and 14-18 = hats on front/side, 31-35 = flat rocker key, 36-40 = cross on left. Weapon release = 20 (round button)."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmV3Q65tLgmFdRGVpmNMUKnQc3uR5Du72gj1pxYnv1J5S6",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=377",
    "sources": [
-    "https://en.winwing.cn/static/file/JOYSTICK%20GRIP%20OF%20F-16%20H.O.T.A.S-User%20MANUAL%20EN%20V%201.0.pdf"
+    "https://en.winwing.cn/static/file/JOYSTICK%20GRIP%20OF%20F-16%20H.O.T.A.S-User%20MANUAL%20EN%20V%201.0.pdf",
+    "https://linux-hardware.org/?id=usb:4098-be48",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/WINWING JOYSTICK BASE2 + JGRIP-F16.diff.lua (HOTAS equivalence)",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/WINWING JOYSTICK BASE2 + JGRIP-F16.diff.lua (HOTAS equivalence: CMS press)"
    ],
    "confidence": "medium",
    "axes": [
@@ -1050,37 +1077,43 @@
      "input": "JOY_BTN9",
      "control": "stick.hat.1.press",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.press"
     },
     {
      "input": "JOY_BTN10",
      "control": "stick.hat.1.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.right"
     },
     {
      "input": "JOY_BTN11",
      "control": "stick.hat.1.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.down"
     },
     {
      "input": "JOY_BTN12",
      "control": "stick.hat.1.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.left"
     },
     {
      "input": "JOY_BTN13",
      "control": "stick.hat.1.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.up"
     },
     {
      "input": "JOY_BTN14",
      "control": "stick.hat.2.press",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.button.index_lower"
     },
     {
      "input": "JOY_BTN15",
@@ -1176,25 +1209,29 @@
      "input": "JOY_BTN32",
      "control": "stick.hat.3.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.up"
     },
     {
      "input": "JOY_BTN33",
      "control": "stick.hat.3.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.right"
     },
     {
      "input": "JOY_BTN34",
      "control": "stick.hat.3.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.down"
     },
     {
      "input": "JOY_BTN35",
      "control": "stick.hat.3.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.left"
     },
     {
      "input": "JOY_BTN36",
@@ -1206,25 +1243,29 @@
      "input": "JOY_BTN37",
      "control": "stick.hat.4.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.up"
     },
     {
      "input": "JOY_BTN38",
      "control": "stick.hat.4.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.right"
     },
     {
      "input": "JOY_BTN39",
      "control": "stick.hat.4.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.down"
     },
     {
      "input": "JOY_BTN40",
      "control": "stick.hat.4.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.left"
     }
    ]
   },
@@ -1248,7 +1289,9 @@
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=338",
    "sources": [
     "https://en.winwing.cn/static/file/JOYSTICK%20GRIP%20OF%20F-16%20H.O.T.A.S-User%20MANUAL%20EN%20V%201.0.pdf",
-    "https://www.helisimmer.com/reviews/winwing-f-16ex-joystick-grip-hotas-orion-2-base"
+    "https://www.helisimmer.com/reviews/winwing-f-16ex-joystick-grip-hotas-orion-2-base",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/WINWING JOYSTICK BASE2 + JGRIP-F16.diff.lua (HOTAS equivalence; the EX grip keeps the JGRIP-F16 numbering of buttons 4-40)",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/WINWING JOYSTICK BASE2 + JGRIP-F16.diff.lua (HOTAS equivalence: CMS press)"
    ],
    "confidence": "medium",
    "axes": [
@@ -1304,37 +1347,43 @@
      "input": "JOY_BTN9",
      "control": "stick.hat.1.press",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.press"
     },
     {
      "input": "JOY_BTN10",
      "control": "stick.hat.1.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.right"
     },
     {
      "input": "JOY_BTN11",
      "control": "stick.hat.1.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.down"
     },
     {
      "input": "JOY_BTN12",
      "control": "stick.hat.1.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.left"
     },
     {
      "input": "JOY_BTN13",
      "control": "stick.hat.1.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.cms.up"
     },
     {
      "input": "JOY_BTN14",
      "control": "stick.hat.2.press",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.button.index_lower"
     },
     {
      "input": "JOY_BTN15",
@@ -1430,25 +1479,29 @@
      "input": "JOY_BTN32",
      "control": "stick.hat.3.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.up"
     },
     {
      "input": "JOY_BTN33",
      "control": "stick.hat.3.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.right"
     },
     {
      "input": "JOY_BTN34",
      "control": "stick.hat.3.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.down"
     },
     {
      "input": "JOY_BTN35",
      "control": "stick.hat.3.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.tms.left"
     },
     {
      "input": "JOY_BTN36",
@@ -1460,25 +1513,29 @@
      "input": "JOY_BTN37",
      "control": "stick.hat.4.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.up"
     },
     {
      "input": "JOY_BTN38",
      "control": "stick.hat.4.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.right"
     },
     {
      "input": "JOY_BTN39",
      "control": "stick.hat.4.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.down"
     },
     {
      "input": "JOY_BTN40",
      "control": "stick.hat.4.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.dms.left"
     },
     {
      "input": "JOY_BTN21",
@@ -1654,7 +1711,7 @@
    "identify": {
     "vidPids": [],
     "names": [],
-    "note": "Airbus A320-style sidestick (2025/26). No numbering found."
+    "note": "Airbus A320-style sidestick (2025/26). No numbering found. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "image": "",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=6525",
@@ -1662,6 +1719,7 @@
     "https://en.winwing.cn/en/download"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [],
    "controls": []
   },
@@ -1672,21 +1730,28 @@
    "hand": "left",
    "identify": {
     "vidPids": [
-     "4098:BC29",
-     "4098:BC2A"
+     "4098:BC29"
     ],
     "names": [
      "URSA MINOR FIGHTER L",
-     "URSA MINOR L"
+     "URSA MINOR L",
+     "WINWING URSA MINOR FIGHTER FLIGHT STICK L",
+     "URSA MINOR Combat Joystick L"
     ],
-    "note": "Numbers from the WinWing user manual key map (grip keys 20-48, base keys 1-14, axes X/Y/Z/Rx/Ry/Slider); manual numbers taken as 1-based DirectInput buttons. 21 = HAT press, HAT directions are drawn without numbers -> POV1 (4-way). Hat 1 directions read from a perspective drawing of a side-mounted hat (L and R drawings differ), treat as approximate. 34 = mini stick press; 45-48 = mini stick directions in button mode; 49-51 = Z twist in button mode (no vocabulary control, left out). L/R PIDs contradict between sources: Linux kernel patch says BC29 = L, BC2A = R; X-Plane plugin udev list says Fighter L = BC2A, Fighter R = BC29."
+    "note": "Numbers from the WinWing user manual key map (grip keys 20-48, base keys 1-14, axes X/Y/Z/Rx/Ry/Slider); manual numbers taken as 1-based DirectInput buttons. 21 = HAT press, HAT directions are drawn without numbers -> POV1 (4-way). Hat 1 directions read from a perspective drawing of a side-mounted hat (L and R drawings differ), treat as approximate. 34 = mini stick press; 45-48 = mini stick directions in button mode; 49-51 = Z twist in button mode (no vocabulary control, left out). L/R resolved: BC29 = left, BC2A = right per the Linux kernel patch (tested with both sticks), Elite Dangerous binds of real owners (EDRefCard: 4098BC29 = Fighter Left, 4098BC2A = Fighter Right), a Windows HID dump (4098:BC2A = 'WINCTRL URSA MINOR Combat Joystick R', joystick-mapper issue 24), an AC7 Input.ini (Joystick-BC2A4098 = 'WINWING URSA MINOR FIGHTER FLIGHT STICK R'), a right-hand owner in ursa-minor-ffb issue 1 (PID BC2A) and WinctrlConfig (grip device = PID low byte - 0x20: 0x09 = JGRIP_F1_L, 0x0A = JGRIP_F1_R). Only the X-Plane plugin comments say the opposite (Fighter L = BC2A), so the other hand's PID is no longer listed. HID product strings: older WinWing firmware 'WINWING URSA MINOR FIGHTER FLIGHT STICK L' (Joystick Gremlin profile, pygame script); the WinCtrl-branded firmware calls it 'URSA MINOR Combat Joystick L' (kernel patch wording; the exact Windows L string, presumably 'WINCTRL URSA MINOR Combat Joystick L', was not seen). The URSA MINOR Space joystick reports the same Fighter/Combat identity: WinctrlConfig states the firmware announces the Combat/Fighter grip (F1) and the Space variant cannot be told apart by software, and Space L owners' Elite Dangerous binds show 4098BC29 (EDRefCard issue 22). So a Space stick is usually detected as this entry (same button/axis layout)."
    },
    "image": "https://eu.winctrl.com/static/ipfs/Qmf5RuH2116M8r8Zw1yGjs8yKcBUyaWd3umTBpsKhbDdjm",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=705",
    "sources": [
     "https://ratatoskr.run/linux-input/2026/04/8938200/t",
     "https://github.com/rswilem/winctrl-xplane-plugin",
-    "https://eu.winctrl.com/static/ipfs/QmabSXmvPxNp2ZXHidaDhGq73XGHyKicn6YWrgQksanXDp"
+    "https://eu.winctrl.com/static/ipfs/QmabSXmvPxNp2ZXHidaDhGq73XGHyKicn6YWrgQksanXDp",
+    "https://github.com/brammmers/edrefcard2/blob/main/www/scripts/bindingsData.py",
+    "https://github.com/antixenoinitiative/axiwiki/blob/main/mechan_winwing_hosas_v6.4.2.xml",
+    "https://github.com/neon-softhamster/flight-controller/blob/master/tools/joystick_IDs_checker.py",
+    "https://github.com/Alphonsvds/joystick-mapper/issues/24",
+    "https://github.com/f3nr1l/WinctrlConfig/blob/main/rust/src/protocol.rs",
+    "https://github.com/brammmers/edrefcard2/issues/22"
    ],
    "confidence": "high",
    "axes": [
@@ -1982,21 +2047,28 @@
    "hand": "right",
    "identify": {
     "vidPids": [
-     "4098:BC2A",
-     "4098:BC29"
+     "4098:BC2A"
     ],
     "names": [
      "URSA MINOR FIGHTER R",
-     "URSA MINOR R"
+     "URSA MINOR R",
+     "WINCTRL URSA MINOR Combat Joystick R",
+     "WINWING URSA MINOR FIGHTER FLIGHT STICK R"
     ],
-    "note": "Numbers from the WinWing user manual key map (grip keys 20-48, base keys 1-14, axes X/Y/Z/Rx/Ry/Slider); manual numbers taken as 1-based DirectInput buttons. 21 = HAT press, HAT directions are drawn without numbers -> POV1 (4-way). Hat 1 directions read from a perspective drawing of a side-mounted hat (L and R drawings differ), treat as approximate. 34 = mini stick press; 45-48 = mini stick directions in button mode; 49-51 = Z twist in button mode (no vocabulary control, left out). L/R PIDs contradict between sources: Linux kernel patch says BC29 = L, BC2A = R; X-Plane plugin udev list says Fighter L = BC2A, Fighter R = BC29."
+    "note": "Numbers from the WinWing user manual key map (grip keys 20-48, base keys 1-14, axes X/Y/Z/Rx/Ry/Slider); manual numbers taken as 1-based DirectInput buttons. 21 = HAT press, HAT directions are drawn without numbers -> POV1 (4-way). Hat 1 directions read from a perspective drawing of a side-mounted hat (L and R drawings differ), treat as approximate. 34 = mini stick press; 45-48 = mini stick directions in button mode; 49-51 = Z twist in button mode (no vocabulary control, left out). L/R resolved: BC29 = left, BC2A = right per the Linux kernel patch (tested with both sticks), Elite Dangerous binds of real owners (EDRefCard: 4098BC29 = Fighter Left, 4098BC2A = Fighter Right), a Windows HID dump (4098:BC2A = 'WINCTRL URSA MINOR Combat Joystick R', joystick-mapper issue 24), an AC7 Input.ini (Joystick-BC2A4098 = 'WINWING URSA MINOR FIGHTER FLIGHT STICK R'), a right-hand owner in ursa-minor-ffb issue 1 (PID BC2A) and WinctrlConfig (grip device = PID low byte - 0x20: 0x09 = JGRIP_F1_L, 0x0A = JGRIP_F1_R). Only the X-Plane plugin comments say the opposite (Fighter L = BC2A), so the other hand's PID is no longer listed. HID product strings: WinCtrl-branded firmware 'WINCTRL URSA MINOR Combat Joystick R' (manufacturer 'Winwing', Windows HID dump), older firmware 'WINWING URSA MINOR FIGHTER FLIGHT STICK R' (AC7 Input.ini, Joystick Gremlin profile). The URSA MINOR Space joystick reports the same Fighter/Combat identity: WinctrlConfig states the firmware announces the Combat/Fighter grip (F1) and the Space variant cannot be told apart by software, and Space L owners' Elite Dangerous binds show 4098BC29 (EDRefCard issue 22). So a Space stick is usually detected as this entry (same button/axis layout)."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmZoJpPqr7a8bitto8kRzwQeB9hgQ48pkf7dcCrZ8JgaBo",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=905",
    "sources": [
     "https://ratatoskr.run/linux-input/2026/04/8938200/t",
     "https://github.com/rswilem/winctrl-xplane-plugin",
-    "https://eu.winctrl.com/static/ipfs/QmTvHcYNoR17Ro8AHmA7j6jpqwnHHbaYWS8dXGxM8QbTgh"
+    "https://eu.winctrl.com/static/ipfs/QmTvHcYNoR17Ro8AHmA7j6jpqwnHHbaYWS8dXGxM8QbTgh",
+    "https://github.com/Alphonsvds/joystick-mapper/issues/24",
+    "https://github.com/clemthi/ac7-ursa-minor/blob/main/ac7/Input.ini",
+    "https://github.com/antixenoinitiative/axiwiki/blob/main/mechan_winwing_hosas_v6.4.2.xml",
+    "https://github.com/brammmers/edrefcard2/blob/main/www/scripts/bindingsData.py",
+    "https://github.com/rtroncoso/ursa-minor-ffb/issues/1",
+    "https://github.com/f3nr1l/WinctrlConfig/blob/main/rust/src/protocol.rs"
    ],
    "confidence": "high",
    "axes": [
@@ -2295,15 +2367,20 @@
      "4098:BC27"
     ],
     "names": [
-     "URSA MINOR AIRLINE L"
+     "URSA MINOR AIRLINE L",
+     "WINCTRL URSA MINOR 32 Joystick L"
     ],
-    "note": "Numbers from the WinWing user manual key map (grip keys 20-22, base keys 1-14, axes X/Y/Z/Slider); manual numbers taken as 1-based DirectInput buttons. 20 = press of the 5-way HAT hidden under the magnetic top cover; HAT directions are drawn without numbers -> POV1 (4-way). 23-25 = Z twist in button mode (no vocabulary control, left out). BC27 = L per X-Plane plugin udev list."
+    "note": "Numbers from the WinWing user manual key map (grip keys 20-22, base keys 1-14, axes X/Y/Z/Slider); manual numbers taken as 1-based DirectInput buttons. 20 = press of the 5-way HAT hidden under the magnetic top cover; HAT directions are drawn without numbers -> POV1 (4-way). 23-25 = Z twist in button mode (no vocabulary control, left out). BC27 = L per X-Plane plugin udev list, ursa-minor-ffb, msfs-linux-companion and groundfeel (PID_JOYSTICK = 0xBC27 for the 'URSA MINOR 32 Joystick L'). HID product string 'WINCTRL URSA MINOR 32 Joystick L' from an MSFS 2024 controls profile (DeviceName with ProductID 48167 = 0xBC27) and aerodeck's VID:PID list (from SPAD.neXt usbdevices + Linux evdev)."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmeQFa4TKJhuv9eVSRhyQNA4qwHjKafm4bj5U9rey2bQFM",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=2105",
    "sources": [
     "https://github.com/rswilem/winctrl-xplane-plugin",
-    "https://eu.winctrl.com/static/ipfs/QmXp5PA8VkWV4nFcBHCJ6yakW133itUE2DsKuaA55U1CiL"
+    "https://eu.winctrl.com/static/ipfs/QmXp5PA8VkWV4nFcBHCJ6yakW133itUE2DsKuaA55U1CiL",
+    "https://github.com/highinthefssky/msfs-2024-controls-settings/blob/main/profiles/WinWingSim%20-%20Ursa%20Minor%20-%20GA%20-%20AC.xml",
+    "https://github.com/m4ce-w1ndu/aerodeck/blob/main/src/profile/repository.rs",
+    "https://github.com/rtroncoso/ursa-minor-ffb/blob/main/src/hid/protocol.rs",
+    "https://github.com/agustin320/groundfeel/blob/main/motores.py"
    ],
    "confidence": "high",
    "axes": [
@@ -2449,15 +2526,18 @@
      "4098:BC28"
     ],
     "names": [
-     "URSA MINOR AIRLINE R"
+     "URSA MINOR AIRLINE R",
+     "WINCTRL URSA MINOR 32 Joystick R"
     ],
-    "note": "Numbers from the WinWing user manual key map (grip keys 20-22, base keys 1-14, axes X/Y/Z/Slider); manual numbers taken as 1-based DirectInput buttons. 20 = press of the 5-way HAT hidden under the magnetic top cover; HAT directions are drawn without numbers -> POV1 (4-way). 23-25 = Z twist in button mode (no vocabulary control, left out). BC28 = R per X-Plane plugin udev list."
+    "note": "Numbers from the WinWing user manual key map (grip keys 20-22, base keys 1-14, axes X/Y/Z/Slider); manual numbers taken as 1-based DirectInput buttons. 20 = press of the 5-way HAT hidden under the magnetic top cover; HAT directions are drawn without numbers -> POV1 (4-way). 23-25 = Z twist in button mode (no vocabulary control, left out). BC28 = R per X-Plane plugin udev list, ursa-minor-ffb and msfs-linux-companion. HID product string 'WINCTRL URSA MINOR 32 Joystick R' from aerodeck's VID:PID list (from SPAD.neXt usbdevices + Linux evdev); not cross-checked with a Windows dump."
    },
    "image": "https://eu.winctrl.com/static/ipfs/Qmc5VBeZ6mXuTQF4FzrxtHJUXExGrbXE2Q2veoD37hEt1T",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=2125",
    "sources": [
     "https://github.com/rswilem/winctrl-xplane-plugin",
-    "https://eu.winctrl.com/static/ipfs/QmRwKSeCfwDz515Bk8qVY5weZbPCGbgqE4dMHjxbQFgc4T"
+    "https://eu.winctrl.com/static/ipfs/QmRwKSeCfwDz515Bk8qVY5weZbPCGbgqE4dMHjxbQFgc4T",
+    "https://github.com/m4ce-w1ndu/aerodeck/blob/main/src/profile/repository.rs",
+    "https://github.com/rtroncoso/ursa-minor-ffb/blob/main/src/hid/protocol.rs"
    ],
    "confidence": "high",
    "axes": [
@@ -2599,17 +2679,23 @@
    "kind": "stick",
    "hand": "left",
    "identify": {
-    "vidPids": [],
+    "vidPids": [
+     "4098:BC29"
+    ],
     "names": [
      "URSA MINOR SPACE L"
     ],
-    "note": "Grip and base numbering identical to the URSA MINOR Fighter joystick per the WinWing user manual (grip keys 20-48, base keys 1-14, axes X/Y/Z/Rx/Ry/Slider); manual numbers taken as 1-based DirectInput buttons. 21 = HAT press, HAT directions -> POV1 (4-way). Hat 1 directions read from a perspective drawing, approximate. 45-48 = mini stick in button mode; 49-51 = Z twist in button mode (left out). USB PID not found."
+    "note": "Grip and base numbering identical to the URSA MINOR Fighter joystick per the WinWing user manual (grip keys 20-48, base keys 1-14, axes X/Y/Z/Rx/Ry/Slider); manual numbers taken as 1-based DirectInput buttons. 21 = HAT press, HAT directions -> POV1 (4-way). Hat 1 directions read from a perspective drawing, approximate. 45-48 = mini stick in button mode; 49-51 = Z twist in button mode (left out). USB id: the Space L reports the Fighter L id 4098:BC29 - Elite Dangerous binds uploaded by Space L owners (EDRefCard issue 22, refs koywhp and tpvcqb) carry Device=4098BC29, and WinctrlConfig states the firmware announces the Combat/Fighter grip identity (F1), so Space and Fighter cannot be told apart by software (same layout, so detection as the Fighter L entry is harmless). 4098:BC2B = SimAppPro's own Space L grip id 0x0B (JGRIP_S1_L, PID = 0xBC20 + id) as listed by ursa-minor-ffb and WinctrlConfig; not seen on a real device. Exact Windows HID string of a Space stick not found (probably the Fighter/Combat one); 'URSA MINOR SPACE L' is the SimAppPro-style model label (ursa-minor-ffb), kept for name detection."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmVU6nR7cpKavjiCoLX8Ncg3pqND4kDzziesjtUUfaKtPo",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=553",
    "sources": [
     "https://en.winwing.cn/en/download",
-    "https://eu.winctrl.com/static/ipfs/QmfFcdFqWFoe3S1vo51wpCPW9ZKRnDc6mRPb7sd6S45y6R"
+    "https://eu.winctrl.com/static/ipfs/QmfFcdFqWFoe3S1vo51wpCPW9ZKRnDc6mRPb7sd6S45y6R",
+    "https://github.com/brammmers/edrefcard2/issues/22",
+    "https://github.com/f3nr1l/WinctrlConfig/blob/main/rust/src/protocol.rs",
+    "https://github.com/rtroncoso/ursa-minor-ffb/blob/main/src/hid/protocol.rs",
+    "https://github.com/rtroncoso/ursa-minor-ffb/issues/1"
    ],
    "confidence": "high",
    "axes": [
@@ -2904,17 +2990,23 @@
    "kind": "stick",
    "hand": "right",
    "identify": {
-    "vidPids": [],
+    "vidPids": [
+     "4098:BC2A"
+    ],
     "names": [
      "URSA MINOR SPACE R"
     ],
-    "note": "Grip and base numbering identical to the URSA MINOR Fighter joystick per the WinWing user manual (grip keys 20-48, base keys 1-14, axes X/Y/Z/Rx/Ry/Slider); manual numbers taken as 1-based DirectInput buttons. 21 = HAT press, HAT directions -> POV1 (4-way). Hat 1 directions read from a perspective drawing, approximate. 45-48 = mini stick in button mode; 49-51 = Z twist in button mode (left out). USB PID not found."
+    "note": "Grip and base numbering identical to the URSA MINOR Fighter joystick per the WinWing user manual (grip keys 20-48, base keys 1-14, axes X/Y/Z/Rx/Ry/Slider); manual numbers taken as 1-based DirectInput buttons. 21 = HAT press, HAT directions -> POV1 (4-way). Hat 1 directions read from a perspective drawing, approximate. 45-48 = mini stick in button mode; 49-51 = Z twist in button mode (left out). USB id: WinctrlConfig states the firmware of the URSA MINOR sticks announces the Combat/Fighter grip identity (F1) and the Space variant cannot be told apart by software; the right F1 grip is 4098:BC2A, and Space L owners' Elite Dangerous binds show the Fighter L id 4098BC29 (EDRefCard issue 22). A direct report of a Space R id was not found. 4098:BC2C = SimAppPro's own Space R grip id 0x0C (JGRIP_S1_R, PID = 0xBC20 + id) as listed by ursa-minor-ffb and WinctrlConfig; not seen on a real device. Exact Windows HID string of a Space stick not found (probably the Fighter/Combat one); 'URSA MINOR SPACE R' is the SimAppPro-style model label (ursa-minor-ffb), kept for name detection."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmVyL7WEJjnpjsrcBgoPBJbWNBAug8agSnLsuziCp69zpe",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=552",
    "sources": [
     "https://en.winwing.cn/en/download",
-    "https://eu.winctrl.com/static/ipfs/QmRCiq3fVwnXeQQu4re2geG4oPFSPxYYCbjtFGE9WR1CXJ"
+    "https://eu.winctrl.com/static/ipfs/QmRCiq3fVwnXeQQu4re2geG4oPFSPxYYCbjtFGE9WR1CXJ",
+    "https://github.com/f3nr1l/WinctrlConfig/blob/main/rust/src/protocol.rs",
+    "https://github.com/rtroncoso/ursa-minor-ffb/blob/main/src/hid/protocol.rs",
+    "https://github.com/rtroncoso/ursa-minor-ffb/issues/1",
+    "https://github.com/brammmers/edrefcard2/issues/22"
    ],
    "confidence": "high",
    "axes": [
@@ -3215,15 +3307,22 @@
     ],
     "names": [
      "URSA MINOR Throttle Left",
-     "URSA MINOR Throttle Right"
+     "URSA MINOR Throttle Right",
+     "WINCTRL URSA MINOR 32 Throttle Metal L",
+     "WINWING URSA MINOR 32 Throttle Metal L",
+     "WINWING URSA MINOR 32 Throttle Metal R"
     ],
-    "note": "B920 = left, B930 = right (udev list). Airbus-style 2-lever quadrant U.32.T.MET.1. Numbers and axes (RX = lever 1, RY = lever 2) from the WinWing user manual key position drawing; manual numbers taken as 1-based DirectInput buttons. 12-17 / 18-23 = detent position switches (TOGA, FLX/MCT, CL, IDLE, REV IDLE, REV FULL) read from the drawing. Key 24 is drawn at the ENG MODE knob without a stated function (left out). 5/6 point at the FIRE FAULT indicators."
+    "note": "B920 = left, B930 = right (X-Plane plugin udev list; MobiFlight joystick definitions 'WINWING URSA MINOR 32 Throttle Metal L' = 0xB920 and '... Metal R' = 0xB930; groundfeel drives the Throttle Metal R as 0xB930). HID product string: older firmware 'WINWING URSA MINOR 32 Throttle Metal L/R' (MobiFlight InstanceName), WinCtrl-branded firmware 'WINCTRL URSA MINOR 32 Throttle Metal L' (MSFS 2024 profile DeviceName, ProductID 47392 = 0xB920); the WINCTRL R string was not seen. Airbus-style 2-lever quadrant U.32.T.MET.1. Numbers and axes (RX = lever 1, RY = lever 2) from the WinWing user manual key position drawing; manual numbers taken as 1-based DirectInput buttons. 12-17 / 18-23 = detent position switches (TOGA, FLX/MCT, CL, IDLE, REV IDLE, REV FULL) read from the drawing. Key 24 is drawn at the ENG MODE knob without a stated function (left out). 5/6 point at the FIRE FAULT indicators."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmcAs1HRGd5i5a9YsrMgrjowYK1Ggmyss16WMy93bwx5Tc",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=1385",
    "sources": [
     "https://github.com/rswilem/winctrl-xplane-plugin",
-    "https://eu.winctrl.com/static/ipfs/QmQewYduBVWvwYSvVxzH9GAseJyDfFVeUspknKwbzpeuZo"
+    "https://eu.winctrl.com/static/ipfs/QmQewYduBVWvwYSvVxzH9GAseJyDfFVeUspknKwbzpeuZo",
+    "https://github.com/MobiFlight/MobiFlight-Connector/blob/main/src/MobiFlightConnector/Joysticks/winwing/winwing_airbus_throttle_left.joystick.json",
+    "https://github.com/MobiFlight/MobiFlight-Connector/blob/main/src/MobiFlightConnector/Joysticks/winwing/winwing_airbus_throttle_right.joystick.json",
+    "https://github.com/highinthefssky/msfs-2024-controls-settings/blob/main/profiles/WinWingSim%20-%20UrsaMinor%20Throttle%20-%20Airliner%20-%20Airplanes%20controls.xml",
+    "https://github.com/agustin320/groundfeel/blob/main/motores.py"
    ],
    "confidence": "high",
    "axes": [
@@ -3385,15 +3484,23 @@
    "kind": "throttle",
    "hand": "left",
    "identify": {
-    "vidPids": [],
-    "names": [],
-    "note": "Numbers and axes from the WinWing user manual key layout (U.COMBAT.T.MET.1, axis mode 0: Rx = left lever, Ry = right lever; modes 1-3 split/remap the levers). Manual numbers taken as 1-based DirectInput buttons. Grip: Z = self-centering thumbwheel (57-59 in button mode, left out), Rz = potentiometer knob, Slider/Dial = thumb mini stick (52-55 = its button mode). 30-32 = 3-position slide switch, 33-35 = 3-position toggle, 60/61 = on-off-on auto-reset switch; vocabulary names for these chosen by shape. Encoder rotation direction of 12/13 and 14/15 not stated (cw/ccw assumed). 24/25 drawn at the levers between IDLE and OFF without a stated function (left out). USB PID not found; firmware files name it URSA_MINOR_Combat_Throttle (and _R)."
+    "vidPids": [
+     "4098:B970"
+    ],
+    "names": [
+     "WINCTRL URSA MINOR Combat Throttle Metal.EX",
+     "WINCTRL URSA MINOR Combat Throttle"
+    ],
+    "note": "Numbers and axes from the WinWing user manual key layout (U.COMBAT.T.MET.1, axis mode 0: Rx = left lever, Ry = right lever; modes 1-3 split/remap the levers). Manual numbers taken as 1-based DirectInput buttons. Grip: Z = self-centering thumbwheel (57-59 in button mode, left out), Rz = potentiometer knob, Slider/Dial = thumb mini stick (52-55 = its button mode). 30-32 = 3-position slide switch, 33-35 = 3-position toggle, 60/61 = on-off-on auto-reset switch; vocabulary names for these chosen by shape. Encoder rotation direction of 12/13 and 14/15 not stated (cw/ccw assumed). 24/25 drawn at the levers between IDLE and OFF without a stated function (left out). USB id 4098:B970 with HID product string 'WINCTRL URSA MINOR Combat Throttle Metal.EX' (manufacturer 'WINCTRL') from a Windows HID dump (joystick-mapper issue 25) and a Star Citizen actionmaps file (DirectInput GUID B9704098-...); msfs-linux-companion verified B970 on hardware. Whether the plain Combat Throttle Metal without the EX side module reports the same PID and name is unknown (not found; detection of that one goes by name/partial name only), and what the firmware files' _R variant (URSA_MINOR_Combat_Throttle_R) is remains unexplained. Market check 2026-11-14: 'WINCTRL URSA MINOR Combat Throttle' (without Metal.EX) added as a name so a unit without the EX module is found by its name too; its own USB id was not found. The EX module's inputs 62-81 (START, SW1-SW12, RUD TRIM, thumb wheels; owner's SimAppPro screenshots in joystick-mapper issue #25) are not mapped yet."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmXs8APeYw91UWCFrX3kZuqGuYRypY3tnbaGdxfWUhdta3",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=1965",
    "sources": [
     "https://en.winwing.cn/en/download",
-    "https://eu.winctrl.com/static/ipfs/QmVLFu6k2SkWsQfRgw9o6iryfTg9WQYgD1GHKRRm9Sjvkk"
+    "https://eu.winctrl.com/static/ipfs/QmVLFu6k2SkWsQfRgw9o6iryfTg9WQYgD1GHKRRm9Sjvkk",
+    "https://github.com/Alphonsvds/joystick-mapper/issues/25",
+    "https://github.com/hamlet2k/sc-mapper/blob/main/scripts/fixtures/actionmaps-js9-plus.xml",
+    "https://github.com/Kyr4l/msfs-linux-companion/blob/master/docs/VIBRATION.md"
    ],
    "confidence": "high",
    "axes": [
@@ -3761,7 +3868,10 @@
     "https://en.winwing.cn/static/file/T1-SUPER%20TARUS%20THROTTLE%20BASE-MANUAL%20EN%20V%201.1.pdf",
     "https://en.winwing.cn/static/file/FA18%20HOTAS%20INSTALL%20GUIDE%20EN%20%20V%201.1.pdf",
     "https://ratatoskr.run/linux-input/2026/04/8938200/t",
-    "https://steamcommunity.com/sharedfiles/filedetails/?id=3078686956"
+    "https://steamcommunity.com/sharedfiles/filedetails/?id=3078686956",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/WINWING Orion Throttle Base II + F18 HANDLE.diff.lua (HOTAS equivalence)",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/WINWING Orion Throttle Base II + F18 HANDLE.diff.lua (HOTAS equivalence)",
+    "DCS World Mods/aircraft/FA-18C/Input/FA-18C/joystick/WINWING Orion Throttle Base II + F18 HANDLE.diff.lua + Throttle - HOTAS Warthog.diff.lua (HOTAS equivalence: exterior lights switch = Warthog pinky switch)"
    ],
    "confidence": "medium",
    "axes": [
@@ -3789,25 +3899,29 @@
      "input": "JOY_BTN9",
      "control": "throttle.hat.1.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.coolie.up"
     },
     {
      "input": "JOY_BTN10",
      "control": "throttle.hat.1.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.dogfight.in", "throttle.coolie.right"]
     },
     {
      "input": "JOY_BTN11",
      "control": "throttle.hat.1.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.coolie.down"
     },
     {
      "input": "JOY_BTN12",
      "control": "throttle.hat.1.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.dogfight.out", "throttle.coolie.left"]
     },
     {
      "input": "JOY_BTN13",
@@ -3819,31 +3933,36 @@
      "input": "JOY_BTN14",
      "control": "throttle.hat.2.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.down"
     },
     {
      "input": "JOY_BTN15",
      "control": "throttle.hat.2.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.right"
     },
     {
      "input": "JOY_BTN16",
      "control": "throttle.hat.2.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.up"
     },
     {
      "input": "JOY_BTN17",
      "control": "throttle.hat.2.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.left"
     },
     {
      "input": "JOY_BTN18",
      "control": "throttle.button.1",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.speedbrake.fwd"
     },
     {
      "input": "JOY_BTN19",
@@ -3855,13 +3974,15 @@
      "input": "JOY_BTN20",
      "control": "throttle.button.3",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.speedbrake.aft"
     },
     {
      "input": "JOY_BTN21",
      "control": "throttle.button.4",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.knob.man_rng.press"
     },
     {
      "input": "JOY_BTN22",
@@ -3873,7 +3994,8 @@
      "input": "JOY_BTN3",
      "control": "throttle.speedbrake.fwd",
      "finger": "hand",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.pinky.lever.fwd"
     },
     {
      "input": "JOY_BTN4",
@@ -3885,19 +4007,22 @@
      "input": "JOY_BTN5",
      "control": "throttle.speedbrake.aft",
      "finger": "hand",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.pinky.lever.aft"
     },
     {
      "input": "JOY_BTN6",
      "control": "throttle.button.5",
      "finger": "index",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.knob.man_rng.ccw", "throttle.button.laap"]
     },
     {
      "input": "JOY_BTN7",
      "control": "throttle.button.6",
      "finger": "index",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.knob.man_rng.cw"
     }
    ]
   },
@@ -3912,7 +4037,7 @@
      "4098:BE62"
     ],
     "names": [],
-    "note": "2024/25 successor of NavyAce throttle grip; numbering assumed the same, not confirmed. The WinWing shop page (id 6545, WINCTRL CarrierAce Throttle Grip Metal 2.0) is unpublished and lists no manual (checked 2026-10)."
+    "note": "2024/25 successor of NavyAce throttle grip; numbering assumed the same, not confirmed. The WinWing shop page (id 6545, WINCTRL CarrierAce Throttle Grip Metal 2.0) is unpublished and lists no manual (checked 2026-10). Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmQYEJKNSVeeVUB52nzK3htknFXrzDq7HQVtZCqCAdN2vm",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=6545",
@@ -3920,6 +4045,7 @@
     "https://en.winwing.cn/en/download"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [],
    "controls": []
   },
@@ -3935,7 +4061,8 @@
     ],
     "names": [
      "TGRIP-16EX",
-     "F16 THROTTLE GRIP"
+     "F16 THROTTLE GRIP",
+     "Orion Throttle Base II + TGRIP-F16"
     ],
     "note": "Orion 2 throttle with F-16EX handle reports 4098:BE68. Numbers from the F-16 throttle handle manual: 3/4 under-side buttons, 5 = analog ministick press (X/Y axes) with optional digital 6 left/7 up/8 right/9 down, 10-12 and 13-15 = two 3-position switches, 16/17 = ends of the Rz wheel, 18-22 = diagonal 4-way+press hat, 23-27 = cross hat. Z axis = range wheel, Rz = antenna elevation wheel. Names speed brake / dogfight for 10-12 / 13-15 are inferred from drawing position."
    },
@@ -3943,7 +4070,9 @@
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=339",
    "sources": [
     "https://en.winwing.cn/static/file/THROTTLE%20HANDLE%20OF%20F-16%20H.O.T.A.S-User%20MANUAL%20EN%20V%202.0.pdf",
-    "https://ratatoskr.run/linux-input/2026/04/8938200/t"
+    "https://ratatoskr.run/linux-input/2026/04/8938200/t",
+    "https://linux-hardware.org/?id=usb:4098-be68",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/WINWING THROTTLE BASE2 + TGRIP-F16.diff.lua (HOTAS equivalence)"
    ],
    "confidence": "medium",
    "axes": [
@@ -4029,7 +4158,8 @@
      "input": "JOY_BTN13",
      "control": "throttle.dogfight.fwd",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.dogfight.out"
     },
     {
      "input": "JOY_BTN14",
@@ -4041,25 +4171,29 @@
      "input": "JOY_BTN15",
      "control": "throttle.dogfight.aft",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.dogfight.in"
     },
     {
      "input": "JOY_BTN16",
      "control": "throttle.button.3",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.knob.man_rng.ccw"
     },
     {
      "input": "JOY_BTN17",
      "control": "throttle.button.4",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.knob.man_rng.cw"
     },
     {
      "input": "JOY_BTN18",
      "control": "throttle.hat.1.press",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.knob.man_rng.press"
     },
     {
      "input": "JOY_BTN19",
@@ -4095,25 +4229,29 @@
      "input": "JOY_BTN24",
      "control": "throttle.hat.2.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.up"
     },
     {
      "input": "JOY_BTN25",
      "control": "throttle.hat.2.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.right"
     },
     {
      "input": "JOY_BTN26",
      "control": "throttle.hat.2.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.down"
     },
     {
      "input": "JOY_BTN27",
      "control": "throttle.hat.2.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.hat.mic.left"
     }
    ]
   },
@@ -4445,7 +4583,8 @@
    "base": "winwing-orion2-throttle-base",
    "identify": {
     "vidPids": [
-     "4098:BD64"
+     "4098:BD64",
+     "4098:BD65"
     ],
     "names": [
      "F15 HANDLE L",
@@ -4456,7 +4595,8 @@
    "image": "https://eu.winctrl.com/static/ipfs/QmYineDfhhYqaSqi3yiF8LFryZydZTtGwWAGFhAp1vJtDg",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=476",
    "sources": [
-    "https://raw.githubusercontent.com/EDCD/EliteCustomButtonNames/main/files/INTO%20Bindings/DeviceButtonMaps/4098BD64.buttonMap"
+    "https://raw.githubusercontent.com/EDCD/EliteCustomButtonNames/main/files/INTO%20Bindings/DeviceButtonMaps/4098BD64.buttonMap",
+    "https://github.com/torvalds/linux/blob/master/drivers/hid/hid-winwing.c"
    ],
    "confidence": "medium",
    "axes": [
@@ -5156,7 +5296,9 @@
     ],
     "names": [
      "WINCTRL CarrierAce PTO 2",
-     "PTO 2"
+     "PTO 2",
+     "WINWING PTO2",
+     "F18 TAKEOFF PANEL 2"
     ],
     "note": "Successor of PTO with extra PROBE switch, MASTER CAUTION and annunciator buttons CTR/LI/RI/LO/RO. 41 buttons per EDCD map; every switch position is its own button, so they are listed as panel.button with the printed label."
    },
@@ -5422,7 +5564,9 @@
    "kind": "panel",
    "hand": "none",
    "identify": {
-    "vidPids": [],
+    "vidPids": [
+     "4098:BE05"
+    ],
     "names": [
      "WINWING F18 COMBAT READY PANEL",
      "F18 COMBAT READY PANEL"
@@ -5432,7 +5576,8 @@
    "image": "https://eu.winctrl.com/upload/picture/2022-07-06/upload_2f87d52134c987516dfb276886b596a6.jpg",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=322",
    "sources": [
-    "https://en.winwing.cn/static/file/PCR-COMBAT%20READY%20PANEL-MANUAL%20EN%20V%201.0.pdf"
+    "https://en.winwing.cn/static/file/PCR-COMBAT%20READY%20PANEL-MANUAL%20EN%20V%201.0.pdf",
+    "https://linux-hardware.org/?id=usb:4098-be05"
    ],
    "confidence": "medium",
    "axes": [],
@@ -5783,7 +5928,8 @@
    "identify": {
     "vidPids": [
      "4098:BEE1",
-     "4098:BEE2"
+     "4098:BEE2",
+     "4098:BEE0"
     ],
     "names": [
      "WINWING MFD1-L",
@@ -5791,16 +5937,20 @@
      "MFD1",
      "WINCTRL CarrierAce MFD L",
      "WINCTRL CarrierAce MFD R",
-     "WINCTRL CarrierAce MFD C"
+     "WINCTRL CarrierAce MFD C",
+     "MFD1-L",
+     "MFD1-C",
+     "MFD1-R"
     ],
-    "note": "BEE1 and BEE2 are the two MFD units (left/right, order unverified); controls are named for the left MFD. OSB numbers from the WinWing MFD1 manual key-position drawing: left column 1/3/5/7/9 (top to bottom), bottom row 12/14/16/18/20 (left to right), right column 31/29/27/25/23 (top to bottom), top row 42/40/38/36/34 (left to right); the narrow keys between the OSBs (2/4/6/8, 13/15/17/19, 24/26/28/30, 35/37/39/41) have no vocabulary name and are left out. Rockers: GAIN 10/11, CONT 22/21, SYM 33/32, DAY/NGT 43/44; brightness knob = Z axis (0-4095), 48 at the knob. Possible contradiction: the manual drawing lists the side switch as 45 (top) / 46 / 47 (bottom), while the existing EDCD-based entry names 47 SIDE UP and 45 SIDE DOWN (kept unchanged). 49/50 (knob left/right) come from the EDCD map only."
+    "note": "BEE0 = MFD1-C, BEE1 = MFD1-L, BEE2 = MFD1-R (USB strings on linux-hardware.org, checked 2026-11-14); controls are named for the left MFD. OSB numbers from the WinWing MFD1 manual key-position drawing: left column 1/3/5/7/9 (top to bottom), bottom row 12/14/16/18/20 (left to right), right column 31/29/27/25/23 (top to bottom), top row 42/40/38/36/34 (left to right); the narrow keys between the OSBs (2/4/6/8, 13/15/17/19, 24/26/28/30, 35/37/39/41) have no vocabulary name and are left out. Rockers: GAIN 10/11, CONT 22/21, SYM 33/32, DAY/NGT 43/44; brightness knob = Z axis (0-4095), 48 at the knob. Possible contradiction: the manual drawing lists the side switch as 45 (top) / 46 / 47 (bottom), while the existing EDCD-based entry names 47 SIDE UP and 45 SIDE DOWN (kept unchanged). 49/50 (knob left/right) come from the EDCD map only."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmUDcU9Vgy7nEcNe4nbX6zk1uzd6qpVhtMvuyvEixCuEcv",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=402",
    "sources": [
     "https://raw.githubusercontent.com/EDCD/EliteCustomButtonNames/main/files/INTO%20Bindings/DeviceButtonMaps/4098BEE1.buttonMap",
     "https://raw.githubusercontent.com/EDCD/EliteCustomButtonNames/main/files/INTO%20Bindings/DeviceButtonMaps/4098BEE2.buttonMap",
-    "https://eu.winctrl.com/static/ipfs/QmPM5B75RK5UGNrmuc9CWAb2DtE4Gygtqu4aPGzVX4qUNv"
+    "https://eu.winctrl.com/static/ipfs/QmPM5B75RK5UGNrmuc9CWAb2DtE4Gygtqu4aPGzVX4qUNv",
+    "https://linux-hardware.org/?id=usb:4098-bee0"
    ],
    "confidence": "medium",
    "axes": [
@@ -6500,15 +6650,20 @@
    "kind": "panel",
    "hand": "none",
    "identify": {
-    "vidPids": [],
-    "names": [],
+    "vidPids": [
+     "4098:BF06"
+    ],
+    "names": [
+     "ICP"
+    ],
     "note": "Numbers 1-34 and the four thumbwheel axes (Y = SYM, X = RET/DEPR, Ry = BRT, Rx = CONT, 0-4095) from the WinWing ICP manual drawing; manual numbers taken as 1-based DirectInput buttons. Printed panel labels (DRIFT C/O, NORM, WARN RESET, RTN, SEQ, FLIR, GAIN/LVL/AUTO) are visible in the drawing; keypad and top-row labels follow the F-16 ICP layout the panel replicates (drawing shows only numbers). 19/20 (lower-left rocker) and 29 (button next to RET/DEPR) are unlabeled in the drawing. Can be cascaded through MP1. USB PID not found."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmZLCq6pvPsVLQx8HUpCJta2RpcWnRCbXhx6eKXjRfxgtu",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=544",
    "sources": [
     "https://en.winwing.cn/en/download",
-    "https://eu.winctrl.com/static/ipfs/QmVUekeGd37nnGiFxhEufKT7Mjtw5zkySFZPLSTgVmFYHN"
+    "https://eu.winctrl.com/static/ipfs/QmVUekeGd37nnGiFxhEufKT7Mjtw5zkySFZPLSTgVmFYHN",
+    "https://linux-hardware.org/?id=usb:4098-bf06"
    ],
    "confidence": "high",
    "axes": [
@@ -7003,7 +7158,10 @@
      "4098:BA01"
     ],
     "names": [
-     "WINWING FCU"
+     "WINWING FCU",
+     "WINWING FCU-320 + EFIS-320L",
+     "WINWING FCU-320 + EFIS-320R",
+     "WINWING FCU-320 + EFIS-320L + EFIS-320R"
     ],
     "note": "Numbers from the WinWing FCU manual (V2.1) button drawing, confirmed by the X-Plane plugin button table (HID button index + 1). 1 = SPD/MACH, push buttons 2-9 (LOC, HDG-TRK/V/S-FPA, AP1, AP2, A/THR, EXPED, METRIC ALT, APPR). Knobs SPD/HDG/ALT/V/S in button mode: 10-13 / 14-17 / 18-21 / 22-25 = decrease, increase, push, pull; in axis mode X/Y/Z/Rx. 26/27 = ALT step 100/1000. With EFIS units attached the same device reports 4098:BC1D / BC1E / BA01 and adds EFIS buttons 33-62 (L) and 65-94 (R)."
    },
@@ -7213,7 +7371,9 @@
      "4098:BA01"
     ],
     "names": [
-     "FCU-EFIS Left"
+     "FCU-EFIS Left",
+     "WINWING FCU-320 + EFIS-320L",
+     "WINWING FCU-320 + EFIS-320L + EFIS-320R"
     ],
     "note": "Cascaded to the FCU: the FCU then reports FCU + EFIS-L as 4098:BC1D (FCU + both EFIS = 4098:BA01, per X-Plane plugin). EFIS-L keys are buttons 33-62 of that device (WinWing EFIS-32L manual drawing; the X-Plane plugin reads EFIS-L as HID buttons 32-63, 0-based, with the same order). 42/43 = baro knob rotation, 40/41 = baro push/pull (STD), 44/45 = in Hg / h Pa."
    },
@@ -7419,7 +7579,9 @@
      "4098:BA01"
     ],
     "names": [
-     "FCU-EFIS Right"
+     "FCU-EFIS Right",
+     "WINWING FCU-320 + EFIS-320R",
+     "WINWING FCU-320 + EFIS-320L + EFIS-320R"
     ],
     "note": "Cascaded to the FCU: the FCU then reports FCU + EFIS-R as 4098:BC1E (FCU + both EFIS = 4098:BA01, per X-Plane plugin). EFIS-R keys are buttons 65-94 of that device (WinWing EFIS-32R manual drawing; the X-Plane plugin reads EFIS-R as HID buttons 64-95, 0-based, same order). Selector order on the right unit is VOR / OFF / ADF."
    },
@@ -7624,7 +7786,8 @@
      "4098:BF0F"
     ],
     "names": [
-     "PAP3"
+     "PAP3",
+     "WINWING PAP3"
     ],
     "note": "Boeing 737 MCP replica. Numbers 1-40 from the WinWing PAP3 manual drawing, confirmed by the X-Plane plugin Zibo profile (HID button index + 1); A/T ARM / OFF = 41/42 from the plugin only. Knob pairs: lower number = decrease (CRS, IAS/MACH, HEADING, ALTITUDE, V/S wheel: 39 = DN, 40 = UP, as printed). Rx = ambient light sensor (no control). 28/29 and 30/31 = F/D ON/OFF; 32/33 = A/P DISENGAGE bar down/up."
    },
@@ -7910,7 +8073,9 @@
     ],
     "names": [
      "3N PDC Left",
-     "3N PDC Right"
+     "3N PDC Right",
+     "WINWING 3N PDC L",
+     "WINWING 3N PDC R"
     ],
     "note": "Boeing 737 EFIS control panel (3N = NG). Numbers from the X-Plane plugin Zibo PDC table (HID button index + 1), matching the WinWing 3N PDC manual drawing (e.g. WXR 3, VOR1/OFF/ADF1 10-12, CTR 17, TFC 18, STD 19, range 5-640 = 32-39). The MINS and BARO outer knobs are spring knobs: fast/slow left and right plus a center position (MINS 20/40/41/42/21, BARO 22/43/44/45/23). BB61 = captain (L), BB62 = first officer (R)."
    },
@@ -8208,7 +8373,9 @@
     ],
     "names": [
      "3M PDC Left",
-     "3M PDC Right"
+     "3M PDC Right",
+     "WINWING PDC-3M-L",
+     "WINWING PDC-3M-R"
     ],
     "note": "Boeing 737 MAX EFIS control panel (3M). Numbers from the X-Plane plugin Zibo PDC table (HID button index + 1): adds VSD (3) and RANGE -/+ (21/22) instead of a range selector. MINS / BARO spring knobs: 33/34/35/36/37 and 23/38/39/40/24. BB51 = captain (L), BB52 = first officer (R). Not cross-checked against the 3M manual drawing."
    },
@@ -8478,7 +8645,10 @@
     "names": [
      "MCDU-32-CAPTAIN",
      "MCDU-32-OBSERVER",
-     "MCDU-32-CO-PILOT"
+     "MCDU-32-CO-PILOT",
+     "WINWING MCDU-32-CAPTAIN",
+     "WINWING MCDU-32-CO-PILOT",
+     "WINWING MCDU-32-OBSERVER"
     ],
     "note": "Airbus MCDU. Numbers 1-74 from the WinWing MCDU-32 manual drawing; key labels from the X-Plane plugin FMC hardware key table (HID button index + 1). BB36 = captain, BB3E = first officer, BB3A = observer. Two blank keys (18, 28) left out."
    },
@@ -8940,7 +9110,10 @@
     "names": [
      "PFP3N Captain",
      "PFP3N First Officer",
-     "PFP3N Observer"
+     "PFP3N Observer",
+     "WINWING PFP-3N-CAPTAIN",
+     "WINWING PFP-3N-CO-PILOT",
+     "WINWING PFP-3N-OBSERVER"
     ],
     "note": "Boeing 737NG CDU. Numbers 1-71 from the WinWing PFP-3N manual drawing (LSK 1-12, BRT 18/19, EXEC 25, digits 30-41, letters 42-67, SP/DEL/'/'/CLR 68-71); key labels from the X-Plane plugin FMC hardware key table (HID button index + 1). BB35 = captain, BB39 = first officer, BB3D = observer."
    },
@@ -9396,7 +9569,10 @@
     "names": [
      "PFP4 Captain",
      "PFP4 First Officer",
-     "PFP4 Observer"
+     "PFP4 Observer",
+     "WINWING PFP-4-CAPTAIN",
+     "WINWING PFP-4-CO-PILOT",
+     "WINWING PFP-4-OBSERVER"
     ],
     "note": "Boeing 747 style CDU. Numbers from the X-Plane plugin FMC hardware key table (HID button index + 1); same 71-key layout as the PFP-3N (whose manual drawing matches the table), not cross-checked against the PFP-4 manual. BB38 = captain, BB40 = first officer, BB3C = observer."
    },
@@ -9852,7 +10028,10 @@
     "names": [
      "PFP7 Captain",
      "PFP7 First Officer",
-     "PFP7 Observer"
+     "PFP7 Observer",
+     "WINWING PFP-7-CAPTAIN",
+     "WINWING PFP-7-CO-PILOT",
+     "WINWING PFP-7-OBSERVER"
     ],
     "note": "Boeing 777 style CDU. Numbers from the X-Plane plugin FMC hardware key table (HID button index + 1); same 71-key layout as the PFP-3N (whose manual drawing matches the table), not cross-checked against the PFP-7 manual. BB37 = captain, BB3F = first officer, BB3B = observer."
    },
@@ -10303,7 +10482,9 @@
     "vidPids": [
      "4098:BB70"
     ],
-    "names": [],
+    "names": [
+     "WINWING ECAM"
+    ],
     "note": "A320 ECAM control panel. Numbers 1-22 from the WinWing 32 ECAM manual drawing, labels from the X-Plane plugin ToLiss ECAM table (HID button index + 1); 1, 3, 18 and 21 are blank keys."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmSVKEZ9bBsFaqNkaMhcpPao7E3z5EwYZumwt13fNLE44L",
@@ -10435,7 +10616,9 @@
     "vidPids": [
      "4098:BB80"
     ],
-    "names": [],
+    "names": [
+     "WINWING AGP"
+    ],
     "note": "A320 glareshield/centre panel (gear lever, autobrake, clock). Numbers from the X-Plane plugin ToLiss AGP table (HID button index + 1). BRK FAN and A/SKID are reported as two states each (1/2, 6/7); toggle direction names are assumed. Not cross-checked against the manual drawing."
    },
    "image": "https://eu.winctrl.com/static/ipfs/QmTc2ZEC5qPNpS9dgJASkchQAy3ukft8PzG9WMg6yHg7WT",
@@ -10609,7 +10792,9 @@
     "vidPids": [
      "4098:BB81"
     ],
-    "names": [],
+    "names": [
+     "WINCTRL 32 TCAS"
+    ],
     "note": "A320 ATC/TCAS panel. Numbers 1-24 from the WinWing 32 TCAS manual drawing, labels from the X-Plane plugin ToLiss TCAS table (HID button index + 1): keypad 1-7 = 1-7, 0 = 8, CLR = 9, IDENT = 10, XPDR STBY/AUTO/ON 11-13, SYS 1/2 14/15, ALT RPTG OFF/ON 16/17, THRT/ALL/ABV/BLW 18-21, TCAS STBY/TA/TA-RA 22-24."
    },
    "image": "https://eu.winctrl.com/static/ipfs/Qmb8qwthP9MxoJjcUrvyXQpikB8aaYxjdRMY2kz714hFy8",
@@ -10782,7 +10967,10 @@
     "names": [
      "RMP Left",
      "RMP Right",
-     "RMP Center"
+     "RMP Center",
+     "WINCTRL 32 RMP L",
+     "WINCTRL 32 RMP R",
+     "WINCTRL 32 RMP C"
     ],
     "note": "A320 radio management panel. Numbers from the X-Plane plugin ToLiss RMP table (HID button index + 1): 1 = frequency transfer, 2-14 = VHF1, VHF2, VHF3, LOAD (a newer-RMP key), HF1, HF2, AM, NAV, VOR, ILS, GLS, MLS, ADF; 15/16 large knob left/right, 17/18 small knob left/right, 19 knob push, 20/21 power ON/OFF. BB83 = L, BB84 = R, BB85 = C. Not cross-checked against the manual drawing."
    },
@@ -11251,17 +11439,22 @@
    "hand": "either",
    "identify": {
     "vidPids": [
-     "4098:B961"
+     "4098:B961",
+     "4098:B962"
     ],
-    "names": [],
-    "note": "Airbus A320-style tiller, left (captain) and right (first officer) versions with the same parts: tiller handle (+-75 deg) and PEDAL DISC button. 4098:B961 per the WinCtrl X-Plane plugin device table ('WINCTRL 32 NWS'); whether the L and R units report different PIDs is not known. The manuals (Winctrl Steering Handwheel Left/Right 1.0) give no axis letter or button number, so no inputs."
+    "names": [
+     "WINCTRL 32 NWS L",
+     "WINCTRL 32 NWS R"
+    ],
+    "note": "Airbus A320-style tiller, left (captain) and right (first officer) versions with the same parts: tiller handle (+-75 deg) and PEDAL DISC button. 4098:B961 per the WinCtrl X-Plane plugin device table ('WINCTRL 32 NWS'); 4098:B962 = the right (first officer) unit, B961 = left, with the USB names 'WINCTRL 32 NWS L' / 'WINCTRL 32 NWS R' (MobiFlight device definitions winwing_tiller_left/right). The manuals (Winctrl Steering Handwheel Left/Right 1.0) give no axis letter or button number, so no inputs."
    },
    "image": "https://eu.winctrl.com/static/ipfs/Qmc4Qaj2d9kbJS7NMWrG1szibXwdRebv9XJwDLT2hpxaW3",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=6245",
    "sources": [
     "https://eu.winctrl.com/static/ipfs/QmUio6d7HvAeeYGSxhBs7RNaUM4waaRvRhv2nvTzo1y3Ri",
     "https://eu.winctrl.com/static/ipfs/QmcW5ZWJhzpvm8UcnrQeHcZfyxh9w6hYv4RFaN9uQZYbKu",
-    "https://github.com/rswilem/winctrl-xplane-plugin/blob/HEAD/src/include/utils/usbdevice/usbdevice.cpp"
+    "https://github.com/rswilem/winctrl-xplane-plugin/blob/HEAD/src/include/utils/usbdevice/usbdevice.cpp",
+    "https://github.com/MobiFlight/MobiFlight-Connector/blob/main/src/MobiFlightConnector/Joysticks/winwing/winwing_tiller_right.joystick.json"
    ],
    "confidence": "low",
    "axes": [
@@ -11423,15 +11616,20 @@
    "kind": "panel",
    "hand": "none",
    "identify": {
-    "vidPids": [],
-    "names": [],
+    "vidPids": [
+     "4098:BE03"
+    ],
+    "names": [
+     "WINWING F18 STARTUP PANEL"
+    ],
     "note": "Backlit F/A-18C left-console style side panel that is factory-mounted on the Super Taurus (T1) throttle base but has its own USB port (and a backup power port), so it is its own USB device (SimAppPro firmware names 18C_STARTUP_PANEL / F18_STARTUP_PANEL). Numbers 1-57 and the two knobs (Rx, Ry, 0-4095) from the WinWing '18 HANDLE + T1 Super Taurus Throttle Base' manual V1.1 section 3 drawing, read as: number above a switch = up, beside = center, below = down; 40/41/42 = ENG CRANK left/center/right (drawn with arrows next to the APU switch 38/39 and the APU READY LED); 54-57 = 4-position rotary. The drawing prints no other switch names, so the remaining switches carry no label. USB id not found."
    },
    "image": "https://eu.winctrl.com/static/ipfs/Qme8tA2Cn9ZTmRv6RvXkLdicZALDTNuEvFkfNdZjqK4mpM",
    "productUrl": "https://eu.winctrl.com/view/goods-details.html?id=308",
    "sources": [
     "https://eu.winctrl.com/static/ipfs/QmUEYDYP9aKhG6FBFbi4cEsk9xgdPeH6sTmvY4umurWEmM",
-    "https://eu.winctrl.com/static/assets/files/en/T1-SUPER%20TARUS%20THROTTLE%20BASE-MANUAL%20EN%20V%201.1.pdf"
+    "https://eu.winctrl.com/static/assets/files/en/T1-SUPER%20TARUS%20THROTTLE%20BASE-MANUAL%20EN%20V%201.1.pdf",
+    "https://linux-hardware.org/?id=usb:4098-be03"
    ],
    "confidence": "high",
    "axes": [

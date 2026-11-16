@@ -17,20 +17,23 @@ launcher yourself. Falcon 4.0 and Allied Force are not supported; use Falcon BMS
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E["engine bms export"]
-  E --> X["User / Config /<br/>Setup.v100.&lt;device&gt; {GUID}.xml<br/>(one per device)"]
-  E --> U["Falcon BMS User.cfg<br/>(above the launcher's block),<br/>Feedback.ini, pilot file"]
-  X --> L["Launcher: Launch"]
-  U --> L
-  L --> K["BMS - Auto.key<br/>(buttons, hats)"]
-  L --> A["axismapping.dat<br/>joystick.cal"]
-  K --> G["Falcon BMS"]
-  A --> G
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep BMS and its launcher closed
+:::
+
+**Before**: close BMS and its launcher.
+
+**Then**: start the launcher and press **Launch**. Only then does the launcher build the files BMS reads.
+
+Did you bind buttons in Falcon BMS before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Falcon BMS
 
 - **Import**: the buttons, hats and axes of your devices come in from the launcher's device files, with the shift
@@ -57,9 +60,9 @@ On the **Relations** page the BMS callback of a relation sits next to the same f
 ## Export to Falcon BMS
 
 1. **Close BMS and its launcher.** JoyPro refuses while `Falcon BMS.exe` or `FalconBMS_Alternative_Launcher.exe` runs.
-2. Open **Export**. The Falcon BMS tile shows how many of its relations are bound.
+2. Open **Export**. The Falcon BMS card shows how many of its relations are bound.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your devices.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -129,7 +132,7 @@ file of that model, else an empty file in the launcher's layout.
 - **Granularity**: global, one setup for all aircraft.
 - **Axes** (axis model `bms`): invert, the launcher's dead zone step (None, Small, Medium, Large) and saturation step,
   one-sided axes (throttle, toe brakes, brightness, volumes) without a dead zone; for pitch, roll, yaw and cursor X/Y
-  also the exponential curve (0 to 100) and exponential saturation (0 to 99) in User.cfg. A curve set for all games
+  also the exponential curve (0 to 100) and exponential saturation (0 to 99) in User.cfg. The **Default curve**
   sets the nearest launcher steps but no exponent.
 - **Throttle detents**: the AB and IDLE detent positions per throttle device, in its device file.
 - **Game settings** (Settings > **Force feedback settings of the games**): centring spring, runway rumble, anti-jitter
@@ -144,6 +147,17 @@ file of that model, else an empty file in the launcher's layout.
 
 :::layer technical
 ## Inside the BMS integration
+
+```mermaid
+%% caption: JoyPro writes the launcher's device files (User / Config / Setup.v100, one per device), User.cfg (above the launcher's block), Feedback.ini and the pilot file. Launch in the launcher turns them into the files BMS reads (BMS - Auto.key, axismapping.dat, joystick.cal).
+flowchart LR
+  P["Your profile"] --> E["engine bms export"]
+  E --> X["Device files"]
+  E --> U["User.cfg,<br/>Feedback.ini"]
+  X --> L["Launcher:<br/>Launch"]
+  U --> L
+  L --> G["Falcon BMS"]
+```
 
 Code: `engine\Games\FalconBmsIntegration.cs`, axis model `bms`, settings model `FalconBMS`; telemetry
 `gui\JoyPro.Ffb.Core\Telemetry\Bms\BmsTelemetry.cs`.

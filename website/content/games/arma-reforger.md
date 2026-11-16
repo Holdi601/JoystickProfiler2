@@ -17,17 +17,24 @@ rules that say which device is joystick 0, 1, 2 or 3.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(helicopter relations)"] --> E["engine reforger export"]
-  E --> J["customInputConfigs /<br/>JoyPro.conf<br/>(JoyPro's own preset)"]
-  E --> R["ReforgerEngineSettings.conf<br/>device order: slots 0 to 3"]
-  J --> U["You, once: Settings > Controllers<br/>> Joystick preset = JoyPro"]
-  R --> U
-  U --> G["Restart the game:<br/>your binds are active"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep Arma Reforger closed
+:::
+
+**Before**: start Arma Reforger once and open **Settings > Controllers**. Then close the game.
+
+**Then, once**: in the game, open **Settings > Controllers**. Under **Joystick preset**, pick **JoyPro**.
+Restart the game. After later exports a restart is enough.
+
+Did you bind buttons in Arma Reforger before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Arma Reforger
 
 - **Import**: the helicopter binds of the joystick preset come into your profile, with their multiplier and invert.
@@ -55,9 +62,9 @@ the Export page. The vanilla game has helicopters only (UH-1H, Mi-8); airplane a
 
 1. **Close Arma Reforger.** The game writes its settings when you change them, so JoyPro refuses to write while it
    runs.
-2. Open **Export** and tick the Arma Reforger tile.
+2. Open **Export** and tick the Arma Reforger card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -163,6 +170,16 @@ A block left without sources is removed.
 
 :::layer technical
 ## Inside the Reforger integration
+
+```mermaid
+%% caption: What the export writes. You pick the JoyPro preset in the game once; after every export a restart is enough.
+flowchart LR
+  P["Your profile<br/>(helicopter relations)"] --> E["engine reforger export"]
+  E --> J["customInputConfigs /<br/>JoyPro.conf<br/>(JoyPro's own preset)"]
+  E --> R["ReforgerEngineSettings.conf<br/>device order: slots 0 to 3"]
+  J --> U["You, once: Settings > Controllers<br/>> Joystick preset = JoyPro;<br/>then restart the game"]
+  R --> U
+```
 
 Code: `engine\Games\ArmaReforgerIntegration.cs`, `engine\Games\ReforgerCatalogSource.cs`, `engine\Games\EnfusionPak.cs`,
 the axis model `engine\AxisModels\ArmaReforger.cs` and the settings model `engine\FfbModels\ArmaReforger.cs`.

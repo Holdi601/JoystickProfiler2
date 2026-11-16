@@ -83,7 +83,7 @@ Three columns.
 
 The printable pictures, as before (devices, games, aircraft, what to make, look, output folder, preview gallery).
 
-- A device needs a layout file: the user's own (JoyPro 1, his picture); else the device's sheet of tables and lines
+- A device needs a layout file: the user's own (JoyPro 1, its picture); else the device's sheet of tables and lines
   (the picture last shown for it on the Device pictures section, saved before the export); else the picked one.
 - **One page with all devices** (per aircraft and for the overview; `--combine`). Sheets are printed 3508 px wide (A4
   landscape at 300 dpi). The page colour of the sheet style decides the grey or the white page (`--style`).

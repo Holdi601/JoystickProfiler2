@@ -25,6 +25,7 @@ namespace JoyPro.Setup
                 { "PreferFewer", plan.PreferFewer },
                 { "Realism", plan.Realism },
                 { "PhaseLayers", plan.PhaseLayers },
+                { "HeadTracking", plan.HeadTracking },
                 { "Seed", plan.Seed },
                 { "CockpitSource", plan.CockpitSource },
                 { "Devices", plan.Devices.Select(DeviceObject).Cast<object>().ToList() },
@@ -37,7 +38,7 @@ namespace JoyPro.Setup
                 { "NotPlaced", plan.NotPlaced.Select(n => (object)new Dictionary<string, object>
                     {
                         { "Relation", n.Relation }, { "Function", n.Function }, { "Category", n.Category }, { "Importance", n.Importance },
-                        { "Aircraft", n.Aircraft.Cast<object>().ToList() }, { "Reason", n.Reason }
+                        { "Aircraft", n.Aircraft.Cast<object>().ToList() }, { "Reason", n.Reason }, { "Essential", n.Essential }
                     }).ToList() },
                 { "Quality", plan.Quality.Select(q => (object)new Dictionary<string, object>
                     {
@@ -61,7 +62,7 @@ namespace JoyPro.Setup
                 { "Device", d.Device }, { "Model", d.Model }, { "ModelId", d.ModelId }, { "Kind", d.Kind }, { "Hand", d.Hand }, { "Connected", d.Connected },
                 { "Generic", d.Generic }, { "ForceFeedback", d.ForceFeedback }, { "NeedsGrip", d.NeedsGrip }, { "VidPid", d.VidPid }, { "Buttons", d.Buttons },
                 { "Hats", d.Hats }, { "Axes", d.Axes }, { "ProfileUses", d.ProfileUses }, { "Role", d.Role }, { "ProposedRole", d.ProposedRole }, { "Reason", d.Reason },
-                { "Grip", d.Grip },
+                { "Grip", d.Grip }, { "Assumed", d.Assumed },
                 { "Grips", d.Grips.Select(g => (object)new Dictionary<string, object> { { "Id", g.Id }, { "Name", g.Name }, { "Image", g.Image } }).ToList() }
             };
         }
@@ -75,7 +76,7 @@ namespace JoyPro.Setup
                 { "Nodes", r.Nodes.Select(n => (object)new Dictionary<string, object> { { "Game", n.Game }, { "Action", n.Action }, { "Aircraft", n.Aircraft } }).ToList() },
                 { "Aircraft", r.Aircraft.Cast<object>().ToList() }, { "Overlap", r.Overlap.Cast<object>().ToList() }, { "Importance", r.Importance },
                 { "Device", r.Device }, { "Input", r.Input }, { "Control", r.Control }, { "Label", r.Label }, { "Modifier", r.Modifier }, { "Phase", r.Phase }, { "Score", r.Score },
-                { "RealMatch", r.RealMatch }, { "Reason", r.Reason }
+                { "RealMatch", r.RealMatch }, { "Reason", r.Reason }, { "Share", r.Share }
             };
         }
 
@@ -99,6 +100,7 @@ namespace JoyPro.Setup
                 PreferFewer = Bool(root, "PreferFewer"),
                 Realism = Number(root, "Realism", 0.5),
                 PhaseLayers = Text(root, "PhaseLayers"),
+                HeadTracking = Text(root, "HeadTracking"),
                 Seed = (int)Number(root, "Seed", 1),
                 CockpitSource = Text(root, "CockpitSource"),
                 Rules = Strings(root, "Rules"),
@@ -112,7 +114,8 @@ namespace JoyPro.Setup
                     Device = Text(d, "Device"), Model = Text(d, "Model"), ModelId = Text(d, "ModelId"), Kind = Text(d, "Kind"), Hand = Text(d, "Hand"),
                     Connected = Bool(d, "Connected"), Generic = Bool(d, "Generic"), ForceFeedback = Bool(d, "ForceFeedback"), NeedsGrip = Bool(d, "NeedsGrip"),
                     VidPid = Text(d, "VidPid"), Buttons = (int)Number(d, "Buttons", 0), Hats = (int)Number(d, "Hats", 0), Axes = (int)Number(d, "Axes", 0),
-                    ProfileUses = (int)Number(d, "ProfileUses", 0), Role = Text(d, "Role"), ProposedRole = Text(d, "ProposedRole"), Reason = Text(d, "Reason"), Grip = Text(d, "Grip")
+                    ProfileUses = (int)Number(d, "ProfileUses", 0), Role = Text(d, "Role"), ProposedRole = Text(d, "ProposedRole"), Reason = Text(d, "Reason"), Grip = Text(d, "Grip"),
+                    Assumed = Bool(d, "Assumed")
                 };
                 foreach (IDictionary<string, object> g in Objects(d, "Grips"))
                     device.Grips.Add(new SetupGripChoice { Id = Text(g, "Id"), Name = Text(g, "Name"), Image = Text(g, "Image") });
@@ -134,7 +137,7 @@ namespace JoyPro.Setup
                     IsAxis = Bool(r, "IsAxis"), Existing = Bool(r, "Existing"), Kept = Bool(r, "Kept"), Removed = Bool(r, "Removed"),
                     Aircraft = Strings(r, "Aircraft"), Overlap = Strings(r, "Overlap"), Importance = Number(r, "Importance", 0),
                     Device = Text(r, "Device"), Input = Text(r, "Input"), Control = Text(r, "Control"), Label = Text(r, "Label"), Modifier = Text(r, "Modifier"), Phase = Text(r, "Phase"),
-                    Score = Number(r, "Score", 0), RealMatch = Number(r, "RealMatch", 0), Reason = Text(r, "Reason")
+                    Score = Number(r, "Score", 0), RealMatch = Number(r, "RealMatch", 0), Reason = Text(r, "Reason"), Share = Text(r, "Share")
                 };
                 foreach (IDictionary<string, object> n in Objects(r, "Nodes"))
                     relation.Nodes.Add(new SetupNode { Game = Text(n, "Game"), Action = Text(n, "Action"), Aircraft = Text(n, "Aircraft") });
@@ -145,7 +148,7 @@ namespace JoyPro.Setup
                 plan.NotPlaced.Add(new SetupNotPlaced
                 {
                     Relation = Text(n, "Relation"), Function = Text(n, "Function"), Category = Text(n, "Category"), Importance = Number(n, "Importance", 0),
-                    Aircraft = Strings(n, "Aircraft"), Reason = Text(n, "Reason")
+                    Aircraft = Strings(n, "Aircraft"), Reason = Text(n, "Reason"), Essential = Bool(n, "Essential")
                 });
             }
             foreach (IDictionary<string, object> q in Objects(root, "Quality"))
@@ -235,7 +238,7 @@ namespace JoyPro.Setup
             HashSet<string> clash = ClashingLayers(plan, modifier ?? string.Empty);
             return plan.Relations.Where(r => r != relation && r != except && !r.Removed && r.Device == device &&
                                              string.Equals(r.Input, input, StringComparison.OrdinalIgnoreCase) &&
-                                             clash.Contains(r.Modifier ?? string.Empty) && Overlap(r, relation)).ToList();
+                                             clash.Contains(r.Modifier ?? string.Empty) && Clash(r, relation)).ToList();
         }
 
         // The layers that clash on one input: the same layer, and the normal layer with the mode switch's phase layers (a
@@ -253,6 +256,31 @@ namespace JoyPro.Setup
                 layers.Add(string.Empty);
             }
             return layers;
+        }
+
+        // Two relations that must not share an input: Overlap, unless they meet only through a DCS input layer and do the
+        // same thing (SetupPlanner.Compatible: the layer's throttle and the aircraft's throttle on one lever).
+        // The planner's shared gun trigger (SetupPlanner.SharedGunTrigger): on a one-stage trigger - or a yoke button of a
+        // device without a trigger - the first and the second stage gun of the modules share the input.
+        private static bool SharedGun(SetupPlan plan, SetupPlanRelation a, SetupPlanRelation b)
+        {
+            Func<string, bool> gun = f => f == "trigger1ststage" || f == "trigger2ndstage";
+            if (!gun(a.Function ?? string.Empty) || !gun(b.Function ?? string.Empty) || string.Equals(a.Function, b.Function, StringComparison.OrdinalIgnoreCase))
+                return false;
+            string control = a.Control ?? string.Empty;
+            bool trigger = control == "stick.trigger.stage1" || control == "yoke.trigger.stage1";
+            bool twoStage = plan.Inputs.Any(i => i.Device == a.Device && (i.Control ?? string.Empty).EndsWith(".trigger.stage2", StringComparison.Ordinal));
+            bool withTrigger = plan.Inputs.Any(i => i.Device == a.Device && (i.Control ?? string.Empty).IndexOf(".trigger.", StringComparison.Ordinal) >= 0);
+            return (trigger && !twoStage) || (control.StartsWith("yoke.button.", StringComparison.Ordinal) && !withTrigger);
+        }
+
+        public static bool Clash(SetupPlanRelation a, SetupPlanRelation b)
+        {
+            if (!Overlap(a, b))
+                return false;
+            if (a.Aircraft.Count == 0 || b.Aircraft.Count == 0 || a.Aircraft.Intersect(b.Aircraft, StringComparer.OrdinalIgnoreCase).Any())
+                return true;
+            return !SetupPlanner.Compatible(a.Share, b.Share);
         }
 
         public static bool Overlap(SetupPlanRelation a, SetupPlanRelation b)
@@ -346,7 +374,7 @@ namespace JoyPro.Setup
                 {
                     for (int j = i + 1; j < list.Count; j++)
                     {
-                        if ((list[i].Kept && list[j].Kept) || !Overlap(list[i], list[j]))
+                        if ((list[i].Kept && list[j].Kept) || !Clash(list[i], list[j]) || SharedGun(plan, list[i], list[j]))
                             continue;
                         problems.Add("\"" + list[i].Name + "\" and \"" + list[j].Name + "\" share " + Where(list[i]) + " in the same aircraft.");
                     }
@@ -362,7 +390,7 @@ namespace JoyPro.Setup
                 foreach (SetupPlanRelation layered in group.Where(r => r.Modifier.Length > 0))
                 {
                     string layerPhase = plan.Modifiers.Where(m => m.Name == layered.Modifier).Select(m => m.Phase).FirstOrDefault() ?? string.Empty;
-                    SetupPlanRelation other = normal.FirstOrDefault(r => !(r.Kept && layered.Kept) && Overlap(r, layered) && !(!r.Kept && r.Phase.Length > 0 && r.Phase != layerPhase));
+                    SetupPlanRelation other = normal.FirstOrDefault(r => !(r.Kept && layered.Kept) && Clash(r, layered) && !(!r.Kept && r.Phase.Length > 0 && r.Phase != layerPhase));
                     if (other != null)
                         problems.Add("\"" + other.Name + "\" on " + Where(other, false) + " would not work while the mode switch is on \"" + layered.Modifier + "\" (\"" + layered.Name + "\").");
                 }

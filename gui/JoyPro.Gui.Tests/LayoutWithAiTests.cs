@@ -530,8 +530,20 @@ public sealed class LayoutWithAiTests
         SetupPlanRelation yaw = Assert.Single(ask.Plan.Placed, r => r.Function == "space_yaw");
         Assert.Equal(left, yaw.Device);
         Assert.Equal("stick.axis.twist", yaw.Control);
-        SetupPlanRelation vertical = Assert.Single(ask.Plan.Placed, r => r.Function == "space_strafe_ver");
-        Assert.NotEqual("stick.axis.twist", vertical.Control);
+        // No translation on the twist that now holds the yaw. Up / down strafe is a centred rate: only on a spring-centred
+        // axis (an "extra" axis that stays where it is left would drift), and the A1 ministick reports its hat mode by default
+        // (one mode per thumb stick, review 5 M1) - with roll, pitch and twist of the left stick taken, it has no axis left
+        // and the plan lists it as not placed instead of putting it somewhere unsafe.
+        Assert.DoesNotContain(ask.Plan.Placed, r => r.Function.StartsWith("space_strafe", StringComparison.Ordinal) && r.Device == left && r.Control == "stick.axis.twist");
+        SetupPlanRelation? vertical = ask.Plan.Placed.SingleOrDefault(r => r.Function == "space_strafe_ver");
+        if (vertical != null)
+        {
+            Assert.False(vertical.Device == left && vertical.Control == "stick.axis.twist");
+            Assert.True(SetupPlanner.CentringAxis(vertical.Control) || SetupPlanner.CentringAxis(ask.Plan.Inputs.First(i => i.Device == vertical.Device && i.Input == vertical.Input)),
+                "up / down strafe on an axis that does not centre: " + vertical.Control);
+        }
+        else
+            Assert.Contains(ask.Plan.NotPlaced, n => n.Function == "space_strafe_ver" && n.Reason.Length > 0);
         Assert.DoesNotContain(ask.Plan.Placed, r => r.Function == "space_yaw" && r.Device.StartsWith("T-Rudder", StringComparison.Ordinal));
         // Throttle and left-hand stick on a set without a throttle: the note says so.
         Ask? both = AskEngine("space-dual-sticks", "throttle and left-hand stick");

@@ -28,6 +28,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <ApplicationIcon>assets\engine_console.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -107,6 +108,7 @@
     <Compile Include="CoreInternalDataManagement.cs" />
     <Compile Include="CoreLoadCorrectionGuard.cs" />
     <Compile Include="EngineMoveToInput.cs" />
+    <Compile Include="EngineRelationItemTransfer.cs" />
     <Compile Include="EngineRelationDuplicates.cs" />
     <Compile Include="EngineCheckConflicts.cs" />
     <Compile Include="EngineIgnoredWarnings.cs" />
@@ -115,6 +117,7 @@
     <Compile Include="EngineRelationDuplicatesCli.cs" />
     <Compile Include="EngineRelationMergeCopies.cs" />
     <Compile Include="EngineSampler.cs" />
+    <Compile Include="EngineProcessPriority.cs" />
     <Compile Include="ObjectGraphCloner.cs" />
     <Compile Include="EngineProfileCache.cs" />
     <Compile Include="EngineLoadCorrectionCache.cs" />
@@ -148,12 +151,19 @@
     <Compile Include="EngineDcsRefresh.Parallel.cs" />
     <Compile Include="EngineDcsDefaultsStrip.cs" />
     <Compile Include="EngineAutoGroup.cs" />
+    <Compile Include="EngineBindGuard.cs" />
+    <Compile Include="EngineSetupEvalRandom.cs" />
+    <Compile Include="EngineSetupEvalEssentials.cs" />
+    <Compile Include="EngineSetupEvalPlacement.cs" />
     <Compile Include="EngineAutoAddRepair.cs" />
     <Compile Include="EngineNlGroup.cs" />
     <Compile Include="EngineLlm.cs" />
     <Compile Include="EngineLlmServer.cs" />
     <Compile Include="EngineAutoAssign.cs" />
     <Compile Include="EngineSetupWizard.cs" />
+    <Compile Include="EngineSetupEval.cs" />
+    <Compile Include="EngineSetupEvalGates.cs" />
+    <Compile Include="EngineSetupEvalPad.cs" />
     <Compile Include="SetupWizard\SetupModel.cs" />
     <Compile Include="SetupWizard\SetupRoles.cs" />
     <Compile Include="SetupWizard\SetupCockpits.cs" />
@@ -212,6 +222,9 @@
     <Compile Include="EngineDtos.cs" />
     <Compile Include="DbUpdateCheck.cs" />
     <Compile Include="DcsModInputs.cs" />
+    <Compile Include="DcsKneeboardFolders.cs" />
+    <Compile Include="EngineLayoutKneeboard.cs" />
+    <Compile Include="EngineKneeboardPage.cs" />
     <Compile Include="DcsFoundCommands.cs" />
     <Compile Include="DeviceModelIdentity.cs" />
     <Compile Include="DeviceReference\MiniJson.cs" />
@@ -287,6 +300,7 @@
     <Compile Include="VJoy\VJoyMapping.cs" />
     <Compile Include="VJoy\VJoyTunnel.cs" />
     <Compile Include="VJoy\XboxMapping.cs" />
+    <Compile Include="VJoy\XboxPadAutoSetup.cs" />
     <Compile Include="VJoy\VirtualFunctions.cs" />
     <Compile Include="VJoy\VirtualFunctionRuntime.cs" />
     <Compile Include="VJoy\GameInputLimits.cs" />
@@ -433,6 +447,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\engine_console.ico" />
+    <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <!-- engine games support: the hand-kept verification notes (docs/games/support.md) -->

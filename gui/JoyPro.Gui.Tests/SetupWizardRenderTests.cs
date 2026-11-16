@@ -66,7 +66,7 @@ public sealed class SetupWizardRenderTests
         vm.PriorityDownCommand.Execute(null);
         vm.Modifiers = 1;
         vm.Realism = 30;
-        Assert.Contains("Group by function", vm.RealismText);
+        Assert.Contains("Same button for the same job", vm.RealismText);
 
         // 4 plan: the engine is asked with exactly these choices.
         Wait(vm.NextCommand.ExecuteAsync(null));

@@ -135,7 +135,7 @@ namespace JoyPro.DeviceReference
         }
 
         // The local copy of a verified photo in a folder, or null: the GUI's store (index.json: Url, File, Sha256 relative
-        // to the folder) or the maintainer's archive (sha256\<sha256>.<ext>, tools\backup_cockpit_photos.ps1).
+        // to the folder) or a photo archive (sha256\<sha256>.<ext>, tools\backup_cockpit_photos.ps1).
         public static string LocalFile(string folder, CockpitPhoto photo)
         {
             if (photo == null || string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))

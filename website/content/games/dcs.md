@@ -17,17 +17,51 @@ files. Nothing runs while you fly: DCS reads its own files as always.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E["engine dcs export<br/>(ticked aircraft)"]
-  C[("Clean profiles<br/>DCS defaults per aircraft<br/>and device type")] --> E
-  E --> D["&lt;aircraft&gt; / joystick / &lt;device&gt;.diff.lua<br/>only the differences<br/>from DCS's defaults"]
-  E --> J[".jp beside it<br/>(names, groups)"]
-  E --> M["&lt;aircraft&gt;\modifiers.lua"]
-  D --> G["DCS: Options > Controls<br/>(per aircraft)"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep DCS closed
+:::
+
+**Before**: if the DCS card on the Start page asks for a command list, press **Build List** first.
+
+**Then**: start DCS. Your binds are in **Options > Controls**, for each aircraft.
+
+Did you bind buttons in DCS before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
+## Where should functions go?
+
+The setup asks one big question, with a slider. It matters most in DCS, because you fly many different aircraft.
+
+| Left end | Right end |
+|---|---|
+| **Same button for the same job in every aircraft** | **Where the real aircraft has it** |
+| Gear is on the same button in every plane. Easy to learn. | Each button does what the real stick's button there does. |
+
+The quick setup uses your last choice (the middle at first). The gun and the throttle never move. See
+[[page:how-do-i/where-functions-go.html|Where should functions go?]].
+
+## Look around without head tracking
+
+No TrackIR, no VR? The setup puts looking around on one hat of your stick: forward, back, left and right. A thumb
+stick on your throttle can get the look axes. See
+[[page:how-do-i/head-tracking.html|Head tracking and looking around]].
+
+The setup asks one question first: **Do you use head tracking or VR?** **Yes** (head tracking, face tracking, Tobii
+or VR, or you plan to get one): no view buttons on your devices, only "recenter the view". **No**: looking around gets
+a good place on a hat of your stick.
+
+## Your binds on the kneeboard
+
+DCS can show a page per aircraft on its kneeboard. JoyPro puts a list of your buttons there: open **Layout**, press
+**Cheat sheets**, then **Put on the kneeboard**. In the cockpit, open the kneeboard: your page is there. See
+[[page:how-do-i/dcs-kneeboard.html|See my binds on the DCS kneeboard]].
+
 ## What JoyPro does for DCS
 
 - **Import**: every aircraft's binds on your sticks, throttles and pedals come into your profile, with your modifiers
@@ -55,12 +89,12 @@ the [[page:flows/relations.html|relations flow]] to join actions of several airc
 ## Export to DCS
 
 1. **Close DCS.** JoyPro refuses to write while DCS runs, because DCS writes its files when it quits.
-2. Open **Export**. On the DCS tile, **Aircraft...** lists every aircraft of your profile: only ticked aircraft are
+2. Open **Export**. On the DCS card, **Aircraft...** lists every aircraft of your profile: only ticked aircraft are
    written, the others keep their files exactly as they are.
 3. Keep the first choice, **Replace on my devices** with **Also clear my other devices**, if JoyPro is where you set
-   up your sticks. Press **Export now** on the DCS tile.
+   up your sticks. Press **Export now** on the DCS card.
 
-![The DCS tile with its aircraft list: only ticked aircraft are written](shot:export-dcs-aircraft)
+![The DCS card with its aircraft list: only ticked aircraft are written](shot:export-dcs-aircraft)
 
 :::ingame What you see in DCS
 Start DCS and open **Options > Controls**, then pick the aircraft at the top. Your binds are in your device's column
@@ -81,7 +115,7 @@ modifier list. Axis curves show in **Axis Tune** of the axis. Other aircraft you
 ## Common pitfalls
 
 - **"DCS is running"**: close DCS (also the launcher's background process) and export again.
-- **An aircraft kept its old binds**: it was not ticked under **Aircraft...** on the DCS tile, or the profile has no
+- **An aircraft kept its old binds**: it was not ticked under **Aircraft...** on the DCS card, or the profile has no
   relation for it.
 - **A stick has binds you never made**: these are DCS's default binds on a device JoyPro did not write. Tick **Also
   clear my other devices**, or see *Default binds* below.
@@ -173,21 +207,23 @@ itself, both off unless you switch them on: strip the defaults from every joysti
 integrity check of servers that enforce it; **Restore DCS files** puts every original back. After a DCS update JoyPro
 applies a switched-on option again at its start.
 
-```mermaid
-flowchart TD
-  F["Device file of one aircraft"] --> A["Active in DCS =<br/>defaults (clean profile)<br/>- removed + added"]
-  A --> M{"Export mode"}
-  M --> S["Binds that shall be active"]
-  S --> W["Write only the difference:<br/>added = not a default<br/>removed = a default you do not want<br/>changed = a default with other tuning"]
-  W --> X["A bind equal to a default<br/>is not written<br/>(listed in the .jp only)"]
-```
+A device file holds only the differences from DCS's defaults: active in DCS = the defaults, minus what the file
+removes, plus what it adds. Every export mode decides which binds shall be active; JoyPro then writes only the
+difference. An example in one aircraft:
+
+| In the aircraft | What the device file gets |
+|---|---|
+| A DCS default bind you keep | nothing: it is a default already (it is listed in the `.jp` only) |
+| A DCS default bind you do not want | a "removed" line |
+| Your own bind that is not a default | an "added" line |
+| A default bind with other tuning (curve, invert) | a "changed" line |
 
 ## Aircraft, curves, force feedback
 
 - **Per aircraft**: every relation keeps its action per aircraft; the export writes the ticked aircraft only.
 - **Axis curves**: dead zone, saturation X and Y, curvature or an 11-point user curve, invert and slider, written per
-  aircraft as DCS's own filter (what **Axis Tune** shows). A curve can be set for all games, for DCS or for one
-  aircraft ([[page:gui/binds.html|Binds]] > Axis response).
+  aircraft as DCS's own filter (what **Axis Tune** shows). The **Default curve** counts for every game; a curve
+  can also be set for DCS or for one aircraft ([[page:gui/binds.html|Binds]] > Axis response).
 - **In-game force feedback**: Settings > DCS force feedback sets swap axis, invert X and invert Y per device
   ([[cli:dcs ffb set]]). Telemetry force feedback: the [[gui:ffb|Force Feedback]] page installs JoyPro's hook
   `Saved Games\DCS\Scripts\Hooks\JoyProFfb.lua` (DCS must be closed; other scripts such as SRS or Tacview keep working).
@@ -199,6 +235,17 @@ flowchart TD
 
 :::layer technical
 ## Inside the DCS integration
+
+```mermaid
+%% caption: Export writes the ticked aircraft: per aircraft and device only the differences from DCS's defaults (device.diff.lua, from the clean profiles), a .jp file with names and groups beside it, and modifiers.lua. The kneeboard pages (Saved Games / DCS / Kneeboard) come from the Layout page, not from Export.
+flowchart LR
+  P["Your profile"] --> E["engine dcs export"]
+  C[("Clean profiles<br/>(DCS defaults)")] --> E
+  E --> D["device.diff.lua<br/>+ .jp"]
+  E --> M["modifiers.lua"]
+  D --> G["DCS: Options ><br/>Controls"]
+  L["Layout: Put on<br/>the kneeboard"] --> K["Kneeboard<br/>pages"]
+```
 
 Code: `engine\EngineDcsImport.cs`, `engine\EngineDcsExport.cs`, `engine\EngineDcsExport.Modes.cs`,
 `engine\EngineDcsRefresh.cs`, `engine\DcsDeviceNames.cs`, `engine\DcsCommandNames.cs`, `engine\EngineDcsDefaultsStrip.cs`.

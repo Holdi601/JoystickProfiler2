@@ -52,7 +52,7 @@ public sealed partial class FfbGraphEditorViewModel : ObservableObject
         new(NodeKind.Trim, "Input", "Trim (spring centre)"),
         new(NodeKind.Invert, "Direction", "Invert (flip direction)"),
         new(NodeKind.Group, "Combine", "Group (several wires)"),
-        new(NodeKind.Add, "Maths", "Add"),
+        new(NodeKind.Add, "Maths", "Add (sum)"),
         new(NodeKind.Multiply, "Maths", "Multiply"),
         new(NodeKind.ScaleOffset, "Maths", "Scale and offset"),
         new(NodeKind.Clamp, "Maths", "Clamp"),

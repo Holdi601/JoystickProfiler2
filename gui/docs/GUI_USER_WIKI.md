@@ -553,6 +553,7 @@ Extras that run inside the virtual joystick, between your devices and what the g
 | ⇔ Axis ends to buttons | a button at each end of an axis | throttle at idle presses a button |
 | ✛ Axes to hat | a mini stick as an 8- or 4-way hat | slew stick as hat |
 | ± Buttons to axis | two buttons move an axis at a speed, optional spring back | trim, zoom |
+| ⊹ Hat to axes | a hat as two axes: a direction holds its axis out while held | look around on a hat (a pad's right stick) |
 | ⟳ Axis to encoder pulses | turning an axis gives up/down pulses | radio or altimeter knob |
 | » Turbo | repeats a press while held (or until pressed again) | countermeasure bursts |
 | ▶ Macro | one press plays presses with delays | start-up sequence |

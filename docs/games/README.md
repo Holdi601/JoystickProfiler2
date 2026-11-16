@@ -41,10 +41,10 @@ Measured with a release-like engine folder (game data removed by `tools/ReleaseC
 | Game | Built by | Source on the user's PC | Before | After | Dev | Gaps left |
 |---|---|---|---|---|---|---|
 | DCS World | `dcs refresh id` + `dcs refresh clean` (headless Lua) | the DCS install's input Lua files, run by its own `luae.exe` in a temporary Saved Games folder | 92 html, 1027 / 89 clean profiles | (not rerun, unchanged) | 119 html, 1145 / 118 | only the installed modules get lists (correct) |
-| IL-2 Great Battles | `db refresh-il2` | `data\input\*.actions` the game writes | 376 | 376 | 450 | the game writes only actions that have an input; the 74 others are only in the maintainer's development list (not shipped) and are not rebuilt |
+| IL-2 Great Battles | `db refresh-il2` | `data\input\*.actions` the game writes | 376 | 376 | 450 | the game writes only actions that have an input; the 74 others are only in the development list (not shipped) and are not rebuilt |
 | IL-2 Series: Korea | `il2korea refresh-db` | `general.actions`; titles from IL-2 GB's built list or, without it, IL-2 GB's own `data\input\*.actions`; JoyPro's own wording for the rest | 318 (91 titles were ids) | 318 (the cryptic ids get JoyPro's wording) | 378 | Korea's own texts are in its `.gtp` archives, which JoyPro does not read; 60 actions without an input are not in `general.actions` |
 | Star Citizen | `db refresh-starcitizen` | `Data.p4k` (defaultProfile.xml) and user profiles | 1103 | 1103 | 1103 | — |
-| War Thunder | `warthunder refresh-db` | `gui.vromfs.bin` / `lang.vromfs.bin` **by default** (user decision 2026-10-12); `--no-game-archives` (Settings > Games) = JoyPro's own list | 116 | 290 | 290 | no base preset table (exports write tuned attributes explicitly) |
+| War Thunder | `warthunder refresh-db` | `gui.vromfs.bin` / `lang.vromfs.bin` **by default**; `--no-game-archives` (Settings > Games) = JoyPro's own list | 116 | 290 | 290 | no base preset table (exports write tuned attributes explicitly) |
 | X-Plane 12 / 11 | `xplane12` / `xplane11 refresh-db` | `Resources\plugins\Commands.txt` | 2779 / 2066 | same | same | — |
 | MSFS 2024 / 2020 | `msfs2024` / `msfs2020 refresh-db` | Asobo's preset files, **every flight event `fs-base\en-US.locPak` names** (JoyPro's rules pick the flight ones and their context), installed aircraft | 360 / 355 | 1739 / 1580 | 1378 / 1378 | 35 (2024) / 183 (2020) dev ids the sim does not name (dev list mixed both sims); context matches the dev list for 91 % of the locPak-only events |
 | Falcon BMS | `bms refresh-db` | `BMS - Full.key` | 939 | 939 | 939 | — |
@@ -55,9 +55,9 @@ Measured with a release-like engine folder (game data removed by `tools/ReleaseC
 | Nuclear Option | `nuclearoption refresh-db` | `resources.assets` | 95 | 95 | 95 | — |
 | Tiny Combat Arena | `tca refresh-db` | `sharedassets` (Rewired) | 97 | 97 | 97 | — |
 | VTOL VR native | `vtolvr-native refresh-db` | `level0` | 3 | 3 | 3 | — |
-| VTOL VR (BYOJoystick) | `vtolvr refresh-db` | **the installed mod's `BYOJoystick.dll`** (Steam Workshop item; GUI: Install BYOJoystick on the VTOL VR card), else the user's own `BYOJ_*.xml` | failed | failed (the mod is not installed on a test PC) | 433 | the full list after the user installs the mod; the reader is tested with a stand-in DLL only |
+| VTOL VR (BYOJoystick) | `vtolvr refresh-db` | **the installed mod's `BYOJoystick.dll`** (Steam Workshop item; GUI: Install BYOJoystick on the VTOL VR card), else the user's own `BYOJ_*.xml` | failed | failed (without the mod) | 433 | the full list after the user installs the mod; the reader is tested with a stand-in DLL only |
 | WARDOGS | `wardogs refresh-db` | the user's `GameUserSettings.ini` + JoyPro's axes | 28 | 28 | 28 | — |
-| Hell Let Loose: Vietnam | `hllv refresh-db` | **JoyPro's own table** of the three pad layouts and pilot keys; the game's files only with an Oodle library (the game ships none; another installed game's only after the user's yes, asked when the list is built) | 28 (read silently with Battlefield 6's Oodle) | 28 (own table, no yes given) | — | the game's own wording only with the user's consent to another game's Oodle library |
+| Hell Let Loose: Vietnam | `hllv refresh-db` | **JoyPro's own table** of the three pad layouts and pilot keys; the game's files only with an Oodle library (the game ships none; another installed game's only after the user's yes, asked when the list is built) | 28 | 28 (own table, no yes given) | — | the game's own wording only with an Oodle library the user allowed |
 | G-Rebels | `grebels refresh-db` | **JoyPro's own table** (axis roles, buttons) | failed (no refresh) | 7 | 7 | — |
 | Battlefield 6 / ACE COMBAT 8 | `bf6` / `ac8 refresh-db` | the user's profile / `System.sav` | 65 / 13 | same | — | — |
 | ACE COMBAT 7 | `ac7 refresh-db` | `Input.ini` the game writes | failed | failed | — | the game must have been started once |
@@ -78,6 +78,6 @@ Rules that apply to every exporter:
    - Every game: only connected devices the import can read are released (never a device that is not connected, mouse binds or binds the import cannot read), and only in the aircraft of the export. Add, merge and merge-overwrite follow [../export.md](../export.md#export-modes): add removes nothing and lists a bind it leaves out because the game uses the input for another action (`SkippedTakenInputs`), merge removes only such a conflict, merge-overwrite also takes the profile's actions off their other inputs. IL-2 Great Battles keeps `global.actions` in its order (new lines at the end) and never releases mouse lines, lines with an unknown token or lines of a joystick that is not connected.
 6. Keyboard binds are imported and exported only with `--include-keyboard` (GUI: "Include keyboard binds"), and only for flight actions.
 
-Local research samples (third-party configs, not versioned) are in `research-samples/` when present. The author's
-research notes and helper scripts (per-game surveys, in-game test notes) are private and not part of the repository
+Local research samples (third-party configs, not versioned) are in `research-samples/` when present. Research
+notes and helper scripts (per-game surveys, in-game test notes) are not part of the repository
 (`private/`, ignored).

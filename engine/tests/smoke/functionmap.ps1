@@ -168,13 +168,14 @@ try {
     $fmAfter = Invoke-FmJson @("--profile", $fmProfile, "relations", "suggest", "Throttle")
     Assert-True (@($fmAfter.Suggestions | Where-Object { $_.Id -eq "a9901cdnil" }).Count -eq 0) "a dismissed map suggestion came back."
 
-    # Auto Group: a game the catalog does not know joins by the map.
+    # Auto Group: what a game's table lacks joins by the map (Tiny Combat Arena's table has its flight axes since review 6,
+    # not its target lock: the fixture's LockTargetFront joins "Radar Lock" by the map only).
     $fmGroup = Invoke-FmJson @("--profile", $fmProfile, "relations", "auto-group", "--planes", "TinyCombatArena", "--dry-run")
     Assert-True ($fmGroup.UseMap -and $fmGroup.MapRows -ge 3) ("auto-group added too few map rows (" + $fmGroup.MapRows + ").")
-    Assert-True (@($fmGroup.MapAircraft) -contains "TinyCombatArena") "auto-group did not bring in Tiny Combat Arena."
     Assert-True (@($fmGroup.Relations | Where-Object { $_.Name -eq "Pitch" -and @($_.Aircraft) -contains "TinyCombatArena" }).Count -eq 1) "auto-group did not put Tiny Combat Arena's pitch into Pitch."
+    Assert-True (@($fmGroup.Relations | Where-Object { $_.Name -eq "Radar Lock" -and @($_.Aircraft) -contains "TinyCombatArena" }).Count -eq 1) "auto-group did not put Tiny Combat Arena's target lock (map only) into Radar Lock."
     $fmNoMap = Invoke-FmJson @("--profile", $fmProfile, "relations", "auto-group", "--planes", "TinyCombatArena", "--dry-run", "--no-map")
-    Assert-True ($fmNoMap.MapRows -eq 0 -and @($fmNoMap.Relations).Count -eq 0) "auto-group --no-map still used the map."
+    Assert-True ($fmNoMap.MapRows -eq 0 -and @($fmNoMap.Relations | Where-Object { $_.Name -eq "Radar Lock" }).Count -eq 0) "auto-group --no-map still used the map."
 }
 finally {
     $env:JOYPRO_DATA_DIR = $fmPreviousData

@@ -47,8 +47,13 @@ internal static class Budgets
         // clear my other devices", as in JoyPro 1): every exported aircraft's files are rewritten from the defaults.
         // (~5.6 s on the gate profile; 2.4.3 needed ~6.9 s for the same mode, the old merge default ~4 s)
         ["dcs export dry-run"] = 7500,
-        // The Start page's games (games installs + integrations). (~0.7 s)
+        // The Start page's games (games installs + integrations). (~0.7 s; 13-14 s on 2026-11-14 while the Start card's look
+        // at the games sat in the queue of the app's engine calls)
         ["games list"] = 1500,
+        // The Start card's look at the games (engine setup games --status-only) after the games list: the wait for the idle
+        // Start page (1.2 s) and the engine process of its own in Windows' background mode. Nobody waits for it (it never
+        // blocks a click), the card just shows up. (~2 s with 20 installed games)
+        ["start card look"] = 8000,
         // The engine server starting and reading the game lists (once, in the background while the app starts). (~4 s;
         // timed on a fresh server after the gate's first start, as a normal app start sees it)
         ["engine server start"] = 8000,

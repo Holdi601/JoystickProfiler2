@@ -201,8 +201,10 @@ public sealed partial class MainWindowViewModel
         BindFilter.SearchText = value ?? string.Empty;
     }
 
-    private static FilterSubject SubjectOf(RelationListItem relation, string device, bool isBound, string input, IEnumerable<string> modifiers)
+    private static FilterSubject SubjectOf(RelationListItem relation, string device, bool isBound, string input, IEnumerable<string> modifiers,
+        IReadOnlyList<ExtraBindRow>? extras = null)
     {
+        extras ??= [];
         IReadOnlyCollection<string> gamePlanes = relation.ActiveGamePlanes.Count > 0
             ? relation.ActiveGamePlanes
             : DisplayText.List(relation.Games).Select(g => g.Equals("DCS", StringComparison.OrdinalIgnoreCase) ? "DCS|" : g + "|" + g).Where(k => !k.EndsWith('|')).ToList();
@@ -226,8 +228,16 @@ public sealed partial class MainWindowViewModel
         {
             words.Add(T("not bound unbound"));
         }
+        // Its other inputs (multi-bind): found by their device, input and modifiers too.
+        foreach (ExtraBindRow extra in extras)
+        {
+            words.Add(DisplayText.ShortDevice(extra.Device));
+            words.Add(extra.Input);
+            words.Add(DeviceMarkerText.ShortLabel(extra.Input));
+            words.AddRange(extra.Modifiers);
+        }
         return new FilterSubject(relation.Name, DisplayText.List(relation.Groups), gamePlanes, device, isBound, relation.IsAxis, string.Join("\u0001", words),
-            relation.ActionTitles);
+            relation.ActionTitles, extras.Select(e => e.Device));
     }
 
     // With a typed search the best fits come first (the relation called so, then names starting with it, then names
@@ -245,7 +255,7 @@ public sealed partial class MainWindowViewModel
         EnsureListFilters();
         relationSubjects.Clear();
         foreach (RelationListItem relation in allRelations)
-            relationSubjects[relation.Name] = SubjectOf(relation, relation.BindDeviceFull, relation.IsBound, relation.BindInputRaw, relation.Modifiers);
+            relationSubjects[relation.Name] = SubjectOf(relation, relation.BindDeviceFull, relation.IsBound, relation.BindInputRaw, relation.Modifiers, relation.ExtraInputs);
         RelationFilter.SetSubjects(relationSubjects.Values);
     }
 
@@ -275,7 +285,7 @@ public sealed partial class MainWindowViewModel
             RelationListItem relation = byName.TryGetValue(row.RelationName, out RelationListItem? r)
                 ? r
                 : new RelationListItem { Name = row.RelationName, Type = row.Type, Groups = "<none>" };
-            list.Add(SubjectOf(relation, row.HasBind ? row.Device : string.Empty, row.HasBind, row.HasBind ? row.Input : string.Empty, row.ModifierList));
+            list.Add(SubjectOf(relation, row.HasBind ? row.Device : string.Empty, row.HasBind, row.HasBind ? row.Input : string.Empty, row.ModifierList, row.ExtraBinds));
         }
         return list;
     }

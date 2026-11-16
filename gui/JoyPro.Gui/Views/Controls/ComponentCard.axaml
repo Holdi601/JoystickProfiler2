@@ -36,11 +36,11 @@
                         <Button Content="{l:T 'License on the project page'}" Classes="ghost small" Command="{Binding OpenLicenseCommand}" HorizontalAlignment="Left" />
                     </StackPanel>
                 </Expander>
-                <CheckBox IsChecked="{Binding Consent}" IsEnabled="{Binding IsIdle}">
+                <CheckBox x:Name="ComponentConsentBox" IsChecked="{Binding Consent}" IsEnabled="{Binding IsIdle}">
                     <TextBlock Text="{Binding ConsentText}" TextWrapping="Wrap" />
                 </CheckBox>
                 <WrapPanel>
-                    <Button Content="{Binding InstallButtonText}" Classes="accent" Command="{Binding InstallCommand}" IsEnabled="{Binding CanInstall}" Margin="0,0,8,0"
+                    <Button x:Name="ComponentInstallButton" Content="{Binding InstallButtonText}" Classes="accent" Command="{Binding InstallCommand}" IsEnabled="{Binding CanInstall}" Margin="0,0,8,0"
                             ToolTip.Tip="{l:T 'Downloads the official installer, checks it, then runs it. Windows asks once for administrator rights.'}" />
                     <Button Content="{l:T 'Cancel download'}" Command="{Binding CancelCommand}" IsVisible="{Binding IsBusy}" />
                 </WrapPanel>

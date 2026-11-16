@@ -75,6 +75,8 @@
     <!-- The page background under everything (opaque: text is always drawn onto a colour, never onto transparency) -->
     <Border x:Name="PageRoot" Background="{DynamicResource JP.PageBackgroundBrush}">
     <LayoutTransformControl x:Name="UiScaleHost">
+    <!-- The help mode, tour and welcome layer (Views/Controls/HelpLayer.axaml) lies over the content, inside the UI scale. -->
+    <Panel x:Name="UiLayers">
     <Grid x:Name="RootLayoutGrid" RowDefinitions="Auto,*,6,Auto,Auto" RowSpacing="10" Margin="12"
           Container.Name="RootLayout" Container.Sizing="Height">
 
@@ -98,6 +100,33 @@
                             </StackPanel>
                         </Viewbox>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <!-- Help (docs/ui/help-and-tours.md): in the banner on every page: F1's help mode, a tour of the open page, the welcome's tours, the wiki. -->
+                            <Button x:Name="PageTourButton" Classes="icon" Tag="{StaticResource Icon.Play}" Content="{l:T 'Tour of this page'}"
+                                    Command="{Binding StartPageTourCommand}" ToolTip.Tip="{Binding CurrentPageTourLabel}" />
+                            <Button x:Name="HelpButton" Classes="icon accent" Tag="{StaticResource Icon.Help}" Content="{l:T 'Help'}"
+                                    ToolTip.Tip="{l:T 'Help mode (F1): click anything to see what it does. Also the tours and the wiki.'}">
+                                <Button.Flyout>
+                                    <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                        <MenuItem Header="{l:T 'Help mode (F1)'}" Command="{Binding ToggleHelpModeCommand}"
+                                                  ToolTip.Tip="{l:T 'Click anything to see what it does; F1 or Esc ends it'}">
+                                            <MenuItem.Icon><PathIcon Data="{StaticResource Icon.Help}" Width="14" Height="14" /></MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="{l:T 'Tour of this page'}" Command="{Binding StartPageTourCommand}"
+                                                  ToolTip.Tip="{l:T 'A short tour of the page that is open'}">
+                                            <MenuItem.Icon><PathIcon Data="{StaticResource Icon.Play}" Width="14" Height="14" /></MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="{l:T 'Tours...'}" Command="{Binding OpenWelcomeCommand}"
+                                                  ToolTip.Tip="{l:T 'The welcome: pick the tour that fits you'}">
+                                            <MenuItem.Icon><PathIcon Data="{StaticResource Icon.Lightbulb}" Width="14" Height="14" /></MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="{l:T 'Open the wiki'}" Command="{Binding OpenPageWikiCommand}"
+                                                  ToolTip.Tip="{l:T 'The wiki page of the open page, in your browser'}">
+                                            <MenuItem.Icon><PathIcon Data="{StaticResource Icon.Send}" Width="14" Height="14" /></MenuItem.Icon>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </Button.Flyout>
+                            </Button>
+                            <Border Width="1" Margin="4,6" Background="{DynamicResource JP.Banner.TextBrush}" Opacity="0.35" />
                             <Button Command="{Binding SetThemeLightCommand}" Classes="icon" Tag="{StaticResource Icon.Sun}" Content="{l:T 'Light'}" ToolTip.Tip="{l:T 'Light colors'}" />
                             <Button Command="{Binding SetThemeDarkCommand}" Classes="icon" Tag="{StaticResource Icon.Moon}" Content="{l:T 'Dark'}" ToolTip.Tip="{l:T 'Dark colors'}" />
                             <Button Command="{Binding SetThemeSystemCommand}" Classes="icon" Tag="{StaticResource Icon.Contrast}" Content="{l:T 'System'}" ToolTip.Tip="{l:T 'Follow the Windows setting'}" />
@@ -125,7 +154,7 @@
                         <!-- The profile actions wrap to a second line when they do not fit (a big text size or UI scale);
                              the name keeps at least a little room (MainWindow.Appearance.cs FitProfileHeader). -->
                         <WrapPanel x:Name="ProfileHeaderButtons" Grid.Column="2" ItemSpacing="8" LineSpacing="6" VerticalAlignment="Center" HorizontalAlignment="Right">
-                            <Button Click="OpenProfileClicked" Classes="icon" Tag="{StaticResource Icon.FolderOpen}" Content="{l:T 'Open profile...'}"
+                            <Button x:Name="OpenProfileButton" Click="OpenProfileClicked" Classes="icon" Tag="{StaticResource Icon.FolderOpen}" Content="{l:T 'Open profile...'}"
                                     ToolTip.Tip="{l:T 'Open a JoyPro profile (.pr0file)'}" />
                             <Button Click="NewProfileClicked" Classes="icon" Tag="{StaticResource Icon.Plus}" Content="{l:T 'New profile'}"
                                     ToolTip.Tip="{l:T 'Start an empty profile (it gets a name in Documents\\JoyPro2\\profiles; More &gt; Rename... gives it yours). Tip: importing from a game (Start page) makes one for you.'}" />
@@ -489,6 +518,63 @@
                                 <controls:BusyProgressPanel DataContext="{Binding BusyProgress}" />
                             </Border>
 
+                            <!-- Auto setup (MainWindowViewModel.AutoSetupStart.cs, docs/setup-wizard.md#start-page): per installed
+                                 game whether the user already has binds (engine setup games, read-only). Games with nothing
+                                 assigned: the setup front and center; games with binds of their own: import first, then fill
+                                 the gaps; games already in the profile: fill the gaps. -->
+                            <Border x:Name="AutoSetupCard" Classes="surface" IsVisible="{Binding ShowAutoSetupCard}">
+                                <StackPanel Spacing="12">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border Classes="iconBadge large"><PathIcon Data="{StaticResource Icon.Wand}" /></Border>
+                                        <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                                            <TextBlock Classes="h2" Text="{Binding AutoSetupHeadline}" TextWrapping="Wrap" />
+                                            <TextBlock Classes="caption" Text="{Binding AutoSetupIntro}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <WrapPanel ItemSpacing="8" LineSpacing="8" IsVisible="{Binding HasAutoSetupNewGames}">
+                                        <!-- The one blue button is the novice's: JoyPro does it all. The full wizard is the grey one. -->
+                                        <Button x:Name="QuickSetupButton" Classes="icon accent" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Set it all up for me'}" Command="{Binding QuickSetupCommand}"
+                                                IsEnabled="{Binding CanRun}" ToolTip.Tip="{l:T 'JoyPro does every step by itself and shows you the result. You only press Use these buttons and Write to my game.'}" />
+                                        <Button x:Name="AutoSetupButton" Classes="icon" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Set up step by step...'}" Command="{Binding OpenAutoSetupCommand}"
+                                                IsEnabled="{Binding CanRun}" ToolTip.Tip="{l:T 'Opens the setup with these games ticked: your devices and their roles, what matters most to you, the plan, and a review before anything changes'}" />
+                                        <Button Classes="icon" Tag="{StaticResource Icon.Joystick}" Content="{l:T 'Where is what?'}" Command="{Binding OpenLayoutPreviewCommand}"
+                                                IsEnabled="{Binding CanRun}" ToolTip.Tip="{l:T 'Shows your stick and throttle with the function on each control, per game and aircraft'}" />
+                                    </WrapPanel>
+
+                                    <!-- Games with binds of the user's own in the game: import first, then fill the gaps. -->
+                                    <StackPanel Spacing="6" IsVisible="{Binding HasAutoSetupOwnGames}">
+                                        <TextBlock Text="{Binding AutoSetupOwnText}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                        <ItemsControl ItemsSource="{Binding AutoSetupOwnGames}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="models:AutoSetupGameItem">
+                                                    <Border Classes="raised" Margin="0,0,0,6" Padding="10,6">
+                                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                                <TextBlock Classes="caption" Text="{Binding Detail}" />
+                                                            </StackPanel>
+                                                            <Button Grid.Column="1" Classes="small" Content="{l:T 'Import, then fill the gaps'}" VerticalAlignment="Center"
+                                                                    Command="{Binding #RootWindow.DataContext.ImportThenFillGapsCommand}" CommandParameter="{Binding}"
+                                                                    ToolTip.Tip="{l:T 'Takes your binds from the game into JoyPro first; afterwards the setup only uses the controls that are still free'}" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+
+                                    <!-- Games already in the profile: fill the gaps. -->
+                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" IsVisible="{Binding HasAutoSetupProfileGames}">
+                                        <TextBlock Text="{Binding AutoSetupProfileText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                        <Button Grid.Column="1" Classes="small" Content="{l:T 'Fill the gaps...'}" Command="{Binding FillAutoSetupGapsCommand}" VerticalAlignment="Center"
+                                                IsEnabled="{Binding CanRun}" ToolTip.Tip="{l:T 'The setup for these games: your binds stay, only free controls get functions'}" />
+                                        <Button Grid.Column="2" Classes="small" Content="{l:T 'Where is what?'}" Command="{Binding OpenLayoutPreviewCommand}" VerticalAlignment="Center"
+                                                IsEnabled="{Binding CanRun}" IsVisible="{Binding AutoSetupOnlySecondary}"
+                                                ToolTip.Tip="{l:T 'Shows your stick and throttle with the function on each control, per game and aircraft'}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
                             <!-- Profile at a glance -->
                             <WrapPanel ItemSpacing="12" LineSpacing="12">
                                 <Border Classes="stat" ToolTip.Tip="{l:T 'Relations: game commands that share one button or axis of your devices'}">
@@ -577,9 +663,11 @@
                                                 <!-- How far JoyPro supports each game (MainWindowViewModel.SupportedGames.cs, docs/games/support.md): opens in the browser. -->
                                                 <Button Grid.Column="5" Classes="icon small" Tag="{StaticResource Icon.Info}" Content="{l:T 'Supported games'}" Command="{Binding OpenSupportedGamesCommand}"
                                                         IsEnabled="{Binding CanRun}" ToolTip.Tip="{l:T 'Every game JoyPro knows, what it can do for each (import, export, curves, settings, virtual joystick ...) and how it was tested, in your browser'}" />
-                                                <!-- Setup wizard (MainWindowViewModel.SetupWizard.cs, docs/setup-wizard.md): relations and binds for the watched games. -->
-                                                <Button Grid.Column="4" Classes="icon small accent" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Set up my devices automatically...'}" Command="{Binding OpenSetupWizardCommand}"
-                                                        IsEnabled="{Binding CanRun}" ToolTip.Tip="{l:T 'Binds the most important functions of the games you watch to your devices: roles, priorities, modifiers, realism; you review before anything changes'}" />
+                                                <!-- Setup wizard (MainWindowViewModel.SetupWizard.cs, docs/setup-wizard.md): relations and binds for the
+                                                     watched games; the auto setup card above it names the games that need it. -->
+                                                <Button Grid.Column="4" Classes="icon small" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Set up my devices automatically...'}" Command="{Binding OpenSetupWizardCommand}"
+                                                        IsEnabled="{Binding CanRun}" IsVisible="{Binding !ShowAutoSetupCard}"
+                                                        ToolTip.Tip="{l:T 'Binds the most important functions of the games you watch to your devices: roles, priorities, modifiers, where functions go; you review before anything changes'}" />
                                                 <!-- Watch all / none (MainWindowViewModel.GameSync.cs WatchAllGames): mixed when only some games are ticked. -->
                                                 <CheckBox Grid.Column="2" Name="WatchAllGamesBox" Content="{l:T 'Watch all'}" IsChecked="{Binding WatchAllGames}" VerticalAlignment="Center"
                                                           IsVisible="{Binding HasWatchableGameCards}"
@@ -611,6 +699,8 @@
                                                         <TextBlock Grid.Column="1" Text="{Binding ImportWizardResult}" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center" />
                                                     </Grid>
                                                     <WrapPanel ItemSpacing="8" LineSpacing="8">
+                                                        <Button Classes="icon accent" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Now fill the gaps...'}" Command="{Binding FillGapsAfterImportCommand}" IsVisible="{Binding OffersFillGapsAfterImport}"
+                                                                ToolTip.Tip="{l:T 'The setup for this game: your imported binds stay, only free controls get functions'}" />
                                                         <Button Classes="icon accent" Tag="{StaticResource Icon.Link}" Content="{l:T 'See my relations'}" Command="{Binding FinishImportWizardCommand}" IsVisible="{Binding !ImportWizardFailed}" />
                                                         <Button Classes="icon" Tag="{StaticResource Icon.ArrowLeft}" Content="{l:T 'Try again'}" Command="{Binding ImportWizardBackCommand}" IsVisible="{Binding ImportWizardFailed}" />
                                                         <Button Classes="icon" Tag="{StaticResource Icon.Close}" Content="{l:T 'Close'}" Command="{Binding RestartImportWizardCommand}"
@@ -1258,12 +1348,18 @@
 
                                 <!-- Several relations ticked (Ctrl/Shift+click): what to do with all of them -->
                                 <Border Grid.Row="3" Classes="callout" IsVisible="{Binding HasRelationMultiSelection}">
-                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
-                                        <TextBlock Text="{Binding RelationMassSelectionSummary}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                        <Button Grid.Column="1" Classes="icon small danger" Tag="{StaticResource Icon.Delete}" Content="{l:T 'Delete'}" Command="{Binding DeleteSelectedRelationsCommand}"
-                                                ToolTip.Tip="{l:T 'Delete the selected relations (asks first; Ctrl+Z undoes it) - Del'}" />
-                                        <Button Grid.Column="2" Classes="small" Content="{l:T 'Clear'}" Click="ClearRelationSelectionClicked" ToolTip.Tip="{l:T 'Unselect all'}" />
-                                    </Grid>
+                                    <!-- The summary above, the buttons below (they wrap in a narrow list) -->
+                                    <StackPanel x:Name="RelationMultiSelectBar" Spacing="6">
+                                        <TextBlock Text="{Binding RelationMassSelectionSummary}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                            <Button x:Name="RelationsMoveActionsButton" Classes="icon small" Tag="{StaticResource Icon.ArrowRight}" Content="{l:T 'Move actions to...'}"
+                                                    Command="{Binding OpenMoveRelationsActionsCommand}"
+                                                    ToolTip.Tip="{l:T 'Every action of the selected relations goes to a new or an existing relation of the same kind; the emptied relations are deleted (Ctrl+Z undoes it)'}" />
+                                            <Button Classes="icon small danger" Tag="{StaticResource Icon.Delete}" Content="{l:T 'Delete'}" Command="{Binding DeleteSelectedRelationsCommand}"
+                                                    ToolTip.Tip="{l:T 'Delete the selected relations (asks first; Ctrl+Z undoes it) - Del'}" />
+                                            <Button Classes="small" Content="{l:T 'Clear'}" Click="ClearRelationSelectionClicked" ToolTip.Tip="{l:T 'Unselect all'}" />
+                                        </WrapPanel>
+                                    </StackPanel>
                                 </Border>
 
                                 <Panel Grid.Row="4">
@@ -1306,7 +1402,7 @@
                                                                 <TextBlock Text="{Binding BindDevice}" TextTrimming="CharacterEllipsis" />
                                                             </DockPanel>
                                                         </Border>
-                                                        <!-- Experimental multi-bind: the other inputs -->
+                                                        <!-- Multi-bind: the other inputs -->
                                                         <Border Classes="chip device" IsVisible="{Binding HasMoreInputs}" ToolTip.Tip="{Binding MoreInputsTooltip}">
                                                             <TextBlock Text="{Binding MoreInputsBadge}" FontWeight="SemiBold" />
                                                         </Border>
@@ -1421,14 +1517,14 @@
                                                         </ComboBox>
                                                         <TextBlock Grid.Row="1" Classes="label" Text="{l:T 'Value'}" />
                                                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding RelationMassValue}" Watermark="{l:T 'Name, prefix, text or file (merge, add-prefix, ...)'}" />
-                                                        <TextBlock Grid.Row="2" Classes="label" Text="{l:T 'On'}" />
+                                                        <TextBlock Grid.Row="2" Classes="label" Text="{l:T 'Apply to'}" />
                                                         <ComboBox Grid.Row="2" Grid.Column="1" SelectedItem="{Binding RelationMassTarget}" HorizontalAlignment="Stretch">
                                                             <x:String>selected</x:String>
                                                             <x:String>all</x:String>
                                                             <x:String>query</x:String>
                                                         </ComboBox>
                                                         <TextBlock Grid.Row="3" Classes="label" Text="{l:T 'Query'}" IsEnabled="{Binding IsRelationMassQueryTarget}" />
-                                                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding RelationMassQuery}" IsEnabled="{Binding IsRelationMassQueryTarget}" Watermark="{l:T 'Only used when On is query'}" />
+                                                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding RelationMassQuery}" IsEnabled="{Binding IsRelationMassQueryTarget}" Watermark="{l:T 'Only used when Apply to is query'}" />
                                                     </Grid>
                                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" IsVisible="{Binding IsRelationMassSplit}">
                                                         <TextBlock Classes="label" Text="{l:T 'Planes'}" />
@@ -1894,7 +1990,7 @@
                                                             </DockPanel>
                                                         </Border>
                                                     </Button>
-                                                    <!-- Experimental multi-bind: the relation's other inputs (a click opens the bind with its More inputs) -->
+                                                    <!-- Multi-bind: the relation's other inputs (a click opens the bind with its More inputs) -->
                                                     <Button x:Name="RelationMoreInputsChip" Classes="chipButton" IsVisible="{Binding SelectedRelation.HasMoreInputs}" Command="{Binding BindSelectedRelationCommand}"
                                                             ToolTip.Tip="{Binding SelectedRelation.MoreInputsTooltip}">
                                                         <Border Classes="chip device"><TextBlock Text="{Binding SelectedRelation.MoreInputsBadge}" FontWeight="SemiBold" /></Border>
@@ -1958,7 +2054,8 @@
                                                 <!-- A wrap panel: in a narrow window the buttons go to the next line instead of running into the
                                                      search column on the right. -->
                                                 <WrapPanel x:Name="RelationEditorActionRow" ItemSpacing="6" LineSpacing="6">
-                                                    <TextBlock Classes="h3" VerticalAlignment="Center" Margin="0,0,4,0" Text="{l:T 'Its actions ({0})', Arg0={Binding RelationNodes.Count}}" />
+                                                    <TextBlock Classes="h3" VerticalAlignment="Center" Margin="0,0,4,0" Text="{l:T 'Its actions ({0})', Arg0={Binding RelationNodes.Count}}"
+                                                               ToolTip.Tip="{l:T 'Ctrl+click or Shift+click selects several actions (Ctrl+A all of them): copy, move or remove them together'}" />
                                                     <Button Classes="icon small accent" Tag="{StaticResource Icon.Lightbulb}" Content="{Binding SuggestMissingLabel}" Command="{Binding SuggestMissingCommand}"
                                                             ToolTip.Tip="{l:T 'Expand this relation: the same function in the games and aircraft it does not have yet, without the actions other relations use (no AI). Tick, add.'}" />
                                                     <Button Classes="icon small" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Expand with AI'}" Command="{Binding ExpandWithAiCommand}"
@@ -1976,7 +2073,26 @@
                                                     </Button>
                                                     <Button Classes="icon small danger iconOnly" Tag="{StaticResource Icon.Delete}" Command="{Binding DeleteSelectedRelationCommand}"
                                                             ToolTip.Tip="{l:T 'Delete this relation (asks first; Ctrl+Z undoes it)'}" />
+                                                    <!-- Paste: the actions copied from another relation (MainWindowViewModel.RelationMultiSelect.cs) -->
+                                                    <Button x:Name="RelationPasteNodesButton" Classes="icon small accent" Tag="{StaticResource Icon.Copy}" Content="{Binding PasteRelationNodesLabel}"
+                                                            Command="{Binding PasteRelationNodesCommand}" IsVisible="{Binding CanPasteRelationNodes}" ToolTip.Tip="{Binding PasteRelationNodesTooltip}" />
                                                 </WrapPanel>
+                                                <!-- Several actions selected (Ctrl/Shift+click, Ctrl+A): what to do with all of them -->
+                                                <Border x:Name="RelationNodeMultiSelectBar" Classes="callout" IsVisible="{Binding HasRelationNodeMultiSelection}">
+                                                    <StackPanel Spacing="6">
+                                                        <TextBlock Text="{Binding RelationNodeSelectionSummary}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                        <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                                            <Button Classes="icon small" Tag="{StaticResource Icon.Copy}" Content="{l:T 'Copy'}" Command="{Binding CopySelectedRelationNodesCommand}"
+                                                                    ToolTip.Tip="{l:T 'Copy the selected actions; open another relation and press Paste (Ctrl+C, Ctrl+V)'}" />
+                                                            <Button Classes="icon small" Tag="{StaticResource Icon.ArrowRight}" Content="{l:T 'Move to...'}" Command="{Binding OpenMoveRelationNodesCommand}"
+                                                                    ToolTip.Tip="{l:T 'Move the selected actions to a new relation or to another relation of the same kind (Ctrl+Z undoes it)'}" />
+                                                            <Button Classes="icon small danger" Tag="{StaticResource Icon.Delete}" Content="{l:T 'Remove'}" Command="{Binding DeleteSelectedRelationNodesCommand}"
+                                                                    ToolTip.Tip="{l:T 'Remove the selected actions from this relation (asks first; Ctrl+Z undoes it) - Del'}" />
+                                                            <Button Classes="small" Content="{l:T 'Select all'}" Command="{Binding SelectAllRelationNodesCommand}" ToolTip.Tip="{l:T 'Select every action of this relation (Ctrl+A)'}" />
+                                                            <Button Classes="small" Content="{l:T 'Clear'}" Command="{Binding ClearRelationNodeSelectionCommand}" ToolTip.Tip="{l:T 'Unselect all'}" />
+                                                        </WrapPanel>
+                                                    </StackPanel>
+                                                </Border>
                                             </StackPanel>
                                             <StackPanel IsVisible="{Binding ShowNewRelationCard}" Spacing="6">
                                                 <Grid ColumnDefinitions="*,Auto">
@@ -2002,6 +2118,7 @@
                                                  Under the Games filter the filter's actions come first (accent edge, "Filter: F-100D"), the others
                                                  in the fold "Other aircraft (n)" (RelationNodeListItems, MainWindowViewModel.RelationNodeFilter.cs). -->
                                             <ListBox x:Name="RelationNodeList" Classes="cards" ItemsSource="{Binding RelationNodeListItems}" SelectedItem="{Binding SelectedRelationNode}" IsVisible="{Binding ShowRelationNodeList}"
+                                                     SelectionMode="Multiple" SelectionChanged="RelationNodeListSelectionChanged"
                                                      DragDrop.AllowDrop="True"
                                                      ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                                 <ListBox.DataTemplates>
@@ -2034,8 +2151,12 @@
                                                                 <Separator />
                                                                 <MenuItem Header="{l:T 'Move to another button...'}" Command="{Binding #RootWindow.DataContext.OpenMoveActionForNodeCommand}" CommandParameter="{Binding}"
                                                                           ToolTip.Tip="{l:T 'Only one action goes to another button; the other actions stay on this one'}" />
+                                                                <MenuItem Header="{l:T 'Move to another relation...'}" Command="{Binding #RootWindow.DataContext.OpenMoveRelationNodesCommand}" CommandParameter="{Binding}"
+                                                                          ToolTip.Tip="{l:T 'This action (or the selected actions) to a new relation or to another relation of the same kind'}" />
+                                                                <MenuItem Header="{l:T 'Copy'}" InputGesture="Ctrl+C" Command="{Binding #RootWindow.DataContext.CopySelectedRelationNodesCommand}" CommandParameter="{Binding}"
+                                                                          ToolTip.Tip="{l:T 'Copy this action (or the selected actions); open another relation and press Paste'}" />
                                                                 <Separator />
-                                                                <MenuItem Header="{l:T 'Remove from the relation'}" Command="{Binding #RootWindow.DataContext.RemoveNodeCommand}" CommandParameter="{Binding}" />
+                                                                <MenuItem Header="{l:T 'Remove from the relation'}" InputGesture="Delete" Command="{Binding #RootWindow.DataContext.DeleteSelectedRelationNodesCommand}" CommandParameter="{Binding}" />
                                                             </ContextMenu>
                                                         </Border.ContextMenu>
                                                       <StackPanel Spacing="4" Classes.searchHit="{Binding IsSearchHit}">
@@ -2520,6 +2641,8 @@
                                                 </ItemsControl>
                                                 <ToggleButton Classes="filterChip trimmed" Content="{Binding BuilderWeakLabel}" IsChecked="{Binding BuilderShowWeakMatches}"
                                                               ToolTip.Tip="{l:T 'Also actions whose title only looks similar (weaker evidence)'}" />
+                                                <ToggleButton x:Name="BuilderInstalledOnlyChip" Classes="filterChip trimmed" Content="{l:T 'Only games installed on this PC'}" IsChecked="{Binding SuggestInstalledGamesOnly}"
+                                                              ToolTip.Tip="{l:T 'Off: suggestions for every game JoyPro knows, also the ones you do not have.'}" />
                                             </WrapPanel>
                                             <Border Grid.Row="2" Classes="callout warn" IsVisible="{Binding HasRelationMisfits}">
                                                 <StackPanel Spacing="4">
@@ -2818,7 +2941,7 @@
                                                         <Ellipse Width="8" Height="8" Fill="{DynamicResource StatusWarnBrush}" IsVisible="{Binding IsUnbound}" ToolTip.Tip="{l:T 'Not bound yet'}" />
                                                     </Panel>
                                                     <StackPanel Grid.Column="1" Spacing="4">
-                                                        <TextBlock Text="{Binding RelationName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                                         <StackPanel Orientation="Horizontal" Spacing="4" ClipToBounds="True">
                                                             <Border Classes="chip axis" IsVisible="{Binding IsAxisType}"><TextBlock Text="{l:T 'Axis'}" /></Border>
                                                             <Border Classes="chip device" IsVisible="{Binding HasBind}" ToolTip.Tip="{Binding Device}">
@@ -2844,7 +2967,7 @@
                                                                     </DataTemplate>
                                                                 </ItemsControl.ItemTemplate>
                                                             </ItemsControl>
-                                                            <!-- Experimental multi-bind: the relation's other inputs ("+1", the inputs in the tooltip) -->
+                                                            <!-- Multi-bind: the relation's other inputs ("+1", the inputs in the tooltip) -->
                                                             <Border Classes="chip device" IsVisible="{Binding HasExtraBinds}" ToolTip.Tip="{Binding ExtraBindsTooltip}">
                                                                 <TextBlock Text="{Binding ExtraBindsBadge}" FontWeight="SemiBold" />
                                                             </Border>
@@ -2927,7 +3050,7 @@
                                                   ToolTip.Tip="{l:T 'Say in your words how you like your controls (throttle and left-hand stick, trim on the hat, curves softer for helis); JoyPro lays out binds, curves, force feedback and vJoy and shows every change before anything is applied.'}" />
                                     <!-- Setup wizard (docs/setup-wizard.md): relations and binds for the watched games, device roles, priorities. -->
                                     <Button Classes="icon" Tag="{StaticResource Icon.Wand}" Command="{Binding OpenSetupWizardCommand}" Content="{l:T 'Set up my devices automatically...'}"
-                                            ToolTip.Tip="{l:T 'Setup wizard: relations and binds for the games you watch in one go (device roles, aircraft priorities, modifiers, how real), then you review before anything changes'}" />
+                                            ToolTip.Tip="{l:T 'Setup wizard: relations and binds for the games you watch in one go (device roles, aircraft priorities, modifiers, where functions go), then you review before anything changes'}" />
                                 </WrapPanel>
                                 <Button Grid.Column="1" Classes="icon" Tag="{StaticResource Icon.More}" Content="{l:T 'More'}" ToolTip.Tip="{l:T 'Refresh, import and export binds, save'}">
                                     <Button.Flyout>
@@ -3402,9 +3525,9 @@
                                     <Border Classes="emptyState" IsVisible="{Binding HasNoBindSelected}">
                                         <StackPanel Spacing="8" HorizontalAlignment="Center" MaxWidth="520">
                                             <PathIcon Classes="emptyIcon" Data="{StaticResource Icon.Gamepad}" />
-                                            <TextBlock Classes="h2" HorizontalAlignment="Center" Text="{l:T 'Pick a relation on the left'}" />
+                                            <TextBlock Classes="h2" HorizontalAlignment="Center" Text="{l:T 'Click a game control on the left'}" />
                                             <TextBlock Classes="caption" TextAlignment="Center"
-                                                       Text="{l:T 'Then press Record and press the button (or move the axis) on your device. A modifier and an axis curve are optional.'}" />
+                                                       Text="{l:T 'Then Record input shows here: click it and press the button (or move the axis) on your device. A modifier and an axis curve are optional.'}" />
                                         </StackPanel>
                                     </Border>
 
@@ -3419,7 +3542,7 @@
                                             </Border>
                                             <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center">
                                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                                    <TextBlock Text="{Binding SelectedBind.RelationName}" FontSize="{DynamicResource JP.FontSize.20}" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding SelectedBind.DisplayName}" FontSize="{DynamicResource JP.FontSize.20}" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
                                                     <Border Classes="chip axis" IsVisible="{Binding SelectedBind.IsAxisType}"><TextBlock Text="{l:T 'Axis'}" /></Border>
                                                     <Border Classes="chip" IsVisible="{Binding !SelectedBind.IsAxisType}"><TextBlock Text="{l:T 'Button'}" /></Border>
                                                 </StackPanel>
@@ -3567,7 +3690,7 @@
                                         </StackPanel>
                                     </Border>
 
-                                    <!-- Experimental (Settings > Experimental): the relation's other inputs, each with its own device and
+                                    <!-- Several inputs per relation (docs/multi-bind.md): the relation's other inputs, each with its own device and
                                          modifiers; record or pick another one, make one the main input, remove one; copy a device's binds
                                          to another device (MainWindowViewModel.MultiBind.cs) -->
                                     <Border x:Name="MultiBindPanel" Classes="surface" IsVisible="{Binding ShowMultiBindPanel}">
@@ -3575,7 +3698,7 @@
                                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                                 <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Gamepad}" /></Border>
                                                 <StackPanel Grid.Column="1">
-                                                    <TextBlock Classes="h2" Text="{l:T 'More inputs (experimental)'}" />
+                                                    <TextBlock Classes="h2" Text="{l:T 'More inputs'}" />
                                                     <TextBlock Classes="caption" TextWrapping="Wrap"
                                                                Text="{l:T 'The same functions on other inputs: each has its own device, modifiers and axis tuning.'}" />
                                                 </StackPanel>
@@ -3661,7 +3784,7 @@
                                                         <ListBox.ItemTemplate>
                                                             <DataTemplate x:DataType="models:ModifierListItem">
                                                                 <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
-                                                                    <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center" MinWidth="0" />
+                                                                    <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center" MinWidth="0" ToolTip.Tip="{l:T 'Tick for Delete or for attaching on the Binds page'}" />
                                                                     <Border Grid.Column="1" Classes="keycap" IsVisible="{Binding HasInput}"><TextBlock Text="{Binding InputLabel}" /></Border>
                                                                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
                                                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
@@ -3737,10 +3860,17 @@
                                     <Border x:Name="AxisResponsePanel" IsVisible="{Binding SelectedBindIsAxis}">
                                 <Expander x:Name="AxisResponseExpander" Header="{l:T 'Axis response: curve, dead zone, saturation'}" HorizontalAlignment="Stretch" IsEnabled="{Binding SelectedBindIsAxis}" IsExpanded="{Binding IsAxisTuningExpanded}">
                                     <StackPanel Margin="0,6,0,0" Spacing="8">
+                                        <!-- Multi-bind: which input of the relation this tunes (each input has its own curves) -->
+                                        <Grid x:Name="AxisTuningInputPicker" ColumnDefinitions="Auto,*" ColumnSpacing="8" IsVisible="{Binding HasAxisTuningInputChoices}">
+                                            <TextBlock Text="{l:T 'Input'}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                            <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding AxisTuningInputChoices}" SelectedItem="{Binding SelectedAxisTuningInput}"
+                                                      DisplayMemberBinding="{Binding Label, x:DataType=models:AxisTuningInputChoice}"
+                                                      ToolTip.Tip="{l:T 'Each input of the relation has its own curve, dead zone and saturation: pick the one to tune'}" />
+                                        </Grid>
                                         <!-- Where the curve applies, with checkboxes (2.6.5): all games, each game, each DCS aircraft; next
                                              to each what it uses today. Several aircraft can be ticked: Save gives all of them the curve shown. -->
                                         <TextBlock x:Name="AxisAppliesExplanation"
-                                                   Text="{l:T 'A curve for all games, one per game, or one for the aircraft you tick. An aircraft with its own curve uses it; the others use their game\'s curve, else the one for all games.'}"
+                                                   Text="{l:T 'One default curve, one per game, or one for the aircraft you tick. An aircraft uses its own curve, else its game\'s curve, else the default curve.'}"
                                                    FontSize="{DynamicResource JP.FontSize.11}"
                                                    TextWrapping="Wrap" />
                                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
@@ -3788,6 +3918,7 @@
                                         <TextBlock x:Name="AxisTuningReplaceLine" Text="{Binding AxisTuningReplaceText}" Foreground="{DynamicResource JP.WarnTextBrush}" FontWeight="SemiBold"
                                                    TextWrapping="Wrap" IsVisible="{Binding HasAxisTuningReplaceText}" />
                                         <TextBlock Text="{Binding AxisTuningModelText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.8" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="AxisTuningXboxPadLine" Text="{Binding AxisTuningXboxPadNote}" FontWeight="SemiBold" TextWrapping="Wrap" IsVisible="{Binding HasAxisTuningXboxPadNote}" />
                                         <Grid ColumnDefinitions="300,*" ColumnSpacing="14">
                                             <StackPanel Spacing="4" VerticalAlignment="Top">
                                                 <controls:AxisCurveView Width="300"
@@ -3800,7 +3931,7 @@
                                                                         HandleMovedCommand="{Binding DragAxisTuningHandleCommand}"
                                                                         ShowsPercent="{Binding AxisTuningShowsPercent}"
                                                                         OneSided="{Binding AxisTuningOneSided}" />
-                                                <TextBlock Text="{l:T 'Blue: the curve shown. Dashed orange: the one for all games, while the shown one is not its own. Drag the white points (user curve or curve points) to shape the curve.'}"
+                                                <TextBlock Text="{l:T 'Blue: the curve shown. Dashed orange: the default curve, while the shown one is not its own. Drag the white points (user curve or curve points) to shape the curve.'}"
                                                            FontSize="{DynamicResource JP.FontSize.11}"
                                                            Opacity="0.8"
                                                            TextWrapping="Wrap" />
@@ -3809,7 +3940,7 @@
                                             <StackPanel Grid.Column="1" Spacing="6">
                                                 <!-- The unit of the numbers below: DCS's own 0 .. 100, or what the game's model says -->
                                                 <TextBlock x:Name="AxisTuningUnits" Classes="caption" Text="{Binding AxisTuningUnitsText}" TextWrapping="Wrap" />
-                                                <ItemsControl ItemsSource="{Binding AxisTuningEditors}">
+                                                <ItemsControl ItemsSource="{Binding AxisTuningEditors}" IsEnabled="{Binding AxisTuningEditable}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:AxisParameterEditor">
                                                             <StackPanel Spacing="2" Margin="0,0,0,4">
@@ -3875,7 +4006,7 @@
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
-                                                <StackPanel IsVisible="{Binding AxisTuningSupportsControlPoints}" Spacing="4">
+                                                <StackPanel IsVisible="{Binding AxisTuningSupportsControlPoints}" IsEnabled="{Binding AxisTuningEditable}" Spacing="4">
                                                     <CheckBox Content="{l:T 'Curve points (free stops, replace dead zone, saturation and curvature)'}" IsChecked="{Binding AxisTuningUseControlPoints}"
                                                               ToolTip.Tip="{l:T 'The game\'s response curve with any number of stops: x = axis travel, y = output, both 0..1, x increasing'}" />
                                                     <StackPanel IsVisible="{Binding AxisTuningUseControlPoints}" Spacing="2">
@@ -3913,7 +4044,7 @@
                                                             Command="{Binding ClearAxisTuningCommand}"
                                                             Content="{Binding AxisTuningClearText}"
                                                             IsEnabled="{Binding CanClearAxisTuning}"
-                                                            ToolTip.Tip="{l:T 'Removes the own curve of the ticked rows, in one step (Ctrl+Z undoes it): an aircraft then uses its game\'s curve, a game the one for all games.'}"
+                                                            ToolTip.Tip="{l:T 'Removes the own curve of the ticked rows, in one step (Ctrl+Z undoes it): an aircraft then uses its game\'s curve, a game the default curve.'}"
                                                             Margin="0,0,8,4" />
                                                     <!-- The same response on another axis in one step (Thrust Left -> Thrust Right; Ctrl+Z undoes it) -->
                                                     <Button x:Name="AxisTuningCopyButton"
@@ -3964,7 +4095,7 @@
 
                                     <!-- Detent mode: one throttle relation for all aircraft (docs/axis-curves.md "Detent mode") -->
                                     <Border IsVisible="{Binding SelectedBindIsAxis}">
-                                <Expander Header="{l:T 'Detent mode: one throttle for all aircraft (afterburner detent)'}" HorizontalAlignment="Stretch" IsEnabled="{Binding SelectedBindIsAxis}" IsExpanded="{Binding IsDetentExpanded}">
+                                <Expander x:Name="DetentModeExpander" Header="{l:T 'Detent mode: one throttle for all aircraft (afterburner detent)'}" HorizontalAlignment="Stretch" IsEnabled="{Binding SelectedBindIsAxis}" IsExpanded="{Binding IsDetentExpanded}">
                                     <StackPanel Margin="0,6,0,0" Spacing="8">
                                         <TextBlock x:Name="DetentExplanation" Text="{l:T 'One throttle relation for every aircraft: JoyPro bends the curve per aircraft, so your throttle\'s afterburner detent is exactly where that aircraft\'s afterburner starts.'}"
                                                    FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" />
@@ -4017,6 +4148,19 @@
                                                             <Border BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,0,0,6">
                                                                 <StackPanel Spacing="4">
                                                                     <TextBlock Text="{Binding Heading}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                                    <!-- The relations to merge (2.6.6): untick one to keep it apart with its own curve -->
+                                                                    <ItemsControl x:Name="DetentMergeCandidates" ItemsSource="{Binding Candidates}">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <WrapPanel />
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate x:DataType="models:DetentMergeRelationItem">
+                                                                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked}" Margin="0,0,14,0" />
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
                                                                     <TextBlock Text="{Binding CalibrationText}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" />
                                                                     <TextBlock Text="{Binding GroupsText}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" />
                                                                     <TextBlock Text="{Binding NotesText}" FontSize="{DynamicResource JP.FontSize.11}" Foreground="{DynamicResource JP.WarnTextBrush}" TextWrapping="Wrap" IsVisible="{Binding HasNotes}" />
@@ -4267,8 +4411,13 @@
                      place of the device reference control; its contract: docs/ui/layout-redesign.md. -->
                 <Border IsVisible="{Binding IsLayoutStage}" Padding="0,4,0,0">
                     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
                             <Border Classes="iconBadge large"><PathIcon Data="{StaticResource Icon.Image}" /></Border>
+                            <!-- The layout window (MainWindowViewModel.LayoutWindow.cs): every device for one game and aircraft,
+                                 live, in a window of its own (a second monitor too). -->
+                            <Button x:Name="LayoutWindowButton" Grid.Column="3" Classes="icon" Tag="{StaticResource Icon.Joystick}" Content="{l:T 'Where is what?'}"
+                                    Command="{Binding OpenLayoutWindowCommand}" VerticalAlignment="Center"
+                                    ToolTip.Tip="{l:T 'Every device with what each control does in one game and aircraft, in a window of its own (for a second monitor too); what you press lights up'}" />
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
                                 <TextBlock Classes="pageTitle" Text="{l:T 'Layout'}" />
                                 <TextBlock Classes="pageSubtitle" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
@@ -4417,11 +4566,11 @@
                                          of being cut off. -->
                                     <Border Classes="toolbar" Container.Name="LayoutCanvasBar" Container.Sizing="Width">
                                         <Border.Styles>
-                                            <Style Selector="StackPanel.layoutBarRight">
+                                            <Style Selector="WrapPanel.layoutBarRight">
                                                 <Setter Property="Grid.Column" Value="2" />
                                             </Style>
                                             <ContainerQuery Name="LayoutCanvasBar" Query="max-width:760">
-                                                <Style Selector="StackPanel.layoutBarRight">
+                                                <Style Selector="WrapPanel.layoutBarRight">
                                                     <Setter Property="Grid.Row" Value="1" />
                                                     <Setter Property="Grid.Column" Value="0" />
                                                     <Setter Property="Grid.ColumnSpan" Value="3" />
@@ -4461,7 +4610,8 @@
                                             <TextBlock Grid.Column="1" Classes="caption" VerticalAlignment="Center" IsVisible="{Binding IsLayoutViewMode}" Text="{Binding LayoutLegendSummary}" />
                                             <TextBlock Grid.Column="1" Classes="caption" VerticalAlignment="Center" IsVisible="{Binding IsLayoutBindMode}" TextTrimming="CharacterEllipsis"
                                                        Text="{l:T 'Click an input, then pick what it does on the right. The bind goes into your profile.'}" />
-                                            <StackPanel Classes="layoutBarRight" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <!-- Wraps when the bar is narrow (big text, small window): nothing sticks out of the frame -->
+                                            <WrapPanel Classes="layoutBarRight" ItemSpacing="8" LineSpacing="6" VerticalAlignment="Center">
                                                 <!-- Tables and lines on the reference picture, and what their rows show -->
                                                 <ToggleButton Classes="icon small iconOnly" Tag="{StaticResource Icon.Grid}" IsChecked="{Binding LayoutCalloutsEnabled}"
                                                               IsVisible="{Binding CanShowLayoutCallouts}"
@@ -4490,7 +4640,7 @@
                                                 </Border>
                                                 <Button Classes="icon small accent" Tag="{StaticResource Icon.Save}" Content="{l:T 'Save'}" Command="{Binding SaveWorkspaceCommand}"
                                                         IsEnabled="{Binding CanSaveWorkspace}" ToolTip.Tip="{Binding SaveWorkspaceTip}" />
-                                            </StackPanel>
+                                            </WrapPanel>
                                         </Grid>
                                     </Border>
 
@@ -5735,6 +5885,44 @@
                                             </Grid>
                                         </StackPanel>
                                     </Border>
+
+                                    <!-- Kneeboard (MainWindowViewModel.Kneeboard.cs, engine layout kneeboard): the sheets as kneeboard pages -->
+                                    <Border Classes="surface">
+                                        <StackPanel Spacing="8">
+                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Image}" /></Border>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Classes="h2" Text="{l:T 'Kneeboard'}" />
+                                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                                               Text="{l:T 'Puts the cheat sheet of each aircraft on its kneeboard. JoyPro only adds or replaces its own pages (JoyPro_...); your other kneeboard pages stay as they are.'}" />
+                                                </StackPanel>
+                                            </Grid>
+                                            <WrapPanel ItemSpacing="12" LineSpacing="6">
+                                                <!-- No GroupName: the two bindings keep them apart (a named group shared by two window copies looped) -->
+                                                <RadioButton Content="{l:T 'DCS kneeboard (also OpenKneeboard)'}" IsChecked="{Binding KneeboardToDcs}" />
+                                                <RadioButton Content="{l:T 'A folder of my choice'}" IsChecked="{Binding KneeboardToFolder}" />
+                                            </WrapPanel>
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" IsVisible="{Binding KneeboardToFolder}">
+                                                <TextBox Text="{Binding KneeboardFolder}" Watermark="{l:T 'Folder for the kneeboard pages'}" />
+                                                <Button Grid.Column="1" Classes="small" Click="BrowseKneeboardFolderClicked" Content="{l:T 'Browse...'}" />
+                                            </Grid>
+                                            <WrapPanel ItemSpacing="12" LineSpacing="6">
+                                                <CheckBox Content="{l:T 'All aircraft'}" IsChecked="{Binding KneeboardAllAircraft}"
+                                                          ToolTip.Tip="{l:T 'Off: only the aircraft ticked above.'}" />
+                                                <CheckBox Content="{l:T 'One page with all devices'}" IsChecked="{Binding KneeboardOnePage}" />
+                                                <CheckBox Content="{l:T 'List of the binds in large text'}" IsChecked="{Binding KneeboardListPage}"
+                                                          ToolTip.Tip="{l:T 'Off: the cheat sheet picture, as on the Layout page.'}" />
+                                                <CheckBox Content="{l:T 'Device picture at the top'}" IsChecked="{Binding KneeboardPicture}" IsEnabled="{Binding KneeboardListPage}" />
+                                            </WrapPanel>
+                                            <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                                <TextBlock Classes="label" VerticalAlignment="Center" Text="{l:T 'Name ending'}" />
+                                                <TextBox Text="{Binding KneeboardPostfix}" Width="90" Watermark="_VR" />
+                                                <TextBlock Classes="label" VerticalAlignment="Center" Text="{l:T 'Page height (pixels)'}" />
+                                                <TextBox Text="{Binding KneeboardSize}" Width="70" />
+                                            </WrapPanel>
+                                            <Button Classes="icon accent" Tag="{StaticResource Icon.Export}" Content="{l:T 'Put on the kneeboard'}" Command="{Binding ExportKneeboardCommand}" HorizontalAlignment="Left" />
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
                             </ScrollViewer>
 
@@ -6586,7 +6774,8 @@
                                                                         <DataTemplate x:DataType="models:FfbTelemetryEffectItem">
                                                                             <Grid ColumnDefinitions="330,*,60" ColumnSpacing="8" Margin="0,0,0,2">
                                                                                 <CheckBox Content="{Binding Title}" IsChecked="{Binding Enabled}" ToolTip.Tip="{Binding Name}" />
-                                                                                <Slider Grid.Column="1" Minimum="0" Maximum="200" Value="{Binding Strength}" IsEnabled="{Binding Enabled}" />
+                                                                                <Slider Grid.Column="1" Minimum="0" Maximum="200" Value="{Binding Strength}" IsEnabled="{Binding Enabled}"
+                                                                                        ToolTip.Tip="{l:T 'How strong this effect is, in percent (100 = as the graph makes it)'}" />
                                                                                 <TextBlock Grid.Column="2" Text="{Binding StrengthText}" VerticalAlignment="Center" />
                                                                             </Grid>
                                                                         </DataTemplate>
@@ -6600,7 +6789,8 @@
                                                                             <Grid ColumnDefinitions="180,260,*,60,Auto" ColumnSpacing="8" Margin="0,0,0,4">
                                                                                 <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                                                                 <ComboBox Grid.Column="1" ItemsSource="{Binding GraphOptions}" SelectedItem="{Binding Graph}" HorizontalAlignment="Stretch" />
-                                                                                <Slider Grid.Column="2" Minimum="0" Maximum="200" Value="{Binding Strength}" />
+                                                                                <Slider Grid.Column="2" Minimum="0" Maximum="200" Value="{Binding Strength}"
+                                                                                        ToolTip.Tip="{l:T 'How strong the force feedback is in this aircraft, in percent'}" />
                                                                                 <TextBlock Grid.Column="3" Text="{Binding StrengthText}" VerticalAlignment="Center" />
                                                                                 <Button Grid.Column="4" Content="{l:T 'Remove'}" Command="{Binding #RootWindow.DataContext.RemoveFfbTelemetryAircraftCommand}" CommandParameter="{Binding}" />
                                                                             </Grid>
@@ -7158,6 +7348,24 @@
                                 </StackPanel>
                             </controls:SettingsSection>
 
+                            <!-- Settings > Looking around: the Setup wizard's head-tracking answer (docs/setup-wizard.md#head-tracking). A change
+                                 offers to set up the sims again. -->
+                            <controls:SettingsSection SectionId="looking" Title="{l:T 'Looking around: head tracking or VR'}" Icon="{StaticResource Icon.Eye}">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                               Text="{l:T 'With head tracking (TrackIR, a face tracking webcam, a Tobii eye tracker) or VR you look around by turning your head. Then JoyPro puts no view buttons on your HOTAS in the flight sims, only a button to centre the view.'}" />
+                                    <RadioButton x:Name="SettingsHeadTrackingYesRadio" GroupName="SettingsHeadTracking" IsChecked="{Binding HeadTrackingYes}"
+                                                 Content="{l:T 'Yes – I use head tracking, face tracking, Tobii or VR, or I plan to (no view buttons on the HOTAS)'}" />
+                                    <RadioButton x:Name="SettingsHeadTrackingNoRadio" GroupName="SettingsHeadTracking" IsChecked="{Binding HeadTrackingNo}"
+                                                 Content="{l:T 'No – put looking around on a hat of my stick or throttle'}" />
+                                    <WrapPanel IsVisible="{Binding HasHeadTrackingChangedNote}" ItemSpacing="8" LineSpacing="4">
+                                        <TextBlock Text="{Binding HeadTrackingChangedNote}" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="560" />
+                                        <Button x:Name="SettingsHeadTrackingSetUpAgainButton" Content="{l:T 'Set up again'}" Command="{Binding SetUpAgainForHeadTrackingCommand}"
+                                                ToolTip.Tip="{l:T 'Opens the Setup wizard for these sims'}" />
+                                    </WrapPanel>
+                                </StackPanel>
+                            </controls:SettingsSection>
+
                             <!-- Settings > Pages in the bottom bar (MainWindowViewModel.NavPages.cs): hide pages, drag them (or use the
                                  arrows) into your order. Settings cannot be hidden; a hidden page another page opens shows while open. -->
                             <controls:SettingsSection SectionId="pages" Title="{l:T 'Pages in the bottom bar'}" Icon="{StaticResource Icon.Grid}">
@@ -7200,6 +7408,48 @@
                                     </ItemsControl>
                                     <Button Classes="icon small" Tag="{StaticResource Icon.Undo}" Content="{l:T 'Reset to default'}" Command="{Binding ResetNavPagesCommand}" HorizontalAlignment="Left"
                                             ToolTip.Tip="{l:T 'JoyPro\'s order of the pages, every page shown'}" />
+                                </StackPanel>
+                            </controls:SettingsSection>
+
+                            <controls:SettingsSection SectionId="tours" Title="{l:T 'Tours'}" Icon="{StaticResource Icon.Lightbulb}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock TextWrapping="Wrap"
+                                               Text="{l:T 'A tour shows you around: it points at the real buttons, one step at a time, and waits for your click. Start one any time. F1 (or the Help button) explains any button you click.'}" />
+                                    <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                        <Button Classes="icon accent" Tag="{StaticResource Icon.Lightbulb}" Content="{l:T 'Show the welcome'}" Command="{Binding OpenWelcomeCommand}"
+                                                ToolTip.Tip="{l:T 'The question of the first start: what do you want to do, and which tour fits'}" />
+                                        <Button Classes="icon" Tag="{StaticResource Icon.Help}" Content="{l:T 'Help mode (F1)'}" Command="{Binding ToggleHelpModeCommand}"
+                                                ToolTip.Tip="{l:T 'Click anything to see what it does; F1 or Esc ends it'}" />
+                                        <Button Classes="icon" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Ask again at the next start'}" Command="{Binding ResetToursCommand}"
+                                                ToolTip.Tip="{l:T 'The welcome shows again at the next start, and no tour counts as seen'}" />
+                                    </WrapPanel>
+                                    <!-- Easy words: big cards, the shortest texts (German "du"), help with one plain sentence first. -->
+                                    <ToggleSwitch x:Name="EasyWordsToggle" IsChecked="{Binding EasyWords}" OnContent="{l:T 'Easy words: on'}" OffContent="{l:T 'Easy words: off'}"
+                                                  ToolTip.Tip="{l:T 'Big text and very short sentences in the tours and the help. Good for children and for anyone who wants it simple.'}" />
+                                    <WrapPanel ItemSpacing="16">
+                                        <RadioButton Content="{l:T 'Only the essentials'}" IsChecked="{Binding ToursEssentials}"
+                                                     ToolTip.Tip="{l:T 'The tours below show only the steps you need'}" />
+                                        <RadioButton Content="{l:T 'Every feature'}" IsChecked="{Binding ToursEveryFeature}"
+                                                     ToolTip.Tip="{l:T 'The tours below show every step, also the extras'}" />
+                                    </WrapPanel>
+                                    <ItemsControl x:Name="ToursList" ItemsSource="{Binding TourList}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:TourListItem">
+                                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" Margin="0,3">
+                                                    <StackPanel Spacing="1" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{Binding Description}" Classes="caption" TextWrapping="Wrap" />
+                                                    </StackPanel>
+                                                    <Border Grid.Column="1" Classes="chip ok" IsVisible="{Binding Seen}" VerticalAlignment="Center" ToolTip.Tip="{l:T 'You have seen this tour'}">
+                                                        <TextBlock Text="{Binding SeenText}" />
+                                                    </Border>
+                                                    <Button Grid.Column="2" Classes="icon small" Tag="{StaticResource Icon.Play}" Content="{l:T 'Start tour'}" VerticalAlignment="Center"
+                                                            Command="{Binding #RootWindow.DataContext.StartTourByIdCommand}" CommandParameter="{Binding Id}"
+                                                            ToolTip.Tip="{l:T 'Starts this tour'}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                 </StackPanel>
                             </controls:SettingsSection>
 
@@ -8063,16 +8313,6 @@
                                     </Expander>
                                 </StackPanel>
                             </controls:SettingsSection>
-
-                            <!-- Settings > Experimental (MainWindowViewModel.MultiBind.cs, docs/multi-bind.md): several inputs per relation -->
-                            <controls:SettingsSection SectionId="experimental" Title="{l:T 'Experimental'}" Icon="{StaticResource Icon.Wand}">
-                                <StackPanel Spacing="6">
-                                    <CheckBox x:Name="MultiBindCheckBox" Content="{l:T 'Several inputs per relation (experimental)'}" IsChecked="{Binding MultiBindEnabled}"
-                                              ToolTip.Tip="{l:T 'A relation can have more than one input, each with its own device, modifiers and axis tuning, for example the same grip on two bases. Exports write every input where the game can hold them and name the relations where it cannot. Off: only the main input is used, as before.'}" />
-                                    <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="{DynamicResource JP.FontSize.12}"
-                                               Text="{l:T 'On the Binds page a relation then shows More inputs: record another input, or copy every bind of one device to another device.'}" />
-                                </StackPanel>
-                            </controls:SettingsSection>
                         </controls:SettingsSectionsPanel>
                         </ScrollViewer>
                     </Grid>
@@ -8151,6 +8391,43 @@
                                     ToolTip.Tip="{l:T 'Keep the changes for later; JoyPro asks again'}" />
                             <Button Command="{Binding IgnoreGameChangesCommand}" Content="{l:T 'Ignore these'}" IsEnabled="{Binding CanRun}"
                                     ToolTip.Tip="{l:T 'The profile stays as it is; the next export writes it over the game\'s changes'}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Move to... (MainWindowViewModel.RelationMultiSelect.cs): the selected actions, or every action of the selected
+                     relations, to a new relation (named here) or to an existing relation of the same kind. The radio buttons
+                     follow IsMoveNodesToNew without a GroupName: a GroupName is one group over every window
+                     (FollowInputTests.TwoWindows_RadioChoices_StayInTheirOwnWindow). -->
+                <Border IsVisible="{Binding IsMoveNodesOpen}" ZIndex="104" Background="{DynamicResource JP.OverlayDimBrush}" />
+                <Border x:Name="MoveNodesPanel" IsVisible="{Binding IsMoveNodesOpen}" ZIndex="105" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Width="560" MaxHeight="640" Margin="24" Padding="18" CornerRadius="14" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="2"
+                        Background="{DynamicResource JP.SurfaceBrush}" BoxShadow="0 8 32 0 #80000000">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto" RowSpacing="10">
+                        <TextBlock Text="{Binding MoveNodesTitle}" FontSize="{DynamicResource JP.FontSize.18}" FontWeight="Bold" TextWrapping="Wrap" />
+                        <TextBlock Grid.Row="1" Text="{Binding MoveNodesIntro}" TextWrapping="Wrap" Opacity="0.85" />
+                        <StackPanel Grid.Row="2" Spacing="6">
+                            <RadioButton x:Name="MoveNodesToNewRadio" IsChecked="{Binding IsMoveNodesToNew}" Content="{l:T 'New relation'}" />
+                            <TextBox x:Name="MoveNodesNewNameBox" Text="{Binding MoveNodesNewName}" Watermark="{l:T 'Name of the new relation'}" IsEnabled="{Binding IsMoveNodesToNew}" Margin="26,0,0,0" />
+                        </StackPanel>
+                        <RadioButton Grid.Row="3" x:Name="MoveNodesToExistingRadio" IsChecked="{Binding IsMoveNodesToExisting}" Content="{l:T 'Existing relation (same kind)'}" />
+                        <Grid Grid.Row="4" RowDefinitions="Auto,*,Auto" RowSpacing="6" Margin="26,0,0,0" IsEnabled="{Binding IsMoveNodesToExisting}">
+                            <TextBox x:Name="MoveNodesSearchBox" Text="{Binding MoveNodesSearch}" Watermark="{l:T 'Search relations'}" />
+                            <ListBox Grid.Row="1" x:Name="MoveNodesTargetList" ItemsSource="{Binding MoveNodesTargets}" SelectedItem="{Binding SelectedMoveNodesTarget}"
+                                     MinHeight="80" MaxHeight="260" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBlock Grid.Row="2" Classes="caption" Text="{l:T 'No relation of the same kind fits the search.'}" IsVisible="{Binding HasNoMoveNodesTargets}" TextWrapping="Wrap" />
+                        </Grid>
+                        <TextBlock Grid.Row="5" Text="{Binding MoveNodesStatus}" TextWrapping="Wrap" Foreground="{DynamicResource JP.DangerTextBrush}" IsVisible="{Binding HasMoveNodesStatus}" />
+                        <WrapPanel Grid.Row="6" HorizontalAlignment="Right" ItemSpacing="8" LineSpacing="6">
+                            <Button Content="{l:T 'Cancel'}" Command="{Binding CancelMoveNodesCommand}" />
+                            <Button x:Name="MoveNodesApplyButton" Classes="accent" Content="{l:T 'Move'}" Command="{Binding ApplyMoveNodesCommand}" IsEnabled="{Binding CanApplyMoveNodes}"
+                                    ToolTip.Tip="{l:T 'Moves the actions (Ctrl+Z undoes it)'}" />
                         </WrapPanel>
                     </Grid>
                 </Border>
@@ -8343,7 +8620,7 @@
                     <ToggleButton x:Name="Nav_export" Command="{Binding GoExportCommand}" Classes="nav" Tag="{StaticResource Icon.Export}" Content="{l:T 'Export'}" ToolTip.Tip="{l:T 'Write your binds into the games; backups and undo'}" IsChecked="{Binding IsExportStage}" />
                     <ToggleButton x:Name="Nav_hud" Command="{Binding GoHudCommand}" Classes="nav" Tag="{StaticResource Icon.Monitor}" Content="HUD" IsChecked="{Binding IsHudStage}" ToolTip.Tip="{l:T 'HUD designer: your sticks, throttles and pedals live on screen or for streaming'}" />
                     <ToggleButton x:Name="Nav_ffb" Command="{Binding GoFfbTelemetryCommand}" Classes="nav" Tag="{StaticResource Icon.Vibrate}" Content="{l:T 'Force Feedback'}" IsChecked="{Binding IsFfbTelemetryStage}" ToolTip.Tip="{l:T 'Force feedback from the game\'s telemetry: settings, graph editor, telemetry inspector'}" />
-                    <ToggleButton x:Name="Nav_vjoy" Command="{Binding GoVirtualJoystickCommand}" Classes="nav" Tag="{StaticResource Icon.Joystick}" Content="{l:T 'Virtual Joystick'}" IsChecked="{Binding IsVirtualJoystickStage}" ToolTip.Tip="{l:T 'Virtual joystick (vJoy + HidHide): per game one virtual device instead of your real ones'}" />
+                    <ToggleButton x:Name="Nav_vjoy" Command="{Binding GoVirtualJoystickCommand}" Classes="nav" Tag="{StaticResource Icon.Joystick}" Content="{Binding VirtualJoystickNavTitle}" IsChecked="{Binding IsVirtualJoystickStage}" ToolTip.Tip="{l:T 'Virtual joystick (vJoy + HidHide): per game one virtual device instead of your real ones'}" />
                     <ToggleButton x:Name="Nav_statistics" Command="{Binding GoStatisticsCommand}" Classes="nav" Tag="{StaticResource Icon.Chart}" Content="{l:T 'Statistics'}" IsChecked="{Binding IsStatisticsStage}" IsVisible="False" ToolTip.Tip="{l:T 'Your most played games, aircraft and ships, streaks and fun facts (from your games\' logs, on this PC only)'}" />
                     <ToggleButton x:Name="Nav_cockpits" Command="{Binding GoCockpitsCommand}" Classes="nav" Tag="{StaticResource Icon.Airplane}" Content="{l:T 'Cockpits'}" IsChecked="{Binding IsCockpitsStage}" ToolTip.Tip="{l:T 'Cockpit reference: stick and throttle of real and fictional aircraft per version, with JoyPro\'s drawings, the panels and sources'}" />
                     <ToggleButton x:Name="Nav_settings" Command="{Binding GoSettingsCommand}" Classes="nav" Tag="{StaticResource Icon.Cog}" Content="{l:T 'Settings'}" ToolTip.Tip="{l:T 'Games and their folders, devices, command lists, force feedback, updates, report a problem'}" IsChecked="{Binding IsSettingsStage}" />
@@ -8362,6 +8639,8 @@
             </Grid>
         </Border>
     </Grid>
+    <controls:HelpLayer x:Name="HelpLayer" />
+    </Panel>
     </LayoutTransformControl>
     </Border>
 </Window>

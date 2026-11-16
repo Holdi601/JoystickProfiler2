@@ -57,7 +57,8 @@
     "sources": [
       "https://ts.thrustmaster.com/download/accessories/pc/hotas/manual/hotas_warthog/HOTAS_Warthog_Manual.pdf",
       "https://raw.githubusercontent.com/blob42/Warthog-Hotas-Scripts/master/StarCitizenMappings.tmh (TARGET DX numbering)",
-      "https://images10.newegg.com/UploadFilesForNewegg/itemintelligence/Thrustmaster/hotascontrolmapping1519892968768.pdf"
+      "https://images10.newegg.com/UploadFilesForNewegg/itemintelligence/Thrustmaster/hotascontrolmapping1519892968768.pdf",
+      "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/Joystick - HOTAS Warthog.lua (HOTAS equivalence: S3 = NWS button, S5 = MMCB of the A-10C grip)"
     ],
     "confidence": "high",
     "axes": [
@@ -89,6 +90,7 @@
         "control": "stick.pinky.button",
         "finger": "pinky",
         "type": "momentary",
+        "hotas": "stick.button.index_lower",
         "label": "NWS button (S3, front of the grip, index finger)"
       },
       {
@@ -103,7 +105,8 @@
         "control": "stick.button.index_lower",
         "label": "MMCB (master mode control button, right side of the head)",
         "finger": "index",
-        "type": "momentary"
+        "type": "momentary",
+        "hotas": "stick.pinky.button"
       },
       {
         "input": "JOY_BTN6",
@@ -233,7 +236,9 @@
     "productUrl": "https://www.thrustmaster.com/products/hotas-warthog/",
     "sources": [
       "https://ts.thrustmaster.com/download/accessories/pc/hotas/manual/hotas_warthog/HOTAS_Warthog_Manual.pdf",
-      "https://raw.githubusercontent.com/blob42/Warthog-Hotas-Scripts/master/StarCitizenMappings.tmh"
+      "https://raw.githubusercontent.com/blob42/Warthog-Hotas-Scripts/master/StarCitizenMappings.tmh",
+      "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/Throttle - HOTAS Warthog.lua (HOTAS equivalence: pinky switch, LTB)",
+      "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/Throttle - HOTAS Warthog.diff.lua (HOTAS equivalence: F-16C positions on boat/china/coolie/mic press)"
     ],
     "confidence": "high",
     "axes": [
@@ -271,7 +276,8 @@
         "control": "throttle.hat.mic.press",
         "finger": "thumb",
         "label": "MIC SWITCH",
-        "type": "momentary"
+        "type": "momentary",
+        "hotas": ["throttle.hat.mic.press", "throttle.knob.man_rng.press"]
       },
       {
         "input": "JOY_BTN3",
@@ -320,49 +326,56 @@
         "control": "throttle.boat.fwd",
         "finger": "thumb",
         "label": "BOAT SWITCH",
-        "type": "latched"
+        "type": "latched",
+        "hotas": ["throttle.boat.fwd", "throttle.dogfight.in"]
       },
       {
         "input": "JOY_BTN10",
         "control": "throttle.boat.aft",
         "finger": "thumb",
         "label": "BOAT SWITCH",
-        "type": "latched"
+        "type": "latched",
+        "hotas": ["throttle.boat.aft", "throttle.dogfight.out"]
       },
       {
         "input": "JOY_BTN11",
         "control": "throttle.china.fwd",
         "finger": "thumb",
         "label": "CHINA HAT",
-        "type": "momentary"
+        "type": "momentary",
+        "hotas": ["throttle.china.fwd", "throttle.knob.man_rng.cw"]
       },
       {
         "input": "JOY_BTN12",
         "control": "throttle.china.aft",
         "finger": "thumb",
         "label": "CHINA HAT",
-        "type": "momentary"
+        "type": "momentary",
+        "hotas": ["throttle.china.aft", "throttle.knob.man_rng.ccw"]
       },
       {
         "input": "JOY_BTN13",
         "control": "throttle.pinky.fwd",
         "finger": "pinky",
         "label": "PINKY SWITCH",
-        "type": "latched"
+        "type": "latched",
+        "hotas": "throttle.pinky.lever.fwd"
       },
       {
         "input": "JOY_BTN14",
         "control": "throttle.pinky.aft",
         "finger": "pinky",
         "label": "PINKY SWITCH",
-        "type": "latched"
+        "type": "latched",
+        "hotas": "throttle.pinky.lever.aft"
       },
       {
         "input": "JOY_BTN15",
         "control": "throttle.button.1",
         "finger": "index",
         "label": "LTB (left throttle button)",
-        "type": "momentary"
+        "type": "momentary",
+        "hotas": "throttle.button.laap"
       },
       {
         "input": "JOY_BTN16",
@@ -440,7 +453,7 @@
         "input": "JOY_BTN26",
         "control": "throttle.base.button.2",
         "label": "AUTOPILOT ENGAGE",
-        "type": "latched"
+        "type": "momentary"
       },
       {
         "input": "JOY_BTN27",
@@ -471,7 +484,8 @@
         "control": "throttle.coolie.up",
         "label": "COOLIE SWITCH",
         "finger": "thumb",
-        "type": "momentary"
+        "type": "momentary",
+        "hotas": ["throttle.coolie.up", "throttle.wheel.ant_elev.down"]
       },
       {
         "input": "JOY_BTN_POV1_R",
@@ -485,7 +499,8 @@
         "control": "throttle.coolie.down",
         "label": "COOLIE SWITCH",
         "finger": "thumb",
-        "type": "momentary"
+        "type": "momentary",
+        "hotas": ["throttle.coolie.down", "throttle.wheel.ant_elev.up"]
       },
       {
         "input": "JOY_BTN_POV1_L",
@@ -513,7 +528,9 @@
    "image": "https://www.thrustmaster.com/wp-content/uploads/2023/04/HotasWarthog_DualThrottle_800x800_1-768x768-1.webp",
    "productUrl": "https://www.thrustmaster.com/products/hotas-warthog-dual-throttle/",
    "sources": [
-    "https://ts.thrustmaster.com/download/accessories/pc/hotas/manual/hotas_warthog/HOTAS_Warthog_DualThrottles_Manual.pdf"
+    "https://ts.thrustmaster.com/download/accessories/pc/hotas/manual/hotas_warthog/HOTAS_Warthog_DualThrottles_Manual.pdf",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/Throttle - HOTAS Warthog.lua (HOTAS equivalence: pinky switch, LTB)",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/Throttle - HOTAS Warthog.diff.lua (HOTAS equivalence: F-16C positions on boat/china/coolie/mic press)"
    ],
    "confidence": "medium",
    "axes": [
@@ -551,7 +568,8 @@
      "control": "throttle.hat.mic.press",
      "finger": "thumb",
      "label": "MIC SWITCH",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.hat.mic.press", "throttle.knob.man_rng.press"]
     },
     {
      "input": "JOY_BTN3",
@@ -600,49 +618,56 @@
      "control": "throttle.boat.fwd",
      "finger": "thumb",
      "label": "BOAT SWITCH",
-     "type": "latched"
+     "type": "latched",
+     "hotas": ["throttle.boat.fwd", "throttle.dogfight.in"]
     },
     {
      "input": "JOY_BTN10",
      "control": "throttle.boat.aft",
      "finger": "thumb",
      "label": "BOAT SWITCH",
-     "type": "latched"
+     "type": "latched",
+     "hotas": ["throttle.boat.aft", "throttle.dogfight.out"]
     },
     {
      "input": "JOY_BTN11",
      "control": "throttle.china.fwd",
      "finger": "thumb",
      "label": "CHINA HAT",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.china.fwd", "throttle.knob.man_rng.cw"]
     },
     {
      "input": "JOY_BTN12",
      "control": "throttle.china.aft",
      "finger": "thumb",
      "label": "CHINA HAT",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.china.aft", "throttle.knob.man_rng.ccw"]
     },
     {
      "input": "JOY_BTN13",
      "control": "throttle.pinky.fwd",
      "finger": "pinky",
      "label": "PINKY SWITCH",
-     "type": "latched"
+     "type": "latched",
+     "hotas": "throttle.pinky.lever.fwd"
     },
     {
      "input": "JOY_BTN14",
      "control": "throttle.pinky.aft",
      "finger": "pinky",
      "label": "PINKY SWITCH",
-     "type": "latched"
+     "type": "latched",
+     "hotas": "throttle.pinky.lever.aft"
     },
     {
      "input": "JOY_BTN15",
      "control": "throttle.button.1",
      "finger": "index",
      "label": "LTB (left throttle button)",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.button.laap"
     },
     {
      "input": "JOY_BTN16",
@@ -794,7 +819,8 @@
    "image": "https://www.thrustmaster.com/wp-content/uploads/2026/08/Website_HotasWarthogMKII_PageProductListing.webp",
    "productUrl": "https://www.thrustmaster.com/products/hotas-warthog-mkii/",
    "sources": [
-    "https://ts.thrustmaster.com/download/accessories/Manuals/HOTAS_Warthog_MKII/Hotas_Warthog_MKII_user_manual.pdf"
+    "https://ts.thrustmaster.com/download/accessories/Manuals/HOTAS_Warthog_MKII/Hotas_Warthog_MKII_user_manual.pdf",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/Joystick - HOTAS Warthog.lua (HOTAS equivalence: S3 = NWS button, S5 = MMCB of the A-10C grip)"
    ],
    "confidence": "medium",
    "axes": [
@@ -824,7 +850,8 @@
      "input": "JOY_BTN3",
      "control": "stick.pinky.button",
      "finger": "pinky",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.button.index_lower"
     },
     {
      "input": "JOY_BTN4",
@@ -837,7 +864,8 @@
      "control": "stick.button.index_lower",
      "label": "MMCB (master mode control button, right side of the head)",
      "finger": "index",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.pinky.button"
     },
     {
      "input": "JOY_BTN6",
@@ -964,7 +992,9 @@
    "image": "https://www.thrustmaster.com/wp-content/uploads/2026/08/Website_HotasWarthogMKII_PageProductListing.webp",
    "productUrl": "https://www.thrustmaster.com/products/hotas-warthog-mkii/",
    "sources": [
-    "https://ts.thrustmaster.com/download/accessories/Manuals/HOTAS_Warthog_MKII/Hotas_Warthog_MKII_user_manual.pdf"
+    "https://ts.thrustmaster.com/download/accessories/Manuals/HOTAS_Warthog_MKII/Hotas_Warthog_MKII_user_manual.pdf",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/Throttle - HOTAS Warthog.lua (HOTAS equivalence: pinky switch, LTB)",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/Throttle - HOTAS Warthog.diff.lua (HOTAS equivalence: F-16C positions on boat/china/coolie/mic press)"
    ],
    "confidence": "medium",
    "axes": [
@@ -1002,7 +1032,8 @@
      "control": "throttle.hat.mic.press",
      "finger": "thumb",
      "label": "MIC SWITCH",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.hat.mic.press", "throttle.knob.man_rng.press"]
     },
     {
      "input": "JOY_BTN3",
@@ -1051,49 +1082,56 @@
      "control": "throttle.boat.fwd",
      "finger": "thumb",
      "label": "BOAT SWITCH",
-     "type": "latched"
+     "type": "latched",
+     "hotas": ["throttle.boat.fwd", "throttle.dogfight.in"]
     },
     {
      "input": "JOY_BTN10",
      "control": "throttle.boat.aft",
      "finger": "thumb",
      "label": "BOAT SWITCH",
-     "type": "latched"
+     "type": "latched",
+     "hotas": ["throttle.boat.aft", "throttle.dogfight.out"]
     },
     {
      "input": "JOY_BTN11",
      "control": "throttle.china.fwd",
      "finger": "thumb",
      "label": "CHINA HAT",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.china.fwd", "throttle.knob.man_rng.cw"]
     },
     {
      "input": "JOY_BTN12",
      "control": "throttle.china.aft",
      "finger": "thumb",
      "label": "CHINA HAT",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.china.aft", "throttle.knob.man_rng.ccw"]
     },
     {
      "input": "JOY_BTN13",
      "control": "throttle.pinky.fwd",
      "finger": "pinky",
      "label": "PINKY SWITCH",
-     "type": "latched"
+     "type": "latched",
+     "hotas": "throttle.pinky.lever.fwd"
     },
     {
      "input": "JOY_BTN14",
      "control": "throttle.pinky.aft",
      "finger": "pinky",
      "label": "PINKY SWITCH",
-     "type": "latched"
+     "type": "latched",
+     "hotas": "throttle.pinky.lever.aft"
     },
     {
      "input": "JOY_BTN15",
      "control": "throttle.button.1",
      "finger": "index",
      "label": "LTB (left throttle button)",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.button.laap"
     },
     {
      "input": "JOY_BTN16",
@@ -3002,7 +3040,7 @@
      "AVA [R] AIRBUS Grip",
      "AVA [L] AIRBUS Grip"
     ],
-    "note": "0433 = right-hand, 043B = left-hand variant on AVA base. Numbering not available in the leaflet (full manual online)."
+    "note": "0433 = right-hand, 043B = left-hand variant on AVA base. Numbering not available in the leaflet (full manual online). Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "image": "https://www.thrustmaster.com/wp-content/uploads/2026/06/website-AirbusAddOnGrip-PageProduitListing-800x800-1.webp",
    "productUrl": "https://www.thrustmaster.com/products/airbus-add-on-grip/",
@@ -3011,6 +3049,7 @@
     "https://www.driverscloud.com/en/drivers/manufacturercat/622-15-3/thrustmaster-usb-devices"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "input": "JOY_X",
@@ -3584,7 +3623,9 @@
    "productUrl": "https://www.thrustmaster.com/products/twcs-throttle/",
    "sources": [
     "https://ts.thrustmaster.com/download/accessories/Manuals/TWCS_throttle/TWCS_Throttle_Manual_All.pdf (p.3-4)",
-    "https://github.com/EDCD/EliteCustomButtonNames (T16000MTHROTTLE.buttonMap)"
+    "https://github.com/EDCD/EliteCustomButtonNames (T16000MTHROTTLE.buttonMap)",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/TWCS Throttle.diff.lua (HOTAS equivalence)",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/TWCS Throttle.diff.lua (HOTAS equivalence)"
    ],
    "confidence": "high",
    "axes": [
@@ -3603,6 +3644,7 @@
     {
      "input": "JOY_RZ",
      "control": "throttle.axis.wheel.1",
+     "type": "centring",
      "label": "Rocker axis (paddle on the inner face)"
     },
     {
@@ -3615,13 +3657,15 @@
      "input": "JOY_BTN1",
      "control": "throttle.button.1",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.knob.man_rng.press"
     },
     {
      "input": "JOY_BTN2",
      "control": "throttle.button.2",
      "finger": "pinky",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.button.laap"
     },
     {
      "input": "JOY_BTN3",
@@ -3634,14 +3678,16 @@
      "control": "throttle.button.4",
      "finger": "thumb",
      "label": "rocker up",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.wheel.ant_elev.up"
     },
     {
      "input": "JOY_BTN5",
      "control": "throttle.button.5",
      "finger": "thumb",
      "label": "rocker down",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.wheel.ant_elev.down"
     },
     {
      "input": "JOY_BTN6",
@@ -3661,7 +3707,8 @@
      "control": "throttle.hat.1.right",
      "finger": "thumb",
      "label": "saddle",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.boat.fwd"
     },
     {
      "input": "JOY_BTN9",
@@ -3675,7 +3722,8 @@
      "control": "throttle.hat.1.left",
      "finger": "thumb",
      "label": "saddle",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.boat.aft"
     },
     {
      "input": "JOY_BTN11",
@@ -3689,7 +3737,8 @@
      "control": "throttle.hat.2.right",
      "finger": "thumb",
      "label": "castle",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.speedbrake.fwd"
     },
     {
      "input": "JOY_BTN13",
@@ -3703,35 +3752,40 @@
      "control": "throttle.hat.2.left",
      "finger": "thumb",
      "label": "castle",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.speedbrake.aft"
     },
     {
      "input": "JOY_BTN_POV1_U",
      "control": "throttle.hat.3.up",
      "finger": "thumb",
      "label": "cone POV",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.coolie.up"
     },
     {
      "input": "JOY_BTN_POV1_R",
      "control": "throttle.hat.3.right",
      "finger": "thumb",
      "label": "cone POV",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.dogfight.in", "throttle.coolie.right"]
     },
     {
      "input": "JOY_BTN_POV1_D",
      "control": "throttle.hat.3.down",
      "finger": "thumb",
      "label": "cone POV",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "throttle.coolie.down"
     },
     {
      "input": "JOY_BTN_POV1_L",
      "control": "throttle.hat.3.left",
      "finger": "thumb",
      "label": "cone POV",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["throttle.dogfight.out", "throttle.coolie.left"]
     }
    ]
   },
@@ -3769,7 +3823,8 @@
     },
     {
      "input": "JOY_RZ",
-     "control": "throttle.axis.wheel.1"
+     "control": "throttle.axis.wheel.1",
+     "type": "centring"
     },
     {
      "input": "JOY_SLIDER1",
@@ -3919,7 +3974,9 @@
    "productUrl": "https://www.thrustmaster.com/products/t-16000m-fcs/",
    "sources": [
     "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf (fig.3/4)",
-    "https://github.com/EDCD/EliteCustomButtonNames (T16000M.buttonMap)"
+    "https://github.com/EDCD/EliteCustomButtonNames (T16000M.buttonMap)",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/T.16000M.diff.lua (HOTAS equivalence)",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/T.16000M.diff.lua (HOTAS equivalence: trim roll directions)"
    ],
    "confidence": "high",
    "axes": [
@@ -3945,52 +4002,60 @@
      "input": "JOY_BTN1",
      "control": "stick.trigger.stage1",
      "finger": "index",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["stick.trigger.stage1", "stick.trigger.stage2"]
     },
     {
      "input": "JOY_BTN2",
      "control": "stick.button.thumb.1",
      "finger": "thumb",
      "label": "rear / thumb button",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.pinky.lever"
     },
     {
      "input": "JOY_BTN3",
      "control": "stick.button.thumb.2",
      "finger": "thumb",
      "label": "head button left",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.weapon_release"
     },
     {
      "input": "JOY_BTN4",
      "control": "stick.button.thumb.3",
      "finger": "thumb",
      "label": "head button right",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.button.index_lower"
     },
     {
      "input": "JOY_BTN_POV1_U",
      "control": "stick.hat.tms.up",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.trim.up"
     },
     {
      "input": "JOY_BTN_POV1_R",
      "control": "stick.hat.tms.right",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.trim.right"
     },
     {
      "input": "JOY_BTN_POV1_D",
      "control": "stick.hat.tms.down",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.trim.down"
     },
     {
      "input": "JOY_BTN_POV1_L",
      "control": "stick.hat.tms.left",
      "finger": "thumb",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": "stick.hat.trim.left"
     },
     {
      "input": "JOY_BTN5",
@@ -4217,7 +4282,9 @@
     "https://ts.thrustmaster.com/download/pictures/PCMAC/TFH4/CPL_TFH4_Fw25.png",
     "https://github.com/machinedgod/tflight4",
     "https://github.com/richardbuckle/EDRefCard/blob/dev/www/scripts/bindingsData.py",
-    "https://github.com/richardbuckle/EDRefCard/blob/dev/bindings/Defaults%203.3/DeviceMappings.xml"
+    "https://github.com/richardbuckle/EDRefCard/blob/dev/bindings/Defaults%203.3/DeviceMappings.xml",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/T.Flight Hotas X.diff.lua (HOTAS equivalence; the Hotas 4 keeps the Hotas X button numbering)",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/T.Flight Hotas X.diff.lua (HOTAS equivalence; the Hotas 4 keeps the Hotas X button numbering)"
    ],
    "confidence": "medium",
    "axes": [
@@ -4239,7 +4306,8 @@
     },
     {
      "input": "JOY_SLIDER1",
-     "control": "throttle.axis.wheel.1"
+     "control": "throttle.axis.wheel.1",
+     "type": "centring"
     }
    ],
    "controls": [
@@ -4247,7 +4315,8 @@
      "input": "JOY_BTN1",
      "control": "stick.trigger.stage1",
      "finger": "index",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["stick.trigger.stage1", "stick.trigger.stage2"]
     },
     {
      "input": "JOY_BTN_POV1_U",
@@ -4278,6 +4347,7 @@
      "control": "stick.button.thumb.1",
      "finger": "thumb",
      "type": "momentary",
+     "hotas": "stick.weapon_release",
      "label": "L1"
     },
     {
@@ -4320,6 +4390,7 @@
      "control": "throttle.button.4",
      "finger": "thumb",
      "type": "momentary",
+     "hotas": "throttle.knob.man_rng.press",
      "label": "Triangle"
     },
     {
@@ -4327,6 +4398,7 @@
      "control": "throttle.button.5",
      "finger": "index",
      "type": "momentary",
+     "hotas": "stick.pinky.button",
      "label": "R2"
     },
     {
@@ -4366,7 +4438,7 @@
      "T.Flight Hotas 5 PS5",
      "T.Flight Hotas 5 PS4"
     ],
-    "note": "2804 = PC mode, 2803 = PS5 mode, B67B = PS4 mode. Button numbering not published."
+    "note": "2804 = PC mode, 2803 = PS5 mode, B67B = PS4 mode. Button numbering not published. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "image": "https://support.thrustmaster.com/wp-content/uploads/TFH5_MSFE-1024x835.jpg",
    "productUrl": "https://www.thrustmaster.com/products/t-flight-hotas-5-microsoft-flight-simulator-edition/",
@@ -4375,6 +4447,7 @@
     "https://www.driverscloud.com/en/drivers/manufacturercat/622-15-3/thrustmaster-usb-devices"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "input": "JOY_X",
@@ -4394,7 +4467,8 @@
     },
     {
      "input": "JOY_SLIDER1",
-     "control": "throttle.axis.wheel.1"
+     "control": "throttle.axis.wheel.1",
+     "type": "centring"
     }
    ],
    "controls": [
@@ -4443,7 +4517,7 @@
      "T.Flight Hotas One",
      "Thrustmaster T.Flight Hotas One"
     ],
-    "note": "B68D = normal device, B68B = bulk/firmware device. 8 axes incl. 3 pedal axes; 4/6-axis vs 5/8-axis mode toggled with the Xbox Guide button; throttle rocker = separate axis in 5/8 mode. Button numbers not published (Xbox-style labels A/B/X/Y/View/Menu)."
+    "note": "B68D = normal device, B68B = bulk/firmware device. 8 axes incl. 3 pedal axes; 4/6-axis vs 5/8-axis mode toggled with the Xbox Guide button; throttle rocker = separate axis in 5/8 mode. Button numbers not published (Xbox-style labels A/B/X/Y/View/Menu). Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "image": "https://www.thrustmaster.com/wp-content/uploads/2021/09/SF_List-T-FLIGHT-HOTAS-ONE-XBOX-X-S-PC-1-1.png",
    "productUrl": "https://www.thrustmaster.com/products/t-flight-hotas-one/",
@@ -4452,6 +4526,7 @@
     "https://linux-hardware.org/?id=usb:044f-b68d"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "input": "JOY_X",
@@ -4471,7 +4546,8 @@
     },
     {
      "input": "JOY_SLIDER1",
-     "control": "throttle.axis.wheel.1"
+     "control": "throttle.axis.wheel.1",
+     "type": "centring"
     }
    ],
    "controls": [
@@ -4528,7 +4604,9 @@
     "https://linux-hardware.org/?id=usb:044f-b108",
     "https://github.com/richardbuckle/EDRefCard/blob/dev/www/scripts/bindingsData.py",
     "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/ThrustMaster/T-Flight-Hotas-X.xml",
-    "https://github.com/richardbuckle/EDRefCard/blob/dev/bindings/Defaults%203.3/DeviceMappings.xml"
+    "https://github.com/richardbuckle/EDRefCard/blob/dev/bindings/Defaults%203.3/DeviceMappings.xml",
+    "DCS World Mods/aircraft/F-16C/Input/F-16C/joystick/T.Flight Hotas X.diff.lua (HOTAS equivalence)",
+    "DCS World Mods/aircraft/A-10C_2/Input/A-10C_2/joystick/T.Flight Hotas X.diff.lua (HOTAS equivalence)"
    ],
    "confidence": "medium",
    "axes": [
@@ -4550,7 +4628,8 @@
     },
     {
      "input": "JOY_SLIDER1",
-     "control": "throttle.axis.wheel.1"
+     "control": "throttle.axis.wheel.1",
+     "type": "centring"
     }
    ],
    "controls": [
@@ -4558,7 +4637,8 @@
      "input": "JOY_BTN1",
      "control": "stick.trigger.stage1",
      "finger": "index",
-     "type": "momentary"
+     "type": "momentary",
+     "hotas": ["stick.trigger.stage1", "stick.trigger.stage2"]
     },
     {
      "input": "JOY_BTN_POV1_U",
@@ -4589,6 +4669,7 @@
      "control": "stick.button.thumb.1",
      "finger": "thumb",
      "type": "momentary",
+     "hotas": "stick.weapon_release",
      "label": "L1 (2)"
     },
     {
@@ -4631,6 +4712,7 @@
      "control": "throttle.button.4",
      "finger": "thumb",
      "type": "momentary",
+     "hotas": "throttle.knob.man_rng.press",
      "label": "8"
     },
     {
@@ -4638,6 +4720,7 @@
      "control": "throttle.button.5",
      "finger": "index",
      "type": "momentary",
+     "hotas": "stick.pinky.button",
      "label": "R2 (9)"
     },
     {
@@ -4671,7 +4754,7 @@
     "names": [
      "T.Flight Hotas NEO"
     ],
-    "note": "New 2026 products (Ace Combat 8 edition); USB VID:PID not found publicly."
+    "note": "New 2026 products (Ace Combat 8 edition); USB VID:PID not found publicly. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "image": "https://support.thrustmaster.com/wp-content/uploads/TFlight_NEO_X.jpg",
    "productUrl": "https://www.thrustmaster.com/products/t-flight-hotas-neo-ace-combat-8-wings-of-theve-edition-ps/",
@@ -4679,6 +4762,7 @@
     "https://ts.thrustmaster.com/download/accessories/Manuals/TFHNEO/T-Flight_Hotas_NEO_XBOX_user_manual.pdf"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "stick.axis.roll"
@@ -4797,12 +4881,14 @@
      "T.A320 Pilot",
      "T.A320 Copilot"
     ],
-    "note": "Left-hand/right-hand selector under the base; 0405 = Pilot, 0406 = Copilot (same stick, different mode). Quadrant/rudder attached to the stick's USB host port show up as separate virtual devices."
+    "note": "Left-hand/right-hand selector under the base; 0405 = Pilot, 0406 = Copilot (same stick, different mode). Manual p.1: one digital trigger (button 1) + 15 action buttons + virtual button 17; fig. 3/4 draw button 2 as its own element above the trigger, so it is no second trigger stage. The red (priority takeover) and black head modules can be swapped between the sides; the buttons report by side (3 left, 4 right), not by module. Quadrant/rudder attached to the stick's USB host port show up as separate virtual devices."
    },
    "image": "https://www.thrustmaster.com/wp-content/uploads/2023/03/P_List-TCA-sidestick-joystick-Airbus-1-1-768x768-1.webp",
    "productUrl": "https://www.thrustmaster.com/products/tca-sidestick-airbus-edition/",
    "sources": [
-    "https://ts.thrustmaster.com/download/accessories/Manuals/TCA_Sidestick/TCA_Sidestick_AE_User_Manual.pdf (fig.3/4)"
+    "https://ts.thrustmaster.com/download/accessories/Manuals/TCA_Sidestick/TCA_Sidestick_AE_User_Manual.pdf (fig.3/4)",
+    "https://ts.thrustmaster.com/download/pictures/Mappings/Mapping-TCASidestick_MFS.png (Thrustmaster default MSFS mapping)",
+    "EngineOnly_Runtime/DB/DeviceLayouts/thrustmaster-tca-sidestick-airbus.main.json (mappingSource)"
    ],
    "confidence": "high",
    "axes": [
@@ -4827,12 +4913,14 @@
     {
      "input": "JOY_BTN1",
      "control": "stick.trigger.stage1",
+     "label": "trigger (single-stage digital trigger)",
      "finger": "index",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN2",
-     "control": "stick.trigger.stage2",
+     "control": "stick.button.index.1",
+     "label": "button 2 above the trigger (front of the head)",
      "finger": "index",
      "type": "momentary"
     },
@@ -4840,14 +4928,14 @@
      "input": "JOY_BTN3",
      "control": "stick.button.thumb.1",
      "finger": "thumb",
-     "label": "left head button",
+     "label": "left head button (red or black module, swappable)",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN4",
      "control": "stick.button.thumb.2",
      "finger": "thumb",
-     "label": "right head button",
+     "label": "right head button (red or black module, swappable)",
      "type": "momentary"
     },
     {
@@ -4951,7 +5039,7 @@
      "control": "stick.base.button.13",
      "finger": "hand",
      "label": "virtual button: thrust reverser (first 20% of throttle slider)",
-     "type": "latched"
+     "type": "detent"
     }
    ]
   },
@@ -4970,13 +5058,14 @@
      "TCA Sidestick X Pilot",
      "TCA Sidestick X CoPilot"
     ],
-    "note": "040E = left-handed/Pilot mode, 040F = right-handed/Copilot mode (selector under the base). Interchangeable button modules; top buttons 20/21/22 are View/Xbox/Menu."
+    "note": "040E = left-handed/Pilot mode, 040F = right-handed/Copilot mode (selector under the base). Manual p.3: one digital trigger (9); the PC mapping (p.17) draws button 2 as its own element above trigger button 1, so it is no second trigger stage. Interchangeable button modules; top buttons 20/21/22 are View/Xbox/Menu."
    },
    "image": "https://www.thrustmaster.com/wp-content/uploads/2023/03/SidestickX-website-800x800-listing-1-768x768-1.webp",
    "productUrl": "https://www.thrustmaster.com/products/tca-sidestick-x-airbus-edition/",
    "sources": [
     "https://ts.thrustmaster.com/download/accessories/Manuals/TCA_sidestick_X/TCA_Sidestick_X_AE_User_manual.pdf (PC mapping, p.17)",
-    "https://www.driverscloud.com/en/drivers/manufacturercat/622-15-3/thrustmaster-usb-devices"
+    "https://www.driverscloud.com/en/drivers/manufacturercat/622-15-3/thrustmaster-usb-devices",
+    "https://ts.thrustmaster.com/download/accessories/Manuals/TCA_sidestick_X/TCA_Sidestick_X_AE_User_manual.pdf (p.3 features, p.17 PC mapping)"
    ],
    "confidence": "high",
    "axes": [
@@ -5001,12 +5090,14 @@
     {
      "input": "JOY_BTN1",
      "control": "stick.trigger.stage1",
+     "label": "trigger (single-stage digital trigger)",
      "finger": "index",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN2",
-     "control": "stick.trigger.stage2",
+     "control": "stick.button.index.1",
+     "label": "button 2 above the trigger (front of the head)",
      "finger": "index",
      "type": "momentary"
     },
@@ -5125,7 +5216,7 @@
      "control": "stick.base.button.13",
      "finger": "hand",
      "label": "virtual button: thrust reverser (first 20% of throttle slider)",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN18",
@@ -5176,12 +5267,16 @@
      "TCA Q-Eng 1&2",
      "TCA Q-Eng 3&4"
     ],
-    "note": "Selector switch picks engines 1&2 (0407) or 3&4 (0408). Virtual buttons 9-16 are the detents (can be disabled in the control panel). Axis order lever1=X, lever2=Y taken from 'X and Y axes for throttle' in the manual."
+    "note": "Selector switch picks engines 1&2 (0407) or 3&4 (0408). Virtual buttons 9-16 are the detents (can be disabled in the control panel). Axis order lever1=X, lever2=Y taken from 'X and Y axes for throttle' in the manual. Manual p.4: 3 / 4 = ENG 1 / ENG 2 master switches (lift-and-flip ON/OFF switches that stay put; the manual does not say which state reports the button, a forum owner reports it is held while the switch is ON), 7&8 = the CRANK / NORM / IGN START engine mode knob, NORM has no button (forum owner: 7 = CRANK, 8 = IGN START; the manual only writes '7&8'). Detents 9-12 left lever, 13-16 right lever, top to bottom in the manual's figure; the manual does not name them (TOGA / FLX-MCT / CL / IDLE / reverse), so they stay numbered."
    },
    "image": "https://www.thrustmaster.com/wp-content/uploads/2023/03/ListProduit-TCA_Quadrant-1-pichi-768x768-2.webp",
    "productUrl": "https://www.thrustmaster.com/products/tca-quadrant-airbus-edition/",
    "sources": [
-    "https://ts.thrustmaster.com/download/accessories/Manuals/TCA_Quadrant/TCA_Quadrant_Airbus_Edition_user_manual.pdf (p.4)"
+    "https://ts.thrustmaster.com/download/accessories/Manuals/TCA_Quadrant/TCA_Quadrant_Airbus_Edition_user_manual.pdf (p.4)",
+    "https://ts.thrustmaster.com/download/pictures/Mappings/Mapping-TCAQuadrant_MFS.png (Thrustmaster suggested MSFS mapping: lever end buttons = autothrottle disconnect, knob left = CRANK, right = IGN/Start)",
+    "https://forums.flightsimulator.com/t/thrustmaster-tca-quadrant-still-not-completely-working/309593 (owner MoparChrgr69: button 7 = crank, 8 = start, NORM has no button)",
+    "https://forums.flightsimulator.com/t/thrustmaster-tca-qurdrant-norm-mode-trick/332916 (owner NeoKingRthur: engine switches are persistent, button active while ON)",
+    "EngineOnly_Runtime/DB/DeviceLayouts/thrustmaster-tca-quadrant-airbus.main.json (mappingSource)"
    ],
    "confidence": "medium",
    "axes": [
@@ -5198,106 +5293,114 @@
     {
      "input": "JOY_BTN1",
      "control": "quadrant.button.1",
+     "label": "THR 1 lever end button (A/THR disconnect)",
      "finger": "hand",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN2",
      "control": "quadrant.button.2",
+     "label": "THR 2 lever end button, red (A/THR disconnect)",
      "finger": "hand",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN3",
      "control": "quadrant.button.3",
+     "label": "ENG 1 MASTER",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN4",
      "control": "quadrant.button.4",
+     "label": "ENG 2 MASTER",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN5",
      "control": "quadrant.button.5",
+     "label": "square button left of the ENG MODE knob",
      "finger": "hand",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN6",
      "control": "quadrant.button.6",
+     "label": "square button right of the ENG MODE knob",
      "finger": "hand",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN7",
      "control": "quadrant.button.7",
+     "label": "ENG MODE CRANK",
      "finger": "hand",
-     "type": "momentary"
+     "type": "selector"
     },
     {
      "input": "JOY_BTN8",
      "control": "quadrant.button.8",
+     "label": "ENG MODE IGN START",
      "finger": "hand",
-     "type": "momentary"
+     "type": "selector"
     },
     {
      "input": "JOY_BTN9",
      "control": "quadrant.detent.1",
      "finger": "hand",
      "label": "lever 1 detent 1",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN10",
      "control": "quadrant.detent.2",
      "finger": "hand",
      "label": "lever 1 detent 2",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN11",
      "control": "quadrant.detent.3",
      "finger": "hand",
      "label": "lever 1 detent 3",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN12",
      "control": "quadrant.detent.4",
      "finger": "hand",
      "label": "lever 1 detent 4",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN13",
      "control": "quadrant.detent.5",
      "finger": "hand",
      "label": "lever 2 detent 1",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN14",
      "control": "quadrant.detent.6",
      "finger": "hand",
      "label": "lever 2 detent 2",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN15",
      "control": "quadrant.detent.7",
      "finger": "hand",
      "label": "lever 2 detent 3",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN16",
      "control": "quadrant.detent.8",
      "finger": "hand",
      "label": "lever 2 detent 4",
-     "type": "latched"
+     "type": "detent"
     }
    ]
   },
@@ -5316,12 +5419,14 @@
      "TCA Q-Eng 1&2",
      "TCA Q-Eng 3&4"
     ],
-    "note": "Modules plug into the Quadrant via SATA; their 15 buttons and 2 axes appear on the quadrant's USB device. Speed brake lever = ZR (RZ), flaps/lever module = Z. 17-21 and 22-26 are the engine master/start switches and selectors (exact positions not named in the manual)."
+    "note": "Modules plug into the Quadrant via SATA; their 15 buttons and 2 axes appear on the quadrant's USB device. Speed brake lever = ZR (RZ), flaps/lever module = Z. Manual p.6: speed brake module = 21 gear lever, 22-26 the five positions of the AUTO BRK knob, 27-31 speed brake virtual detent buttons; flaps module = 17 round black button, 18-19 the white RUD TRIM knob, 20 PARK BRK. Thrustmaster's MSFS mapping names 17 rudder trim reset, 18 / 19 rudder trim left / right, 20 parking brake, 21 gear, 23 / 24 / 26 autobrake LO / MED / HI; 22 and 25 are not named. Which gear lever / PARK BRK state reports the button is not documented."
    },
    "image": "https://www.thrustmaster.com/wp-content/uploads/2023/03/tca-quadrant-add-on-airbus-edition-pc-768x768-2.webp",
    "productUrl": "https://www.thrustmaster.com/products/tca-quadrant-add-on-airbus-edition/",
    "sources": [
-    "https://ts.thrustmaster.com/download/accessories/Manuals/TCA_Quadrant/TCA_Quadrant_Add-On_Airbus_Edition_user_manual.pdf (p.6)"
+    "https://ts.thrustmaster.com/download/accessories/Manuals/TCA_Quadrant/TCA_Quadrant_Add-On_Airbus_Edition_user_manual.pdf (p.6)",
+    "https://ts.thrustmaster.com/download/pictures/Mappings/Mapping-TCAQuadrantAddOn_MFS.png (Thrustmaster suggested MSFS mapping with button numbers)",
+    "EngineOnly_Runtime/DB/DeviceLayouts/thrustmaster-tca-quadrant-addon-airbus.main.json (mappingSource)"
    ],
    "confidence": "medium",
    "axes": [
@@ -5338,97 +5443,107 @@
     {
      "input": "JOY_BTN17",
      "control": "quadrant.button.17",
+     "label": "round black button (flaps module)",
      "finger": "hand",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN18",
      "control": "quadrant.button.18",
+     "label": "RUD TRIM knob left (flaps module)",
      "finger": "hand",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN19",
      "control": "quadrant.button.19",
+     "label": "RUD TRIM knob right (flaps module)",
      "finger": "hand",
      "type": "momentary"
     },
     {
      "input": "JOY_BTN20",
      "control": "quadrant.button.20",
+     "label": "PARK BRK",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN21",
      "control": "quadrant.button.21",
+     "label": "GEAR lever",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN22",
      "control": "quadrant.button.22",
+     "label": "AUTO BRK knob position (button 22)",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN23",
      "control": "quadrant.button.23",
+     "label": "AUTO BRK LO",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN24",
      "control": "quadrant.button.24",
+     "label": "AUTO BRK MED",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN25",
      "control": "quadrant.button.25",
+     "label": "AUTO BRK knob position (button 25)",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN26",
      "control": "quadrant.button.26",
+     "label": "AUTO BRK HI",
      "finger": "hand",
-     "type": "momentary"
+     "type": "latched"
     },
     {
      "input": "JOY_BTN27",
      "control": "quadrant.detent.9",
      "finger": "hand",
      "label": "speed brake detent 1",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN28",
      "control": "quadrant.detent.10",
      "finger": "hand",
      "label": "speed brake detent 2",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN29",
      "control": "quadrant.detent.11",
      "finger": "hand",
      "label": "speed brake detent 3",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN30",
      "control": "quadrant.detent.12",
      "finger": "hand",
      "label": "speed brake detent 4",
-     "type": "latched"
+     "type": "detent"
     },
     {
      "input": "JOY_BTN31",
      "control": "quadrant.detent.13",
      "finger": "hand",
      "label": "speed brake detent 5",
-     "type": "latched"
+     "type": "detent"
     }
    ]
   },
@@ -5783,7 +5898,7 @@
     "names": [
      "TCA Sky Yoke"
     ],
-    "note": "New (2026) product; USB VID:PID and numbering not yet published in sources found."
+    "note": "New (2026) product; USB VID:PID and numbering not yet published in sources found. Catalog lists only part of the controls (incomplete: the full button numbering is not verified from a readable source)."
    },
    "image": "https://www.thrustmaster.com/wp-content/uploads/2026/09/Website-TCASkyYoke_Xbox-PageProduitListing-800x800-1.png",
    "productUrl": "https://www.thrustmaster.com/products/tca-sky-yoke-xbox-pc/",
@@ -5792,6 +5907,7 @@
     "https://www.thrustmaster.com/products/tca-sky-yoke-playstation-pc/"
    ],
    "confidence": "low",
+   "incomplete": true,
    "axes": [
     {
      "control": "yoke.axis.roll"

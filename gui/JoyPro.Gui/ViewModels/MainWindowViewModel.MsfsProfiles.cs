@@ -14,7 +14,7 @@ namespace JoyPro.Gui.ViewModels;
 // which profile got them or why the import file has them instead.
 public sealed partial class MainWindowViewModel
 {
-    // On: the export writes into the user's own MSFS 2024 profiles (engine default; off: --user-profiles false).
+    // On: the export writes into the user's MSFS 2024 profiles (engine default; off: --user-profiles false).
     [ObservableProperty]
     private bool msfsWriteUserProfiles = true;
 

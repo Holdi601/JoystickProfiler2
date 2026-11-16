@@ -19,8 +19,9 @@ public static class ReadableNames
     public static string Control(string? control, string? label = null)
     {
         string text = (label ?? string.Empty).Trim();
+        // A printed label stays as printed, except the shapes on PlayStation-style buttons (Square, Cross ...).
         if (text.Length > 0)
-            return text;
+            return FunctionNames.TranslateLabel(text);
         string c = (control ?? string.Empty).Trim();
         if (c.Length == 0)
             return string.Empty;

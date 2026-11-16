@@ -5,7 +5,8 @@ using JoyPro.Engine.VJoy;
 namespace JoyPro.VJoy;
 
 /// <summary>
-/// JoyPro.VJoy bench [--functions 50] [--rate 240] [--seconds 10] [--sources 4]: the forwarding loop without devices.
+/// JoyPro.VJoy bench [--functions 50] [--rate 240] [--seconds 10] [--sources 4] [--xbox-curves]: the forwarding loop
+/// without devices. --xbox-curves adds the virtual Xbox pad's table with an axis curve (lookup table) on all six pad axes.
 /// Synthetic sources change every pass (every axis moves, buttons and hats toggle), the loop runs on the same
 /// high-resolution waitable timer as the forwarder, applies the table, evaluates the virtual functions, merges them and
 /// writes the dry sink when a position changed. It reports the work per pass (what a pass adds to the input latency),
@@ -14,16 +15,16 @@ namespace JoyPro.VJoy;
 /// </summary>
 internal static class Bench
 {
-    public static int Run(int functions, int rateHz, int seconds, int sources, Action<string> output)
+    public static int Run(int functions, int rateHz, int seconds, int sources, Action<string> output, bool xboxCurves = false)
     {
         rateHz = Math.Clamp(rateHz, 30, 1000);
         seconds = Math.Clamp(seconds, 1, 600);
         sources = Math.Clamp(sources, 1, 16);
         output("bench functions=" + functions.ToString(CultureInfo.InvariantCulture) + " rate=" + rateHz.ToString(CultureInfo.InvariantCulture) +
-               " seconds=" + seconds.ToString(CultureInfo.InvariantCulture) + " sources=" + sources.ToString(CultureInfo.InvariantCulture));
-        var baseline = Measure(0, rateHz, seconds, sources);
+               " seconds=" + seconds.ToString(CultureInfo.InvariantCulture) + " sources=" + sources.ToString(CultureInfo.InvariantCulture) + (xboxCurves ? " xbox-curves=6" : ""));
+        var baseline = Measure(0, rateHz, seconds, sources, xboxCurves);
         output(baseline.Describe("table only"));
-        var loaded = Measure(functions, rateHz, seconds, sources);
+        var loaded = Measure(functions, rateHz, seconds, sources, xboxCurves);
         output(loaded.Describe("with functions"));
         output("result functions=" + functions.ToString(CultureInfo.InvariantCulture) + " rate=" + rateHz.ToString(CultureInfo.InvariantCulture) +
                " work-us-avg=" + loaded.AvgWorkUs.ToString("0.0", CultureInfo.InvariantCulture) + " work-us-p99=" + loaded.P99WorkUs.ToString("0.0", CultureInfo.InvariantCulture) +
@@ -56,16 +57,23 @@ internal static class Bench
     }
 
     // One measured run on its own thread (the forwarder's loop runs on its own thread, too).
-    public static Result Measure(int functions, int rateHz, int seconds, int sources)
+    public static Result Measure(int functions, int rateHz, int seconds, int sources, bool xboxCurves = false)
     {
         Result? result = null;
-        var thread = new Thread(() => result = MeasureOnThread(functions, rateHz, seconds, sources)) { Name = "JoyPro vJoy bench", Priority = ThreadPriority.AboveNormal };
+        var thread = new Thread(() => result = MeasureOnThread(functions, rateHz, seconds, sources, xboxCurves)) { Name = "JoyPro vJoy bench", Priority = ThreadPriority.AboveNormal };
         thread.Start();
         thread.Join();
         return result!;
     }
 
-    private static unsafe Result MeasureOnThread(int functions, int rateHz, int seconds, int sources)
+    // A curve as the engine sends it (dead zone, curvature, saturation; AxisModels.Sample of the base model).
+    internal static double[] BenchCurve()
+    {
+        var tuning = new JoyPro.Engine.Axis.AxisTuning { Deadzone = 0.05, SaturationY = 0.9, Curvature = [0.3] };
+        return JoyPro.Engine.Axis.AxisModels.Sample(JoyPro.Engine.Axis.AxisModels.Get(JoyPro.Engine.Axis.AxisModels.Dcs), tuning, 1025).Select(p => p.Value).ToArray();
+    }
+
+    private static unsafe Result MeasureOnThread(int functions, int rateHz, int seconds, int sources, bool xboxCurves)
     {
         var config = new ForwarderConfig
         {
@@ -88,8 +96,17 @@ internal static class Bench
                 config.Slots.Add(new ForwarderSlot(s, "hat", 0, 1, s));
         }
 
+        if (xboxCurves)
+        {
+            var curve = BenchCurve();
+            string[] pad = ["XB_LX", "XB_LY", "XB_RX", "XB_RY", "XB_LT", "XB_RT"];
+            for (var a = 0; a < pad.Length; a++)
+                config.Xbox.Add(new XboxSlotConfig(0, "axis", a, pad[a]) { Curve = curve });
+        }
+
         var sink = new DrySink();
         var table = new ForwardingTable(config);
+        var xbox = xboxCurves ? new XboxTable(config) : null;
         var runtime = config.Functions.Count > 0 ? new VfRuntime(config.Functions, sources, table.DeviceIds.Length, 0, 32767, new DryKeySink()) : null;
         var states = Enumerable.Range(0, sources).Select(_ => new byte[ForwardingTable.StateSize]).ToArray();
         foreach (var state in states)
@@ -152,6 +169,7 @@ internal static class Bench
             {
                 VfBenchmark.Drive(states[s], s, passes, 0, 32767);
                 table.Apply(s, states[s]);
+                xbox?.Apply(s, states[s]);
                 if (runtime is not null)
                     Buffer.BlockCopy(states[s], 0, runtime.State(s)!, 0, ForwardingTable.StateSize);
             }

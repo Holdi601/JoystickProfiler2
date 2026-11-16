@@ -146,7 +146,7 @@ engine --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" profile sav
 <!-- entry: profile games -->
 :::layer beginner
 Lists the games, and for DCS the aircraft, that the profile has relations for, with how many of them are bound. That
-is what an export to each game would write. The Export page builds its tiles from it (its **Refresh** runs it), and so
+is what an export to each game would write. The Export page builds its cards from it (its **Refresh** runs it), and so
 does the export from a Start page card.
 
 ```powershell
@@ -169,6 +169,39 @@ engine --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" profile gam
   `InstallPath`, `Disabled`), or a text table with `--text`; `--out` writes it to a file.
 - Exit code `0`.
 - Related: [[cli:dcs export]], [[cli:games installs]], [[cli:profile summary]].
+:::
+
+<!-- entry: profile head-tracking -->
+:::layer beginner
+Keeps your answer to the question "Do you use head tracking or VR?" in the profile. **yes**: you look around by
+turning your head, so the setup puts no look buttons on your HOTAS in the flight sims, only a button to recenter the
+view. **no**: looking around goes on a hat of your stick or throttle, with a high priority. **clear** removes the
+answer. Without a value it only shows the answer. **Settings > Looking around** runs it.
+
+```powershell
+engine --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" profile head-tracking yes --text
+```
+:::
+
+:::layer advanced
+- No value: read-only, shows `yes`, `no` or `not asked`.
+- `yes` (also `true`, `on`, `1`): in the sims that support head tracking or VR, Auto Group makes no look-around
+  relation (snap views, look axes) and the suggestions propose no look command. The recenter, zoom, padlock and the
+  camera views stay.
+- `no` (also `false`, `off`, `0`): the setup places looking around on a hat, right after the fight essentials and the
+  trim.
+- `clear`: the answer is removed; the setup then plans like `no` until the question is answered again.
+- Look relations the profile already has stay as they are.
+- [[cli:setup plan]] without `--head-tracking` uses this answer; [[cli:setup apply]] writes the plan's answer into the
+  profile.
+:::
+
+:::layer technical
+- Output: JSON `{"HeadTracking": "yes"|"no"|""}`, or with `--text` the line `Head Tracking: yes`, `no` or `not asked`.
+- With a value the profile is saved (one profile version, so it can be undone).
+- Exit code `1` with `engine profile head-tracking takes yes, no or clear.` for another value, or with the usage line
+  for more than one value; else `0`.
+- Related: [[cli:setup plan]], [[cli:setup apply]], [[cli:relations auto-group]], [[cli:relations suggest]].
 :::
 
 <!-- entry: profile auto-added -->
@@ -1267,7 +1300,7 @@ engine db refresh-starcitizen --install-path "D:\Games\StarCitizen" --branch LIV
 :::layer beginner
 Lists every game JoyPro supports: installed or not, where, how it was found, and where it keeps its controls. Import,
 export, scan and refresh are refused for games that are not installed. The GUI builds the Settings > Games cards, the
-Start page cards and the export tiles from it; **Detect again** (Settings) and **Look again** (Start page) run it.
+Start page cards and the export cards from it; **Detect again** (Settings) and **Look again** (Start page) run it.
 
 ```powershell
 engine games installs --game DCS --text
@@ -1301,7 +1334,7 @@ engine games install disable WarThunder X4
 
 :::layer advanced
 - One or more game ids (separated by spaces or commas); `enable` takes the same list.
-- A hidden game: import, export, scan and refresh are refused, it gets no export tile and the watcher does not watch
+- A hidden game: import, export, scan and refresh are refused, it gets no export card and the watcher does not watch
   it ([[cli:sync status]] shows `disabled`).
 - Saved in `games-disabled.json` in `%LOCALAPPDATA%\JoyPro2`. No game file is touched.
 :::

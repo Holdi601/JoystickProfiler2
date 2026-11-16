@@ -12,12 +12,11 @@ then on JoyPro keeps it in one place.
 :::
 
 ```mermaid
+%% caption: Import only reads. The game keeps its binds exactly as they are.
 flowchart LR
-  G["Game files<br/>(read only)"] --> S["engine &lt;game&gt; import"]
-  D["Connected devices"] --> S
-  L["The game's command list<br/>(built on your PC)"] --> S
-  S --> P["Profile: relations,<br/>binds, modifiers, curves"]
-  M["JoyPro's own data next<br/>to the game file (.jp ...)"] -. names, groups .-> S
+  G["Your game's<br/>control files"] --> I["Import"]
+  D["Your connected<br/>devices"] --> I
+  I --> P["Your profile:<br/>relations, binds,<br/>modifiers, curves"]
 ```
 
 :::layer beginner
@@ -44,6 +43,12 @@ change is saved and can be undone, also after a restart).
 **Nothing.** Import only reads the game's files. The game keeps its binds exactly as they are, whether you export
 later or not.
 
+### Import, then let JoyPro fill the gaps
+
+On the Start page, the card "Set up your devices" lists games where you made binds yourself. **Import, then fill the
+gaps** imports such a game first. Then **Now fill the gaps...** puts the important functions on the buttons that are
+still free. Your own binds stay. For games already in your profile, the card offers **Fill the gaps...**.
+
 ### Before your first import: the command list
 
 JoyPro needs to know the commands of each game (their names and ids). It builds this list once from your own
@@ -56,13 +61,13 @@ card offers **Update** after a game update. This takes from a few seconds to a f
 
 | Option | Default | Effect |
 |---|---|---|
-| Add to my profile / Start over | Add | Add merges into the open profile (`--merge`); Start over replaces its relations after a confirmation and a copy of the profile. |
-| Also take the keyboard keys | your last choice | Flight commands bound to keys come in too (`--include-keyboard true`). |
-| Also import devices that are not connected | on | Devices that are not plugged in now are imported too (useful for a stick you connect later). Off: they are skipped and counted (DCS: `--only-connected true`). |
-| Treat devices with the same name as one device | on | Windows gives a device a new ID now and then; its old and new files are read as one device on the connected ID (`--merge-same-name true`). Two identical devices plugged in at once stay apart. |
+| Add to my profile / Start over | Add | Add merges into the open profile; Start over replaces its relations after a confirmation and a copy of the profile. |
+| Also take the keyboard keys | your last choice | Flight commands bound to keys come in too. |
+| Also import devices that are not connected | on | Devices that are not plugged in now are imported too (useful for a stick you connect later). Off: they are skipped and counted. |
+| Treat devices with the same name as one device | on | Windows gives a device a new ID now and then; its old and new files are read as one device on the connected ID. Two identical devices plugged in at once stay apart. |
 | Include defaults (DCS, expert form) | on | Every default bind DCS has active for an imported device comes in, so that import followed by a Replace + Also clear export leaves DCS as it was. Your own binds win over a default on the same input. |
 | Import inverted / slider / curvature / deadzone / saturation (expert form) | off | Takes values set **in the game** for binds JoyPro did not export itself. A bind JoyPro exported gets its tuning back without these. |
-| DCS: ignore *_easy aircraft | off | The easy-mode copies of aircraft are left out (`--ignore-easy-planes true`). |
+| DCS: ignore *_easy aircraft | off | The easy-mode copies of aircraft are left out. |
 
 The **expert import** (Start page, below the cards, and the Advanced page) offers every engine option per game with
 **Scan** (preview), **Import** and **Export**. Every choice is remembered for the next import.
@@ -85,7 +90,7 @@ a name built from the game's action and the groups `DCS`, `IL2` or `GENERATED` +
 ### Two guards
 
 - **Changes not exported yet.** If you changed binds in JoyPro and have not exported them to this game, an import
-  would bring the old binds back. JoyPro asks first ([[cli:sync pending]]).
+  would bring the old binds back. JoyPro asks first.
 - **Already imported?** When the profile has the game, changes you make in the game later come in through the
   **game watcher** (it asks after the game closes); importing again stays one click.
 :::
@@ -93,14 +98,14 @@ a name built from the game's action and the groups `DCS`, `IL2` or `GENERATED` +
 :::ingame What the import reads, per kind of game
 Import never writes into a game folder. What it reads:
 
-- **DCS**: `Saved Games\DCS\Config\Input\<aircraft>\{joystick,keyboard}\*.diff.lua` and `modifiers.lua`, plus the
-  defaults of each device from the clean profiles JoyPro built from your DCS install (for "Include defaults").
-- **IL-2 Great Battles / Korea**: `data\input\*.actions` and the axis responses.
-- **Star Citizen**: `actionmaps.xml` of the branch (LIVE, PTU ...), with the game's joystick defaults on js1.
-- **Games with infantry or vehicles** (War Thunder, Arma, Reforger, WARDOGS ...): only the flight actions of the
-  file; everything else is ignored, not deleted.
-- **MSFS**: the input profiles of the sim (Steam remote folder or the Microsoft Store save) and, on request, the sim's
-  default presets.
+- **DCS**: the binds of every aircraft and device, your modifiers, and with "Include defaults" the default binds DCS
+  has for each device.
+- **IL-2 Great Battles / Korea**: the key mapping and the axis responses.
+- **Star Citizen**: the keybindings of the branch (LIVE, PTU ...), with the game's joystick defaults on js1.
+- **Games with infantry or vehicles** (War Thunder, Arma, Reforger, WARDOGS ...): only the flight actions;
+  everything else is ignored, not deleted.
+- **MSFS**: the input profiles of the sim (Steam or the Microsoft Store version) and, on request, the sim's default
+  presets.
 
 Devices the game cannot tell apart (two devices of one model in some games) and half-axis binds (Elite) are skipped
 and named in the result.
@@ -124,6 +129,19 @@ and named in the result.
    `<data>\ProfileHistory` (Undo works across restarts).
 4. **Watcher.** An import of a game without a sync record records the game's files, so changes you make in the game
    later are noticed (`<data>\Sync\<game>.json`).
+
+### The files it reads
+
+| Game | Files |
+|---|---|
+| DCS | `Saved Games\DCS\Config\Input\<aircraft>\{joystick,keyboard}\*.diff.lua` and `modifiers.lua`, plus the clean profiles JoyPro built from your DCS install |
+| IL-2 Great Battles / Korea | `data\input\*.actions` and the axis responses |
+| Star Citizen | `actionmaps.xml` of the branch |
+| MSFS | the Steam remote folder or the Microsoft Store save |
+
+The options of the GUI as engine options: Add `--merge`, keyboard `--include-keyboard true`, devices not connected
+`--only-connected false`, same name `--merge-same-name true`, easy aircraft `--ignore-easy-planes true`. The guard for
+changes not exported yet is [[cli:sync pending]].
 
 Engine commands: [[cli:dcs import]], [[cli:dcs scan]], [[cli:il2 import]], [[cli:starcitizen import]] and
 `engine <game> import` for every registry game (for example [[cli:warthunder import]], [[cli:msfs2024 import]]).

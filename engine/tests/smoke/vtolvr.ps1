@@ -416,7 +416,7 @@ try {
     $env:JOYPRO_VTOLVR_MOD_DIR = Join-Path $vmDir "not-subscribed"
     $vmStatus = (Run-Engine @("vtolvr", "mod", "status")).Output | ConvertFrom-Json
     Assert-True (-not $vmStatus.ModInstalled) "vtolvr mod status should report the mod as missing."
-    Assert-Match $vmStatus.License "no license" "the status should say the mod has no license."
+    Assert-Match $vmStatus.License "no license" "the status should carry the licence text."
     Assert-True ($vmStatus.WorkshopItem -eq "3276352374" -and $vmStatus.ListedSize -gt 0) "the status should name the Workshop item and its size."
     $vmRefused = Run-Engine @("vtolvr", "mod", "prepare")
     Assert-True ($vmRefused.ExitCode -ne 0) "vtolvr mod prepare must refuse without --accept-license."

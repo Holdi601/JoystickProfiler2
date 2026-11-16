@@ -1,0 +1,254 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:help="using:JoyPro.Gui.Services.Help"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Class="JoyPro.Gui.Views.Controls.HelpLayer"
+             x:DataType="vm:MainWindowViewModel">
+    <!-- F1's help mode, the tours, the welcome and the quick setup over every page (docs/ui/help-and-tours.md). The
+         window places the cards and outlines (MainWindow.Help.cs); nothing here catches a click unless it is shown. -->
+    <UserControl.Styles>
+        <Style Selector="Border.helpCard">
+            <Setter Property="Background" Value="{DynamicResource JP.SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource JP.AccentBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="16,14" />
+            <Setter Property="BoxShadow" Value="0 8 28 0 #70000000" />
+        </Style>
+        <Style Selector="TextBlock.helpHeading">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.12}" />
+            <Setter Property="Foreground" Value="{DynamicResource JP.AccentTextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.tourText">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.15}" />
+        </Style>
+        <Style Selector="TextBlock.welcomeTitle">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.14}" />
+        </Style>
+        <Style Selector="Border.big TextBlock.tourText">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.18}" />
+        </Style>
+        <Style Selector="TextBlock.tourTitle">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.16}" />
+        </Style>
+        <Style Selector="Border.big TextBlock.tourTitle">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.20}" />
+        </Style>
+        <Style Selector="Border.big TextBlock.tourWait">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.16}" />
+        </Style>
+        <Style Selector="Border.big Button.tourNext">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.16}" />
+            <Setter Property="Padding" Value="18,8" />
+        </Style>
+        <Style Selector="Border.helpOutline">
+            <Setter Property="BorderBrush" Value="{DynamicResource JP.AccentBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+        <!-- The tour's control glows, so it stands out even where the dim is faint (a dark page in the dark theme). -->
+        <Style Selector="Border#TourOutline">
+            <Setter Property="BoxShadow" Value="0 0 18 6 #CC3B82F6" />
+        </Style>
+        <!-- Skip and End tour are quiet text links, so Next is the one button that goes on. -->
+        <Style Selector="Button.tourLink">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="6,4" />
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.12}" />
+            <Setter Property="Foreground" Value="{DynamicResource JP.TextMutedBrush}" />
+        </Style>
+        <Style Selector="Button.tourLink /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="TextBlock.TextDecorations" Value="Underline" />
+        </Style>
+        <Style Selector="Border.easy TextBlock.welcomeText">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.16}" />
+        </Style>
+        <Style Selector="Border.easy TextBlock.welcomeTitle">
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.18}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel x:Name="LayerRoot">
+        <!-- Help mode: a click anywhere lands here first (the help cursor), so nothing below runs. -->
+        <Border x:Name="HelpCatcher" Background="Transparent" Cursor="Help" IsVisible="{Binding IsHelpModeOn}" />
+
+        <Canvas x:Name="MarkCanvas">
+            <!-- The tour: the rest of the window dimmed, the step's control outlined (its hole lets the click through). -->
+            <Border x:Name="DimTop" Background="{DynamicResource JP.TourDimBrush}" IsVisible="False" />
+            <Border x:Name="DimBottom" Background="{DynamicResource JP.TourDimBrush}" IsVisible="False" />
+            <Border x:Name="DimLeft" Background="{DynamicResource JP.TourDimBrush}" IsVisible="False" />
+            <Border x:Name="DimRight" Background="{DynamicResource JP.TourDimBrush}" IsVisible="False" />
+            <Border x:Name="TourOutline" Classes="helpOutline" BorderThickness="3" IsVisible="False" />
+            <Border x:Name="HoverOutline" Classes="helpOutline" BorderThickness="2" Opacity="0.7" IsVisible="False" />
+            <Border x:Name="HelpOutline" Classes="helpOutline" BorderThickness="3" IsVisible="False" />
+
+            <!-- The help popup: what this does, where it fits, what happens next, the wiki. -->
+            <Border x:Name="HelpCard" Classes="helpCard" MaxWidth="420" IsVisible="{Binding IsHelpPopupOpen}">
+                <StackPanel Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="{Binding HelpTopic.KindName, FallbackValue=''}" Classes="caption" />
+                            <TextBlock Text="{Binding HelpTopic.Title, FallbackValue=''}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="Bold" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Button x:Name="HelpCardClose" Grid.Column="1" Classes="icon iconOnly small" Tag="{StaticResource Icon.Close}" VerticalAlignment="Top"
+                                Command="{Binding CloseHelpPopupCommand}" AutomationProperties.Name="{l:T 'Close'}" ToolTip.Tip="{l:T 'Close this help (help mode stays on)'}" />
+                    </Grid>
+                    <!-- One plain sentence first (at most 12 words); the details below it, closed with easy words. -->
+                    <TextBlock x:Name="HelpLead" Text="{Binding HelpTopic.Lead, FallbackValue=''}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
+                    <ItemsControl ItemsSource="{Binding HelpTopic.MenuEntries, FallbackValue={x:Null}}" IsVisible="{Binding HelpTopic.HasMenuEntries, FallbackValue=False}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="help:HelpMenuEntry">
+                                <TextBlock TextWrapping="Wrap" Margin="8,1,0,1">
+                                    <Run Text="• " /><Run Text="{Binding Title}" FontWeight="SemiBold" /><Run Text="  " /><Run Text="{Binding What}" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button x:Name="HelpDetailsButton" Classes="tourLink" Content="{Binding HelpDetailsLabel}" Command="{Binding ToggleHelpDetailsCommand}" HorizontalAlignment="Left"
+                            ToolTip.Tip="{l:T 'Shows or hides the longer explanation'}" />
+                    <StackPanel x:Name="HelpDetails" Spacing="8" IsVisible="{Binding IsHelpDetailsOpen}">
+                    <TextBlock Text="{Binding HelpTopic.What, FallbackValue=''}" TextWrapping="Wrap" IsVisible="{Binding HelpTopic.HasWhatDetail, FallbackValue=False}" />
+                    <StackPanel Spacing="2" IsVisible="{Binding HelpTopic.HasFits, FallbackValue=False}">
+                        <TextBlock Classes="helpHeading" Text="{l:T 'Why it matters'}" />
+                        <TextBlock Text="{Binding HelpTopic.Fits, FallbackValue=''}" TextWrapping="Wrap" Opacity="0.9" />
+                    </StackPanel>
+                    <StackPanel Spacing="2" IsVisible="{Binding HelpTopic.HasNext, FallbackValue=False}">
+                        <TextBlock Classes="helpHeading" Text="{l:T 'What happens next'}" />
+                        <TextBlock Text="{Binding HelpTopic.Next, FallbackValue=''}" TextWrapping="Wrap" Opacity="0.9" />
+                    </StackPanel>
+                    <StackPanel Spacing="2" IsVisible="{Binding HelpTopic.HasWords, FallbackValue=False}">
+                        <TextBlock Classes="helpHeading" Text="{l:T 'Words explained'}" />
+                        <ItemsControl ItemsSource="{Binding HelpTopic.Words, FallbackValue={x:Null}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="help:HelpWord">
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.9">
+                                        <Run Text="{Binding Word}" FontWeight="SemiBold" /><Run Text=": " /><Run Text="{Binding Explanation}" />
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                    </StackPanel>
+                    <Button x:Name="HelpWikiLink" Classes="icon small" Tag="{StaticResource Icon.Send}" Content="{l:T 'More in the wiki'}" HorizontalAlignment="Left"
+                            Command="{Binding OpenHelpWikiCommand}" ToolTip.Tip="{l:T 'Opens this control\'s page of the JoyPro wiki in your browser'}" />
+                </StackPanel>
+            </Border>
+
+            <!-- A step of a tour. -->
+            <Border x:Name="TourCard" Classes="helpCard" Classes.big="{Binding TourIsBig}" MaxWidth="460" IsVisible="{Binding IsTourActive}">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="{Binding TourCounter}" Classes="caption" />
+                    <TextBlock Classes="tourTitle" Text="{Binding TourTitle}" FontWeight="Bold" TextWrapping="Wrap" />
+                    <!-- A small drawn picture: what an axis, the pretend controller or Export is. -->
+                    <StackPanel x:Name="TourPicturePanel" Spacing="4" IsVisible="{Binding TourHasPicture}">
+                        <controls:TourPicture x:Name="TourPictureView" Kind="{Binding TourPicture}" Height="96" HorizontalAlignment="Stretch" />
+                        <TextBlock Text="{Binding TourPictureCaption}" Classes="caption" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Classes="tourText" Text="{Binding TourText}" TextWrapping="Wrap" />
+                    <!-- The step waits for the user's click: said in normal text, with the hand, not as a small caption. -->
+                    <Border x:Name="TourWaitBox" IsVisible="{Binding TourShowsWaitHint}" Background="{DynamicResource JP.AccentSoftBrush}" CornerRadius="8" Padding="10,6">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Data="{StaticResource Icon.ArrowRight}" Width="14" Height="14" Foreground="{DynamicResource JP.AccentTextBrush}" VerticalAlignment="Center" />
+                            <TextBlock Classes="tourWait" Text="{Binding TourWaitHint}" TextWrapping="Wrap" FontWeight="SemiBold" Foreground="{DynamicResource JP.AccentTextBrush}" MaxWidth="380" />
+                        </StackPanel>
+                    </Border>
+                    <Button x:Name="TourQuickSetupButton" Classes="icon accent tourNext" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Set it all up for me'}" Command="{Binding TourDoActionCommand}"
+                            IsVisible="{Binding TourShowsQuickSetupAction}" HorizontalAlignment="Left"
+                            ToolTip.Tip="{l:T 'JoyPro puts the game\'s controls on your stick and shows you the result'}" />
+                    <Button x:Name="TourJoyPro1Button" Classes="small accent" Content="{l:T 'Open my JoyPro 1 profile'}" Command="{Binding OpenJoyPro1ProfileCommand}"
+                            IsVisible="{Binding TourShowsJoyPro1Offer}" HorizontalAlignment="Left"
+                            ToolTip.Tip="{l:T 'Opens a copy of the profile JoyPro 1 used last (last.pr0file in Documents, folder JoyPro). JoyPro 1\'s own file stays as it is.'}" />
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                        <Button x:Name="TourBackButton" Classes="icon small" Tag="{StaticResource Icon.ArrowLeft}" Content="{l:T 'Back'}" Command="{Binding TourBackCommand}"
+                                IsEnabled="{Binding TourCanGoBack}" ToolTip.Tip="{l:T 'The step before'}" VerticalAlignment="Center" />
+                        <WrapPanel Grid.Column="1" ItemSpacing="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <!-- Easy words in the moment they are needed (the first start may skip the welcome's switch). -->
+                            <Button x:Name="TourEasyWordsButton" Classes="tourLink" Content="{Binding TourWordsLabel}" Command="{Binding ToggleEasyWordsCommand}"
+                                    ToolTip.Tip="{l:T 'Big text and very short sentences in the tours and the help. Change it any time in Settings > Tours.'}" />
+                            <Button x:Name="TourSkipButton" Classes="tourLink" Content="{l:T 'Skip'}" Command="{Binding TourSkipCommand}" IsVisible="{Binding TourShowsSkip}"
+                                    ToolTip.Tip="{l:T 'Leave this step out and go to the next one'}" />
+                            <Button x:Name="TourEndButton" Classes="tourLink" Content="{l:T 'End tour'}" Command="{Binding EndTourCommand}"
+                                    ToolTip.Tip="{l:T 'End the tour (start it again with the Help button > Tours)'}" />
+                        </WrapPanel>
+                        <Button x:Name="TourNextButton" Grid.Column="2" Classes="icon tourNext" Classes.accent="{Binding !TourShowsQuickSetupAction}" Tag="{StaticResource Icon.ArrowRight}" Content="{Binding TourNextLabel}"
+                                Command="{Binding TourNextCommand}" ToolTip.Tip="{l:T 'The next step (a step that asks you to open a page opens it for you)'}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Canvas>
+
+        <!-- Help mode is on: the line at the top says how to end it. -->
+        <Border x:Name="HelpModeBanner" IsVisible="{Binding IsHelpModeOn}" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,6,0,0"
+                Padding="12,6" CornerRadius="10" Background="{DynamicResource JP.AccentBrush}" BoxShadow="0 4 16 0 #60000000">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <PathIcon Data="{StaticResource Icon.Help}" Width="16" Height="16" Foreground="{DynamicResource JP.OnAccentTextBrush}" />
+                <TextBlock Text="{l:T 'Help mode: click anything to see what it does. F1 or Esc ends it.'}" Foreground="{DynamicResource JP.OnAccentTextBrush}"
+                           VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="560" />
+                <Button x:Name="HelpModeEndButton" Classes="small" Content="{l:T 'End help mode'}" Command="{Binding EndHelpModeCommand}"
+                        ToolTip.Tip="{l:T 'Back to normal: clicks run the buttons again (F1 or Esc does the same)'}" />
+            </StackPanel>
+        </Border>
+
+        <!-- The welcome: what do you want to do? (once per user, Settings > Tours, "JoyPro 2 - Tour"). -->
+        <Panel x:Name="WelcomePanel" IsVisible="{Binding IsWelcomeOpen}">
+            <Border Background="{DynamicResource JP.OverlayDimBrush}" />
+            <Border x:Name="WelcomeCard" Classes="helpCard" Classes.easy="{Binding EasyWords}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="720" Margin="24" Padding="22,18">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="{l:T 'Welcome to JoyPro 2'}" FontSize="{DynamicResource JP.FontSize.20}" FontWeight="Bold" TextWrapping="Wrap" />
+                        <TextBlock Classes="welcomeText" Text="{l:T 'What do you want to do? Pick one.'}" TextWrapping="Wrap" />
+                        <!-- Why one answer is picked already: above the answers, where it is read. -->
+                        <TextBlock x:Name="WelcomeSuggestionText" Classes="welcomeText" Text="{Binding WelcomeSuggestion}" TextWrapping="Wrap" Opacity="0.85" />
+                        <ItemsControl x:Name="WelcomeOptionsList" ItemsSource="{Binding WelcomeOptions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:WelcomeOption">
+                                    <RadioButton IsChecked="{Binding IsSelected}" Margin="0,2" HorizontalAlignment="Stretch"
+                                                 HorizontalContentAlignment="Stretch">
+                                        <StackPanel Spacing="1">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Classes="welcomeTitle" Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                <Border Classes="chip ok" IsVisible="{Binding IsSuggested}" Padding="6,0" VerticalAlignment="Center"
+                                                        ToolTip.Tip="{l:T 'JoyPro suggests this from the games it found on this PC'}">
+                                                    <TextBlock Text="{l:T 'suggested'}" FontSize="{DynamicResource JP.FontSize.11}" />
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Classes="welcomeText" Text="{Binding Description}" TextWrapping="Wrap" Opacity="0.8" />
+                                        </StackPanel>
+                                    </RadioButton>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <StackPanel Spacing="4" IsVisible="{Binding IsWelcomeTourPicked}">
+                            <TextBlock Classes="welcomeText" Text="{l:T 'How long a tour?'}" FontWeight="SemiBold" />
+                            <WrapPanel ItemSpacing="16">
+                                <RadioButton Content="{l:T 'Short'}" IsChecked="{Binding WelcomeEssentials}"
+                                             ToolTip.Tip="{l:T 'The shortest way: only the steps you need'}" />
+                                <RadioButton Content="{l:T 'Long, with every extra'}" IsChecked="{Binding WelcomeEveryFeature}"
+                                             ToolTip.Tip="{l:T 'Every step, also the extras'}" />
+                            </WrapPanel>
+                        </StackPanel>
+                        <!-- Easy words: big cards and the shortest texts (also in Settings > Tours). -->
+                        <CheckBox x:Name="WelcomeEasyWords" IsChecked="{Binding EasyWords}"
+                                  ToolTip.Tip="{l:T 'Big text and very short sentences in the tours and the help. Change it any time in Settings > Tours.'}">
+                            <TextBlock Classes="welcomeText" Text="{l:T 'Easy words: big text, short sentences'}" TextWrapping="Wrap" />
+                        </CheckBox>
+                        <WrapPanel ItemSpacing="8" LineSpacing="6">
+                            <Button x:Name="WelcomeStartButton" Classes="icon accent" Tag="{StaticResource Icon.Play}" Content="{Binding WelcomeStartLabel}"
+                                    Command="{Binding StartWelcomeChoiceCommand}" ToolTip.Tip="{Binding WelcomeStartTip}" />
+                            <Button x:Name="WelcomeLaterButton" Content="{l:T 'Not now'}" Command="{Binding SkipWelcomeCommand}"
+                                    IsVisible="{Binding IsWelcomeTourPicked}"
+                                    ToolTip.Tip="{l:T 'Closes the welcome; it does not come back by itself'}" />
+                        </WrapPanel>
+                        <TextBlock Classes="caption" TextWrapping="Wrap"
+                                   Text="{l:T 'Come back here any time: the Help button > Tours, Settings > Tours, or the \'JoyPro 2 - Tour\' entry next to JoyPro.'}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Panel>
+
+    </Panel>
+</UserControl>

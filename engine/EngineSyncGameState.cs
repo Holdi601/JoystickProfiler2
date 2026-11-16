@@ -20,6 +20,10 @@ namespace JoyPro.Engine
         public bool ExportedByRecord { get; set; }
         public bool GameHasBinds { get; set; }
         public int GameBindCount { get; set; }
+        // Of them on game devices (not the keyboard or mouse): what the Start page's auto setup asks about.
+        public int GameJoystickBindCount { get; set; }
+        // The game's control files were read (false: the game was not found, or the profile already decided its state).
+        public bool GameFilesRead { get; set; }
         public List<string> Warnings { get; set; }
 
         public EngineProfileGameState()
@@ -61,7 +65,10 @@ namespace JoyPro.Engine
             return (InternalDataManagement.SyncedGames ?? new List<string>()).Contains(reason + "|" + gameId, StringComparer.OrdinalIgnoreCase);
         }
 
-        public static EngineProfileGameState GameState(string gameName, string explicitPath)
+        // decidedByProfile (setup games --status-only): given the game's id, true when the profile alone decides what the
+        // caller wants to know; the game's control files then stay unread (they are the slow part: DCS reads every
+        // aircraft's files).
+        public static EngineProfileGameState GameState(string gameName, string explicitPath, Func<string, bool> decidedByProfile = null)
         {
             EngineProfileGameState state = new EngineProfileGameState();
             state.Game = gameName ?? string.Empty;
@@ -81,6 +88,8 @@ namespace JoyPro.Engine
             if (!location.Exists)
                 return state;
             state.ConfigPath = location.ConfigPath;
+            if (state.Imported || state.Exported || (decidedByProfile != null && decidedByProfile(game.Id)))
+                return state;
 
             // A profile that exported before 2.5.0 has no SyncedGames entry; the sync record of that export still says
             // which binds it wrote. Most of the profile's binds being those means this profile exported there.
@@ -105,7 +114,9 @@ namespace JoyPro.Engine
             List<string> readErrors = new List<string>();
             Dictionary<string, Relation> scratch;
             List<SyncEntry> entries = ReadCurrent(game, location, null, readWarnings, readErrors, out scratch);
+            state.GameFilesRead = true;
             state.GameBindCount = readErrors.Count == 0 ? entries.Count : 0;
+            state.GameJoystickBindCount = readErrors.Count == 0 ? entries.Count(e => !e.IsKeyboard && !string.Equals(e.Device.Trim(), "Mouse", StringComparison.OrdinalIgnoreCase) && e.Device.Trim().Length > 0) : 0;
             state.GameHasBinds = state.GameBindCount > 0;
             state.Warnings.AddRange(readErrors);
             return state;

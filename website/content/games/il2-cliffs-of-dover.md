@@ -18,17 +18,28 @@ manage.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E{"engine il2codblitz<br/>or il2cod export"}
-  E -->|Blitz| B["Device name =<br/>product name + hash<br/>of its USB path"]
-  E -->|original| O["Joystick, Joystick1 ...<br/>(Windows' order)"]
-  B --> F["Documents / 1C SoftClub /<br/>il-2 sturmovik cliffs of dover /<br/>confUser.ini"]
-  O --> F
-  F --> G["The game's controls page"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep the game closed
+:::
+
+**Before**: start the game once, then close it.
+
+**Then**: your binds are on the game's controls page.
+
+Did you bind buttons in Cliffs of Dover before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
+## Look around without head tracking
+
+No TrackIR, no VR? The setup puts the snap views on one hat of your stick: forward, back, left and right. See
+[[page:how-do-i/head-tracking.html|Head tracking and looking around]].
+
 ## What JoyPro does for Cliffs of Dover
 
 - **Import**: your binds on sticks, throttles and pedals come into your profile, with chords (several inputs held
@@ -36,7 +47,7 @@ flowchart LR
 - **Relations**: one relation is one function in all your games ("Gear" in Cliffs of Dover, IL-2 Great Battles and
   DCS on the same button).
 - **Export**: JoyPro writes the flight sections of `confUser.ini`. Blitz and the original are two games in JoyPro
-  (two cards and tiles) because they name devices differently; both write the same file.
+  (two cards on the Start page and on the Export page) because they name devices differently; both write the same file.
 
 ## Import your binds
 
@@ -57,10 +68,10 @@ games. Use the [[page:flows/relations.html|relations flow]] to join them, then p
 
 1. **Close the game.** JoyPro refuses to write while Blitz (`Launcher64.exe`) or the original runs. The game writes
    `confUser.ini` when it closes.
-2. Open **Export** and use the tile of the game you play (both tiles write the same file, each with its own device
+2. Open **Export** and use the card of the game you play (both cards write the same file, each with its own device
    names).
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -125,7 +136,7 @@ path and how the page shows JoyPro's binds are not confirmed yet: the live check
 - **Granularity**: global. One file for all aircraft; axis settings are per command, not per device axis.
 - **Axis settings** (axis model `il2cod`): aileron, elevator and rudder have sensitivity (0 linear to 1 most curved),
   centre dead zone and end dead zone; the other axes a dead zone at the low and the high end; the throttles keep their
-  five values as imported. A curve set for all games is fitted (dead zone to the centre, saturation to the end, a
+  five values as imported. The **Default curve** is fitted (dead zone to the centre, saturation to the end, a
   positive curvature to sensitivity). The preview's formula is an assumption.
 - **Invert**: the sign before the command (`=-1throttle`).
 - In Update mode, values set in the game stay when JoyPro's are all zero. No force feedback or game settings.
@@ -134,6 +145,16 @@ path and how the page shows JoyPro's binds are not confirmed yet: the live check
 
 :::layer technical
 ## Inside the Cliffs of Dover integration
+
+```mermaid
+%% caption: Blitz and the original write the same file. They only name your devices differently.
+flowchart LR
+  P["Your profile<br/>(relations + binds)"] --> B["Blitz (engine il2codblitz):<br/>device = product name<br/>+ hash of its USB path"]
+  P --> O["Original (engine il2cod):<br/>Joystick, Joystick1 ...<br/>(Windows' order)"]
+  B --> F["Documents / 1C SoftClub /<br/>il-2 sturmovik cliffs of dover /<br/>confUser.ini"]
+  O --> F
+  F --> G["The game's controls page"]
+```
 
 Code: `engine\Games\Il2CodIntegration.cs` (one class, two games), `engine\Games\Il2LegacyIntegration.cs`,
 `engine\Games\LegacyIniFile.cs`.

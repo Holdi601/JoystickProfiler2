@@ -154,10 +154,10 @@ public sealed class AxisTuningAppliesToTests
         // A fresh relation: DCS and all five helicopters are ticked; Save says it stores DCS's curve.
         Assert.Equal("game:DCS", vm.SelectedAxisTuningScope!.Scope);
         Assert.Equal(["game:DCS", .. Helicopters.Select(Plane)], vm.AxisTuningTicked.Select(t => t.Scope).ToArray());
-        Assert.Equal("Save stores it for DCS, all its aircraft (5).", vm.AxisTuningSavePlanText);
+        Assert.Equal("Save stores it for DCS: all 5 aircraft listed here.", vm.AxisTuningSavePlanText);
         Assert.Equal("Save for DCS", vm.AxisTuningSaveText);
         Assert.False(vm.HasAxisTuningReplaceText);
-        Assert.All(Helicopters, p => Assert.Equal("uses All games", Row(vm, Plane(p)).UsesText));
+        Assert.All(Helicopters, p => Assert.Equal("uses the default curve", Row(vm, Plane(p)).UsesText));
 
         // Saved like that: DCS's curve, no copy per aircraft.
         vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "5";
@@ -286,9 +286,9 @@ public sealed class AxisTuningAppliesToTests
         MainWindowViewModel again = await setup.OpenAsync(Collective, ListPreferences.Load(file));
         Assert.Equal(three, again.AxisTuningTicked.Select(t => t.Scope).ToArray());
         Assert.Equal("12", again.AxisTuningEditors.Single(e => e.Key == "deadzone").Text);
-        // DCS has no curve of its own in this test: the two use the one for all games.
+        // DCS has no curve of its own in this test: the two use the default curve.
         Assert.Equal(
-            [Names(again, "SA342 Copilot", "SA342 Pilot") + ": uses All games", Names(again, "AH-64D_BLK_II_CPG", "AH-64D_BLK_II_PLT", "Ka-50_3") + ": same curve"],
+            [Names(again, "SA342 Copilot", "SA342 Pilot") + ": uses the default curve", Names(again, "AH-64D_BLK_II_CPG", "AH-64D_BLK_II_PLT", "Ka-50_3") + ": same curve"],
             again.AxisTuningGroups.Select(g => g.Text).ToArray());
         Assert.Equal("same as " + Names(again, "AH-64D_BLK_II_PLT", "Ka-50_3"), Row(again, Plane("AH-64D_BLK_II_CPG")).UsesText);
 
@@ -297,7 +297,7 @@ public sealed class AxisTuningAppliesToTests
         await SettleAsync(again);
         Assert.Equal(["game:DCS", Plane("SA342 Copilot"), Plane("SA342 Pilot")], again.AxisTuningTicked.Select(t => t.Scope).ToArray());
         Assert.True(again.AxisTuningGroups[0].IsCurrent);
-        // DCS's curve is the one for all games here (dead zone 0): that is what is shown now.
+        // DCS's curve is the default curve here (dead zone 0): that is what is shown now.
         Assert.Equal("0", again.AxisTuningEditors.Single(e => e.Key == "deadzone").Text);
     }
 

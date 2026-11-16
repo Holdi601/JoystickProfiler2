@@ -48,11 +48,20 @@ internal sealed class AppShell
         desktop.MainWindow = main;
         if (options.ReviewKeys.Count > 0)
             main.Opened += ReviewOnOpen;
+        // "JoyPro 2 - Tour" (--welcome): the welcome as soon as the window shows.
+        if (options.ShowWelcome)
+            main.Opened += WelcomeOnOpen;
+
+        void WelcomeOnOpen(object? sender, EventArgs e)
+        {
+            main.Opened -= WelcomeOnOpen;
+            vm.RequestWelcome();
+        }
 
         void ReviewOnOpen(object? sender, EventArgs e)
         {
             main.Opened -= ReviewOnOpen;
-            _ = vm.ReviewGameChangesAsync(options.ReviewKeys);
+            ReviewOrLayout(options.ReviewKeys);
         }
     }
 
@@ -68,8 +77,20 @@ internal sealed class AppShell
             window.Activate();
         }
         List<string> keys = TakeForwardedReviewKeys(names);
+        if (keys.RemoveAll(k => k == StartupOptions.WelcomeRequest) > 0)
+            vm.RequestWelcome();
         if (keys.Count > 0)
-            _ = vm.ReviewGameChangesAsync(keys);
+            ReviewOrLayout(keys);
+    }
+
+    // The tray's "Where is what?" comes as StartupOptions.LayoutWindowKey among the review keys.
+    private void ReviewOrLayout(IReadOnlyList<string> keys)
+    {
+        if (keys.Contains(StartupOptions.LayoutWindowKey, StringComparer.OrdinalIgnoreCase))
+            vm.OpenLayoutWindowCommand.Execute(null);
+        List<string> reviews = keys.Where(k => !string.Equals(k, StartupOptions.LayoutWindowKey, StringComparison.OrdinalIgnoreCase)).ToList();
+        if (reviews.Count > 0)
+            _ = vm.ReviewGameChangesAsync(reviews);
     }
 
     // The GUI ends (its process too: the memory goes back to Windows). With "Close to tray" on the tray host goes on

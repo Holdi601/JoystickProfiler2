@@ -68,8 +68,10 @@ public sealed partial class CheckIssueSection : ObservableObject
 
     public string CountText => Title + " (" + (CountLabel.Length > 0 ? CountLabel : TotalCount.ToString(System.Globalization.CultureInfo.InvariantCulture)) + ")";
 
-    // The section's cards; the first 'shown' of them (at least one page) are built.
-    public void SetCards(IReadOnlyList<CheckIssueCard> cards, int shown)
+    // The section's cards; the first 'shown' of them (at least one page) are built. buildNow: only that many are built
+    // at once, the rest of the page follows with BuildPending (the search builds a page in small steps so a key press
+    // never blocks the UI thread for long); the section counts them as shown already.
+    public void SetCards(IReadOnlyList<CheckIssueCard> cards, int shown, int buildNow = int.MaxValue)
     {
         allCards = cards;
         // A short rest is shown with the page instead of a "Show 2 more".
@@ -83,9 +85,27 @@ public sealed partial class CheckIssueSection : ObservableObject
         for (int i = Cards.Count - 1; i >= same; i--)
             Cards.RemoveAt(i);
         ShownCount = Cards.Count;
-        ShowUpTo(first);
+        int target = System.Math.Min(first, cards.Count);
+        ShowUpTo(System.Math.Max(same, System.Math.Min(target, buildNow)));
+        pendingTarget = target;
+        if (ShownCount < target)
+            ShownCount = target;
         OnPropertyChanged(nameof(TotalCount));
         OnPropertyChanged(nameof(CountText));
+    }
+
+    private int pendingTarget;
+
+    // Cards of the shown page not built yet (SetCards with buildNow).
+    public bool HasPendingCards => Cards.Count < System.Math.Min(pendingTarget, allCards.Count);
+
+    // Builds up to 'count' more of the page's cards; true while some are still left.
+    public bool BuildPending(int count)
+    {
+        int target = System.Math.Min(pendingTarget, allCards.Count);
+        for (int i = 0; i < count && Cards.Count < target; i++)
+            Cards.Add(allCards[Cards.Count]);
+        return Cards.Count < target;
     }
 
     // Shows the cards up to this count (the next page with "Show more").
@@ -94,6 +114,7 @@ public sealed partial class CheckIssueSection : ObservableObject
         int target = System.Math.Min(count, allCards.Count);
         for (int i = Cards.Count; i < target; i++)
             Cards.Add(allCards[i]);
+        pendingTarget = System.Math.Max(pendingTarget, Cards.Count);
         ShownCount = Cards.Count;
     }
 }

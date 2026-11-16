@@ -84,27 +84,27 @@ scale 1). Measured: two short dark ticks, a long blue bar and a long dark bar si
 line across the bars; below to the right a nearly level row of three short ticks (the "_": dark, dark, blue); all
 parallel to the shield's lower right edge. Cleaned up: every bar exactly at the edge's angle (58.4 degrees), one
 width, equal gaps, square ends with the ">" tops on one line and the "_" centres on one level line, the nearest bar
-4 units off the rim (as the "2"). His bars are dark like the shield, so like the shield they get a thin light rim on
+4 units off the rim (as the "2"). The sketch's bars are dark like the shield, so like the shield they get a thin light rim on
 dark backgrounds. When a variant's strokes would leave the canvas, the whole icon (shield and strokes) is shrunk and
-centred. Shapes: `TRACE10_STYLES`, `trace10_strokes` in `branding/branding_concepts.py`; his strokes for the overlay:
+centred. Shapes: `TRACE10_STYLES`, `trace10_strokes` in `branding/branding_concepts.py`; the sketch's strokes for the overlay:
 `sketch-9-strokes.png`.
 
 | Variant | |
 |---|---|
-| `Trace10Exact` | his layout, width 3.6 (his 2.65 is too thin at 32 px), blue on the long bar and the last tick (as drawn) |
+| `Trace10Exact` | the sketch's layout, width 3.6 (the sketch's 2.65 is too thin at 32 px), blue on the long bar and the last tick (as drawn) |
 | `Trace10Large` | width 4.6, the group scaled up |
 | `Trace10Ticks3` | Large with three short ticks in the ">" |
 | `Trace10BarBlue` | Large, blue only on the long bar |
 
-**Round 9, the engine mark traced from the user's sketch** (`variants-round9.png`; not the default yet): his drawing
-(`images/6.png`, 865 x 679 px) shows our shield at full size, so his strokes were measured in its pixels and mapped
+**Round 9, the engine mark traced from a hand sketch** (`variants-round9.png`; not the default yet): the drawing
+(`images/6.png`, 865 x 679 px) shows our shield at full size, so its strokes were measured in its pixels and mapped
 onto the mark (X = 50 + (x - 248.5) / 4.95, Y = 5.75 + (y - 21) / 4.92; shapes: `trace_strokes` in
 `branding/branding_concepts.py`). Every stroke as drawn - the tiny tick and the blue tick on top, the two long strokes
 (each a light head and a body on one line, the second hooking to the lower left), the separate row of five short ticks
-- only cleaned up: straight lines, level-cut ends, one weight (his pen width, 1.9 units: TipBoldAligned's 5 would merge
-his closely set strokes), the row's ticks at one angle (67.5 degrees) and evenly spaced. The sheet lays his strokes
-(`sketch-6-strokes.png`, magenta) over the 256 px render. Variants: `TraceTopBlue` (his blue tick), `TraceHookBlue`,
-`TraceRowTickBlue` (middle row tick), `TraceLastBlue` (last row tick), `TraceSketch` (his colours #808285, #58595B,
+- only cleaned up: straight lines, level-cut ends, one weight (the pen width, 1.9 units: TipBoldAligned's 5 would merge
+the closely set strokes), the row's ticks at one angle (67.5 degrees) and evenly spaced. The sheet lays the sketch's strokes
+(`sketch-6-strokes.png`, magenta) over the 256 px render. Variants: `TraceTopBlue` (the sketch's blue tick), `TraceHookBlue`,
+`TraceRowTickBlue` (middle row tick), `TraceLastBlue` (last row tick), `TraceSketch` (the sketch's colours #808285, #58595B,
 #00AACC). Pick one with `branding/generate-icons.ps1 -Engine TraceTopBlue`.
 
 **Round 8, the engine mark (current default `PromptCursorBlue`)** (`variants-round8.png`, after the user's sketches):
@@ -187,7 +187,7 @@ The main window starts with a banner: the mark, the title and the tagline on a d
 it shrinks on small windows (Viewbox, never larger than designed); the theme buttons stay on its right. The banner is
 dark in the light and the dark theme.
 
-Game pictures: the Start page cards, export tiles and game lists show the cover Steam keeps for the game on this PC
+Game pictures: the Start page cards, export cards and game lists show the cover Steam keeps for the game on this PC
 (`Steam\appcache\librarycache\<app id>\...`, the portrait cover first). Nothing is downloaded and no game artwork is in
 the repository. Games without a Steam cover get a JoyPro badge (`Views/Controls/GameBadge.cs`): a colour per game, a
 simple motif (aircraft, helicopter for Arma and Hell Let Loose, rocket for the space games) and the game's short

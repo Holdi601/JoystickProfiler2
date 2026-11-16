@@ -46,8 +46,9 @@ fixes automatically after an import.
 :::
 
 <!-- entry: ValidateProfileCommand -->
-Runs the whole check (`engine profile validate --fail-on-warnings false`, then the conflicts, duplicates and export
-marks) and builds the cards. It changes nothing in the profile or the games. The bottom bar's **Check** does the same
+<!-- easy: Looks for mistakes, like two jobs on one button. -->
+Looks for mistakes and shows each one as a card. It only looks; it changes nothing. It runs the whole check (`engine profile validate --fail-on-warnings false`, then the conflicts, duplicates and export
+marks) and builds the cards; nothing in the profile or the games is changed. The bottom bar's **Check** does the same
 and opens the Export page.
 
 <!-- entry: ExpandAllCheckCardsCommand -->

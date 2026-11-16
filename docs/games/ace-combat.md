@@ -70,7 +70,7 @@ start):**
   `[JoystickSetting]`, a `[JoystickMappingFormat]` block of `HelpComment=` lines (the object/value/mapping syntax and
   the example `Flight_Pitch=Y:R ! Button10`), and one `[Joystick-<product GUID>]` section per connected DirectInput
   model with `ProductName=` (the DirectInput name, quoted when it has outer spaces: `" VKB-Sim Gunfighter Modern Combat
-  Pro Twist "`) and **every** `Flight_*` and `UI_*` key, all empty for unlicensed devices. On a test PC: 7 sections
+  Pro Twist "`) and **every** `Flight_*` and `UI_*` key, all empty for unlicensed devices. For example 7 sections
   (pedals, WinWing panel, vJoy `BEAD1234-...`, VKB, Rhino, VPC throttle, WarBRD); the Wooting keyboard's game
   controller interfaces got none (XInput-capable devices are left to XInput).
 - **The values JoyPro writes survive** the game's rewrite on exit (`Slider2:R`, `Y`, `Button11`, `POV_R1` ... read back
@@ -78,8 +78,8 @@ start):**
 - `engine ac7 refresh-db` on the real file: the 20 `Flight_*` actions.
 - In-game check `tools/e2e/games/AceCombat7Settings.ps1` (RunAll `ac7`), no input to the game: export random vJoy
   binds, start, title, WM_CLOSE, the rewritten file still holds every value, import reads them back (19/19 on
-  2026-10-12, `C:\Temp\jp2-e2e\runs\20261012-070310-ac7-settings2`).
-- **Still open (needs a session where the kit can click):** whether the controls menu shows stick binds at all, and a
+  2026-10-12).
+- **Not checked yet:** whether the controls menu shows stick binds at all, and a
   flight: `:R` on pitch for the user's stick, `:C` for a throttle lever.
 
 ## ACE COMBAT 8 (virtual Xbox pad)
@@ -102,15 +102,45 @@ start):**
     relation on `Pad_ThrottleUp` + `Pad_ThrottleDown` becomes the centre-split trigger axis (`XB_TRIGGERS`).
   - The export writes nothing (checksum, EAC) and says so. After changing a gamepad key in the game: `engine ac8
     refresh-db`, then `engine vjoy map`.
-- **Not covered:** flares, autopilot, view and the other buttons have no player-mappable gamepad key in the save. They
-  sit on fixed pad buttons JoyPro does not know yet. Bind them to the free pad buttons the planner lists, and check in
-  the game.
+- **On the pad by itself (2.7.0):** the game reads no generic joystick, so without a mode chosen it uses the virtual
+  Xbox pad (the user's choice wins). The relation's axis curve goes to the pad in JoyPro's forwarder (axis model
+  `xboxpad`; the game gets no export).
+- **Auto setup from the live test of 2026-11-14** (docs/virtual-joystick.md "Auto setup on the Xbox pad"): the throttle
+  splits both triggers (forward RT, back LT) even when Decelerate sits in a toe brake relation; yaw on LB/RB comes from
+  the stick twist (else the rudder pedals) through "Axis ends to buttons" with an end zone of 0.35; the D-pad (wingman
+  orders) from the comm switch or AI-menu hat; a hat direction bound to Change target drives Y; the "Cobra button" (DCS ASC
+  Direct Control) or a button relation named "High-G" holds both triggers (High-G turn) on top of the throttle.
+- **Pitch and invert on the pad:** DCS's invert of a relation never reaches the pad. `Pad_Pitch` is reversed by default
+  because with the game's default "Pitch Controls" the pad stick pushed up pitches the nose up (checked in game, 2026-11-14):
+  a HOTAS pushed forward gives nose down. With "Pitch Controls: Inverted" in the game, untick Invert for ACE COMBAT 8
+  in Axis response (Applies to: ACE COMBAT 8 only). The throttle on the triggers follows the lever (forward = RT).
+- **Look around (right stick) on a hat:** with no axis on Look Horizontal / Look Vertical (`Pad_CameraYaw`,
+  `Pad_CameraPitch`), the pad's auto setup puts the right stick on a free hat of the user's stick ("Hat to axes": a
+  direction holds the stick fully out while held). On a VKB Gunfighter MCG Pro that is POV1, the top ministick that
+  trims in DCS (docs/virtual-joystick.md "Auto setup on the Xbox pad", rule 7). pad-check reports it as `look`.
+- **Roll direction (in-game check 2026-11-14: rolling left/right came out inverted):** JoyPro's chain is straight (DirectInput
+  X right -> XInput LX +32767, `XboxPadForwarderTests.SignChain_*`); nothing in JoyPro reverses roll. A reversal comes
+  from the game side (its pad roll convention or a setting); the fix is a game-scope invert on the Roll relation for
+  ACE COMBAT 8 only (`binds tuning set Roll --scope game:AceCombat8 --inverted true`), never DCS's base.
+- **Flares = L3 + R3 pressed together: NOT CONFIRMED.** Not checked in game yet
+  (`AceCombat8Integration.PadChords`, `Confirmed = false`). JoyPro maps it from the flare / CMS forward relation as a
+  120 ms chord (a macro with "pressed together") and says "not confirmed in game yet"; change it here once it is checked.
+- **Setup wizard and Auto Group (2.7.0):** `DB/Functions/AceCombat8.tsv` has every flight control: pitch / roll
+  (`Pad_Pitch`, `Pad_Roll`), yaw (the rudder function with `Pad_YawLeft` + `Pad_YawRight`: the twist or the pedals, the
+  pad's auto setup presses LB / RB at the axis ends), the throttle (`Pad_ThrottleUp` + `Pad_ThrottleDown`: the centre
+  split), gun, missile (weapon release), target (TMS right), change weapon, radar map, camera, flares (CMS forward,
+  `Pad_Flares`: the L3 + R3 chord), High-G (the FBW disconnect / Cobra button, `Pad_HighGTurn`) and the wingman D-pad
+  from the comm switch (`Pad_WingmanUp/Down/Left/Right` on the D-pad). `Pad_Flares` and `Pad_HighGTurn` have no pad
+  key of their own: the chord and the hold read the relation's button. The relations take the game's names (Radar map,
+  Change weapon, Fire gun ...), not the DCS slots. ACE COMBAT 7's table has its flight axes, missile and flares too.
+- **Not covered:** autopilot, view and the other buttons have no player-mappable gamepad key in the save. They sit on
+  fixed pad buttons JoyPro does not know yet. Bind them to the free pad buttons the planner lists, and check in the
+  game.
 - **Community route** (WEB): vJoy + Joystick Gremlin + HidHide + x360ce. EAC reportedly blocks x360ce's DLL
   injection. JoyPro's ViGEm pad is created outside the game, so nothing is injected.
-- The AC8HOTAS mod (UE4SS, `bindings.lua`) gives native multi-device input. It is game modding under EAC (offline
-  only), so JoyPro does not generate it.
-- **Menu check with the virtual pad (2026-10-11, `tools\e2e\games\AceCombat8Xbox.ps1`, 20/20, run
-  `C:\Temp\jp2-e2e\runs\20261011-221446-release\ac8-xbox`):** unattended, menus only (EAC). JoyPro's xbox mode with vJoy
+- The AC8HOTAS mod (UE4SS, `bindings.lua`) gives native multi-device input. JoyPro does not generate it.
+- **Menu check with the virtual pad (2026-10-11, `tools\e2e\games\AceCombat8Xbox.ps1`, 20/20):** unattended, menus
+  only. JoyPro's xbox mode with vJoy
   standing in for the HOTAS: the planner pins Fire machine gun to A, Fire missile to B and Pitch to the left stick Y;
   XInput shows the pad; the pad's A passes "PRESS THE ENTER KEY" (the menus then show pad glyphs, "Confirm"), opens
   SYSTEM > CONTROLS > CONTROLLER, the stick moves the focus, A opens BUTTON MAPPING, B goes back to the main menu, and
@@ -120,9 +150,9 @@ start):**
   Change weapon X, Change target Y, Switch radar map View); CONTROLLER OPTIONS has Control Type, High-G Turn, Target
   Highlight, Pitch Controls, Camera, Camera Sensitivity, Vibration; FLIGHT STICK shows only the T.Flight HOTAS diagram
   (Deploy flares, Change view, Camera on the licensed stick). The pad buttons of flares and view are shown only in a
-  mission (pause menu / training), which needs gameplay: **not checked** (EAC, menus-only rule).
-- **Still open (needs a flight):** throttle on the triggers, yaw on LB/RB, weapons in the air; the flare and view pad
-  buttons.
+  mission (pause menu / training), which needs gameplay: **not checked**.
+- **Not checked in flight yet:** weapons in the air; the flare chord (L3 + R3, see above) and the view pad buttons.
+  A flight with throttle on the triggers and yaw on LB/RB works.
 - Menu facts: a pad created before the game starts may not reach it (as in HLL: Vietnam), so the script creates it once
   the title shows; the title's prompt blinks; a mouse click only selects a menu row; the main menu has ACE COMBAT STORE
   and SYSTEM has AGREEMENTS (never opened); on BUTTON MAPPING the pad's X is "Reset Settings".

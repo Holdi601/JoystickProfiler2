@@ -116,4 +116,35 @@ public sealed class LayoutSettingsPersistTests : IDisposable
         // The pick: the cheat sheets of that device are drawn on the picked picture after the restart too.
         Assert.Contains(second.LayoutMapCsvForTests(), m => m == "Smoke Stick=" + layout);
     }
+
+    // The kneeboard options (MainWindowViewModel.Kneeboard.cs): target, folder, aircraft, name ending, page height, one page.
+    [Fact]
+    public void KneeboardOptions_ComeBackAfterARestart()
+    {
+        MainWindowViewModel first = Vm();
+        Assert.False(first.KneeboardToFolder);
+        Assert.True(first.KneeboardAllAircraft);
+        Assert.Equal("2048", first.KneeboardSize);
+
+        first.KneeboardToFolder = true;
+        first.KneeboardFolder = Path.Combine(folder, "Kneeboard");
+        first.KneeboardAllAircraft = false;
+        first.KneeboardPostfix = "_VR";
+        first.KneeboardSize = "1536";
+        first.KneeboardOnePage = true;
+        Assert.True(first.KneeboardListPage);
+        Assert.True(first.KneeboardPicture);
+        first.KneeboardListPage = false;
+        first.KneeboardPicture = false;
+
+        MainWindowViewModel second = Vm();
+        Assert.True(second.KneeboardToFolder);
+        Assert.Equal(Path.Combine(folder, "Kneeboard"), second.KneeboardFolder);
+        Assert.False(second.KneeboardAllAircraft);
+        Assert.Equal("_VR", second.KneeboardPostfix);
+        Assert.Equal("1536", second.KneeboardSize);
+        Assert.True(second.KneeboardOnePage);
+        Assert.False(second.KneeboardListPage);
+        Assert.False(second.KneeboardPicture);
+    }
 }

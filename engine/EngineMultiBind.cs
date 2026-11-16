@@ -4,25 +4,26 @@ using System.Linq;
 
 namespace JoyPro.Engine
 {
-    // Experimental (2.6.5, docs/multi-bind.md): a relation can have several binds. The main bind is Relation.bind (and
-    // InternalDataManagement.AllBinds[name], as always); the others are Relation.ExtraBinds, each with its own device,
-    // input, modifiers and axis tuning. With the setting off (the default, global option --multi-bind off) nothing reads
-    // the extra binds: exports, checks and pages behave exactly as before; extra binds a profile already has stay in it
-    // and an export names them once ("not exported: the setting is off").
+    // Several binds per relation (docs/multi-bind.md; experimental in 2.6.5, a normal feature since 2.6.6). The main bind
+    // is Relation.bind (and InternalDataManagement.AllBinds[name], as always); the others are Relation.ExtraBinds, each
+    // with its own device, input, modifiers and axis tuning. On by default; the global option --multi-bind off (or
+    // JOYPRO_MULTI_BIND=0) still switches it off for one call: nothing reads the extra binds then, exports, checks and
+    // pages behave as with main binds only, extra binds a profile has stay in it and an export names them once.
     internal static class MultiBind
     {
         public const string Option = "--multi-bind";
 
-        // Set per run from --multi-bind on|off (the GUI passes on while Settings > Experimental > "Several inputs per
-        // relation" is ticked); JOYPRO_MULTI_BIND=1 switches it on for hand-typed commands.
-        public static bool Enabled;
+        // Set per run from --multi-bind on|off (on when not given; older GUIs pass on); JOYPRO_MULTI_BIND=0 switches it off
+        // for hand-typed commands.
+        public static bool Enabled = true;
 
         public static bool ParseOption(string raw, out bool enabled)
         {
-            enabled = false;
+            enabled = true;
             if (raw == null)
             {
-                enabled = string.Equals(Environment.GetEnvironmentVariable("JOYPRO_MULTI_BIND"), "1", StringComparison.Ordinal);
+                string env = (Environment.GetEnvironmentVariable("JOYPRO_MULTI_BIND") ?? string.Empty).Trim();
+                enabled = !(env == "0" || env.Equals("off", StringComparison.OrdinalIgnoreCase) || env.Equals("false", StringComparison.OrdinalIgnoreCase));
                 return true;
             }
             switch (raw.Trim().ToLowerInvariant())
@@ -35,6 +36,7 @@ namespace JoyPro.Engine
                 case "off":
                 case "false":
                 case "0":
+                    enabled = false;
                     return true;
                 default:
                     return false;
@@ -63,7 +65,7 @@ namespace JoyPro.Engine
             return bind != null && !string.IsNullOrWhiteSpace(bind.Joystick) && InputOf(relation, bind).Length > 0;
         }
 
-        // The extra binds an export, a check or a page uses: none while the setting is off.
+        // The extra binds an export, a check or a page uses: none while --multi-bind is off.
         public static List<Bind> ActiveExtras(Relation relation)
         {
             return Enabled ? Extras(relation) : new List<Bind>();
@@ -243,11 +245,11 @@ namespace JoyPro.Engine
             return id.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
         }
 
-        // The warning an export gives once while the setting is off and the profile has extra binds for that game.
+        // The warning an export gives once while --multi-bind is off and the profile has extra binds for that game.
         public static string OffNote(string gameName, int binds, int relations)
         {
             return binds + " extra input(s) of " + relations + " relation(s) were not exported to " + gameName +
-                   ": the experimental setting \"Several inputs per relation\" is off (Settings > Experimental, or --multi-bind on).";
+                   ": several inputs per relation are switched off for this call (--multi-bind off or JOYPRO_MULTI_BIND=0).";
         }
 
         // The warning per relation of a game that keeps one input per action: only the main bind is exported.

@@ -38,10 +38,9 @@
     },
     "stick.trigger": {
       "type": "trigger",
-      "name": "Trigger",
+      "name": "trigger (single-stage digital trigger)",
       "inputs": [
-        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
-        {"input": "JOY_BTN2", "control": "stick.trigger.stage2"}
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"}
       ],
       "mapping": "high"
     },
@@ -261,6 +260,14 @@
         {"input": "JOY_BTN22", "control": "stick.base.button.18"}
       ],
       "mapping": "high"
+    },
+    "stick.button.index.1": {
+      "type": "button",
+      "name": "button 2 above the trigger (front of the head)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.button.index.1"}
+      ],
+      "mapping": "high"
     }
   },
   "unplaced": {
@@ -271,7 +278,8 @@
     "stick.base.button.13": "virtual button on the first 20 % of the throttle slider travel (manual 17), no separate control",
     "stick.base.button.16": "View button at the rear of the base (manual 20), not visible",
     "stick.base.button.17": "Xbox button at the rear of the base (manual 21), not visible",
-    "stick.base.button.18": "Menu button at the rear of the base (manual 22), not visible"
+    "stick.base.button.18": "Menu button at the rear of the base (manual 22), not visible",
+    "stick.button.index.1": "upper part of the trigger at the back of the grip (manual draws 2 on the upper, 1 on the lower part), faces away from the camera"
   },
   "candidates": {
     "stick.base.button.7": [0.324, 0.587],
@@ -295,7 +303,7 @@
       {"id": "grid:stick.base.button.12", "title": "Buttons Base button 12 - 14", "parts": ["stick.base.button.12", "stick.base.button.11", "stick.base.button.10", "stick.base.button.14"], "side": "left", "x": 40, "y": 568.8, "width": 276, "grid": true, "columns": 3, "modifier": false, "spot": [0.2712, 0.643], "rows": [{"input": "JOY_BTN16", "label": "Base butto", "icon": "button", "part": "stick.base.button.12", "cell": [0, 0, 0]}, {"input": "JOY_BTN15", "label": "Base butto", "icon": "button", "part": "stick.base.button.11", "cell": [0, 1, 0]}, {"input": "JOY_BTN14", "label": "Base butto", "icon": "button", "part": "stick.base.button.10", "cell": [0, 2, 0]}, {"input": "JOY_BTN18", "label": "Base butto", "icon": "button", "part": "stick.base.button.14", "cell": [1, 0, 0]}]},
       {"id": "grid:stick.base.button.3", "title": "Buttons Base button 3 - 15", "parts": ["stick.base.button.3", "stick.base.button.2", "stick.base.button.1", "stick.base.button.4", "stick.base.button.5", "stick.base.button.6", "stick.base.button.15"], "side": "right", "x": 1132, "y": 646.8, "width": 276, "grid": true, "columns": 3, "modifier": false, "spot": [0.7009, 0.699], "rows": [{"input": "JOY_BTN7", "label": "Base butto", "icon": "button", "part": "stick.base.button.3", "cell": [0, 0, 0]}, {"input": "JOY_BTN6", "label": "Base butto", "icon": "button", "part": "stick.base.button.2", "cell": [0, 1, 0]}, {"input": "JOY_BTN5", "label": "Base butto", "icon": "button", "part": "stick.base.button.1", "cell": [0, 2, 0]}, {"input": "JOY_BTN8", "label": "Base butto", "icon": "button", "part": "stick.base.button.4", "cell": [1, 0, 0]}, {"input": "JOY_BTN9", "label": "Base butto", "icon": "button", "part": "stick.base.button.5", "cell": [1, 1, 0]}, {"input": "JOY_BTN10", "label": "Base butto", "icon": "button", "part": "stick.base.button.6", "cell": [1, 2, 0]}, {"input": "JOY_BTN19", "label": "Base butto", "icon": "button", "part": "stick.base.button.15", "cell": [2, 0, 0]}]},
       {"id": "stick.hat.tms", "title": "TMS hat", "parts": ["stick.hat.tms"], "side": "top", "x": 709, "y": 16, "width": 300, "modifier": true, "spot": [0.525, 0.1], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.tms"}]},
-      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "other", "x": 16, "y": 938, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger", "stick.button.index.1"], "side": "other", "x": 16, "y": 938, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Trigger", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Button 2 (front of the head)", "icon": "button", "part": "stick.button.index.1"}]},
       {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "left", "x": 16, "y": 378.8, "width": 300, "modifier": true, "spot": [0.48, 0.35], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
       {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 16, "y": 628.8, "width": 300, "modifier": true, "spot": [0.48, 0.63], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
       {"id": "stick.axis.slider", "title": "Slider", "parts": ["stick.axis.slider"], "side": "right", "x": 1144, "y": 785.7, "width": 300, "modifier": true, "pinned": true, "spot": [0.35, 0.76], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "stick.axis.slider"}]},

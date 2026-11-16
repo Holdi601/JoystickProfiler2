@@ -124,6 +124,31 @@ try {
     $gdAgain = Run-Engine @("db", "paths", "--text")
     Assert-Match $gdAgain.Output "(?m)^\s+DB\\DCS \| game-data \| 2\.9\.31\.1 \| " "after the replacement the game-data list is read."
     Assert-True (@(Get-ChildItem -Path (Join-Path $gdGameData "Replaced") -Directory).Count -eq 1) "an equal list must not be replaced again on the next start."
+
+    # ---- 5. an FSX / Prepar3D list an older JoyPro built with the elevator titles reversed is corrected on start (no
+    #         source-version.txt, so 4. never replaces it); only those exact titles change, the old list is kept.
+    $gdFsx = Join-Path $gdGameData "DB\P3D5"
+    New-Item -Path $gdFsx -ItemType Directory -Force | Out-Null
+    $gdFsxList = Join-Path $gdFsx "actions.tsv"
+    $gdFsxOld = "# Prepar3D v5 action catalog, refreshed 2026-10-11 20:08`r`n" +
+        "AXIS_ELEVATOR_SET`tElevator (pitch) axis`taxis`tFlight controls`r`n" +
+        "ELEV_UP`tElevator up (nose down)`tbutton`tFlight controls`r`n" +
+        "ELEV_DOWN`tElevator down (nose up)`tbutton`tFlight controls`r`n" +
+        "ELEV_TRIM_UP`tElevator trim up (nose down)`tbutton`tTrim`r`n" +
+        "ELEV_TRIM_DN`tElevator trim down (nose up)`tbutton`tTrim`r`n" +
+        "AILERONS_LEFT`tElevator up (nose down)`tbutton`tFlight controls`r`n"
+    [System.IO.File]::WriteAllText($gdFsxList, $gdFsxOld, (New-Object System.Text.UTF8Encoding $false))
+    $gdFsxRun = Run-Engine @("db", "paths", "--text")
+    Assert-True ($gdFsxRun.ExitCode -eq 0) ("db paths with an old FSX list failed: " + $gdFsxRun.Output)
+    $gdFsxNew = [System.IO.File]::ReadAllText($gdFsxList)
+    $gdFsxExpected = $gdFsxOld.Replace("ELEV_UP`tElevator up (nose down)", "ELEV_UP`tElevator up (nose up)").Replace("ELEV_DOWN`tElevator down (nose up)", "ELEV_DOWN`tElevator down (nose down)").
+        Replace("ELEV_TRIM_UP`tElevator trim up (nose down)", "ELEV_TRIM_UP`tElevator trim up (nose up)").Replace("ELEV_TRIM_DN`tElevator trim down (nose up)", "ELEV_TRIM_DN`tElevator trim down (nose down)")
+    Assert-True ($gdFsxNew -ceq $gdFsxExpected) ("the old elevator titles must be corrected and nothing else changed (another event with such a title stays): " + $gdFsxNew)
+    $gdFsxKept = @(Get-ChildItem -Path (Join-Path $gdGameData "Replaced") -Recurse -File -Filter "actions.tsv" | Where-Object { $_.FullName -match "\\DB\\P3D5\\actions\.tsv$" })
+    Assert-True ($gdFsxKept.Count -eq 1 -and [System.IO.File]::ReadAllText($gdFsxKept[0].FullName) -ceq $gdFsxOld) "the old FSX list must be kept under GameData\Replaced."
+    $null = Run-Engine @("db", "paths", "--text")
+    Assert-True ([System.IO.File]::ReadAllText($gdFsxList) -ceq $gdFsxExpected) "a corrected list must stay as it is on the next start."
+    Assert-True (@(Get-ChildItem -Path (Join-Path $gdGameData "Replaced") -Recurse -File -Filter "actions.tsv" | Where-Object { $_.FullName -match "\\DB\\P3D5\\actions\.tsv$" }).Count -eq 1) "a corrected list must not be kept aside again."
 }
 finally {
     Pop-Location

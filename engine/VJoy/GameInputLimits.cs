@@ -109,7 +109,7 @@ namespace JoyPro.Engine.VJoy
             Add(table, "AceCombat8,HLLVietnam", 0, 0, 0, false, "XInput only (fixed Xbox pad layout)", Documented,
                 "Reads no joystick, only Xbox pads: use the virtual Xbox pad.", "engine/Games/AceCombat8Integration.cs, engine/Games/HllVietnamIntegration.cs");
             // Not known (no warning): Star Citizen (sources conflict), War Thunder, Arma 3, Arma Reforger, Battlefield,
-            // Elite Dangerous (players report 32, but Joy_41 worked on the development PC), IL-2 Korea, WARDOGS,
+            // Elite Dangerous (players report 32, Joy_41 works), IL-2 Korea, WARDOGS,
             // Rewired games (Nuclear Option, Tiny Combat Arena).
             return table;
         }

@@ -17,17 +17,23 @@ writes your binds back into the right tab of each device.
 
 {{game-card}}
 
-```mermaid
-flowchart TD
-  P["Your profile"] --> E["engine tinycombatarena export"]
-  E --> B[("Backup: snapshot of<br/>the controller-map values")]
-  B --> R["HKCU / Software /<br/>TinyCombat / Arena"]
-  R --> T["A map per device and tab:<br/>Flight, Weapons, Camera,<br/>View Select, Map UI, System"]
-  A["sharedassets*.assets<br/>(the game's action list)"] -->|"refresh-db"| E
-  T --> G["The game's Control Mapper"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep the game closed
+:::
+
+**Before**: start Tiny Combat Arena once and open its Control Mapper. Then close the game.
+
+**Then**: your binds are on the tabs of the game's Control Mapper.
+
+Did you bind buttons in Tiny Combat Arena before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Tiny Combat Arena
 
 - **Import**: the joystick maps of your connected devices come into your profile, from every tab: axes with their
@@ -53,7 +59,7 @@ Then run the [[page:flows/check.html|Check]] on the Export page.
 1. **Close Tiny Combat Arena.** JoyPro refuses to write while it runs (process `Arena`); the game saves all maps when
    you press Done in the Control Mapper.
 2. Open **Export**, keep **Replace on my devices** with **Also clear my other devices**, and press **Export now** on
-   the Tiny Combat Arena tile.
+   the Tiny Combat Arena card.
 
 ![The Export page](shot:export)
 
@@ -132,6 +138,15 @@ Tiny Combat Arena is a flight-only game: every assignable action counts as JoyPr
 
 :::layer technical
 ## Inside the Tiny Combat Arena integration
+
+```mermaid
+%% caption: The game keeps its controls in the Windows registry, one map per device and tab. JoyPro saves a snapshot before it writes.
+flowchart LR
+  A["sharedassets*.assets<br/>(the game's action list,<br/>read by refresh-db)"] --> E["engine tinycombatarena export<br/>(a snapshot of the<br/>controller-map values first)"]
+  P["Your profile"] --> E
+  E --> T["HKCU / Software / TinyCombat / Arena:<br/>a map per device and tab<br/>(Flight, Weapons, Camera,<br/>View Select, Map UI, System)"]
+  T --> G["The game's Control Mapper"]
+```
 
 Code: `engine\Games\TinyCombatArenaIntegration.cs` (registry key, player name, tabs, catalog layout) on top of
 `engine\Games\RewiredMapIntegration.cs` (reading and writing Rewired joystick maps, shared with

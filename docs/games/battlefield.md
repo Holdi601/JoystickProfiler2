@@ -105,11 +105,10 @@ How JoyPro writes an axis: as **two halves**, the way the game's default profile
   when keys are exported).
 
 ## Automated survey (`BattlefieldJoystickSurvey.ps1 -Auto`, BattlefieldSurveyAuto.ps1)
-**Needs a reboot window:** on a test PC vJoyConfig answers with "You must restart your computer to apply these
+**Needs a reboot window:** vJoyConfig can answer with "You must restart your computer to apply these
 changes" (2026-10-11): the running vJoy driver keeps its layout until a reboot, and restoring the layout is another
 vJoyConfig call with the same question. The script therefore refuses to touch vJoy unless it is started with
-`-Auto -AllowVJoyReconfigure`, which is only for a run planned with the user around a reboot (the first attempt was
-stopped at that dialog; nothing else had changed, and the user restored vJoy device 1 through UAC).
+`-Auto -AllowVJoyReconfigure`, which is only for a run planned around a reboot.
 
 Unattended except for one Windows administrator prompt at the start:
 - read-only check that Steam Input is off for the game (`localconfig.vdf` UseSteamControllerConfig of app 2807960,
@@ -168,7 +167,7 @@ key or mouse input to the game. It only reads the left mouse button state and mo
      `EngineOnly_Runtime\TOOLS\Conversions\Battlefield6JoystickMap.tsv` (`Battlefield2042JoystickMap.tsv`), which
      JoyPro treats as confirmed;
    - puts the original profile files back (`-KeepBinds` keeps the survey binds).
-6. Send the run folder (`C:\Temp\jp2-e2e\runs\<stamp>-bf-survey`) to the developer.
+6. Keep the run folder (`<run folder>\<stamp>-bf-survey`): it holds the table and the profile copies.
    - The table's notes show which slots the game filled per step. If the game writes a half axis as a whole axis, or
      fills both halves at once, the writer is adjusted to that.
    - Afterwards one export + in-game check confirms the integration.
@@ -188,5 +187,5 @@ writes.
 | Battlefield 4 / Hardline / 3 | One device; joystick and pad share type 2 | `Documents\Battlefield 4\settings\PROFSAVE_profile` | BF4: X/Y = axis 6/7, Z/Rx/Ry/Rz as button halves 36-43, buttons 0-35, hats 44-59 (Realmware editor). |
 | Battlefield 2 / 2142 | DirectInput, device index | `Documents\Battlefield 2\Profiles\000N\Controls.con` | `ControlMap.addAxisToAxisMapping c_PIPitch IDFGameController_0 IDAxis_1 1 0`. Legacy. |
 
-Research: real profiles on a test PC (read-only), text strings in `bf6.exe`, community sources and the BF4 editor (WEB; see
+Sources: real profiles (read-only), text strings in `bf6.exe`, community sources and the BF4 editor (WEB; see
 the survey in docs/games/one-device-games.md).

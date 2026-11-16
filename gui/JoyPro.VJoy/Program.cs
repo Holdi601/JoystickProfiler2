@@ -37,7 +37,7 @@ internal static class Program
                 "devices" => Devices(rest),
                 "refresh-rate" => RefreshRate(),
                 "bench" => Bench.Run(Int(Value(rest, "--functions")) ?? 50, Int(Value(rest, "--rate")) ?? Native.HighestRefreshRateHz(),
-                    Int(Value(rest, "--seconds")) ?? 10, Int(Value(rest, "--sources")) ?? 4, Emit),
+                    Int(Value(rest, "--seconds")) ?? 10, Int(Value(rest, "--sources")) ?? 4, Emit, Flag(rest, "--xbox-curves")),
                 _ => Help()
             };
         }
@@ -54,7 +54,8 @@ internal static class Program
         Console.WriteLine("                [--priority below-normal|normal] [--stats-seconds N] [--fake-sources idle|stream|noisy]   (fake sources: synthetic devices for measurements)");
         Console.WriteLine("JoyPro.VJoy devices [--json]");
         Console.WriteLine("JoyPro.VJoy refresh-rate");
-        Console.WriteLine("JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4]   (the loop with virtual functions, no devices)");
+        Console.WriteLine("JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4] [--xbox-curves]   (the loop with virtual functions, no devices;");
+        Console.WriteLine("                --xbox-curves: also the virtual Xbox pad's table with an axis curve on all six pad axes)");
         return 1;
     }
 

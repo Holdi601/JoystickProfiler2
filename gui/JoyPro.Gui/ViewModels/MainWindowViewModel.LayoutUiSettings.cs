@@ -7,7 +7,7 @@ namespace JoyPro.Gui.ViewModels;
 
 // The Layout page's switches and the cheat-sheet options survive a restart (ui-settings.json "layout"): the picture's
 // Snap, Grid, Tables, 3D view and Tables and lines, the "Where JoyPro looks" ticks, the picks of Apply Selected, what to
-// make, the look and the output folder. Every change is saved at once (the same file as the other settings).
+// make, the look, the output folder and the kneeboard options. Every change is saved at once (the same file as the other settings).
 public sealed partial class MainWindowViewModel
 {
     private static readonly HashSet<string> PersistedLayoutProperties = new(StringComparer.Ordinal)
@@ -17,7 +17,9 @@ public sealed partial class MainWindowViewModel
         nameof(LayoutIncludeOverview), nameof(LayoutIncludePlanes), nameof(LayoutSkipMissing), nameof(LayoutCombinePages),
         nameof(LayoutDrawMarkers), nameof(LayoutDrawLegendTable), nameof(LayoutMarkerSize), nameof(LayoutLegendWidth),
         nameof(LayoutLegendMaxRows), nameof(LayoutLegendFontSize), nameof(LayoutButtonSymbol), nameof(LayoutAxisSymbol),
-        nameof(LayoutPovSymbol), nameof(LayoutSliderSymbol), nameof(LayoutExportPath)
+        nameof(LayoutPovSymbol), nameof(LayoutSliderSymbol), nameof(LayoutExportPath),
+        nameof(KneeboardToFolder), nameof(KneeboardFolder), nameof(KneeboardAllAircraft), nameof(KneeboardPostfix), nameof(KneeboardSize),
+        nameof(KneeboardOnePage), nameof(KneeboardListPage), nameof(KneeboardPicture)
     };
 
     // The pictures picked with Apply Selected (device -> layout file); they go into layoutTemplateByDevice at start.
@@ -73,7 +75,15 @@ public sealed partial class MainWindowViewModel
         SheetAxisSymbol = LayoutAxisSymbol,
         SheetHatSymbol = LayoutPovSymbol,
         SheetSliderSymbol = LayoutSliderSymbol,
-        SheetFolder = LayoutExportPath
+        SheetFolder = LayoutExportPath,
+        KneeboardToFolder = KneeboardToFolder,
+        KneeboardFolder = KneeboardFolder,
+        KneeboardAllAircraft = KneeboardAllAircraft,
+        KneeboardPostfix = KneeboardPostfix,
+        KneeboardSize = KneeboardSize,
+        KneeboardOnePage = KneeboardOnePage,
+        KneeboardListPage = KneeboardListPage,
+        KneeboardPicture = KneeboardPicture
     };
 
     // Called while the settings load (loadingUiSettings: nothing is saved meanwhile); a value not in the file keeps
@@ -112,6 +122,14 @@ public sealed partial class MainWindowViewModel
         LayoutPovSymbol = Symbol(s.SheetHatSymbol, LayoutPovSymbol);
         LayoutSliderSymbol = Symbol(s.SheetSliderSymbol, LayoutSliderSymbol);
         LayoutExportPath = s.SheetFolder?.Trim() ?? LayoutExportPath;
+        KneeboardToFolder = s.KneeboardToFolder ?? KneeboardToFolder;
+        KneeboardFolder = s.KneeboardFolder?.Trim() ?? KneeboardFolder;
+        KneeboardAllAircraft = s.KneeboardAllAircraft ?? KneeboardAllAircraft;
+        KneeboardPostfix = s.KneeboardPostfix?.Trim() ?? KneeboardPostfix;
+        KneeboardSize = Text(s.KneeboardSize, KneeboardSize);
+        KneeboardOnePage = s.KneeboardOnePage ?? KneeboardOnePage;
+        KneeboardListPage = s.KneeboardListPage ?? KneeboardListPage;
+        KneeboardPicture = s.KneeboardPicture ?? KneeboardPicture;
 
         static string Text(string? value, string fallback) => string.IsNullOrWhiteSpace(value) ? fallback : value.Trim();
 
@@ -174,5 +192,23 @@ public sealed partial class MainWindowViewModel
         public string? SheetSliderSymbol { get; set; }
 
         public string? SheetFolder { get; set; }
+
+        // Kneeboard: the DCS kneeboard or a folder, all aircraft or the ticked ones, the name ending, the page height and
+        // one page with all devices.
+        public bool? KneeboardToFolder { get; set; }
+
+        public string? KneeboardFolder { get; set; }
+
+        public bool? KneeboardAllAircraft { get; set; }
+
+        public string? KneeboardPostfix { get; set; }
+
+        public string? KneeboardSize { get; set; }
+
+        public bool? KneeboardOnePage { get; set; }
+
+        public bool? KneeboardListPage { get; set; }
+
+        public bool? KneeboardPicture { get; set; }
     }
 }

@@ -87,6 +87,28 @@ try {
     $cfAircraftJson = $cfAircraft.Output | ConvertFrom-Json
     Assert-True (@($cfAircraftJson.Nodes).Count -eq 1 -and $cfAircraftJson.Nodes[0].Id -eq "a2001cdnil") ("relations aircraft --node game:id:F-16C_50 must find the action: " + $cfAircraft.Output)
 
+    # ---- 4b. an option without its value (the last word): a usage error with exit code 2, no crash report
+    $cfCrashFolder = Join-Path $env:JOYPRO_DATA_DIR "CrashReports"
+    $cfCrashesBefore = @(Get-ChildItem -Path $cfCrashFolder -Recurse -File -ErrorAction SilentlyContinue).Count
+    $cfMissingRuns = @(
+        @{ What = "relations aircraft set --on"; Args = @("--profile", $cfItems, "relations", "aircraft", "set", "Pitch", "--node", "DCS:a2001cdnil", "--on"); Option = "--on" },
+        @{ What = "relations aircraft --node"; Args = @("--profile", $cfItems, "relations", "aircraft", "Pitch", "--node"); Option = "--node" },
+        @{ What = "binds tuning --deadzone"; Args = @("--profile", $cfItems, "binds", "tuning", "set", "Pitch", "--deadzone"); Option = "--deadzone" },
+        @{ What = "support bundle --days"; Args = @("support", "bundle", "--days"); Option = "--days" },
+        @{ What = "games support --notes"; Args = @("games", "support", "--notes"); Option = "--notes" },
+        @{ What = "bf6 refresh-db --path"; Args = @("bf6", "refresh-db", "--dry-run", "--path"); Option = "--path" },
+        @{ What = "sync status --game"; Args = @("sync", "status", "--game"); Option = "--game" },
+        @{ What = "vjoy exe --add"; Args = @("vjoy", "exe", "DCS", "--add"); Option = "--add" }
+    )
+    foreach ($cfMissing in $cfMissingRuns) {
+        $cfMissingRun = Run-Engine $cfMissing.Args
+        Assert-CfClean $cfMissingRun ($cfMissing.What + " without a value")
+        Assert-True ($cfMissingRun.ExitCode -eq 2) ($cfMissing.What + " without a value must end with exit code 2, not " + $cfMissingRun.ExitCode + ". Output: " + $cfMissingRun.Output)
+        Assert-Match $cfMissingRun.Output ("Missing value for option " + [regex]::Escape($cfMissing.Option) + "\. Write the value after it") ($cfMissing.What + " must name the option without its value: " + $cfMissingRun.Output)
+    }
+    $cfCrashesAfter = @(Get-ChildItem -Path $cfCrashFolder -Recurse -File -ErrorAction SilentlyContinue).Count
+    Assert-True ($cfCrashesAfter -eq $cfCrashesBefore) ("an option without its value must not write a crash report (" + $cfCrashesBefore + " before, " + $cfCrashesAfter + " after).")
+
     # ---- 5. exit codes of the checks: telemetry recover / prune with a broken session, a layout sheet with problems
     $cfTelemetry = Join-Path $cfDir "telemetry"
     New-Item -Path $cfTelemetry -ItemType Directory -Force | Out-Null

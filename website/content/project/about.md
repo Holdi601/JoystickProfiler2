@@ -6,7 +6,7 @@ summary: Who makes JoyPro, the licence, privacy in one paragraph, how to get hel
 ---
 JoyPro is a hobby project, started for one pilot's own sticks and shared because it helps other pilots too. JoyPro 2
 continues [JoyPro 1](https://github.com/Holdi601/JoystickProfiler) with the same idea and a new program around it
-([what improved](jp1-vs-jp2.html)).
+([[page:project/jp1-vs-jp2.html|what improved]]).
 
 ## Licence
 
@@ -26,14 +26,18 @@ your PC; nothing is uploaded unless you attach it somewhere yourself. Details: [
 
 - **Discord**: [discord.gg/yK4gQA9xgk](https://discord.gg/yK4gQA9xgk) for questions, ideas and testing.
 - **GitHub issues**: [JoystickProfiler2/issues](https://github.com/Holdi601/JoystickProfiler2/issues). Attach the
-  support file ([how](../faq.html)).
+  support file ([[page:faq.html|how]]).
 - This is a spare-time project: help is given when possible, without promises about fixes or dates.
 
 ## Contributing
 
-The source is on [GitHub](https://github.com/Holdi601/JoystickProfiler2). Build with
-`dotnet build gui/JoyPro.Gui/JoyPro.Gui.csproj`; tests: `dotnet test gui/JoyPro.Gui.Tests` and
+The source is on [GitHub](https://github.com/Holdi601/JoystickProfiler2). Ideas and problems go to the
+Discord or a GitHub issue. This website is made from the source, so it describes the current version.
+
+:::layer technical
+Build with `dotnet build gui/JoyPro.Gui/JoyPro.Gui.csproj`; tests: `dotnet test gui/JoyPro.Gui.Tests` and
 `engine/tests/engine_smoke_test.ps1`. The architecture map is
 [ARCHITECTURE.md](https://github.com/Holdi601/JoystickProfiler2/blob/main/ARCHITECTURE.md). This website is generated
 from the source by `website/build.py`; a new button or engine command needs a description, or the site's completeness
 check fails.
+:::

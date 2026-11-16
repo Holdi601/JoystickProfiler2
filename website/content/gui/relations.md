@@ -39,6 +39,23 @@ walk-through with diagrams and the in-game meaning is on [[page:flows/relations.
   for every relation...** does all relations at once.
 - The function chip says which function JoyPro thinks the relation is; change it if the guess is wrong (it steers the
   suggestions).
+
+## Several actions at once
+
+In **Its actions** Ctrl+click or Shift+click picks several action cards (Ctrl+A all of them). A bar shows how many are
+selected, with:
+
+- **Copy** (Ctrl+C): remembers them. Open another relation of the same kind and press **Paste n action(s)** (Ctrl+V)
+  in its header: they are copied there with their aircraft, also the switched-off ones. The first relation keeps them.
+- **Move to...**: a window asks where they go: **New relation** (type its name; it gets the kind of this relation, axis
+  or button, and no bind yet) or **Existing relation (same kind)** (search the list). **Move** takes them out of this
+  relation.
+- **Remove** (Del): takes them out of this relation after one question.
+
+The right-click menu of an action has **Copy** and **Move to another relation...** as well: for that action, or for
+the selection when the action is part of it. In the list on the left, several selected relations get **Move actions
+to...**: every action of them goes to one relation and the emptied relations are deleted with their binds. Each of
+these is one step for Ctrl+Z.
 :::
 
 :::layer technical
@@ -48,7 +65,8 @@ walk-through with diagrams and the in-game meaning is on [[page:flows/relations.
 `MainWindowViewModel.SuggestMissing.cs`, `MainWindowViewModel.Catalog.cs`, `MainWindowViewModel.AutoGroup.cs`,
 `ListFilterViewModel.cs`. The quick commands run in the engine server (`engine serve`). Engine:
 [[cli:relations list]], [[cli:relations search]], [[cli:relations add]], [[cli:relations suggest]],
-[[cli:relations aircraft]], [[cli:relations item move]], [[cli:relations mass]], [[cli:relations auto-group]],
+[[cli:relations aircraft]], [[cli:relations item move]], [[cli:relations item copy-to]], [[cli:relations item move-to]],
+[[cli:relations mass move-actions]], [[cli:relations mass]], [[cli:relations auto-group]],
 [[cli:relations from-text]], [[cli:relations assistant]]. Reference: [[doc:relation-builder|Relations page (reference)]].
 :::
 
@@ -151,6 +169,11 @@ Suggest missing for every relation: ticks every suggestion in the review, ready 
 
 <!-- entry: ClearMissingReviewTicksCommand -->
 Suggest missing for every relation: unticks every suggestion; nothing is added.
+
+<!-- entry: bind:SuggestInstalledGamesOnly -->
+**Only games installed on this PC** (on by default, in Suggest missing and Suggest missing for every relation): the
+suggestions are only for the games JoyPro found on your PC, so with one game you do not get a list of games you do not
+have. Untick it to see every game JoyPro knows. JoyPro remembers your choice.
 
 <!-- entry: StartAutoGroupCommand -->
 Shown on an empty Relations page: opens Auto Group (**By function**), which builds relations for the whole profile
@@ -336,8 +359,8 @@ Filter switches **All** / **Bound** / **Not bound** (each with its count): every
 device, or only those with no input at all, in any game. A click on the active switch goes back to all.
 
 <!-- entry: ToggleNoActionInGamesCommand -->
-With a game or aircraft ticked under **Games**, one more switch appears, e.g. **No action in Falcon BMS (4)**: the
-relations that do NOT have an action there yet. Together with **Devices** it shows what one device still lacks in that
+With a game or aircraft ticked under **Games**, one more switch appears, for example **No action in Falcon BMS (4)**:
+the relations that do NOT have an action there yet. Together with **Devices** it shows what one device still lacks in that
 game. An action added to the open relation counts at once; the relation leaves the list when you open the next one. A
 click on the switch again, or the x of its chip, goes back to the relations that have one. On the Binds page it works
 the same.
@@ -413,13 +436,46 @@ With several relations selected (Ctrl/Shift+click): deletes them and their binds
 step: Ctrl+Z brings them back. Engine: [[cli:relations mass delete]]. In the game: at the next export their binds are
 no longer written.
 
+<!-- entry: OpenMoveRelationsActionsCommand -->
+**Move actions to...** (several relations selected): every action of the selected relations goes, with its aircraft, to
+a new relation (named in the window) or an existing relation of the same kind; the emptied relations are deleted with
+their binds. The selected relations must all be axis or all button. One undo step. Engine:
+[[cli:relations mass move-actions]] `--delete-empty`. In the game: after the next export the actions are on the input
+of the relation they went to.
+
+<!-- entry: PasteRelationNodesCommand -->
+**Paste n action(s)** (shown after Copy, in another relation of the same kind): copies the copied actions into the open
+relation with their aircraft (switched-off ones stay off); an action it already has gains the aircraft it lacked. The
+relation they were copied from keeps them. Ctrl+V does the same in the action list. One undo step. Engine:
+[[cli:relations item copy-to]].
+
+<!-- entry: CopySelectedRelationNodesCommand -->
+**Copy** (several actions selected, or an action's right-click menu; Ctrl+C): remembers these actions of the open
+relation for **Paste**. Nothing changes until you paste.
+
+<!-- entry: OpenMoveRelationNodesCommand -->
+**Move to...** / **Move to another relation...**: opens a window for the selected actions (or the right-clicked one):
+**New relation** with a name you type, or an **Existing relation** of the same kind picked from a searchable list. The
+actions leave this relation with their aircraft. One undo step. Engine: [[cli:relations item move-to]].
+
+<!-- entry: DeleteSelectedRelationNodesCommand -->
+**Remove** (several actions selected, Del, or **Remove from the relation** in an action's right-click menu): takes the
+actions out of the open relation after one question; its bind stays. One undo step. Engine:
+[[cli:relations item remove]] with one `--node` per action.
+
+<!-- entry: SelectAllRelationNodesCommand -->
+**Select all** (Ctrl+A in the action list): selects every action of the open relation, for Copy, Move to... or Remove.
+
+<!-- entry: ClearRelationNodeSelectionCommand -->
+**Clear** (in the bar of the selected actions): unselects the actions. Nothing changes in the profile.
+
 <!-- entry: click:ClearRelationSelectionClicked -->
 **Clear** (also More > **Clear selection**): unselects every relation in the list and closes the open one. Nothing
 changes in the profile.
 
 <!-- entry: DuplicateRelationCommand -->
-Right-click on a relation card: copies it with its actions, aircraft, groups, tuning and bind as a new relation named
-"(copy)" and opens the copy. Ctrl+Z undoes it. Engine: [[cli:relations mass duplicate]].
+Right-click on a relation card: copies it with its actions, aircraft, groups, tuning and bind as a new relation with
+"copy" added to its name and opens the copy. Ctrl+Z undoes it. Engine: [[cli:relations mass duplicate]].
 
 <!-- entry: DuplicateRelationWithoutBindCommand -->
 Right-click on a relation card: copies it without its bind (`--no-bind`), the same actions for another input, and
@@ -431,7 +487,7 @@ game: at the next export its binds are no longer written.
 
 <!-- entry: label:Bulk changes -->
 Opens the bulk tools under the list: pick what to **Do** (delete, duplicate, merge, split, add-prefix, add-postfix,
-remove-part, export), a **Value**, and **On** (the selected relations, all, or a query), then **Run Mass Operation**.
+remove-part, export), a **Value**, and **Apply to** (the selected relations, all, or a query), then **Run Mass Operation**.
 
 <!-- entry: bind:IsSelected -->
 A tick or chip that picks an item: a group under **Remove Groups**, a step or action of an AI plan or a By description
@@ -553,7 +609,7 @@ in its answer takes it back. The button itself changes nothing.
 
 <!-- entry: RelationDuplicateButton -->
 **Duplicate** on the open relation: a menu with **Duplicate** (with its bind) and **Duplicate without bind**. Both
-make a new relation named "(copy)" and open it; Ctrl+Z undoes it.
+make a new relation with "copy" added to its name and open it; Ctrl+Z undoes it.
 
 <!-- entry: DuplicateSelectedRelationWithoutBindCommand -->
 Copies the open relation with its actions, aircraft, groups and tuning but without its bind, for the same actions on
@@ -659,8 +715,9 @@ relation"); the list it opens only shows them. An action the relation has for on
 and says "already in this relation for 19 of 20 aircraft"; it offers only the aircraft still free.
 
 <!-- entry: OpenOtherRelationsTagCommand -->
-Add actions and Suggested for this relation: the tag under an action that is switched on in other relations. **in 'Name'** opens that relation;
-**in 3 relations** lists them under the action, and a name opens that relation. An action in no other relation has no
+Add actions and Suggested for this relation: an action that is switched on in other relations has a tag under it. A
+tag **in 'Name'** opens that relation; a tag **in 3 relations** lists them under the action, and a name opens that
+relation. An action in no other relation has no
 tag. The search stays; **Back to '...'** above the relation's name (or the Back arrow at the top, Alt+Left) returns to
 the relation and search you came from.
 

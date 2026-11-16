@@ -16,11 +16,10 @@ Thunder.
 
 ```mermaid
 flowchart LR
-  G["Game<br/>(DCS / IL-2 / War Thunder)"] -->|UDP / HTTP telemetry| S["JoyPro.Ffb<br/>telemetry source"]
-  S --> M["Aircraft model 'ac.*'<br/>airspeed, AoA, G, gear ..."]
-  M --> GR["Graph<br/>telemetry → curves → effects"]
-  GR --> X["Mixer<br/>strongest per slot, strength,<br/>max force cap"]
-  X --> D["Force feedback stick<br/>(DirectInput)"]
+  G["Your game<br/>sends live data"] --> M["JoyPro reads it:<br/>speed, G, gear ..."]
+  M --> GR["The graph turns<br/>it into forces"]
+  GR --> D["Your force<br/>feedback stick"]
+%% caption: From the game's live data (DCS, IL-2, War Thunder) to forces on your stick. Every arrow runs all the time while you fly.
 ```
 
 :::layer beginner
@@ -58,15 +57,12 @@ has no spring for).
 
 **Direction test**, step by step (each step waits for **▶ Ready**; **■ Cancel** stops every force at any time):
 
-```mermaid
-flowchart TD
-  A["▶ Start"] --> B["Push RIGHT 2 s (20 %)<br/>Which way did it move?"]
-  B --> C["Push FORWARD 2 s<br/>Which way did it move?"]
-  C --> D["Centring spring<br/>Does it spring back?"]
-  D --> E["Trim: centre 35 % forward<br/>Did it move and stay?"]
-  E --> F["Invert X / Y saved<br/>for this device"]
-  B & C & D & E -.->|↻ Repeat this step| B
-```
+1. Press **▶ Start**. JoyPro pushes the stick RIGHT for 2 s (20 %). Answer: which way did it move?
+2. JoyPro pushes it FORWARD for 2 s. Answer: which way did it move?
+3. The centring spring. Answer: does it spring back?
+4. The trim: the centre moves 35 % forward. Answer: did it move and stay?
+
+After step 4, **Invert X / Y** is saved for this device. **↻ Repeat this step** repeats the current step.
 
 "It did not move" keeps that axis's setting and says what to check (on a VPforce stick: the Configurator's own spring
 must be off for trim). **⏮ Start over** begins again. The test needs the stick to itself: it refuses while JoyPro's
@@ -115,24 +111,15 @@ View model: `MainWindowViewModel.FfbTelemetry.cs` (settings, games, aircraft, se
 `Views/Controls/FfbGraphCanvas.cs`, `FfbCurveEditor.cs`. The force feedback runs in its own process,
 `JoyPro.Ffb.exe` (`gui/JoyPro.Ffb`, graph engine in `gui/JoyPro.Ffb.Core`).
 
-```mermaid
-sequenceDiagram
-  participant GUI as JoyPro
-  participant P as JoyPro.Ffb
-  participant Game
-  participant Stick
-  loop every 5 s while On
-    GUI->>GUI: supported game process running?
-  end
-  GUI->>P: run --game DCS --game-pid N --parent-pid M --protocol
-  Game-->>P: telemetry (UDP 41992 for DCS)
-  P->>Stick: acquire (exclusive) on the first forces
-  loop 50 Hz while telemetry arrives
-    P->>Stick: changed effect parameters only
-  end
-  Game--xP: telemetry stops (menu, pause)
-  P->>Stick: STOP ALL, release (springs kept with "centring spring")
-```
+The force feedback process from the game start to the release of the stick:
+
+| # | Who | What happens |
+|---|---|---|
+| 1 | JoyPro | Every 5 seconds while the page is On: is a supported game running? |
+| 2 | JoyPro | Starts the force feedback process: `JoyPro.Ffb run --game DCS --game-pid N --parent-pid M --protocol`. |
+| 3 | Game | Sends telemetry (UDP port 41992 for DCS). |
+| 4 | Force feedback process | Takes the stick (exclusive) at the first force. Then, 50 times a second while telemetry arrives, it sends only the effect values that changed. |
+| 5 | Force feedback process | Telemetry stops (menu, pause): STOP ALL, and the stick is released (springs stay with "centring spring"). |
 
 - **Lifecycle**: the process follows the game through its process handle and ends with the game or JoyPro. Every
   constant and periodic force has a duration of 0.3 s and is restarted, so a hung or killed process cannot leave a

@@ -1,7 +1,7 @@
 # Project Wingman (Sector D2, Unreal Engine 4.27)
 
 Status: **integrated, native** (`engine pw`, game id `ProjectWingman`). Several devices at once. No anti-cheat.
-Installed on a test PC (Steam 895870, Anniversary Edition 2.1.1208); everything below was observed on the game on
+Checked on an installed copy (Steam 895870, Anniversary Edition 2.1.1208); everything below was observed on the game on
 2026-10-12 [OBS] unless marked.
 
 ## How the game stores controls
@@ -76,8 +76,7 @@ Installed on a test PC (Steam 895870, Anniversary Edition 2.1.1208); everything 
 - In game: `tools/e2e/games/ProjectWingmanSettings.ps1` (RunAll `projectwingman`): random vJoy axes/buttons, invert,
   Pitch curve and dead zone exported; KEY BINDINGS / AXIS BINDINGS / CURVES + DEADZONES read by OCR; View Padlock X
   bound in the game; quit; import reads both back. Snapshots of `Saved\Config` and `Saved\SaveGames` are restored.
-- Live runs on 2026-10-12: in both complete runs (`C:\Temp\jp2-e2e\runs\20261012-063548-pw-settings`,
-  `...-064045-pw-settings2`) the game showed every exported bind on its pages (screenshots: e.g. "VJOYDEVICE 8 BUTTON
+- Live runs on 2026-10-12: in both complete runs the game showed every exported bind on its pages (screenshots: e.g. "VJOYDEVICE 8 BUTTON
   24/18/3", "VJOYDEVICE 8 AXIS 1/2/3/4", Invert boxes, CURVE 0.30 / DEADZONE 23 %), the import after the exit read all
   of them and savegame.sav kept the curve and dead zone (run 2: 19 of 25 checks passed; the failures were the
   script's OCR of the small slot text, fixed afterwards and verified on those screenshots, and the View X bind made in

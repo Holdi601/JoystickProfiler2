@@ -182,7 +182,7 @@ public sealed partial class GameSetupItem : ObservableObject
 
     private string MarkerMissingText()
     {
-        string markers = Install.Markers.Count == 0 ? T("the game's executable") : string.Join(" or ", Install.Markers);
+        string markers = Install.Markers.Count == 0 ? T("the game's executable") : JoinOr(Install.Markers);
         return T("Marker not found ({0}), but the folder is kept as you chose it.", markers);
     }
 

@@ -366,6 +366,9 @@ public sealed partial class MsfsProfileImportTests
     public void Store2024_Export_SimRunningOrUnknownIndex_WritesNothing_ImportFilesInstead()
     {
         (string home, string user, string community, string profile) = StoreDirectSetup();
+        // This test is about the running-sim guard: a run with JOYPRO_TEST_IGNORE_RUNNING_GAMES=1 (the test runs' safety
+        // setting for the real games) must not switch it off for the engine started here; only the stand-ins run.
+        environment["JOYPRO_TEST_IGNORE_RUNNING_GAMES"] = "0";
         Assert.Equal(0, Engine(home, "--profile", profile, "relations", "add", "AAA56", "--node", "MSFS2024:KEY_ATC_MENU_0", "--device", Vmax, "--input", "JOY_BTN2", "--text").Code);
         Dictionary<string, string> hashes = Hashes(user);
         string folder = Path.Combine(root, "data", "MSFS 2024 import files");

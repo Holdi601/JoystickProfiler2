@@ -167,9 +167,11 @@ public sealed partial class MainWindowViewModel
 
     private void MarkGameSetupDone()
     {
-        if (gameSetupDone)
-            return;
-        gameSetupDone = true;
-        SaveUiSettings();
+        if (!gameSetupDone)
+        {
+            gameSetupDone = true;
+            SaveUiSettings();
+        }
+        OnGameSetupClosedForWelcome();
     }
 }

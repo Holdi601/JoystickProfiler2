@@ -34,6 +34,9 @@ from pathlib import Path
 
 from markdown_it import MarkdownIt
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import i18n  # noqa: E402  (website/i18n.py: the languages, the catalogs and the translators' tool)
+
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "website"
 CONTENT = SITE / "content"
@@ -74,6 +77,7 @@ GUI_PAGES = [
     ("overlays", "Dialogs and notices", None, "What shows over every page: the game watcher, Move to another button, updates."),
     ("first-start", "First-start setup", None, "Your games: the window of the first start (also Settings > Games > Run setup again)."),
     ("setup-wizard", "Setup wizard", None, "Relations and binds for your watched games from your devices, roles and priorities."),
+    ("help", "Help mode and tours", None, "F1 explains any control you click; the welcome, the tours of every page and the quick setup."),
 ]
 GUI_TITLES = {slug: title for slug, title, _, _ in GUI_PAGES}
 
@@ -98,6 +102,7 @@ GUI_DOCS = {
     "overlays": ["sync-watcher", "updates"],
     "first-start": ["installs"],
     "setup-wizard": ["setup-wizard"],
+    "help": ["ui/help-and-tours"],
 }
 
 # Which AXAML file belongs to which GUI page (MainWindow.axaml is split by its page sections).
@@ -108,6 +113,7 @@ VIEW_PAGES = {
     "VirtualFunctionEditorView.axaml": "vjoy",
     "GameSetupWindow.axaml": "first-start",
     "SetupWizardWindow.axaml": "setup-wizard",
+    "LayoutWindow.axaml": "layout",
     "HudWindow.axaml": "hud",
     "HudSurface.axaml": "hud",
     "AircraftSelectorPanel.axaml": "relations",
@@ -126,6 +132,7 @@ VIEW_PAGES = {
     "TelemetryRecordingPanel.axaml": "settings",
     "ReplaceDeviceWindow.axaml": "header",
     "ConfirmWindow.axaml": "overlays",
+    "HelpLayer.axaml": "help",
 }
 
 STAGE_PAGES = {
@@ -137,12 +144,28 @@ STAGE_PAGES = {
 
 CONTROL_KINDS = ("Button", "ToggleButton", "SplitButton", "DropDownButton", "RepeatButton", "MenuItem", "CheckBox",
                  "RadioButton", "ToggleSwitch")
+# What a reader calls each kind of control (the chip next to a control's name on the GUI pages; translated).
+KIND_WORDS = {"Button": "Button", "ToggleButton": "Toggle button", "SplitButton": "Button with a menu",
+              "DropDownButton": "Drop-down button", "RepeatButton": "Button", "MenuItem": "Menu entry",
+              "CheckBox": "Check box", "RadioButton": "Option", "ToggleSwitch": "Switch"}
 
 # Docs that stay out of the public site (the same rules as tools/export_public.ps1).
 PRIVATE_DOCS = re.compile(r"^(internal/|licensing-audit\.md$|releases/README\.md$)")
 PRIVATE_IMAGES = re.compile(r"^docs/ui/(?!relation-builder-)[^/]*\.png$", re.I)
 
 LAYER_TITLES = {"beginner": "For beginners", "advanced": "Advanced", "technical": "Technical internals"}
+
+# The side menu: what a beginner needs first; the power-user groups below a line (the command line is hidden at the
+# Beginner level, site.js / site.css).
+NAV_MAIN = ["Start", "Getting started", "How do I", "Games", "Help", "Main flows", "GUI pages"]
+NAV_POWER = ["Engine (CLI)", "Reference", "Game reference", "Release notes", "Project", "Developers"]
+NAV_OPEN = ("Start", "Getting started", "How do I", "Help")
+NAV_EXTRA = {"Help": [("gui/help.html", "F1 help, tours and Easy words")]}
+
+# Test and evaluation logs (testing, auto setup evaluation, device market checks): not on the site.
+MAINTAINER_DOCS = re.compile(r"^(testing|auto-setup-eval|device-market-check[^/]*)[.]md$")
+# Developer documents: built (links keep working) but listed under Developers, not with the user topics.
+DEVELOPER_DOCS = re.compile(r"^(testing|auto-setup-eval|device-market-check[\w-]*|gui-cli-parity|localization|ui/layout-redesign|ui/pages|ui/navigation)\.md$")
 
 # The feature columns of the support matrix (engine games support --json, Cells) as the game pages show them.
 GAME_FEATURES = [
@@ -212,7 +235,10 @@ def rel(from_url: str, to_url: str) -> str:
 NOT_PUBLIC = re.compile(
     r"(?i)(?<!\bEFS )(encrypt|decrypt)|obfuscat|\bDRM\b|\bEULA\b|copy[- ]?protect|\blegal(ly)?\b(?!\s+state)"
     r"|\bcopyright(ed)?\b(?!\s+(notice|holder))|infring|\bDMCA\b|\blawsuit|anti-?cheat"
-    r"|\buser (decision|approved|said|wish)|\bthe user approved\b|\btester\b|\bdev[- ]PC\b")
+    r"|\buser (decision|approved|said|wish)|\buser's decision|\bthe user (approved|said|decided)\b|\btesters?\b|\btester's"
+    r"|\b(dev|test|development|author'?s)[- ]PC\b|reverse[- ]?engineer|\bdecompil|\blicensed (with|to|by)\b"
+    r"|\b(has|with) no licen[cs]e\b|all rights reserved|licen[cs]e terms|for (themselves|yourself) only"
+    r"|[E]:\\Games\\|C:\\Temp\\jp2[-]")  # a game drive and the test kit's run folders
 
 
 def public_text(text: str) -> str:
@@ -401,6 +427,88 @@ def extract_gui_controls(prop_types: dict[tuple[str, str], str] | None = None) -
         used.add((e.page, a))
         e.anchor = a
     return result
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Help mode catalog (F1 in the GUI): every control's short text, made from its wiki entry
+# ----------------------------------------------------------------------------------------------------------------------
+
+HELP_CATALOG = GUI / "Resources" / "help-controls.json"
+
+
+def help_sentences(text: str) -> list[str]:
+    """The plain sentences of a wiki entry: no code, links as their text, no details in parentheses, no engine lines."""
+    t = re.sub(r"```.*?```", "", text or "", flags=re.S)
+    t = re.sub(r"^:::.*$", "", t, flags=re.M)
+    t = re.sub(r"^\s*[|!#].*$", "", t, flags=re.M)
+    # Inline code in pairs, left to right: engine command lines and long code go, short code (file names, keys) stays.
+    t = re.sub(r"`([^`]*)`", lambda m: "" if m.group(1).startswith("engine ") or len(m.group(1)) >= 40 else m.group(1), t)
+    t = re.sub(r"\[\[[^|\]]*\|([^\]]*)\]\]", r"\1", t)
+    t = re.sub(r"\[\[(?:[a-z]+:)?([^\]]*)\]\]", r"\1", t)
+    t = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", t)
+    t = re.sub(r"\*\*|__|(?<!\w)\*(?!\s)|(?<=\S)\*(?!\w)", "", t)
+    t = re.sub(r"^\s*[-*]\s+", "", t, flags=re.M)
+    t = t.replace("\n", " ")
+    t = re.sub(r"\s*\((?:[^()]|\([^()]*\))*\)", "", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    t = re.sub(r"\s+([.,:;!?])(?=\s|$)", r"\1", t)
+    t = re.sub(r"([:,;])(?=[.!?])", "", t)
+    parts = [x.strip() for x in re.split(r"(?<=[.!?])\s+(?=[A-Z\"'0-9])", t) if x.strip()]
+    out = []
+    for x in parts:
+        if re.match(r"(?i)^engine\b|^see\b|^\(?engine:", x) or len(x) < 8:
+            continue
+        if x[-1] not in ".!?":
+            x += "."
+        out.append(x[0].upper() + x[1:])
+    # A first sentence that only says the default ("Off by default.") goes with the next one.
+    while len(out) > 1 and len(out[0]) < 40:
+        out[0:2] = [out[0] + " " + out[1]]
+    return out
+
+
+EASY_LINE = re.compile(r"<!--\s*easy:\s*(.*?)\s*-->", re.S)
+
+
+def easy_line(text: str) -> str:
+    """The entry's plain first sentence for F1's help ('<!-- easy: ... -->'): at most 12 words, for a child."""
+    m = EASY_LINE.search(text or "")
+    return re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
+
+
+def easy_problems(site: "Site") -> list[str]:
+    """Plain first sentences that are too long: every sentence at most 12 words."""
+    out = []
+    for e in site.gui:
+        line = easy_line(e.hand)
+        for sentence in re.split(r"(?<=[.!?])\s+", line):
+            if len(sentence.split()) > 12:
+                out.append(f"{e.page}/{e.key}: easy line over 12 words: {sentence}")
+    return out
+
+
+def help_catalog(site: "Site") -> list[dict]:
+    rows = []
+    for e in sorted(site.gui, key=lambda e: (e.page, e.key)):
+        hand = re.sub(r"<!--.*?-->", "", e.hand or "", flags=re.S)
+        s = help_sentences(hand) or help_sentences(e.tooltip) or help_sentences(e.vm.comment if e.vm else "")
+        what = s[0] if s else ""
+        nxt = s[1] if len(s) > 1 and len(s[1]) <= 170 else ""
+        row = {"p": e.page, "k": e.key, "kind": e.kind, "a": e.anchor, "w": what}
+        if nxt:
+            row["x"] = nxt
+        easy = easy_line(e.hand)
+        if easy:
+            row["e"] = easy
+        for name, value in (("c", e.command), ("b", e.binding), ("ck", e.click), ("n", e.name), ("l", e.label), ("t", e.tooltip)):
+            if value:
+                row[name] = value
+        rows.append(row)
+    return rows
+
+
+def help_catalog_text(site: "Site") -> str:
+    return json.dumps(help_catalog(site), ensure_ascii=False, indent=0).replace("\n", "").replace("},{", "},\n{") + "\n"
 
 
 METHOD = re.compile(r"^[ \t]*(?:(?:private|public|internal|protected|static|async|override|partial|virtual|sealed)\s+)+"
@@ -824,6 +932,210 @@ def parse_cli() -> tuple[list[tuple[str, str]], list[CliCommand]]:
 # ----------------------------------------------------------------------------------------------------------------------
 
 
+def mark_fallbacks(out: str) -> str:
+    """A segment that stayed English on a language page (website/i18n.py put a mark in front of it): its element gets
+    lang="en" (and data-en for the style); marks inside other text go."""
+    mark = i18n.FALLBACK_MARK
+    if mark not in out:
+        return out
+    out = re.sub(r"<(p|li|td|th|div|h[1-6]|figcaption|span|strong|b|a)((?:\s[^>]*)?)>" + mark, r'<\1\2 lang="en" data-en>', out)
+    return out.replace(mark, "")
+
+
+BLOCK_KINDS = ("layer", "video", "picture", "note", "warn", "tip", "ingame", "steps", "cards", "stats", "hero", "flow")
+
+
+def split_cells(line: str) -> list[str]:
+    """The cells of a markdown table row; a | inside [[...|...]] or escaped as \\| is part of the cell."""
+    s = line.strip()
+    if s.startswith("|"):
+        s = s[1:]
+    if s.endswith("|") and not s.endswith("\\|"):
+        s = s[:-1]
+    cells, cur, depth, i = [], "", 0, 0
+    while i < len(s):
+        if s.startswith("[[", i):
+            depth += 1
+            cur += "[["
+            i += 2
+            continue
+        if s.startswith("]]", i) and depth:
+            depth -= 1
+            cur += "]]"
+            i += 2
+            continue
+        ch = s[i]
+        if ch == "\\" and s[i + 1:i + 2] == "|":
+            cur += "|"
+            i += 2
+            continue
+        if ch == "|" and not depth:
+            cells.append(cur)
+            cur = ""
+        else:
+            cur += ch
+        i += 1
+    cells.append(cur)
+    return cells
+
+
+def strip_md(text: str) -> str:
+    t = re.sub(r"\[\[[^|\]]*\|([^\]]*)\]\]", r"\1", text)
+    t = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", t)
+    return re.sub(r"[*_`]", "", t).strip()
+
+
+def cards_html(rendered: str) -> str:
+    """:::cards — a list of '[Title](link): what it is' as cards."""
+    out = []
+    for li in re.findall(r"<li>(.*?)</li>", rendered, re.S):
+        li = re.sub(r"</?p>", "", li).strip()
+        m = re.match(r'<a href="([^"]*)">(.*?)</a>\s*[:：–—-]?\s*(.*)$', li, re.S)  # ： (the CJK colon) too
+        if not m:
+            out.append(f'<div class="card">{li}</div>')
+            continue
+        title = re.sub(r"</?strong>", "", m.group(2))
+        out.append(f'<a class="card" href="{m.group(1)}"><b>{title}</b><span>{m.group(3).strip()}</span></a>')
+    return '<div class="cards">' + "".join(out) + "</div>\n"
+
+
+def stats_html(rendered: str) -> str:
+    """:::stats — a list of '**number** what' as number tiles."""
+    out = []
+    for li in re.findall(r"<li>(.*?)</li>", rendered, re.S):
+        li = re.sub(r"</?p>", "", li).strip()
+        m = re.match(r"<strong>(.*?)</strong>\s*(.*)$", li, re.S)
+        out.append(f"<div><b>{m.group(1)}</b>{m.group(2)}</div>" if m else f"<div>{li}</div>")
+    return '<div class="stats">' + "".join(out) + "</div>\n"
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Diagrams: the caption line and the authoring rules (website/README.md, "Diagrams")
+# ----------------------------------------------------------------------------------------------------------------------
+
+CAPTION_LINE = re.compile(r"^[ \t]*%%[ \t]*caption:[ \t]*(.*?)[ \t]*$", re.M)
+DIAGRAM_MAX_ROW = 5      # boxes in one row (a left-to-right chain, or one rank of a top-down chart)
+DIAGRAM_MAX_OUT = 3      # lines out of one box; more: use a table
+
+
+def mermaid_caption(src: str) -> tuple[str, str]:
+    """('%% caption: ...' lines out of the source, the caption)."""
+    caps = CAPTION_LINE.findall(src)
+    return CAPTION_LINE.sub("", src).strip("\n") + "\n", " ".join(c for c in caps if c)
+
+
+EDGE_LABEL_FORMS = [
+    (re.compile(r"--\s+[^-|>][^>]*?\s+-->"), " --> "),
+    (re.compile(r"-\.\s+[^>]*?\s+\.->"), " -.-> "),
+    (re.compile(r"==\s+[^>]*?\s+==>"), " ==> "),
+]
+EDGE = re.compile(r"\s*<?(?:-{2,}|={2,}|-\.+-)[>ox]?\s*")
+
+
+def diagram_graph(src: str) -> tuple[str, list[tuple[str, str]], bool, bool]:
+    """(direction, edges, has solid lines, has dotted lines) of a Mermaid flowchart; ('', ...) for other kinds."""
+    lines = src.strip().splitlines()
+    head = lines[0].strip() if lines else ""
+    m = re.match(r"(?:flowchart|graph)\s+(TD|TB|LR|RL|BT)\b", head)
+    if not m:
+        return "", [], False, False
+    direction = "LR" if m.group(1) in ("LR", "RL") else "TD"
+    edges: list[tuple[str, str]] = []
+    solid = dotted = False
+    for raw in lines[1:]:
+        line = raw.strip()
+        if not line or line.startswith("%%") or re.match(r"(subgraph|end\b|classDef|class\s|style\s|linkStyle|direction|click\s)", line):
+            continue
+        line = re.sub(r'"[^"]*"', '"q"', line)
+        for rx, repl in EDGE_LABEL_FORMS:
+            line = rx.sub(repl, line)
+        line = re.sub(r"(-->|-\.->|==>|---|-\.-|--[ox])\s*\|[^|]*\|", r"\1", line)
+        if re.search(r"-\.+-", line):
+            dotted = True
+        if re.search(r"(?<![.-])-{2,}[>ox-]|={2,}>", line):
+            solid = True
+        # Node shapes out, the id stays.
+        line = re.sub(r"(\w[\w-]*)\s*(\(\(.*?\)\)|\(\[.*?\]\)|\[\[.*?\]\]|\[\(.*?\)\]|\{\{.*?\}\}|\[/.*?[/\\]\]|\[\\.*?[/\\]\]|\[.*?\]|\(.*?\)|\{.*?\}|>.*?\])",
+                      r"\1", line)
+        line = re.sub(r":::\w+", "", line)
+        parts = [p for p in EDGE.split(line)]
+        if len(parts) < 2:
+            continue
+        groups = [[x.strip() for x in p.split("&") if x.strip()] for p in parts]
+        for a, b in zip(groups, groups[1:]):
+            for x in a:
+                for y in b:
+                    edges.append((x, y))
+    return direction, edges, solid, dotted
+
+
+def diagram_problems(src: str) -> list[str]:
+    """The authoring rules: a caption; at most 5 boxes in a row; at most 3 lines out of one box; a caption that says
+    what the dotted lines mean when a chart has solid and dotted lines."""
+    body, caption = mermaid_caption(src)
+    problems = []
+    if not caption:
+        problems.append("no caption line ('%% caption: ...' in the diagram: one line that says what the picture shows)")
+    direction, edges, solid, dotted = diagram_graph(body)
+    if not direction:
+        return problems
+    first = body.strip().splitlines()[0][:40]
+    out: dict[str, set[str]] = {}
+    for a, b in edges:
+        out.setdefault(a, set()).add(b)
+    for node, targets in out.items():
+        if len(targets) > DIAGRAM_MAX_OUT:
+            problems.append(f"'{node}' has {len(targets)} lines out (at most {DIAGRAM_MAX_OUT}; use a table instead) [{first}]")
+    if solid and dotted and caption and "dotted" not in caption.lower():
+        problems.append(f"solid and dotted lines, but the caption does not say what dotted means [{first}]")
+    # Longest path in boxes (back edges of loops ignored).
+    nodes = {x for e in edges for x in e}
+    depth: dict[str, int] = {}
+
+    def longest(n: str, stack: set[str]) -> int:
+        if n in depth:
+            return depth[n]
+        stack.add(n)
+        best = 1
+        for t in out.get(n, ()):
+            if t not in stack:
+                best = max(best, 1 + longest(t, stack))
+        stack.discard(n)
+        depth[n] = best
+        return best
+
+    if direction == "LR":
+        chain = max((longest(n, set()) for n in nodes), default=0)
+        if chain > DIAGRAM_MAX_ROW:
+            problems.append(f"{chain} boxes in one left-to-right row (at most {DIAGRAM_MAX_ROW}; split it or draw it top-down) [{first}]")
+    else:
+        preds: dict[str, set[str]] = {}
+        for a, b in edges:
+            preds.setdefault(b, set()).add(a)
+        rank: dict[str, int] = {}
+
+        def rank_of(n: str, stack: set[str]) -> int:
+            if n in rank:
+                return rank[n]
+            stack.add(n)
+            r = 0
+            for p in preds.get(n, ()):
+                if p not in stack:
+                    r = max(r, rank_of(p, stack) + 1)
+            stack.discard(n)
+            rank[n] = r
+            return r
+
+        per: dict[int, int] = {}
+        for n in nodes:
+            r = rank_of(n, set())
+            per[r] = per.get(r, 0) + 1
+        widest = max(per.values(), default=0)
+        if widest > DIAGRAM_MAX_ROW:
+            problems.append(f"{widest} boxes side by side in a top-down chart (at most {DIAGRAM_MAX_ROW}) [{first}]")
+    return problems
+
+
 class Renderer:
     def __init__(self, site: "Site"):
         self.site = site
@@ -834,12 +1146,21 @@ class Renderer:
             tok = tokens[idx]
             if tok.info.strip() == "mermaid":
                 env["mermaid"] = True
-                return '<div class="diagram"><pre class="mermaid">' + esc(tok.content) + "</pre></div>\n"
+                src, caption = mermaid_caption(tok.content)
+                # The authoring rules are checked on the English source (a translated caption says "dotted" in
+                # its own language).
+                for problem in (diagram_problems(tok.content) if self.site.lang == "en" else []):
+                    self.site.warn(f"{env.get('page_url', '?')}: diagram: {problem}")
+                cap = f'<figcaption>{self.md.renderInline(caption)}</figcaption>' if caption else ""
+                # Mermaid reads the text of the element: the source is escaped exactly once here (a label's "&gt;"
+                # written in the source would come out literally, so the source uses plain > and <).
+                return '<figure class="diagram-fig"><div class="diagram"><pre class="mermaid">' + esc(src) + "</pre></div>" + cap + "</figure>\n"
             return default_fence(tokens, idx, options, env)
 
         self.md.renderer.rules["fence"] = fence
 
     def render(self, text: str, page_url: str, env: dict, source: str | None = None) -> str:
+        env.setdefault("page_url", page_url)
         text = self.expand(text, page_url, env)
         out = self.md.render(text, env)
         out = self.fix_links(out, page_url, source)
@@ -852,11 +1173,20 @@ class Renderer:
         site = self.site
         lines = text.split("\n")
         out: list[str] = []
+        plain: list[str] = []
+
+        def flush():
+            # The Markdown between the blocks, translated segment by segment (website/i18n.py) on a language page.
+            if plain:
+                out.extend(site.translate_run("\n".join(plain)).split("\n"))
+                plain.clear()
+
         i = 0
         while i < len(lines):
             line = lines[i]
             m = re.match(r"^:::(\w+)\s*(.*)$", line)
-            if m and m.group(1) in ("layer", "video", "picture", "note", "warn", "tip", "ingame"):
+            if m and m.group(1) in BLOCK_KINDS:
+                flush()
                 kind, arg = m.group(1), m.group(2).strip()
                 depth = 1
                 j = i + 1
@@ -873,36 +1203,120 @@ class Renderer:
                 body = "\n".join(inner)
                 if kind == "layer":
                     env.setdefault("layers", set()).add(arg)
-                    title = LAYER_TITLES.get(arg, arg.title())
+                    title = site.t(LAYER_TITLES.get(arg, arg.title()))
                     out.append(f'<section class="layer layer-{esc(arg)}" data-layer="{esc(arg)}"><div class="layer-badge">{esc(title)}</div>\n')
+                    outer, site.ctx_layer = site.ctx_layer, arg
                     out.append(self.render(body, page_url, env))
+                    site.ctx_layer = outer
                     out.append("</section>\n")
                 elif kind == "video":
                     out.append(site.video_slot(arg, page_url))
                 elif kind == "picture":
                     out.append(site.picture_slot(arg, page_url))
+                elif kind == "steps":
+                    out.append(f'<div class="steps">\n{self.render(body, page_url, env)}</div>\n')
+                elif kind == "cards":
+                    out.append(cards_html(self.render(body, page_url, env)))
+                elif kind == "stats":
+                    out.append(stats_html(self.render(body, page_url, env)))
+                elif kind == "hero":
+                    out.append(self.hero_html(arg, body, page_url, env))
+                elif kind == "flow":
+                    out.append(self.flow_html(body, page_url, env))
                 elif kind == "ingame":
-                    out.append(f'<div class="callout ingame"><div class="callout-title">In the game: {esc(arg)}</div>\n')
+                    out.append(f'<div class="callout ingame"><div class="callout-title">{esc(site.t("In the game"))}: {esc(site.t(arg))}</div>\n')
                     out.append(self.render(body, page_url, env))
                     out.append("</div>\n")
                 else:
                     titles = {"note": "Note", "warn": "Careful", "tip": "Tip"}
-                    out.append(f'<div class="callout {kind}"><div class="callout-title">{esc(arg or titles[kind])}</div>\n')
+                    out.append(f'<div class="callout {kind}"><div class="callout-title">{esc(site.t(arg or titles[kind]))}</div>\n')
                     out.append(self.render(body, page_url, env))
                     out.append("</div>\n")
                 out.append("")
                 i = j + 1
                 continue
-            out.append(line)
+            plain.append(line)
             i += 1
+        flush()
         text = "\n".join(out)
         text = re.sub(r"\{\{stat:([\w.]+)\}\}", lambda mm: site.stat(mm.group(1)), text)
         text = re.sub(r"\{\{game-card\}\}", lambda mm: site.game_card(env.get("game_support", []), page_url), text)
         text = re.sub(r"\{\{game-index\}\}", lambda mm: site.game_index(page_url), text)
+        text = re.sub(r"\{\{device-list\}\}", lambda mm: site.device_list(page_url), text)
         text = re.sub(r"\{\{(gui-table|cli-table):([\w-]+)\}\}", lambda mm: site.placeholder(mm.group(1), mm.group(2), page_url), text)
         text = re.sub(r"!\[([^\]]*)\]\(shot:([\w-]+)\)", lambda mm: site.shot_html(mm.group(2), mm.group(1), page_url), text)
         text = re.sub(r"\[\[(cli|gui|doc|game|page):([^\]|]+)(?:\|([^\]]+))?\]\]", lambda mm: site.wikilink(mm.group(1), mm.group(2).strip(), mm.group(3), page_url), text)
         return text
+
+    def inline(self, text: str, page_url: str, env: dict) -> str:
+        """One table cell or line of markdown as HTML without the paragraph around it."""
+        out = self.render(text, page_url, env).strip()
+        m = re.fullmatch(r"<p>(.*)</p>", out, re.S)
+        return m.group(1) if m else out
+
+    def hero_html(self, arg: str, body: str, page_url: str, env: dict) -> str:
+        """:::hero shot:<name> — a heading, a paragraph and a list of links as buttons (the first one is the main one)."""
+        inner = self.render(body, page_url, env)
+
+        def buttons(m):
+            links = re.findall(r'<a href="([^"]*)">(.*?)</a>', m.group(0), re.S)
+            return '<div class="btns">' + "".join(
+                f'<a class="btn{"" if i == 0 else " ghost"}" href="{h}">{re.sub(r"</?strong>", "", t)}</a>' for i, (h, t) in enumerate(links)) + "</div>"
+
+        inner = re.sub(r"<ul>.*?</ul>", buttons, inner, count=1, flags=re.S)
+        pic = ""
+        shot = arg.removeprefix("shot:").strip()
+        if shot and (shot + "-dark") in self.site.shots:
+            pic = f'<div><img src="{rel(page_url, "assets/shots/" + shot + "-dark.webp")}" alt="" loading="lazy"></div>'
+        return f'<div class="hero"><div>{inner}</div>{pic}</div>\n'
+
+    def flow_html(self, body: str, page_url: str, env: dict) -> str:
+        """:::flow — a markdown table drawn as boxes with arrows: the header row names the columns, each row is one
+        line from left to right, an empty first cell continues the box above (one box that leads to several rows).
+        On a phone the boxes stack: the first box, then one card per row."""
+        rows = [split_cells(line) for line in body.splitlines() if line.strip().startswith("|")]
+        rows = [r for r in rows if not all(re.fullmatch(r":?-{2,}:?", c.strip() or "--") for c in r) or not r]
+        if len(rows) < 2:
+            self.site.warn(f"{page_url}: :::flow needs a header row and at least one row")
+            return ""
+        head, data = rows[0], rows[1:]
+        n = len(head)
+        cols = " 30px ".join(["minmax(0, 1fr)"] * n)
+        out = [f'<div class="flow" style="grid-template-columns: {cols}">']
+        for c, title in enumerate(head):
+            out.append(f'<div class="flow-head" style="grid-column: {2 * c + 1}">{self.inline(title, page_url, env)}</div>')
+        # The first column: a box spans the rows below it while their first cell is empty.
+        spans: list[int] = []
+        for i, r in enumerate(data):
+            first = (r[0] if r else "").strip()
+            if first:
+                k = 1
+                while i + k < len(data) and not (data[i + k][0] if data[i + k] else "").strip():
+                    k += 1
+                spans.append(k)
+            else:
+                spans.append(0)
+        for i, r in enumerate(data):
+            cells = [(r[c] if c < len(r) else "").strip() for c in range(n)]
+            grid_row = i + 2
+            lead = spans[i] > 1
+            if cells[0] and lead:
+                out.append(f'<div class="flow-box flow-lead" data-col="{esc(strip_md(self.site.t(head[0].strip())))}" style="grid-column: 1; grid-row: {grid_row} / span {spans[i]}">'
+                           f'<div>{self.inline(cells[0], page_url, env)}</div></div>')
+            out.append('<div class="flow-row">')
+            for c in range(n):
+                if c == 0 and (not cells[0] or lead):
+                    continue
+                if not cells[c]:
+                    continue
+                if c > 0:
+                    from_lead = c == 1 and (lead or not cells[0])
+                    out.append(f'<div class="flow-arrow{" from-lead" if from_lead else ""}" style="grid-column: {2 * c}; grid-row: {grid_row}" aria-hidden="true"></div>')
+                out.append(f'<div class="flow-box" data-col="{esc(strip_md(self.site.t(head[c].strip())))}" style="grid-column: {2 * c + 1}; grid-row: {grid_row}">'
+                           f'<div>{self.inline(cells[c], page_url, env)}</div></div>')
+            out.append("</div>")
+        out.append("</div>\n")
+        return "".join(out)
 
     def fix_links(self, out: str, page_url: str, source: str | None) -> str:
         if not source:
@@ -954,6 +1368,7 @@ class Site:
         self.warnings: list[str] = []
         self.pages: dict[str, Page] = {}
         self.search: list[dict] = []
+        self.slots: list[tuple[str, str, str, str]] = []  # planned videos and in-game pictures (kind, id, title, page)
         self.loc = json.loads(read(DATA / "loc.json")) if (DATA / "loc.json").exists() else {}
         self.support = json.loads(read(DATA / "support.json")) if (DATA / "support.json").exists() else {"Rows": []}
         self.videos = json.loads(read(CONTENT / "videos.json")) if (CONTENT / "videos.json").exists() else {}
@@ -981,6 +1396,53 @@ class Site:
         self.hand_cli: dict[str, str] = {}
         self.load_hand_entries()
         self.link_cli_gui()
+        # Languages (website/i18n.py): the language being built ("en" = the English site at the root), the catalogs,
+        # and while collecting the segments for the translators, the list they go into.
+        self.lang = "en"
+        self.cat: i18n.Catalog | None = None
+        self.collecting: list[dict] | None = None
+        self.untracked = 0  # > 0 while a text outside the scope is rendered (probe_language_keys skips its lookups)
+        self.ctx_page = ""
+        self.ctx_layer = ""
+        self.ctx_heading = ""
+
+    # ---- languages ----
+    def tr(self, key: str, kind: str = "p") -> str | None:
+        """The translation of one segment, or None (the English stays). While collecting: records it."""
+        key = i18n.norm(key)
+        if not key:
+            return None
+        if self.collecting is not None:
+            if kind == "h":
+                self.ctx_heading = key
+            ctx = " · ".join(x for x in (self.ctx_page, self.ctx_layer, "" if kind == "h" else self.ctx_heading) if x)
+            self.collecting.append({"en": key, "ctx": ctx, "page": self.ctx_page, "layer": self.ctx_layer})
+            return None
+        if self.lang == "en" or self.cat is None:
+            return None
+        return self.cat.lookup(self.lang, key)
+
+    def t(self, text: str) -> str:
+        """A text of the site's frame (menu, labels): the translation or the English (never marked)."""
+        return self.tr(text, "c") or text
+
+    def h2(self, text: str) -> str:
+        """A generated heading in the page's language with the id of the English one."""
+        shown = self.t(text)  # also on the English page, so the collector sees the heading
+        if self.lang == "en":
+            return f"<h2>{esc(text)}</h2>"
+        return f"<h2>{i18n.HEAD_ID[0]}{slug(text)}{i18n.HEAD_ID[1]}{esc(shown)}</h2>"
+
+    def translate_run(self, text: str) -> str:
+        if self.lang == "en" and self.collecting is None:
+            return text
+        slugger = None if self.collecting is not None else self.heading_slug
+        return i18n.translate_markdown(text, self.renderer.md, self.tr, slugger)
+
+    def heading_slug(self, key: str) -> str:
+        """The id the English heading gets (with_toc), so a link to a spot works in every language."""
+        inner = self.renderer.md.renderInline(re.sub(r"\[\[[^|\]]*\|([^\]]*)\]\]", r"\1", key))
+        return slug(html.unescape(re.sub(r"<[^>]+>", "", inner)))
 
     def warn(self, text: str):
         self.warnings.append(text)
@@ -1144,9 +1606,9 @@ class Site:
         if yt:
             return (f'<div class="video"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/{esc(yt)}" title="{esc(title)}" '
                     f'allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>\n')
-        return (f'<div class="video-slot" data-video="{esc(vid)}"><div class="video-icon">&#9654;</div><div><strong>Video: {esc(title or vid)}</strong>'
-                f'<br>Coming later: one YouTube video per topic, recorded with the English interface, with subtitles in every language JoyPro speaks.'
-                f'</div></div>\n')
+        # No empty box on the page: the planned videos are listed on the wiki status page.
+        self.slots.append(("video", vid, title, page_url))
+        return ""
 
     def wikilink(self, kind: str, target: str, text: str | None, page_url: str) -> str:
         if kind == "cli":
@@ -1158,14 +1620,16 @@ class Site:
         if kind == "gui":
             page, _, key = target.partition("#")
             if not key:
-                return f'<a href="{rel(page_url, "gui/" + page + ".html")}">{esc(text or GUI_TITLES.get(page, page))}</a>'
+                return f'<a href="{rel(page_url, "gui/" + page + ".html")}">{esc(text or self.t(GUI_TITLES.get(page, page)))}</a>'
             e = next((e for e in self.gui if e.page == page and (e.key == key or e.command == key or e.label == key)), None)
             if not e:
                 self.warn(f"{page_url}: no control '{target}'")
                 return f"<strong>{esc(text or key)}</strong>"
-            return f'<a href="{rel(page_url, "gui/" + page + ".html#" + e.anchor)}"><strong>{esc(text or e.label or key)}</strong></a>'
+            return f'<a href="{rel(page_url, "gui/" + page + ".html#" + e.anchor)}"><strong>{esc(text or (self.t(e.label) if e.label else key))}</strong></a>'
         if kind == "doc":
             url = self.doc_map.get("docs/" + target + ".md") or self.doc_map.get(target)
+            if not url and MAINTAINER_DOCS.match(target + ".md") and (ROOT / "docs" / (target + ".md")).exists():
+                return f'<a href="{github("docs/" + target + ".md")}">{esc(text or target)}</a>'
             if not url:
                 self.warn(f"{page_url}: no doc '{target}'")
             return f'<a href="{rel(page_url, url)}">{esc(text or target)}</a>' if url else esc(text or target)
@@ -1205,8 +1669,14 @@ class Site:
 
         def fix(m):
             level, inner = int(m.group(1)), m.group(2)
+            # A language page: the English id comes along (website/i18n.py), so links to the spot stay the same.
+            forced = re.match(i18n.HEAD_ID[0] + "([^" + i18n.HEAD_ID[1] + "]*)" + i18n.HEAD_ID[1], inner)
+            if forced:
+                inner = inner[forced.end():]
+            fallback = inner.startswith(i18n.FALLBACK_MARK)
+            inner = inner.replace(i18n.FALLBACK_MARK, "")
             text = html.unescape(re.sub(r"<[^>]+>", "", inner))
-            hid = slug(text)
+            hid = forced.group(1) if forced and forced.group(1) else slug(text)
             n = 2
             base = hid
             while hid in used:
@@ -1215,19 +1685,34 @@ class Site:
             used.add(hid)
             if level in (2, 3):
                 toc.append((level, hid, text))
-            return f'<h{level} id="{hid}"><a class="anchor" href="#{hid}">#</a>{inner}</h{level}>'
+            # The docs link to headings the way GitHub names them ("JoyPro's drawings" -> #joypros-drawings): that
+            # name is an id here too, so the same link works in the repository and on the site.
+            gh = re.sub(r"\s", "-", re.sub(r"[^\w\- ]", "", text.strip().lower()))
+            alias = f'<span id="{esc(gh)}" class="alias"></span>' if gh and gh != hid and gh not in used else ""
+            if alias:
+                used.add(gh)
+            en = ' lang="en" data-en' if fallback else ""
+            return f'<h{level} id="{hid}"{en}>{alias}<a class="anchor" href="#{hid}">#</a>{inner}</h{level}>'
 
         out = re.sub(r"<h([2-4])>(.*?)</h\1>", fix, out)
         return out, toc
 
     def content_page(self, path: Path, url: str, section: str, extra_html: str = "") -> Page:
         meta, text = front_matter(read(path))
+        # The texts of single controls and commands ('<!-- entry: key -->' blocks at the end of the file) are shown in
+        # the list of every control, not a second time as the page's own text.
+        cut = re.search(r"^<!-- entry: .+? -->\s*$", text, re.M)
+        if cut:
+            text = text[:cut.start()]
+        self.ctx_page, self.ctx_layer, self.ctx_heading = url, "", ""
+        title = self.t(meta.get("title", path.stem))
+        summary = self.t(meta["summary"]) if meta.get("summary") else ""
         env = {"game_support": [x.strip() for x in meta.get("support", "").split(",") if x.strip()]}
         out, env = self.render_md(text, url, None, env)
         out += extra_html
         out, toc = self.with_toc(out)
         status = meta.get("status", "skeleton")
-        page = Page(url, meta.get("title", path.stem), section, out, status, meta.get("summary", ""), toc,
+        page = Page(url, title, section, mark_fallbacks(out), status, summary, toc,
                     bool(env.get("mermaid")), bool(env.get("layers")), int(meta.get("order", 100)))
         return page
 
@@ -1236,6 +1721,9 @@ class Site:
         for path in sorted(docs.rglob("*.md")):
             r = path.relative_to(docs).as_posix()
             if PRIVATE_DOCS.match(r) or r.startswith("branding/") or r.startswith("cockpits/") or r.startswith("device-reference/"):
+                continue
+            if MAINTAINER_DOCS.match(r):
+                # Test logs and evaluation runs of the maintainer: not on the site (a link to one goes to the repository).
                 continue
             if r.startswith("games/"):
                 # The matrix stays a game page; the per-game notes are the reference behind the hand-written game pages.
@@ -1249,9 +1737,12 @@ class Site:
         for source, url in self.doc_map.items():
             text = read(ROOT / source)
             m = re.search(r"^# (.+)$", text, re.M)
-            title = m.group(1).strip() if m else Path(source).stem
+            # The title is plain text (link texts, the menu, <title>): Markdown code marks dropped.
+            title = re.sub(r"`([^`]*)`", r"\1", m.group(1).strip()) if m else Path(source).stem
             text = re.sub(r"^# .+\n", "", text, count=1, flags=re.M)
             section = "Game reference" if url.startswith("games/ref/") else "Games" if url.startswith("games/") else "Release notes" if url.startswith("releases/") else "Reference"
+            if DEVELOPER_DOCS.match(source.removeprefix("docs/")):
+                section = "Developers"
             head = ""
             if url.startswith("games/ref/"):
                 head = self.game_header(Path(source).name, url)
@@ -1313,18 +1804,25 @@ class Site:
             cmd = r.get("Command") or ""
             area = cmd.removeprefix("engine ")
             cmd_html = (f'<a href="{rel(url, "cli/" + area + ".html")}"><code>{esc(cmd)}</code></a>' if area in self.cli_areas
-                        else (f"<code>{esc(cmd)}</code>" if cmd else "none"))
-            facts = [("Support", esc(LEVEL_WORDS.get(r.get("Level", ""), r.get("Level", "")))), ("Engine command", cmd_html)]
+                        else (f"<code>{esc(cmd)}</code>" if cmd else esc(self.t("none"))))
+            facts = [(self.t("Support"), esc(self.t(LEVEL_WORDS.get(r.get("Level", ""), r.get("Level", ""))))), (self.t("Engine command"), cmd_html)]
+            # The texts of the matrix (bind file, input limit, list source, notes) are segments of the page too: the
+            # translation keeps the code spans (paths, file names) and the game names.
             if r.get("BindFile"):
-                facts.append(("Bind file", self.renderer.md.renderInline(public_text(r["BindFile"]))))
+                facts.append((self.t("Bind file"), self.renderer.md.renderInline(self.t(public_text(r["BindFile"])))))
             if r.get("InputLimit"):
-                facts.append(("Inputs the game reads", esc(public_text(r["InputLimit"]))))
+                facts.append((self.t("Inputs the game reads"), esc(self.t(public_text(r["InputLimit"])))))
             if r.get("ListSource"):
-                facts.append(("Command list from", self.renderer.md.renderInline(public_text(r["ListSource"]))))
+                facts.append((self.t("Command list from"), self.renderer.md.renderInline(self.t(public_text(r["ListSource"])))))
             if r.get("TestResult"):
-                facts.append(("In-game test", esc(r["TestResult"] + (" steps passed (" + r["TestDate"] + ")" if r.get("TestDate") else ""))))
-            out.append(f'<details class="support-card"{" open" if len(rows) <= 2 else ""}><summary><strong>{esc(r["Title"])}</strong>'
-                       f' <span class="lvl lvl-{esc(r.get("Level", ""))}">{esc(LEVEL_WORDS.get(r.get("Level", ""), r.get("Level", "")))}</span></summary>')
+                facts.append((self.t("In-game test"), esc(self.t("{0} steps passed ({1})").replace("{0}", r["TestResult"]).replace("{1}", r["TestDate"])
+                                                         if r.get("TestDate") else r["TestResult"])))
+            # A title with the game that covers it ("ACE COMBAT Zero (with ACE COMBAT 8)"): the words around the names.
+            tm = re.fullmatch(r"(.+?) \(with (.+)\)", r["Title"])
+            title = (self.t("{0} (with {1})").replace("{0}", tm.group(1)).replace("{1}", tm.group(2)) if tm
+                     else self.t(r["Title"]) if re.search(r"\([^)]*(?<![A-Za-z])[a-z]{3,}", r["Title"]) else r["Title"])
+            out.append(f'<details class="support-card"{" open" if len(rows) <= 2 else ""}><summary><strong>{esc(title)}</strong>'
+                       f' <span class="lvl lvl-{esc(r.get("Level", ""))}">{esc(self.t(LEVEL_WORDS.get(r.get("Level", ""), r.get("Level", ""))))}</span></summary>')
             out.append('<dl class="facts">' + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in facts if v) + "</dl>")
             marks = []
             for key, label in GAME_FEATURES:
@@ -1337,11 +1835,11 @@ class Site:
                 note = re.sub(r"\s*Live watcher test.*$", "", note) if key == "watcher" else note
                 note = public_text(note)
                 cls = {"✓": "yes", "◐": "part", "✗": "no"}.get(mark, "na")
-                marks.append(f'<li class="{cls}"><span class="m">{esc(mark)}</span> {esc(label)}'
-                             + (f'<span class="n">{self.renderer.md.renderInline(note)}</span>' if note and cls != "yes" else "") + "</li>")
+                marks.append(f'<li class="{cls}"><span class="m">{esc(mark)}</span> {esc(self.t(label))}'
+                             + (f'<span class="n">{self.renderer.md.renderInline(self.t(note))}</span>' if note and cls != "yes" else "") + "</li>")
             out.append('<ul class="features">' + "".join(marks) + "</ul></details>")
-        out.append(f'<p class="muted small">From the support matrix, generated from the engine\'s code: '
-                   f'<a href="{rel(url, "games/support.html")}">all games</a>.</p></div>')
+        out.append(f'<p class="muted small">{esc(self.t("From the support matrix, generated from the engine’s code:"))} '
+                   f'<a href="{rel(url, "games/support.html")}">{esc(self.t("all games"))}</a>.</p></div>')
         return "".join(out)
 
     def picture_slot(self, arg: str, page_url: str) -> str:
@@ -1353,8 +1851,44 @@ class Site:
             return f'<figure class="shot"><a href="{src}"><img loading="lazy" src="{src}" alt="{esc(title)}"></a><figcaption>{esc(title)}</figcaption></figure>\n'
         if pid + "-light" in self.shots or pid + "-dark" in self.shots:
             return self.shot_html(pid, title, page_url) + "\n"
-        return (f'<div class="picture-slot" data-picture="{esc(pid)}"><div class="picture-icon">&#128247;</div><div><strong>In-game picture follows: {esc(title or pid)}</strong>'
-                f'<br>A screenshot from the game itself, taken during JoyPro\'s in-game test runs, comes here later.</div></div>\n')
+        self.slots.append(("picture", pid, title, page_url))
+        return ""
+
+    def device_list(self, url: str) -> str:
+        """The supported devices from the device catalog (DB/Devices): per maker the models with their kind, the USB ids
+        JoyPro knows them by and whether JoyPro has a picture with the buttons marked."""
+        db = ROOT / "EngineOnly_Runtime" / "DB"
+        pictures = {f.name.split(".")[0] for d in ("DeviceLayouts", "DeviceLayouts2D", "DeviceDrawings") for f in (db / d).glob("*.json")}
+        photos: set[str] = set()
+        for f in (db / "DevicePhotos").glob("*.json"):
+            try:
+                photos |= {x.get("model", "") for x in json.loads(read(f)).get("photos", [])}
+            except ValueError:
+                pass
+        kinds = {"stick": "stick", "base": "stick base", "throttle": "throttle", "hotas": "stick and throttle", "pedals": "pedals",
+                 "yoke": "yoke", "quadrant": "throttle quadrant", "collective": "collective", "panel": "panel or button box",
+                 "controller": "button controller", "mfd": "MFD frame", "gamepad": "gamepad", "other": "other"}
+        vendors: list[tuple[str, list[dict]]] = []
+        for f in sorted((db / "Devices").glob("*.json")):
+            d = json.loads(read(f))
+            vendors.append((d.get("vendor") or f.stem, d.get("devices", [])))
+        vendors.sort(key=lambda v: v[0].lower())
+        total = sum(len(v[1]) for v in vendors)
+        with_ids = sum(1 for v in vendors for x in v[1] if (x.get("identify") or {}).get("vidPids"))
+        with_pic = sum(1 for v in vendors for x in v[1] if x.get("id") in pictures)
+        out = [f'<div class="stats"><div><b>{total}</b>devices in the catalog</div><div><b>{len(vendors)}</b>makers</div>'
+               f'<div><b>{with_ids}</b>recognised by their USB id</div><div><b>{with_pic}</b>with a picture of the buttons</div></div>']
+        for vendor, items in vendors:
+            out.append(f'<h3>{esc(vendor)}</h3><div class="table-wrap"><table class="devices"><thead><tr><th>Model</th><th>Kind</th>'
+                       f'<th>USB id (VID:PID)</th><th>Picture</th></tr></thead><tbody>')
+            for x in sorted(items, key=lambda x: x.get("name", "").lower()):
+                ids = (x.get("identify") or {}).get("vidPids") or []
+                shown = " ".join(f"<code>{esc(i)}</code>" for i in ids[:4]) + (f" +{len(ids) - 4}" if len(ids) > 4 else "")
+                pic = "buttons marked" if x.get("id") in pictures else ("photo" if x.get("id") in photos else "")
+                out.append(f'<tr><td>{esc(public_text(x.get("name", "")))}</td><td>{esc(kinds.get(x.get("kind", ""), x.get("kind", "")))}</td>'
+                           f'<td>{shown or "<span class=muted>by name</span>"}</td><td>{esc(pic) or "<span class=muted>-</span>"}</td></tr>')
+            out.append("</tbody></table></div>")
+        return "\n".join(out)
 
     def build_games(self):
         for path in sorted((CONTENT / "games").glob("*.md")) if (CONTENT / "games").exists() else []:
@@ -1370,13 +1904,13 @@ class Site:
                 else:
                     self.warn(f"{url}: no game doc '{d}'")
             if links:
-                page.html += f'<p class="source-note">All technical notes on this game (generated from the repository): {", ".join(links)}.</p>'
+                page.html += f'<p class="source-note">{esc(self.t("All technical notes on this game (generated from the repository):"))} {", ".join(links)}.</p>'
             cats = [c for c, _ in GAME_CATEGORIES]
             cat = meta.get("category", "other")
             page.order = (cats.index(cat) if cat in cats else len(cats)) * 1000 + page.order
             if path.stem == "index":
                 page.order = -1
-                page.nav = "All games"
+                page.nav = self.t("All games")
             self.add(page, page.summary)
 
     def game_index(self, url: str) -> str:
@@ -1387,14 +1921,14 @@ class Site:
                             if s != "index" and m.get("category", "other") == cat))
             if not items:
                 continue
-            out.append(f'<h2>{esc(title)}</h2><div class="cards">')
+            out.append(f'{self.h2(title)}<div class="cards">')
             for _, t, s, m in items:
                 rows = self.support_rows([x.strip() for x in m.get("support", "").split(",") if x.strip()])
                 order = list(LEVEL_WORDS)
-                levels = [LEVEL_WORDS.get(lv, lv) for lv in sorted({r.get("Level", "") for r in rows}, key=lambda lv: order.index(lv) if lv in order else 99)]
+                levels = [self.t(LEVEL_WORDS.get(lv, lv)) for lv in sorted({r.get("Level", "") for r in rows}, key=lambda lv: order.index(lv) if lv in order else 99)]
                 names = ", ".join(r["Title"] for r in rows) if len(rows) > 1 else ""
                 sub = esc(" · ".join(x for x in [names, "; ".join(levels)] if x))
-                out.append(f'<a class="card" href="{rel(url, "games/" + s + ".html")}"><b>{esc(t)}</b><span>{sub}</span></a>')
+                out.append(f'<a class="card" href="{rel(url, "games/" + s + ".html")}"><b>{esc(self.t(t))}</b><span>{sub}</span></a>')
             out.append("</div>")
         return "".join(out)
 
@@ -1407,15 +1941,16 @@ class Site:
         for e in entries:
             raw = e.command.replace("Command", "") or e.binding or e.name
             title = e.label or e.tooltip or re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", raw).capitalize()
-            badge = {"full": "written", "basic": "from the source", "missing": "to be expanded"}[e.level]
+            title = self.t(title)
+            badge = self.t({"full": "written", "basic": "from the source", "missing": "to be expanded"}[e.level])
             out.append(f'<article class="entry level-{e.level}" id="{e.anchor}">')
-            out.append(f'<header><h3 class="eh"><a class="anchor" href="#{e.anchor}">#</a>{esc(title)}</h3><span class="kind">{esc(e.kind)}</span>'
-                       f'<span class="badge {e.level}">{badge}</span>' + (f'<span class="kind">{e.count} places</span>' if e.count > 1 else "") + "</header>")
-            if e.tooltip and e.tooltip != title:
-                out.append(f'<p class="tip"><span class="lbl">Tooltip</span> {esc(e.tooltip)}</p>')
+            out.append(f'<header><h3 class="eh"><a class="anchor" href="#{e.anchor}">#</a>{esc(title)}</h3><span class="kind">{esc(self.t(KIND_WORDS.get(e.kind, e.kind)))}</span>'
+                       f'<span class="badge {e.level}">{esc(badge)}</span>' + (f'<span class="kind">{e.count} &times;</span>' if e.count > 1 else "") + "</header>")
+            tooltip = self.t(e.tooltip) if e.tooltip else ""
+            if tooltip and tooltip != title:
+                out.append(f'<p class="tip"><span class="lbl">{esc(self.t("Tooltip"))}</span> {esc(tooltip)}</p>')
             if e.hand:
-                h, _ = self.render_md(e.hand, page_url)
-                out.append(f'<div class="hand">{h}</div>')
+                out.append(f'<div class="hand">{self.entry_text(e, page_url)}</div>')
             facts = []
             if e.vm and e.vm.comment:
                 facts.append(f'<p><span class="lbl">From the code</span> {esc(e.vm.comment)}</p>')
@@ -1437,12 +1972,52 @@ class Site:
             if e.binding:
                 src.append(f"setting <code>{esc(e.binding)}</code>")
             facts.append(f'<p class="src"><span class="lbl">Source</span> {" · ".join(src)}</p>')
-            out.append('<div class="facts">' + "".join(facts) + "</div>")
+            if self.lang == "en":
+                # The source facts (code comment, engine calls, file and line) are for power users: the English page only.
+                out.append('<div class="facts power">' + "".join(facts) + "</div>")
             out.append("</article>")
-            self.search.append({"t": title, "u": page_url + "#" + e.anchor, "s": GUI_TITLES.get(page_slug, page_slug) + " page",
-                                "x": (e.tooltip or (e.vm.comment if e.vm else ""))[:160]})
+            self.search.append({"t": title, "u": page_url + "#" + e.anchor, "s": self.t(GUI_TITLES.get(page_slug, page_slug)),
+                                "x": (tooltip or (e.vm.comment if e.vm and self.lang == "en" else ""))[:160]})
         out.append("</div>")
         return "".join(out)
+
+    def help_rows(self) -> dict[tuple[str, str], dict]:
+        if not hasattr(self, "_help_rows"):
+            self._help_rows = {(r["p"], r["k"]): r for r in help_catalog(self)}
+        return self._help_rows
+
+    def entry_text(self, e: GuiEntry, page_url: str) -> str:
+        """A control's hand-written text. On a language page whose site catalog does not have the text yet: the F1
+        help sentences in that language (the app's translations of help-controls.json), the English text folded below."""
+        if self.collecting is not None:
+            # The F1 texts are translated already (the app's strings); the long entry texts are not in the scope.
+            row = self.help_rows().get((e.page, e.key), {})
+            for k in ("w", "x", "e"):
+                if row.get(k):
+                    self.collecting.append({"en": i18n.norm(row[k]), "ctx": self.ctx_page + " · F1", "page": self.ctx_page, "app": True})
+            saved, self.collecting = self.collecting, None
+            h, _ = self.render_md(e.hand, page_url)
+            self.collecting = saved
+            return h
+        more = self.t("More details (in English)")  # asked first, so the language probe always sees it
+        # The long English text is not in the scope (the F1 texts below stand for it): not a segment for the probe.
+        self.untracked += 1
+        try:
+            h, _ = self.render_md(e.hand, page_url)
+        finally:
+            self.untracked -= 1
+        h = mark_fallbacks(h)
+        if self.lang == "en" or "data-en" not in h:
+            return h
+        row = self.help_rows().get((e.page, e.key), {})
+        what = self.tr(row.get("w", "")) if row.get("w") else None
+        if not what:
+            return h
+        nxt = self.tr(row["x"]) if row.get("x") else None
+        easy = self.tr(row["e"]) if row.get("e") else None
+        lead = (f'<p class="easy">{esc(easy)}</p>' if easy else "") + f"<p>{esc(what)}</p>" + (f"<p>{esc(nxt)}</p>" if nxt else "")
+        # The whole English text stays on the English page (one link instead of a copy in every language).
+        return lead + f'<p class="en-more"><a href="EN:{page_url}#{e.anchor}" hreflang="en">{esc(more)}</a></p>'
 
     def build_gui_pages(self):
         for slug_, title, shot, summary in GUI_PAGES:
@@ -1453,12 +2028,19 @@ class Site:
             docs = [d for d in GUI_DOCS.get(slug_, []) if ("docs/" + d + ".md") in self.doc_map]
             refs = ""
             if docs:
-                links = "".join(f'<li><a href="{rel(url, self.doc_map["docs/" + d + ".md"])}">{esc(self.pages[self.doc_map["docs/" + d + ".md"]].title)}</a></li>'
+                # The reference pages stay English: marked on a language page.
+                en_mark = (f' <span class="en-mark" lang="en" title="{esc(self.t("This page is only in English."))}">EN</span>'
+                           if self.lang != "en" else "")
+                links = "".join(f'<li><a href="{rel(url, self.doc_map["docs/" + d + ".md"])}">{esc(self.pages[self.doc_map["docs/" + d + ".md"]].title)}</a>{en_mark}</li>'
                                 for d in docs if self.doc_map["docs/" + d + ".md"] in self.pages)
-                refs = f'<h2>Reference</h2><p>The feature documentation behind this page, generated from the repository:</p><ul>{links}</ul>'
-            gen = refs + (f'<h2>Every control on this page</h2><p class="muted">{len(entries)} controls, read from the program\'s source: '
-                   f'{counts["full"]} written, {counts["basic"]} with the facts from the source (tooltip, code comment, engine call), '
-                   f'{counts["missing"]} still to be expanded.</p>' + self.gui_entries_html(slug_, url))
+                refs = (f'{self.h2("Reference")}<p>{esc(self.t("The feature documentation behind this page, generated from the repository:"))}</p>'
+                        f'<ul>{links}</ul>')
+            self.ctx_page, self.ctx_layer, self.ctx_heading = url, "", ""
+            count_line = self.t("{0} controls, read from the program’s source: {1} written, {2} with the facts from the source "
+                                "(tooltip, code comment, engine call), {3} still to be expanded.")
+            count_line = count_line.format(len(entries), counts["full"], counts["basic"], counts["missing"])
+            gen = refs + (f'{self.h2("Every control on this page")}<p class="muted">{esc(count_line)}</p>'
+                          + self.gui_entries_html(slug_, url))
             if path.exists():
                 page = self.content_page(path, url, "GUI pages", gen)
             else:
@@ -1600,11 +2182,48 @@ class Site:
             if r.startswith("gui/") or r.startswith("cli/") or r.startswith("games/"):
                 continue
             url = r[:-3] + ".html"
-            section = {"getting-started": "Getting started", "flows": "Main flows", "project": "Project"}.get(r.split("/")[0], "Start")
+            section = {"getting-started": "Getting started", "how-do-i": "How do I", "flows": "Main flows", "project": "Project"}.get(r.split("/")[0], "Start")
             if r == "faq.md":
                 section = "Help"
             page = self.content_page(path, url, section)
             self.add(page, page.summary)
+
+    # ---- link and version checks ----
+    def check_links(self):
+        """Every link to a spot on a page (#anchor) lands on an id there, every link to a page goes to a built page, and
+        every F1 'More in the wiki' link (help-controls.json: page + anchor) exists."""
+        import posixpath
+        ids = {u: set(re.findall(r'\bid="([^"]+)"', p.html)) for u, p in self.pages.items()}
+        for u, p in self.pages.items():
+            for href in set(re.findall(r'href="([^"]+)"', p.html)):
+                if re.match(r"^(https?:|mailto:|data:|javascript:)", href):
+                    continue
+                target, _, frag = href.partition("#")
+                tu = posixpath.normpath(posixpath.join(posixpath.dirname(u), target)) if target else u
+                if not tu.endswith(".html"):
+                    continue
+                if tu not in self.pages:
+                    self.warn(f"{u}: link to a page that is not built: {href}")
+                elif frag and frag not in ids[tu]:
+                    self.warn(f"{u}: link to a missing spot: {href}")
+        for row in help_catalog(self):
+            page = f"gui/{row['p']}.html"
+            if page in ids and row.get("a") and row["a"] not in ids[page]:
+                self.warn(f"F1 help: {row['k']} links to {page}#{row['a']}, which is not on the page")
+
+    def check_versions(self):
+        """A JoyPro version newer than the newest release note is a typo or a version that was never released."""
+        notes = [tuple(int(x) for x in m.groups()) for m in (re.match(r"v(\d+)\.(\d+)\.(\d+)$", f.stem) for f in (ROOT / "docs" / "releases").glob("v*.md")) if m]
+        newest = max(notes, default=(0, 0, 0))
+        files = list(CONTENT.rglob("*.md")) + [f for f in (ROOT / "docs").rglob("*.md") if not PRIVATE_DOCS.match(f.relative_to(ROOT / "docs").as_posix())]
+        for f in files:
+            text = read(f)
+            for m in re.finditer(r"\b2\.(\d+)\.(\d+)\b", text):
+                v = (2, int(m.group(1)), int(m.group(2)))
+                before = text[max(0, m.start() - 16):m.start()]
+                if v > newest and not re.search(r"(DCS|World|Beta|Python|version of [A-Z]\w+)\W*$", before, re.I):
+                    self.warn(f"{f.relative_to(ROOT).as_posix()}: version {'.'.join(map(str, v))} is newer than the newest release note "
+                              f"(v{'.'.join(map(str, newest))})")
 
     # ---- completeness ----
     def completeness(self) -> dict:
@@ -1642,43 +2261,65 @@ class Site:
                f'<details><summary>Commands without a description ({c["missing"]})</summary><ul>{crow}</ul></details>'
                f'<h2>Pages</h2><p>Written fully:</p><ul>' + "".join(f'<li><a href="{rel(url, u)}">{esc(self.pages[u].title)}</a></li>' for u in comp["pages_full"]) + "</ul>"
                f'<p>Skeletons (source facts, text to be expanded):</p><ul>' + "".join(f'<li><a href="{rel(url, u)}">{esc(self.pages[u].title)}</a></li>' for u in comp["pages_skeleton"]) + "</ul>")
+        for kind, head in (("video", "Planned videos"), ("picture", "Planned in-game pictures")):
+            items = sorted({(u, i, t) for k, i, t, u in self.slots if k == kind})
+            if items:
+                out += (f'<h2>{head}</h2><p>{len(items)} slots in the page sources (<code>:::{kind} &lt;id&gt;</code>); the pages show '
+                        f'nothing until the {"video is on YouTube (content/videos.json)" if kind == "video" else "screenshot is in assets/shots"}.</p><details><summary>The list</summary><ul>'
+                        + "".join(f'<li><a href="{rel(url, u)}">{esc(u)}</a>: <code>{esc(i)}</code> {esc(t)}</li>' for u, i, t in items) + "</ul></details>")
         out, toc = self.with_toc(out)
         self.add(Page(url, "Wiki status", "Project", out, "generated", "", toc, order=90))
 
     # ---- output ----
     def nav_html(self, current: str) -> str:
-        sections = ["Start", "Getting started", "Main flows", "GUI pages", "Games", "Engine (CLI)", "Reference", "Game reference", "Help", "Project", "Release notes"]
         groups: dict[str, list[Page]] = {}
         for p in self.pages.values():
             groups.setdefault(p.section, []).append(p)
         gui_order = {f"gui/{s}.html": i for i, (s, *_) in enumerate(GUI_PAGES)}
         out = ['<nav class="sidenav" aria-label="Site">']
-        for s in sections:
+
+        def group(s: str, power: bool):
             items = groups.get(s, [])
-            if not items:
-                continue
+            extra = NAV_EXTRA.get(s, [])
+            if not items and not extra:
+                return
             if s == "GUI pages":
                 items.sort(key=lambda p: gui_order.get(p.url, 99))
             elif s == "Release notes":
-                items.sort(key=lambda p: p.url, reverse=True)
+                # By version (2.2.17 before 2.2.2), the newest first.
+                items.sort(key=lambda p: [int(x) for x in re.findall(r"\d+", p.url)], reverse=True)
             else:
                 items.sort(key=lambda p: (p.order, p.title.lower()))
-            open_ = " open" if any(p.url == current for p in items) or s in ("Start", "Getting started", "Main flows") else ""
-            out.append(f"<details{open_}><summary>{esc(s)}</summary><ul>")
+            here = any(p.url == current for p in items)
+            open_ = " open" if here or (not power and s in NAV_OPEN) else ""
+            cls = f' class="nav-{slug(s)}"'
+            out.append(f"<details{open_}{cls}><summary>{esc(self.t(s))}</summary><ul>")
             for p in items:
-                cls = ' class="current"' if p.url == current else ""
+                cur = ' class="current"' if p.url == current else ""
                 mark = '<span class="dot skeleton" title="to be expanded"></span>' if p.status == "skeleton" else ""
-                out.append(f'<li><a{cls} href="{rel(current, p.url)}" title="{esc(p.title)}">{esc(p.nav or p.title)}</a>{mark}</li>')
+                if self.lang != "en" and not i18n.in_scope(p.url):
+                    # A page that stays English (reference, command line, release notes): marked in the menu.
+                    mark += f'<span class="en-mark" lang="en" title="{esc(self.t("This page is only in English."))}">EN</span>'
+                out.append(f'<li><a{cur} href="{rel(current, p.url)}" title="{esc(p.title)}">{esc(p.nav or p.title)}</a>{mark}</li>')
+            for url, text in extra:
+                out.append(f'<li><a href="{rel(current, url)}">{esc(self.t(text))}</a></li>')
             out.append("</ul></details>")
-        out.append("</nav>")
+
+        for s in NAV_MAIN:
+            group(s, False)
+        out.append(f'<div class="nav-power"><div class="nav-sep">{esc(self.t("For power users"))}</div>')
+        for s in NAV_POWER:
+            group(s, True)
+        out.append("</div></nav>")
         return "".join(out)
 
     def write(self):
         # Files are replaced in place and stale pages removed one by one (a synced folder may hold a folder open).
         if DIST.exists():
             keep = {DIST / p.url for p in self.pages.values()}
+            codes = {l.code for l in i18n.languages()}
             for f in DIST.rglob("*.html"):
-                if f not in keep:
+                if f not in keep and f.relative_to(DIST).parts[0] not in codes:
                     try:
                         f.unlink()
                     except OSError:
@@ -1693,62 +2334,282 @@ class Site:
             (DIST / "assets" / "vendor").mkdir(exist_ok=True)
             shutil.copy(mermaid_file(), DIST / "assets" / "vendor" / "mermaid.min.js")
         (DIST / "assets" / "search-index.js").write_text("window.JP_SEARCH=" + json.dumps(self.search, separators=(",", ":"), ensure_ascii=False) + ";", encoding="utf-8")
+        (DIST / "assets" / "i18n.js").write_text(self.i18n_script(), encoding="utf-8")
         for page in self.pages.values():
             dest = DIST / page.url
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(self.page_html(page), encoding="utf-8")
 
+    # ---- languages: every page of the scope (website/i18n.py SCOPE) again under /<code>/ ----
+    JS_TEXTS = ["Nothing found.", "Tap to enlarge", "Tap to fit", "Language", "This page is only in English.",
+                "This page is also in your language:", "Open it", "No thanks"]
+
+    def i18n_script(self) -> str:
+        """assets/i18n.js: the languages for the switcher and the few texts site.js shows, in every language."""
+        langs = i18n.languages()
+        cat = self.cat or i18n.Catalog()
+        texts = {}
+        for l in langs[1:]:
+            row = {}
+            for k in self.JS_TEXTS:
+                v = cat.lookup(l.code, k)
+                if v:
+                    row[k] = v
+            texts[l.code] = row
+        data = {"langs": [[l.code, l.label, l.native] for l in langs], "t": texts}
+        return "window.JP_I18N=" + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";"
+
+    def build_languages(self, codes: list[str]):
+        """Every page of the scope in each language: rendered again with the catalogs (website/i18n.py), the links moved
+        under /<code>/, one search index per language."""
+        import time
+        en_pages, en_search, en_warnings = self.pages, self.search, len(self.warnings)
+        self.cat = i18n.Catalog()
+        scope = {u for u in en_pages if i18n.in_scope(u)}
+        self.scope = scope
+        for code in codes:
+            started = time.time()
+            self.lang = code
+            self.pages, self.search = dict(en_pages), []
+            self.build_games()
+            self.build_content()
+            self.build_gui_pages()
+            written = set()
+            for url in sorted(scope):
+                page = self.pages[url]
+                dest = DIST / code / url
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_text(self.page_html(page), encoding="utf-8")
+                written.add(dest)
+            for f in (DIST / code).rglob("*.html"):
+                if f not in written:
+                    try:
+                        f.unlink()
+                    except OSError:
+                        pass
+            index = [dict(e, u=code + "/" + e["u"]) for e in self.search if e["u"].split("#")[0] in scope]
+            index += [e for e in en_search if e["u"].split("#")[0] not in scope]
+            (DIST / "assets" / f"search-index.{code}.js").write_text(
+                "window.JP_SEARCH=" + json.dumps(index, separators=(",", ":"), ensure_ascii=False) + ";", encoding="utf-8")
+            print(f"  {code}: {len(written)} pages ({time.time() - started:.1f} s)")
+        self.lang, self.pages, self.search = "en", en_pages, en_search
+        # A warning a language pass found again (the same as in English) is listed once.
+        extra = list(dict.fromkeys(self.warnings[en_warnings:]))
+        self.warnings[en_warnings:] = [w for w in extra if w not in self.warnings[:en_warnings]]
+
+    def relocate(self, text: str, url: str, code: str) -> str:
+        """The links of a page rendered for its English place, for its place under /<code>/: a page of the scope is
+        linked in the same language, every other page and every asset at the root."""
+        import posixpath
+        base = posixpath.dirname(url)
+        up = "../" * (code + "/" + url).count("/")
+        scope = getattr(self, "scope", set())
+
+        def fix(m):
+            attr, val = m.group(1), m.group(2)
+            if val.startswith("EN:"):
+                return f'{attr}="{up}{val[3:]}"'
+            if re.match(r"^(https?:|mailto:|#|data:|javascript:)", val):
+                return m.group(0)
+            target, sep, frag = val.partition("#")
+            if not target:
+                return m.group(0)
+            path = posixpath.normpath(posixpath.join(base, target))
+            if path.startswith(".."):
+                return m.group(0)
+            if path in scope:
+                path = code + "/" + path
+            return f'{attr}="{up}{path}{sep}{frag}"'
+
+        return re.sub(r'\b(href|src)="([^"]*)"', fix, text)
+
     def page_html(self, page: Page) -> str:
+        """A page in the language being built (self.lang): English at the root, the others under /<code>/."""
         r = lambda u: rel(page.url, u)
+        t = self.t
+        code = self.lang
         toc = ""
         if len(page.toc) > 2:
-            toc = '<aside class="toc"><div class="toc-title">On this page</div><ul>' + "".join(
-                f'<li class="l{lvl}"><a href="#{hid}">{esc(t)}</a></li>' for lvl, hid, t in page.toc[:40]) + "</ul></aside>"
+            toc = f'<aside class="toc"><div class="toc-title">{esc(t("On this page"))}</div><ul>' + "".join(
+                f'<li class="l{lvl}"><a href="#{hid}">{esc(x)}</a></li>' for lvl, hid, x in page.toc[:40]) + "</ul></aside>"
         status = ""
         if page.status == "skeleton":
-            status = '<span class="badge missing">to be expanded</span>'
+            status = f'<span class="badge missing">{esc(t("to be expanded"))}</span>'
+        # The detail level is one choice for the whole site (Beginner on the first visit, then remembered): it picks the
+        # layer of a page, and at Beginner hides the command line from the menu and the source facts of the controls.
         layers = ""
-        if page.layers:
-            layers = ('<div class="layer-switch" role="group" aria-label="Detail level"><span>Show:</span>'
-                      '<button data-show="all" class="on">Everything</button><button data-show="beginner">Beginner</button>'
-                      '<button data-show="advanced">Advanced</button><button data-show="technical">Technical</button></div>')
+        if page.url != "index.html":
+            layers = (f'<div class="layer-switch" role="group" aria-label="{esc(t("Detail level"))}"><span>{esc(t("Show:"))}</span>'
+                      + "".join(f'<button data-show="{k}">{esc(t(v))}</button>' for k, v in
+                                (("beginner", "Beginner"), ("advanced", "Advanced"), ("technical", "Technical"), ("all", "Everything")))
+                      + "</div>")
         mermaid = f'<script src="{r("assets/vendor/mermaid.min.js")}"></script>' if page.mermaid else ""
-        return f"""<!doctype html>
-<html lang="en">
+        translated = i18n.in_scope(page.url)
+        notice = ""
+        main_cls = ""
+        if code != "en":
+            # Mostly English still (no translation yet): one line says so, the single paragraphs are not marked.
+            fb = page.html.count(" data-en")
+            blocks = len(re.findall(r"<(?:p|li|td|h[2-4])[\s>]", page.html))
+            if blocks and fb > blocks * 0.2:
+                main_cls = ' class="mostly-en"'
+                text = ("This page is not translated yet. It shows the English text." if fb > blocks * 0.5 else
+                        "Parts of this page are not translated yet. They show the English text.")
+                notice = f'<div class="callout note i18n-note"><p>{esc(t(text))}</p></div>'
+        body = page.html
+        if code != "en":
+            # The screenshots show the English program: said once, under the page's first picture.
+            note = t("The pictures show the app in English.")
+            body = re.sub(r'(<figure class="shot">(?:(?!</figure>).)*?)</figcaption></figure>',
+                          lambda m: m.group(1) + f' <span class="shot-lang">({esc(note)})</span></figcaption></figure>', body, count=1, flags=re.S)
+        # Other languages of this page (search engines), and where the switcher goes.
+        alts = ""
+        if translated:
+            here = (code + "/" if code != "en" else "") + page.url
+            up = "../" * here.count("/")
+            alts = "".join(f'<link rel="alternate" hreflang="{l.code}" href="{up}{"" if l.code == "en" else l.code + "/"}{page.url}">'
+                           for l in i18n.languages())
+            alts += f'<link rel="alternate" hreflang="x-default" href="{up}{page.url}">'
+        cjk = i18n.font_stack(code)
+        font = f'<style>:root{{--font:{cjk}, "Segoe UI", system-ui, sans-serif}}</style>' if cjk else ""
+        head = f"""<!doctype html>
+<html lang="{code}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(page.title)} · JoyPro</title>
-<meta name="description" content="{esc(page.summary or 'JoyPro 2: one profile for all your devices, in every flight and space game.')}">
+<meta name="description" content="{esc(page.summary or t('JoyPro 2: one profile for all your devices, in every flight and space game.'))}">
 <link rel="icon" href="{r('assets/favicon.svg')}" type="image/svg+xml">
-<link rel="stylesheet" href="{r('assets/site.css')}">
-<script>(function(){{try{{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}}catch(e){{}}}})();</script>
+<link rel="stylesheet" href="{r('assets/site.css')}">{font}
+<!--JP-ALT-->
+<script>(function(){{var d=document.documentElement,l='beginner';try{{var p=new URLSearchParams(location.search),q=p.get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')d.dataset.theme=t;l=p.get('show')||localStorage.getItem('jp-layer')||'beginner';}}catch(e){{}}if(l!=='all')d.dataset.show=l;}})();</script>
 </head>
-<body data-root="{r('')}">
+<body data-root="{r('')}" data-lang="{code}" data-page="{page.url}" data-i18n="{'1' if translated else ''}">
 <header class="topbar">
-  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <button class="menu-btn" aria-label="{esc(t('Menu'))}" aria-expanded="false">&#9776;</button>
   <a class="brand" href="{r('index.html')}"><img src="{r('assets/logo.svg')}" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
-  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <div class="search"><input type="search" id="q" placeholder="{esc(t('Search buttons, commands, games...'))}" autocomplete="off" aria-label="{esc(t('Search'))}"><div id="results" class="results" hidden></div></div>
   <a class="top-link" href="{DISCORD}">Discord</a>
   <a class="top-link" href="{REPO_URL}">GitHub</a>
-  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+  <span class="lang-slot"></span>
+  <button class="theme-btn" aria-label="{esc(t('Light or dark'))}">&#9680;</button>
 </header>
 <div class="layout">
 {self.nav_html(page.url)}
-<main>
-<div class="page-head"><div class="crumb">{esc(page.section)}</div><h1>{esc(page.title)} {status}</h1>{layers}</div>
+<main{main_cls}>
+<div class="page-head"><div class="crumb">{esc(t(page.section))}</div><h1>{esc(page.title)} {status}</h1>{layers}</div>
 <div class="content">
-{page.html}
+{notice}{body}
 </div>
-<footer class="foot">JoyPro is free software under the <a href="{REPO_URL}/blob/main/LICENSE">GPL-3.0</a> · <a href="{DISCORD}">Discord</a> · <a href="{REPO_URL}">Source</a> · Generated from the source; <a href="{r('project/wiki-status.html')}">wiki status</a></footer>
+<footer class="foot">{esc(t("JoyPro is free software:"))} <a href="{REPO_URL}/blob/main/LICENSE">GPL-3.0</a> · <a href="{DISCORD}">Discord</a> · <a href="{REPO_URL}">{esc(t("Source"))}</a> · <a href="{r('project/wiki-status.html')}">{esc(t("Wiki status"))}</a></footer>
 </main>
 {toc}
 </div>
 {mermaid}
+<script src="{r('assets/i18n.js')}"></script>
 <script src="{r('assets/site.js')}"></script>
 </body>
 </html>
 """
+        if code != "en":
+            head = self.relocate(head, page.url, code)
+            head = head.replace(f'data-root="{r("")}"', f'data-root="{"../" * (code + "/" + page.url).count("/")}"', 1)
+        return head.replace("<!--JP-ALT-->", alts, 1)
+
+
+def collect_segments() -> tuple[list[dict], dict[str, tuple[int, int]]]:
+    """For website/i18n.py: every segment of the pages that exist in every language ({en, ctx, page}), in page order,
+    and per page the English words to translate and the words the app's strings translate already (F1 texts, button
+    names). The texts of the site's frame (menu, labels) count as the page "(site frame)"."""
+    args = argparse.Namespace(check=False, shots=None, engine=None, out=None, help_catalog=False, langs="none")
+    site = Site(args)
+    site.build_docs()
+    site.collecting = []
+    site.build_games()
+    site.build_content()
+    site.build_gui_pages()
+    site.ctx_page, site.ctx_layer, site.ctx_heading = "(site frame)", "", ""
+    for text in Site.JS_TEXTS:
+        site.t(text)
+    for page in list(site.pages.values()):
+        if i18n.in_scope(page.url):
+            site.page_html(page)  # the frame: menu, switch, footer
+            break
+    segs = [s for s in site.collecting if i18n.in_scope(s["page"]) or s["page"] == "(site frame)"]
+    app = i18n.Catalog().app.get("de", {})
+    # Per page: [words to translate, of them in the beginner layer or outside any layer, words the app translates]
+    words: dict[str, list[int]] = {}
+    seen: dict[str, set[str]] = {}
+    for s in segs:
+        if s["en"] in seen.setdefault(s["page"], set()):
+            continue
+        seen[s["page"]].add(s["en"])
+        row = words.setdefault(s["page"], [0, 0, 0])
+        n = len(re.sub(r"`[^`]*`|\{\{[^}]*\}\}|\]\([^)]*\)|\[\[[a-z]+:[^|\]]*\|?|<[^>]+>|[*#|]", " ", s["en"]).split())
+        if s.get("app") or s["en"] in app:
+            row[2] += n
+        else:
+            row[0] += n
+            if s.get("layer", "") in ("", "beginner"):
+                row[1] += n
+    for s in segs:
+        if s.get("app") or s["en"] in app:
+            s["app"] = True
+    # The guard: build the pages once more as a language page and add every text it asks the catalogs for that the
+    # English pass above did not see (a text only a language page shows, such as "More details (in English)", or a
+    # heading the English page writes without a lookup). Such a text is counted and listed like any other segment, so
+    # i18n.py report can never call a language complete while a page still shows English.
+    known = {s["en"] for s in segs}
+    for key, page in probe_language_keys(site).items():
+        if key in known:
+            continue
+        known.add(key)
+        n = len(key.split())
+        is_app = key in app
+        row = words.setdefault(page, [0, 0, 0])
+        row[2 if is_app else 0] += n
+        if not is_app:
+            row[1] += n
+        segs.append({"en": key, "ctx": page + " · generated", "page": page, "layer": "", "probe": True, "app": is_app})
+    return segs, words
+
+
+class _ProbeCatalog:
+    """A catalog that knows no translation and remembers every text a language build asks it for."""
+
+    def __init__(self, site):
+        self.site, self.keys = site, {}
+
+    def lookup(self, code: str, key: str):
+        key = i18n.norm(key)
+        if key and key not in self.keys and not self.site.untracked:
+            self.keys[key] = self.site.ctx_page or "(site frame)"
+        return None
+
+
+def probe_language_keys(site) -> dict[str, str]:
+    """Every text the pages of the scope ask the catalogs for when they are built as a language page: {text: page}.
+    Nothing is written; the English build of the site object is restored afterwards."""
+    saved = (site.lang, site.cat, site.collecting, dict(site.pages), list(site.search), len(site.warnings))
+    probe = _ProbeCatalog(site)
+    site.lang, site.cat, site.collecting = "xx", probe, None
+    site.scope = {u for u in site.pages if i18n.in_scope(u)}
+    try:
+        site.build_games()
+        site.build_content()
+        site.build_gui_pages()
+        keys = {k: p for k, p in probe.keys.items() if i18n.in_scope(p)}
+        probe.keys = {}
+        for url in sorted(site.scope):
+            site.ctx_page = "(site frame)"
+            site.page_html(site.pages[url])
+        keys.update({k: "(site frame)" for k in probe.keys if k not in keys})
+        for text in Site.JS_TEXTS:
+            keys.setdefault(i18n.norm(text), "(site frame)")
+    finally:
+        site.lang, site.cat, site.collecting, site.pages, site.search = saved[:5]
+        del site.warnings[saved[5]:]
+    return keys
 
 
 def mermaid_file() -> Path:
@@ -1793,6 +2654,8 @@ def main():
     ap.add_argument("--shots", help="folder with the PNGs of WebsiteScreenshotTests")
     ap.add_argument("--engine", help="engine.exe: refresh data/support.json")
     ap.add_argument("--out", help="build into this folder instead of website/dist")
+    ap.add_argument("--help-catalog", action="store_true", help="write the GUI's help mode texts (gui/JoyPro.Gui/Resources/help-controls.json)")
+    ap.add_argument("--langs", default="all", help="the languages to build besides English: all (default), none, or codes (de,ja)")
     args = ap.parse_args()
     global DIST
     if args.out:
@@ -1810,6 +2673,14 @@ def main():
         json.loads(res.stdout)
         (DATA / "support.json").write_text(res.stdout, encoding="utf-8")
     site = Site(args)
+    catalog = help_catalog_text(site)
+    if args.help_catalog:
+        HELP_CATALOG.write_text(catalog, encoding="utf-8", newline=chr(10))
+        print(f"Help catalog: {HELP_CATALOG} ({len(site.gui)} controls)")
+    elif not HELP_CATALOG.exists() or read(HELP_CATALOG) != catalog:
+        site.warn("the GUI's help texts are not up to date with the wiki: run python website/build.py --help-catalog")
+    for problem in easy_problems(site):
+        site.warn(problem)
     site.build_docs()
     site.build_games()
     site.build_content()
@@ -1818,7 +2689,20 @@ def main():
     comp = site.completeness()
     comp["warnings"] = site.warnings
     site.build_status_page(comp)
+    site.check_links()
+    site.check_versions()
     site.write()
+    codes = [l.code for l in i18n.languages()[1:]]
+    if args.langs != "all":
+        wanted = [c.strip() for c in args.langs.split(",") if c.strip() and c.strip() != "none"]
+        unknown = [c for c in wanted if c not in codes]
+        if unknown:
+            raise SystemExit("unknown language: " + ", ".join(unknown))
+        codes = wanted
+    if codes:
+        print(f"Languages: {len(codes)}")
+        site.build_languages(codes)
+    comp["warnings"] = site.warnings
     summary = {k: v for k, v in comp.items() if not k.endswith("_list") and k not in ("pages_full", "pages_skeleton")}
     summary["gui"] = {k: v for k, v in comp["gui"].items() if k != "missing_list"}
     summary["cli"] = {k: v for k, v in comp["cli"].items() if k != "missing_list"}

@@ -420,6 +420,37 @@ public sealed class VirtualFunctionRuntimeTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void HatToAxes_HoldsEachAxisOutWhileHeld()
+    {
+        VfSimulator sim = new(Make(VirtualFunctionCatalog.HatAxes));
+        sim.SetHat("hat", -1);
+        sim.Step(0);
+        Assert.Equal(0.5, sim.AxisValue("x"), 4);
+        Assert.Equal(0.5, sim.AxisValue("y"), 4);
+        sim.SetHat("hat", 0); // up: DirectInput up = smaller
+        sim.Step(5);
+        Assert.Equal(0.5, sim.AxisValue("x"), 4);
+        Assert.Equal(0.0, sim.AxisValue("y"), 4);
+        sim.SetHat("hat", 4500); // up-right: both
+        sim.Step(10);
+        Assert.Equal(1.0, sim.AxisValue("x"), 4);
+        Assert.Equal(0.0, sim.AxisValue("y"), 4);
+        sim.SetHat("hat", 27000); // left
+        sim.Step(15);
+        Assert.Equal(0.0, sim.AxisValue("x"), 4);
+        Assert.Equal(0.5, sim.AxisValue("y"), 4);
+        sim.SetHat("hat", -1);
+        sim.Step(20);
+        Assert.Equal(0.5, sim.AxisValue("x"), 4);
+        Assert.Equal(0.5, sim.AxisValue("y"), 4);
+
+        VfSimulator half = new(Make(VirtualFunctionCatalog.HatAxes, f => f.Params["deflection"] = 0.5));
+        half.SetHat("hat", 18000); // down, half way
+        half.Step(0);
+        Assert.Equal(0.75, half.AxisValue("y"), 4);
+    }
+
+    [Fact]
     public void ButtonsToAxisMovesAtItsRate()
     {
         VfSimulator sim = new(Make(VirtualFunctionCatalog.ButtonsAxis, f =>

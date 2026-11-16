@@ -14,12 +14,13 @@ line]] describes them, and the answer shows in the [[page:gui/output.html|Output
 
 ```mermaid
 flowchart LR
-  A["Command box<br/>dcs import --path ... --plane A-10C_2"] --> B["Run"]
-  G["Global Args<br/>Editor Command<br/>Output File<br/>Text output"] --> B
-  P["Include --profile<br/>(the open profile)"] --> B
-  B --> E["engine.exe<br/>(same engine as every button)"]
-  E --> O["Output panel<br/>$ engine ... and the answer"]
-  E -->|"relations list / binds list"| R["Relations and Binds pages<br/>read the answer"]
+  A["Command box"] --> B["Run"]
+  G["Settings"] --> B
+  P["--profile"] --> B
+  B --> E["JoyPro's engine"]
+  E --> O["Output panel"]
+  E -.-> R["Relations and<br/>Binds refreshed"]
+%% caption: What Run does with the command box, the settings (Global Args, Editor Command, Output File, Text output) and Include --profile (the open profile). The engine is the same as behind every button; the output panel shows the command and its answer. Dotted: only for the commands that list relations or binds.
 ```
 
 :::layer beginner

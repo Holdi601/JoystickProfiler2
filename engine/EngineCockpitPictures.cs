@@ -171,7 +171,7 @@ namespace JoyPro.Engine
                     }
                     else if (game == "WarThunder")
                     {
-                        // The models are Oodle packed: only with the maintainer's helper (tools\wt-oodle); users get packs.
+                        // The models are Oodle packed: only with the helper tools\wt-oodle; users get packs.
                         if (WarThunderCockpitPictures.FindOodleHelper().Length == 0)
                         {
                             string note = "War Thunder's cockpit models need the War Thunder Oodle helper (tools\\wt-oodle, a maintainer tool); its pictures come as picture packs.";

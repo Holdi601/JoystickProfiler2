@@ -115,6 +115,7 @@ public static class ThemeService
         new("JP.BorderStrongBrush", N("Pages"), N("Strong borders")),
         new("JP.ImageWellBrush", N("Pages"), N("Behind pictures")),
         new("JP.OverlayDimBrush", N("Pages"), N("Dimmed page behind a question")),
+        new("JP.TourDimBrush", N("Pages"), N("Dimmed page around a tour's button")),
         new("ListBoxItemBackgroundSelected", N("Pages"), N("Selected row")),
         new("CardBorderBrush", N("Pages"), N("Card frame")),
         new("CardTintBrush", N("Pages"), N("Tile background")),

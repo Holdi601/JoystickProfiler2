@@ -73,7 +73,10 @@ public sealed partial class MainWindowViewModel
         CheckRequirements();
         await CheckEngineStartsAsync();
         await RefreshGameInstallsAsync();
+        bool setupShown = ShouldShowFirstStartSetup;
         ShowFirstStartSetupIfNeeded();
+        // The welcome (once per user, docs/ui/help-and-tours.md): after the first-start setup when that shows.
+        ShowWelcomeAfterStartupChecks(setupShown);
 
         JoyProLog.Info("Startup", "Requirements: " + string.Join(" | ", RequirementItems) + (HasMissingRequirements ? " (something is missing)" : string.Empty));
         List<string> crashes = CrashReporter.UnseenReports();

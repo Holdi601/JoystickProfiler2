@@ -30,6 +30,21 @@ public partial class SetupWizardWindow : Window
 
     private SetupWizardViewModel? Wizard => DataContext as SetupWizardViewModel;
 
+    private SetupWizardViewModel? observed;
+
+    // The quick path closes the window itself once its work is done ("Write to my game", "Set up the pretend controller").
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        if (observed != null)
+            observed.CloseRequested -= OnCloseRequested;
+        observed = Wizard;
+        if (observed != null)
+            observed.CloseRequested += OnCloseRequested;
+    }
+
+    private void OnCloseRequested() => Close();
+
     private void AircraftPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if ((sender as Control)?.DataContext is not SetupAircraftItem plane || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)

@@ -1096,7 +1096,7 @@ namespace JoyPro.Engine
             // One physical device under several names: the game's "name  {PIDVID}" in the file, the connected instance
             // "name {instance GUID}", an older instance GUID of the profile. Without this a connected stick the file
             // already has on js1 took a second slot under its instance name (and a stale duplicate in the file a
-            // third), the 8 slots ran out and devices with binds (the author's Rhino) were left out.
+            // third), the 8 slots ran out and devices with binds (a VPforce Rhino) were left out.
             Dictionary<string, int> deviceToSlot = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             Func<string, int> slotOfDevice = token =>
             {

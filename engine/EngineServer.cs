@@ -110,6 +110,7 @@ namespace JoyPro.Engine
                     break;
                 }
                 busy = true;
+                collected = false;
                 trimmed = false;
                 try
                 {
@@ -701,9 +702,18 @@ namespace JoyPro.Engine
                     {
                     }
                     long quietMs = Clock.ElapsedMilliseconds - Interlocked.Read(ref lastActivity);
-                    // Quiet for 3 s after a command: the garbage of the commands is collected and the memory given back,
-                    // the kept lists stay (low footprint while the app is idle).
-                    if (!busy && !trimmed && quietMs > 3000)
+                    // Quiet for 3 s after a command: the garbage of the commands is collected (the heap shrinks, the kept
+                    // lists stay in memory and stay fast).
+                    if (!busy && !collected && quietMs > 3000)
+                    {
+                        collected = true;
+                        CollectGarbage();
+                    }
+                    // Quiet for longer (the user is away or in a game): the working set is given back to Windows too.
+                    // Not after 3 s: that threw out the pages every command needs, and on a busy PC (memory pressure)
+                    // they came back from the page file, so every click after a short pause took 0.3-0.5 s longer per
+                    // engine call (gate 2026-11-14: the session after the exports 2-3x slower).
+                    if (!busy && !trimmed && quietMs > TrimAfterMs)
                     {
                         trimmed = true;
                         TrimMemory();
@@ -721,7 +731,30 @@ namespace JoyPro.Engine
         }
 
         private static volatile bool busy;
+        private static volatile bool collected;
         private static volatile bool trimmed;
+
+        // JOYPRO_SERVER_TRIM_SECONDS: quiet time before the working set goes back to Windows (default 120 s).
+        private static readonly long TrimAfterMs = TrimSeconds() * 1000L;
+
+        private static long TrimSeconds()
+        {
+            long seconds;
+            string raw = Environment.GetEnvironmentVariable("JOYPRO_SERVER_TRIM_SECONDS");
+            return long.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out seconds) && seconds >= 1 ? seconds : 120;
+        }
+
+        private static void CollectGarbage()
+        {
+            try
+            {
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, false);
+            }
+            catch (Exception ex)
+            {
+                JoyPro.Logging.JoyProLog.Debug("Server", "Garbage collection failed: " + ex.Message);
+            }
+        }
 
         [System.Runtime.InteropServices.DllImport("psapi.dll")]
         private static extern bool EmptyWorkingSet(IntPtr process);

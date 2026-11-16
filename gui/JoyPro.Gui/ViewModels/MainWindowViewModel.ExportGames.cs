@@ -11,7 +11,7 @@ using JoyPro.Gui.Models;
 
 namespace JoyPro.Gui.ViewModels;
 
-// The export tiles: every game the profile has relations for (engine profile games), with its cover, what the export
+// The export cards: every game the profile has relations for (engine profile games), with its cover, what the export
 // writes, and an export button. DCS opens to its aircraft with their pictures; only the ticked aircraft are exported.
 public sealed partial class MainWindowViewModel
 {
@@ -144,7 +144,7 @@ public sealed partial class MainWindowViewModel
         // One failure with its reason; several by name (each tile says why).
         if (failed.Count == 1)
             return T("{0}, 1 failed: {1} ({2}).", text, failed[0].Name, failed[0].ExportState.Replace(FailedPrefix, string.Empty).TrimEnd('.'));
-        return T("{0}, {1} failed: {2} (see the tiles).", text, failed.Count, string.Join(", ", failed.Select(g => g.Name)));
+        return T("{0}, {1} failed: {2} (see the cards).", text, failed.Count, string.Join(", ", failed.Select(g => g.Name)));
     }
 
     private async Task LoadExportGamePicturesAsync(List<ExportGameItem> games)
@@ -177,9 +177,17 @@ public sealed partial class MainWindowViewModel
         await AfterExportsAsync();
     }
 
+    // The games the last "Export ticked games" wrote (the quick path's tour starts only after a write).
+    internal IReadOnlyList<string> LastExportedGames { get; private set; } = [];
+
     [RelayCommand]
-    private async Task ExportSelectedGamesAsync()
+    private Task ExportSelectedGamesAsync() => ExportTickedGamesAsync(askFirst: true);
+
+    // askFirst: the Export page's questions (first export, removal). The quick path's "Write to my game" asked its own
+    // plain question already (QuickWriteQuestionAsync).
+    internal async Task ExportTickedGamesAsync(bool askFirst)
     {
+        LastExportedGames = [];
         List<ExportGameItem> games = ExportGames.Where(g => g.IsSelected && g.CanExport).ToList();
         if (games.Count == 0)
         {
@@ -187,8 +195,8 @@ public sealed partial class MainWindowViewModel
             return;
         }
         // Each game exported for the first time by this profile asks on its own (Import first / Export anyway / Cancel).
-        List<ExportGameItem> asked = [];
-        foreach (ExportGameItem game in games.ToList())
+        List<ExportGameItem> asked = askFirst ? [] : games.ToList();
+        foreach (ExportGameItem game in askFirst ? games.ToList() : [])
         {
             FirstExportChoice first = await AskAboutFirstExportAsync(game.GameId, game.Name);
             if (first is FirstExportChoice.Cancel or FirstExportChoice.ImportFirst)
@@ -214,6 +222,7 @@ public sealed partial class MainWindowViewModel
             }
         }
         string status = ExportRunStatus(games, exported, dryRun: false) + (skippedNotes.Count > 0 ? " " + string.Join(" ", skippedNotes) : string.Empty);
+        LastExportedGames = exported.Select(g => g.GameId).ToList();
         await AfterExportsAsync();
         StatusText = status;
         ExportGamesStatus = status;

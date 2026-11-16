@@ -1,9 +1,10 @@
-# Several inputs per relation (experimental, docs/multi-bind.md; dot-sourced by engine_smoke_test.ps1: Run-Engine,
-# Assert-*, $tempDir, $engineDir).
-#   - setting off (no --multi-bind): binds extra add is refused, list works, exports write the main bind only and name
-#     the extra inputs once; a profile without extra inputs is saved byte for byte as before (no new member);
-#   - setting on: add / set / move / remove with numbers 2.., binds list and relations show list them, binds tuning
-#     --bind 2 tunes the extra input alone, history undo takes an added input back out;
+# Several inputs per relation (docs/multi-bind.md; on by default since 2.6.6; dot-sourced by engine_smoke_test.ps1:
+# Run-Engine, Assert-*, $tempDir, $engineDir).
+#   - --multi-bind off: binds extra add is refused, list works, exports write the main bind only and name the extra
+#     inputs once; a profile without extra inputs is saved byte for byte as before (no new member);
+#   - on (the default, no option): add / set / move / remove with numbers 2.., binds list and relations show list them,
+#     binds tuning --bind 2 tunes the extra input alone, history undo takes an added input back out;
+#   - binds unbind, binds modifier rename and devices remove handle the extra inputs (2.6.6);
 #   - checks: a relation's own extra input is no conflict, another relation on that input is;
 #   - DCS export writes the extra input into its device's file, a re-import (JoyPro's .jp) gives it back as an extra
 #     input; Star Citizen (one joystick input per action) writes the main bind and names the relation;
@@ -34,13 +35,13 @@ try {
     Assert-True ((Run-Engine @("--profile", $mbBase, "--remap-missing-devices", "false", "profile", "save", $mbBaseSaved)).ExitCode -eq 0) "profile save of the base failed."
     Assert-True (-not ([System.Text.Encoding]::ASCII.GetString([System.IO.File]::ReadAllBytes($mbBaseSaved)).Contains("ExtraBinds"))) "a profile without extra inputs must not carry the ExtraBinds member."
 
-    # Setting off: changing is refused, listing works.
-    $mbOff = Run-Engine @("--profile", $mbProfile, "--remap-missing-devices", "false", "binds", "extra", "add", "Weapon Release", "--device", $mbB, "--input", "JOY_BTN2", "--text")
-    Assert-True ($mbOff.ExitCode -ne 0) "binds extra add must be refused with the setting off."
-    Assert-Match $mbOff.Output "experimental setting" "the refusal should name the experimental setting."
+    # --multi-bind off: changing is refused, listing works.
+    $mbOff = Run-Engine @("--multi-bind", "off", "--profile", $mbProfile, "--remap-missing-devices", "false", "binds", "extra", "add", "Weapon Release", "--device", $mbB, "--input", "JOY_BTN2", "--text")
+    Assert-True ($mbOff.ExitCode -ne 0) "binds extra add must be refused with --multi-bind off."
+    Assert-Match $mbOff.Output "switched off for this call" "the refusal should name the option."
 
-    # Setting on: add (button with a modifier, axis with its own dead zone), list, set, move, remove.
-    $mbOn = @("--multi-bind", "on", "--profile", $mbProfile, "--remap-missing-devices", "false")
+    # On by default (no option): add (button with a modifier, axis with its own dead zone), list, set, move, remove.
+    $mbOn = @("--profile", $mbProfile, "--remap-missing-devices", "false")
     $mbAddB = Run-Engine ($mbOn + @("binds", "extra", "add", "Weapon Release", "--device", $mbB, "--input", "JOY_BTN2", "--modifier", "RShift", "--text"))
     Assert-True ($mbAddB.ExitCode -eq 0) ("binds extra add failed: " + $mbAddB.Output)
     Assert-Match $mbAddB.Output "Added input 2" "binds extra add should name the new input 2."
@@ -51,7 +52,7 @@ try {
     $mbList = Run-Engine @("--profile", $mbProfile, "--remap-missing-devices", "false", "binds", "list", "--text")
     Assert-Match $mbList.Output ("\+ input 2: device=" + [regex]::Escape($mbB) + " \| input=JOY_BTN2 \| modifiers\(1\)=RShift") "binds list should list the extra input with its modifier."
     $mbShow = Run-Engine @("--profile", $mbProfile, "--remap-missing-devices", "false", "relations", "show", "Pitch", "--text")
-    Assert-Match $mbShow.Output "More inputs \(experimental\): 1" "relations show should count the extra inputs."
+    Assert-Match $mbShow.Output "More inputs: 1" "relations show should count the extra inputs."
     Assert-Match $mbShow.Output "tuning=false/0.2/1/1/0" "the extra axis input keeps its own dead zone."
     $mbTune = Run-Engine ($mbOn + @("binds", "tuning", "set", "Pitch", "--bind", "2", "--scope", "game:DCS", "--curvature", "0.4", "--text"))
     Assert-True ($mbTune.ExitCode -eq 0) ("binds tuning --bind 2 failed: " + $mbTune.Output)
@@ -81,7 +82,7 @@ try {
     Assert-Match $mbConf2.Output "Inputs that do two things: 1" "another relation on the extra input must be a conflict."
     $mbValidate = Run-Engine ($mbOn + @("profile", "validate", "--text"))
     Assert-Match $mbValidate.Output "Button Item key found in multiple Relation" "profile validate should name the collision."
-    Assert-NotMatch (Run-Engine @("--profile", $mbProfile, "--remap-missing-devices", "false", "relations", "conflicts", "--text")).Output "Inputs that do two things: 1" "with the setting off the extra input is not checked."
+    Assert-NotMatch (Run-Engine @("--multi-bind", "off", "--profile", $mbProfile, "--remap-missing-devices", "false", "relations", "conflicts", "--text")).Output "Inputs that do two things: 1" "with --multi-bind off the extra input is not checked."
     Assert-True ((Run-Engine @("--profile", $mbProfile, "--remap-missing-devices", "false", "relations", "mass", "delete", "--relation", "Pickle")).ExitCode -eq 0) "deleting Pickle failed."
 
     # DCS: off = main bind only plus one note; on = both device files; the .jp brings the extra input back.
@@ -115,7 +116,7 @@ try {
         Assert-NotMatch $mbBackList.Output "Weapon Release__" "the extra input must not become a copied relation."
         $mbBackOff = Join-Path $mbDir "back-off.pr0file"
         Assert-True ((Run-Engine @("profile", "new", $mbBackOff)).ExitCode -eq 0) "profile new (re-import off) failed."
-        Assert-True ((Run-Engine @("--profile", $mbBackOff, "--remap-missing-devices", "false", "dcs", "import", (Join-Path $mbDir "dcs-on"), "--only-connected", "false", "--text")).ExitCode -eq 0) "dcs import (off) failed."
+        Assert-True ((Run-Engine @("--multi-bind", "off", "--profile", $mbBackOff, "--remap-missing-devices", "false", "dcs", "import", (Join-Path $mbDir "dcs-on"), "--only-connected", "false", "--text")).ExitCode -eq 0) "dcs import (off) failed."
         Assert-NotMatch (Run-Engine @("--profile", $mbBackOff, "--remap-missing-devices", "false", "binds", "list", "--text")).Output "\+ input 2" "with the setting off the import makes no extra inputs."
 
         # Star Citizen keeps one joystick input per action: the main bind and a warning per relation.
@@ -150,8 +151,8 @@ try {
     Assert-True ($mbCopyDry.ExitCode -eq 0) ("devices copy-to --dry-run failed: " + $mbCopyDry.Output)
     Assert-Match $mbCopyDry.Output "Would copy 2 input\(s\)" "the preview should count both inputs."
     Assert-True ([Convert]::ToBase64String($mbCopyBefore) -eq [Convert]::ToBase64String([System.IO.File]::ReadAllBytes($mbCopy))) "the preview must not change the profile."
-    $mbCopyOff = Run-Engine @("--profile", $mbCopy, "--remap-missing-devices", "false", "devices", "copy-to", $mbA, $mbB, "--text")
-    Assert-True ($mbCopyOff.ExitCode -ne 0) "devices copy-to must be refused with the setting off."
+    $mbCopyOff = Run-Engine @("--multi-bind", "off", "--profile", $mbCopy, "--remap-missing-devices", "false", "devices", "copy-to", $mbA, $mbB, "--text")
+    Assert-True ($mbCopyOff.ExitCode -ne 0) "devices copy-to must be refused with --multi-bind off."
     $mbCopyApply = Run-Engine @("--multi-bind", "on", "--profile", $mbCopy, "--remap-missing-devices", "false", "devices", "copy-to", $mbA, $mbB, "--text")
     Assert-Match $mbCopyApply.Output "Copied 2 input\(s\)" "copy-to should add both inputs."
     $mbCopyList = Run-Engine @("--profile", $mbCopy, "--remap-missing-devices", "false", "binds", "list", "--text")
@@ -177,6 +178,47 @@ try {
     $mbStripSaved = Join-Path $mbDir "strip-saved.pr0file"
     Assert-True ((Run-Engine @("--profile", $mbStrip, "--remap-missing-devices", "false", "profile", "save", $mbStripSaved)).ExitCode -eq 0) "profile save (strip) failed."
     Assert-True (-not ([System.Text.Encoding]::ASCII.GetString([System.IO.File]::ReadAllBytes($mbStripSaved)).Contains("ExtraBinds"))) "a profile whose extra inputs were all removed must not carry the member."
+    # On by default changes nothing for a profile without extra inputs: load + save gives the bytes of --multi-bind off.
+    $mbSavedOff = Join-Path $mbDir "base-saved-off.pr0file"
+    Assert-True ((Run-Engine @("--multi-bind", "off", "--profile", $mbBase, "--remap-missing-devices", "false", "profile", "save", $mbSavedOff)).ExitCode -eq 0) "profile save (off) failed."
+    Assert-True ([Convert]::ToBase64String([System.IO.File]::ReadAllBytes($mbBaseSaved)) -eq [Convert]::ToBase64String([System.IO.File]::ReadAllBytes($mbSavedOff))) "a profile without extra inputs must save byte for byte the same with multi-bind on and off."
+
+    # binds unbind: an extra input on the given device and input goes, the main bind stays.
+    $mbUnbind = Join-Path $mbDir "unbind.pr0file"
+    Copy-Item $mbBase $mbUnbind -Force
+    Assert-True ((Run-Engine @("--profile", $mbUnbind, "--remap-missing-devices", "false", "binds", "extra", "add", "Weapon Release", "--device", $mbB, "--input", "JOY_BTN6")).ExitCode -eq 0) "add for the unbind check failed."
+    $mbUnbindRun = Run-Engine @("--profile", $mbUnbind, "--remap-missing-devices", "false", "binds", "unbind", "--device", $mbB, "--input", "JOY_BTN6", "--text")
+    Assert-True ($mbUnbindRun.ExitCode -eq 0) ("binds unbind of an extra input failed: " + $mbUnbindRun.Output)
+    $mbUnbindList = (Run-Engine @("--profile", $mbUnbind, "--remap-missing-devices", "false", "binds", "list", "--text")).Output
+    Assert-NotMatch $mbUnbindList "JOY_BTN6" "binds unbind should take the extra input out."
+    Assert-Match $mbUnbindList ("(?m)^Weapon Release \| type=button \| device=" + [regex]::Escape($mbA) + " \| input=JOY_BTN2") "binds unbind of an extra input keeps the main bind."
+
+    # binds modifier rename: the extra inputs' modifier is renamed too (else the old name comes back from them).
+    $mbRename = Join-Path $mbDir "rename.pr0file"
+    Copy-Item $mbBase $mbRename -Force
+    Assert-True ((Run-Engine @("--profile", $mbRename, "--remap-missing-devices", "false", "binds", "extra", "add", "Weapon Release", "--device", $mbB, "--input", "JOY_BTN3", "--modifier", "RShift")).ExitCode -eq 0) "add for the rename check failed."
+    $mbRenameRun = Run-Engine @("--profile", $mbRename, "--remap-missing-devices", "false", "binds", "modifier", "rename", "RShift", "Pinky", "--text")
+    Assert-True ($mbRenameRun.ExitCode -eq 0) ("binds modifier rename failed: " + $mbRenameRun.Output)
+    $mbRenameList = (Run-Engine @("--profile", $mbRename, "--remap-missing-devices", "false", "binds", "list", "--text")).Output
+    Assert-Match $mbRenameList "input=JOY_BTN3 \| modifiers\(1\)=Pinky" "the extra input's modifier should be renamed."
+    Assert-NotMatch $mbRenameList "modifiers\(1\)=RShift" "the old modifier name must be gone."
+
+    # devices remove: an extra input on the removed device goes; a main bind on it gives way to the next input.
+    $mbRemoveDev = Join-Path $mbDir "remove-device.pr0file"
+    Copy-Item $mbBase $mbRemoveDev -Force
+    Assert-True ((Run-Engine @("--profile", $mbRemoveDev, "--remap-missing-devices", "false", "binds", "extra", "add", "Weapon Release", "--device", $mbB, "--input", "JOY_BTN4")).ExitCode -eq 0) "add for the device remove check failed."
+    Assert-True ((Run-Engine @("--profile", $mbRemoveDev, "--remap-missing-devices", "false", "binds", "extra", "add", "Pitch", "--device", $mbB, "--input", "JOY_X")).ExitCode -eq 0) "add (axis) for the device remove check failed."
+    $mbRemoveRun = Run-Engine @("--profile", $mbRemoveDev, "--remap-missing-devices", "false", "devices", "remove", $mbA, "--confirm", "false", "--text")
+    Assert-True ($mbRemoveRun.ExitCode -eq 0) ("devices remove failed: " + $mbRemoveRun.Output)
+    $mbRemoveList = (Run-Engine @("--profile", $mbRemoveDev, "--remap-missing-devices", "false", "binds", "list", "--text")).Output
+    Assert-Match $mbRemoveList ("(?m)^Weapon Release \| type=button \| device=" + [regex]::Escape($mbB) + " \| input=JOY_BTN4") "the extra input should become the main bind when its device is removed."
+    Assert-Match $mbRemoveList ("(?m)^Pitch \| type=axis \| device=" + [regex]::Escape($mbB) + " \| input=JOY_X") "the axis' extra input should become its main bind."
+    Assert-NotMatch $mbRemoveList "\+ input 2" "no extra input is left after the promotion."
+    Assert-NotMatch $mbRemoveList ([regex]::Escape($mbA)) "nothing of the removed device is left."
+    $mbRemoveB = Run-Engine @("--profile", $mbRemoveDev, "--remap-missing-devices", "false", "binds", "extra", "add", "Weapon Release", "--device", $mbA, "--input", "JOY_BTN1")
+    Assert-True ($mbRemoveB.ExitCode -eq 0) ("add back on A failed: " + $mbRemoveB.Output)
+    Assert-True ((Run-Engine @("--profile", $mbRemoveDev, "--remap-missing-devices", "false", "devices", "remove", $mbA, "--confirm", "false", "--text")).ExitCode -eq 0) "devices remove (extra only) failed."
+    Assert-NotMatch (Run-Engine @("--profile", $mbRemoveDev, "--remap-missing-devices", "false", "binds", "list", "--text")).Output "\+ input 2" "an extra input on the removed device goes."
 }
 finally {
     $env:JOYPRO_DATA_DIR = $mbPreviousData

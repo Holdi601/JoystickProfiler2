@@ -68,6 +68,8 @@ public sealed partial class WebsiteScreenshotTests
                 vm.ProfilePath = DemoProfilePath;
                 vm.ShowStatisticsPage = true;
                 vm.StatusText = "Ready.";
+                // The Start page's setup card ("Set it all up for me") of the demo PC.
+                vm.ApplyAutoSetupStatus(DemoAutoSetupGames());
                 AvaloniaRenderThread.Pump();
                 foreach ((string theme, ThemeVariant variant) in new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) })
                 {

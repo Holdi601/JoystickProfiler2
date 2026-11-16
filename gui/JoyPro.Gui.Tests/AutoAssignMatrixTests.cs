@@ -42,7 +42,7 @@ public sealed class AutoAssignMatrixTests
         new("space-dual-sticks", "space-dual-sticks", "DCS,StarCitizen", [], "two VKB Gladiator NXT (right and left) + TFRP"),
         new("heli-collective", "heli-collective", "DCS,StarCitizen", [], "VKB NXT + Virpil SharKa-50 collective + TFRP"),
         new("yoke-quadrant", "yoke-quadrant", "DCS,StarCitizen", [], "Honeycomb Alpha yoke + Bravo quadrant"),
-        new("mode-switch-small", "mode-switch-small", "DCS,StarCitizen", [], "Logitech X56 stick + throttle (switches on the throttle), phase layers automatic"),
+        new("mode-switch-small", "mode-switch-small", "DCS,StarCitizen", [], "Logitech X56 stick + Honeycomb Bravo (its toggle switches stay put; the X56 throttle's spring back), phase layers automatic"),
         new("mode-switch-small-phase", "mode-switch-small", "DCS,StarCitizen", ["--phase-layers", "on"], "the same with phase layers on"),
         new("generic-unknown", "generic-unknown", "DCS,StarCitizen", [], "an unknown USB stick + an Arduino button box"),
         new("author-pit", "../setupwizard/devices", "DCS,StarCitizen", [], "the author's pit: VKB Gunfighter MCG Pro, Rhino, WarBRD Alpha-L, MT-50CM, Crosswind, WinWing PTO, vJoy, Wooting")

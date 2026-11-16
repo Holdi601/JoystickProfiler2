@@ -17,18 +17,24 @@ Operation Arrowhead also covers Combined Operations, BAF, PMC, ACR and the DayZ 
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile"] --> Q{"Which game?"}
-  Q -->|"engine arma2oa"| OA["&lt;name&gt;.ArmA2OAProfile<br/>OA, CO, BAF, PMC, ACR, DayZ mod"]
-  Q -->|"engine arma2"| A2["&lt;name&gt;.ArmA2Profile<br/>Arma 2 alone"]
-  OA --> T1["Throttle: both halves<br/>of the lever on one action"]
-  A2 --> T2["Throttle: one half<br/>of the lever"]
-  T1 --> G["Options > Controls"]
-  T2 --> G
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep the game closed
+:::
+
+**Before**: start the game once with every device connected. Open **Options > Controls > Controllers**.
+Then quit. Do this for each of the two games you play.
+
+**Then**: your binds are in **Options > Controls**.
+
+Did you bind buttons in Arma 2 before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
 ## What JoyPro does for Arma 2
 
 - **Import**: the aircraft and helicopter binds on your sticks, throttles and pedals come into your profile, with the
@@ -57,9 +63,9 @@ conflict. Weapons and view actions count for both.
 ## Export to Arma 2
 
 1. **Close the game.** Arma 2 saves the profile itself, so JoyPro refuses to write while it runs.
-2. Open **Export** and tick the Arma 2 or Operation Arrowhead tile.
+2. Open **Export** and tick the Arma 2 or Operation Arrowhead card.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 :::ingame What you see in Arma 2
 Start the game and open **Options > Controls** in the main menu. Your binds are on the aircraft and helicopter
@@ -152,6 +158,17 @@ keyboard combos always stay.
 
 :::layer technical
 ## Inside the Arma 2 integration
+
+```mermaid
+%% caption: Two games in one folder, each with its own profile file. Both show your binds in Options > Controls.
+flowchart LR
+  P["Your profile"] --> OA["Operation Arrowhead<br/>(engine arma2oa):<br/>name.ArmA2OAProfile"]
+  P --> A2["Arma 2 alone<br/>(engine arma2):<br/>name.ArmA2Profile"]
+  OA --> T1["Throttle: both halves<br/>of the lever on one action"]
+  A2 --> T2["Throttle: one half<br/>of the lever"]
+  T1 --> G["Options > Controls"]
+  T2 --> G
+```
 
 Code: `engine\Games\Arma2Integration.cs` on the Arma profile code shared with Arma 3 (`ArmaProfileIntegration.cs`,
 `ArmaGameData.cs`) and the axis model `engine\AxisModels\Arma2.cs` (games Arma2 and Arma2OA).

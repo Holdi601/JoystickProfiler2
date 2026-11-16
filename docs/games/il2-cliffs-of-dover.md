@@ -1,18 +1,18 @@
 # IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz
 
-> **Partly verified (2026-10-12).** Both games are installed on a test PC. Checked: Blitz 5.050 starts to its main menu
+> **Partly verified (2026-10-12).** Checked on installed copies of both games: Blitz 5.050 starts to its main menu
 > without any prompt and on its first start creates `Documents\1C SoftClub\il-2 sturmovik cliffs of dover` with copies
 > of the install's `conf.ini`, `confs.ini` and `confUser.ini` (GAME); the install's default `confUser.ini` of both games
 > (file shape of the fixtures); Blitz's device naming, seen in its installed binaries (CODE, see Devices). **Not yet checked in
 > the game:** binds made on Blitz's controls page and the game's rewrite of an export (`tools/e2e/games/IL2CoDBlitz.ps1`
 > is written but has not run: Windows' foreground lock blocked all input that night). The original game (63950) does
-> not start on a test PC: `Launcher.exe` exits after about 4 s with code 0, no window, no log, no user folder, also
+> not start on the checked PC: `Launcher.exe` exits after about 4 s with code 0, no window, no log, no user folder, also
 > when started directly; its integration is checked against the install's default file and a user's own Steam Cloud
 > file from 2015 only.
 
 Evidence tags: **[GAME]** seen on the installed games; **[CODE]** seen in Blitz's installed binaries, looked at for
 interoperability only, nothing modified or copied; **[FILE]** complete `confUser.ini` files posted by players (Steam discussions
-of both apps, the ControllerBuddy profile for Blitz) and the user's own Steam Cloud copy of the original's file;
+of both apps, the ControllerBuddy profile for Blitz) and a Steam Cloud copy of the original's file;
 **[DOC]** Team Fusion patch notes and the TF Beginner's Guide, **[FORUM]** forum statements (Team Fusion developers,
 ATAG), **[INF]** inferred.
 
@@ -98,12 +98,12 @@ of every command the profile binds away (keyboard only with `--include-keyboard`
 ## Live checks still needed
 
 1. Blitz's controls page: a vJoy button, chord, hat and axis bound in the game; the written names should be
-   `vJoy_Device-14B51D1+...` on a test PC (the hash of vJoy's path `\\?\hid#hidclass#1&2d595ca7&1&0000#{...}`) — run
+   `vJoy_Device-14B51D1+...` (the hash of vJoy's path `\\?\hid#hidclass#1&2d595ca7&1&0000#{...}`) — run
    `tools/e2e/games/IL2CoDBlitz.ps1` (calibrate its Options > Controls steps first).
 2. A second hat (`+Pov1`?) and the throttle's five values.
 3. Whether Blitz still reads the old `Joystick`/`Joystick<n>` names its own default `confUser.ini` ships with
    (JoyPro reads them by DirectInput order for both games).
-4. The original game (63950) does not start on a test PC (see the top of this page).
+4. The original game (63950) did not start on the checked PC (see the top of this page).
 
 ## Other findings
 

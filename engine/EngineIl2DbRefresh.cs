@@ -28,7 +28,7 @@ namespace JoyPro.Engine
                 pathOption = NormalizePath(PopOptionValue(options, "--path"));
                 dbPathOption = NormalizePath(PopOptionValue(options, "--db-path"));
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException ex) when (!IsMissingOptionValue(ex))
             {
                 return Fail(ex.Message);
             }

@@ -95,7 +95,7 @@ public sealed partial class MainWindowViewModel
             removes.Add(T("all binds of the devices your profile does not use"));
         // The default since 2.5.0 (clean + nuke): asked until "Do not ask again" (Settings > Confirmations).
         return await ConfirmAsync(T("Remove binds in {0}?", what),
-            T("This export removes {0}, only in the aircraft you export. JoyPro backs up the game files first; \"Undo last export\" on the game's tile puts them back.", string.Join(" and ", removes)),
+            T("This export removes {0}, only in the aircraft you export. JoyPro backs up the game files first; \"Undo last export\" on the game's card puts them back.", JoinAnd(removes)),
             T("Export and remove"), isDanger: true, dontAskKey: ConfirmExportRemovesKey);
     }
 
@@ -153,7 +153,7 @@ public sealed partial class MainWindowViewModel
         game.ExportState = result.ExitCode == 0
             ? T("Last export undone {0}", DateTime.Now.ToString("HH:mm", CultureInfo.CurrentCulture))
             : T("Undo failed: {0}", BuildFailureStatus(result));
-        StatusText = result.ExitCode == 0 ? T("{0}: the files from before the last export are back.", game.Name) : T("Undo failed, see the tile.");
+        StatusText = result.ExitCode == 0 ? T("{0}: the files from before the last export are back.", game.Name) : T("Undo failed, see the card.");
         if (GameBackups.Count > 0)
             await RefreshGameBackupsAsync();
     }

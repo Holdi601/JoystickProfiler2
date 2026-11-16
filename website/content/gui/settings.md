@@ -1,9 +1,9 @@
 ---
 title: Settings
 status: full
-summary: Every setting of JoyPro in sections that open and close: games, binds, startup, pages, language, appearance, tray, confirmations, updates, privacy, usage, telemetry recording, drawings, problem reports, local AI, components, devices and the expert tools for command lists, DCS defaults and force feedback.
+summary: Every setting of JoyPro in sections that open and close: games, binds, tours, startup, pages, language, appearance, tray, confirmations, updates, privacy, usage, telemetry recording, drawings, problem reports, local AI, components, devices and the expert tools for command lists, DCS defaults and force feedback.
 ---
-The Settings page holds every setting of JoyPro in 22 sections that open and close. A search box finds a setting by a
+The Settings page holds every setting of JoyPro in 25 sections that open and close. A search box finds a setting by a
 word ("tray", "update", "photos"), the tabs at the top jump to a section, and you can put the sections in your own
 order. Every setting is kept at once and survives a restart; there is no Save button.
 
@@ -12,15 +12,11 @@ order. Every setting is kept at once and survives a restart; there is no Save bu
 
 ![The Settings page with the Games section open](shot:settings)
 
-```mermaid
-flowchart LR
-  S["Search box<br/>'tray'"] --> M["only sections with a<br/>matching setting, opened"]
-  T["Tabs at the top"] --> J["jump to a section"]
-  H["Drag a section's handle<br/>or a tab"] --> O["your order"]
-  C["A setting changes"] --> U["ui-settings.json<br/>(this PC, kept at once)"]
-  C --> E["engine command<br/>(game folders, DCS files,<br/>local AI, components ...)"]
-  C --> P["the open profile<br/>(force feedback settings)"]
-```
+- **Search the settings**: type a word ("tray"). Only the sections with a matching setting stay, and they open.
+- **The tabs at the top** jump to a section.
+- **Drag** a section's handle, or a tab, to put the sections in your order.
+- **A setting you change** is kept at once, on this PC. A few also change something else: your game folders, DCS files,
+  the local AI, the optional components. The force feedback settings go into the open profile.
 
 :::layer beginner
 ## How the page works
@@ -40,6 +36,7 @@ The first start opens **Games** only; everything else is a click away. Most peop
 |---|---|
 | Games | Which games you have, linked folders, the game config watcher, the vJoy device JoyPro uses |
 | Binds | Follow input, recording of buttons that rest pressed |
+| Tours | The welcome, help mode (F1) and every tour, to start again |
 | Startup | Open the last profile at start |
 | Pages in the bottom bar | Hide pages, change their order |
 | Language | JoyPro's language |
@@ -90,7 +87,7 @@ it keeps its controls.
 
 :::ingame Linked folders and hidden games
 Nothing changes in a game here. A linked folder decides where import and export read and write; a hidden game gets no
-export tile and is not watched.
+export card and is not watched.
 :::
 
 ### Binds
@@ -102,6 +99,27 @@ export tile and is not watched.
 - **Show the note over the list when follow input jumps** ("BTN 8 on WarBRD: Gear (1/3)"), off by default.
 - **Record: also take a button that rests pressed when it is released**: a 3-way switch's middle position or a mode
   switch is pressed all the time; ticked, letting it go during recording counts as that button.
+
+### Looking around: head tracking or VR
+
+Your answer to the Setup wizard's question **Do you use head tracking or VR?** With head tracking (TrackIR, a face
+tracking webcam, a Tobii eye tracker) or VR you look around by turning your head.
+
+- **Yes**: the setup puts no view buttons on your HOTAS in the flight sims, only a button to recenter the view.
+- **No**: looking around goes on a hat of your stick or throttle, with a high priority.
+- After a change, **Set up again** opens the Setup wizard for the sims the answer concerns. See
+  [[page:how-do-i/head-tracking.html|Head tracking and looking around]].
+
+### Tours
+
+Every tour of JoyPro in one place ([[page:gui/help.html|Help mode and tours]]):
+
+- **Show the welcome** opens the question of the first start again: what do you want to do, and which tour fits.
+- **Help mode (F1)** switches help mode on: click anything to see what it does.
+- **Ask again at the next start**: the welcome shows again when JoyPro starts next, and no tour counts as seen.
+- **Only the essentials** / **Every feature**: how many steps the tours of the list show (kept after a restart).
+- The list: the five tours of the welcome and the **Tour of the ... page** of every page, each with **Start tour** and
+  **seen** once you ran it to its end.
 
 ### Startup
 
@@ -353,17 +371,11 @@ DCS reads the force feedback direction per device at start: a swapped or inverte
 aircraft.
 :::
 
-### Experimental
-
-**Several inputs per relation (experimental)**: a relation can have more than one input, each with its own device,
-modifiers and axis curve, for example the same grip on two bases. The Binds page then shows **More inputs** and **Copy
-every bind of a device to another device** ([[gui:binds|Binds]]). Exports write every input where the game can hold
-them and name the relations where it cannot. Off (the default): only the main input is used, exactly as before.
 :::layer advanced
 ## Tips and interactions
 
 - **Games** and the **first-start window** are two views of the same data: a link set in one shows in the other.
-- A game hidden in **Games** disappears from the Start page, the Export tiles, the watcher, the game backups and every
+- A game hidden in **Games** disappears from the Start page, the Export cards, the watcher, the game backups and every
   game list; its relations stay in the profile and come back with **Show again**.
 - **Watch game configs** and the **tray** options work together: with **Close to tray** the helper keeps watching after
   JoyPro closed and opens JoyPro on the game's changes.
@@ -456,7 +468,7 @@ JoyPro goes back to a built-in theme.
 
 <!-- entry: RefreshGameInstallsCommand -->
 Looks for your games again (Steam, launchers, the Windows apps list, your links), for example after you installed or
-moved a game, and updates the cards here, the Start page and the Export tiles. Engine: [[cli:games installs]].
+moved a game, and updates the cards here, the Start page and the Export page. Engine: [[cli:games installs]].
 
 <!-- entry: AskHllvOodleAgainCommand -->
 Forgets your answer about Hell Let Loose: Vietnam's files; JoyPro asks again the next time it builds that game's
@@ -503,12 +515,6 @@ Nothing is uploaded by JoyPro.
 Opens JoyPro's log folder in Explorer: the background logs of the GUI and the engine and the session log of the Output
 panel.
 
-<!-- entry: bind:MultiBindEnabled -->
-**Several inputs per relation (experimental)**: on, a relation can be on more than one input (two sticks for the same
-functions, a second fire button), each with its own modifiers and axis curve; the Binds page gets the panel More inputs
-and Copy every bind of a device to another device. Exports write every input where the game can hold several per action
-and name the relations where it cannot. Off (the default), profiles and exports are exactly as before. Kept after a
-restart.
 
 <!-- entry: bind:LlmEnabled -->
 Switches the optional local AI model on or off for every AI action (Manage with AI, Edit with AI, the JoyPro assistant,
@@ -742,8 +748,9 @@ any; every device when the name is empty); the next DCS export applies it. Engin
 On a component card: opens the component's licence on its official project page in your browser.
 
 <!-- entry: bind:Consent -->
-On a component card: "I have read ..." - your yes to download and install this program (its size, source and licence
-are on the card). **Install** works only with this ticked.
+<!-- easy: Tick this to say yes. Then JoyPro may install the helper. -->
+Tick this to say yes: JoyPro may download and install this free helper. **Install** works only with this ticked (the
+helper's size, source and licence are on the card, the box says "I have read ...").
 
 <!-- entry: bind:AskBeforeFirstExport -->
 On: the first export of a game this profile never imported from asks "Import first?", so the game's own binds are not
@@ -779,8 +786,9 @@ On a component card that is installed: opens Windows' **Installed apps** list. R
 with its own uninstaller; JoyPro does not remove components itself.
 
 <!-- entry: InstallCommand -->
-On a component card: **Install** with the component's name (**Update to** a version when an older one is installed).
-Works only after the tick "I have read ...". JoyPro downloads the official installer, checks its SHA-256 checksum and
+<!-- easy: Downloads and installs this free helper. Tick the box first. -->
+Downloads and installs this free helper: **Install** with the component's name (**Update to** a version when an older
+one is installed). It works only after the tick "I have read ...", so tick that box first. JoyPro downloads the official installer, checks its SHA-256 checksum and
 digital signature, then runs it; Windows asks once for administrator rights. One component installs at a time; a
 driver may need a restart of Windows afterwards, which the card then says.
 
@@ -928,7 +936,7 @@ like **Choose folder...**. Engine: [[cli:games install set]].
 
 <!-- entry: ToggleGameOwnedCommand -->
 **Hide** on a game card: for a game you do not have or do not care about. It is hidden everywhere in JoyPro (game
-cards, export tiles, the watcher, game lists) and counts as not installed; your binds for it stay in the profile.
+cards, export cards, the watcher, game lists) and counts as not installed; your binds for it stay in the profile.
 Hidden games are listed at the end of the section, where **Show again** brings one back. Engine:
 [[cli:games install disable]] / `enable`.
 
@@ -1148,3 +1156,52 @@ values apply after the next export.
 <!-- entry: ClearFfbSettingsCommand -->
 Removes every stored setting shown here from your profile (for the chosen device and aircraft scope); the game keeps
 its own values again from the next export. Does not ask first. Engine: [[cli:ffb clear]].
+
+<!-- entry: OpenWelcomeCommand -->
+<!-- easy: Shows the welcome again, with all the tours. -->
+**Show the welcome** opens the question of the first start again: what do you want to do? Pick an answer and JoyPro
+starts the tour or the quick setup that fits you.
+
+<!-- entry: ToggleHelpModeCommand -->
+<!-- easy: Click this, then click any button to learn what it does. -->
+**Help mode (F1)** switches help mode on: a click on any button, field, list row or tab no longer runs it but shows
+what it does. F1, Esc or **End help mode** at the top ends it.
+
+<!-- entry: ResetToursCommand -->
+<!-- easy: The welcome comes back at the next start. -->
+**Ask again at the next start** makes the welcome show again the next time JoyPro starts. Every tour counts as not
+seen again; your profile and your other settings stay as they are.
+
+<!-- entry: bind:ToursEssentials -->
+**Only the essentials**: a tour started from the list below shows only the steps you need. The extras, like detent
+mode in the DCS tour, are left out.
+
+<!-- entry: bind:ToursEveryFeature -->
+**Every feature**: a tour started from the list below shows every step, also the extras. Your choice stays after a restart.
+
+<!-- entry: StartTourByIdCommand -->
+<!-- easy: Starts this tour. -->
+**Start tour** starts this tour: it dims the window, makes the button it talks about glow and waits for your click.
+The quick tour shows where to change a button later; the quick setup itself is **Set it all up for me** on the Start
+page.
+
+<!-- entry: bind:EasyWords -->
+<!-- easy: Big text and short sentences in tours and help. -->
+**Easy words**: big cards and the shortest texts in the tours (German says "du"), and F1's help leads with one plain sentence with the details behind **More details**. Saved at once; it stays after a restart.
+
+<!-- entry: bind:HeadTrackingYes -->
+<!-- easy: Pick this if you look around by moving your head. -->
+Pick this when you look around with head tracking (TrackIR, a face tracking webcam), a Tobii eye tracker or VR, or
+when you plan to get one. Every later setup then puts no view or look buttons on your HOTAS in the flight sims, only a
+button to recenter the view, so your buttons stay free for other functions.
+
+<!-- entry: bind:HeadTrackingNo -->
+<!-- easy: Pick this if you look around with a hat on your stick. -->
+Pick this when you look around with your stick or throttle. Every later setup puts looking around on a hat (forward,
+back, left, right) or a thumb stick, with a high priority: right after the gun, weapon release, countermeasures,
+brakes, trim and target.
+
+<!-- entry: SetUpAgainForHeadTrackingCommand -->
+<!-- easy: Sets up your sims again with your new answer. -->
+Shown after you changed your answer: opens the Setup wizard for the installed sims the answer concerns, so looking
+around is set up again there. Your profile changes only when you apply the new plan.

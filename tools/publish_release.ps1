@@ -65,7 +65,7 @@ Write-Host "Publishing JoyPro2 $version ($Configuration) to $publishDir"
 & dotnet publish (Join-Path $root "gui\JoyPro.Gui\JoyPro.Gui.csproj") -c $Configuration -r win-x64 --self-contained true -p:PublishSingleFile=false -p:AutoStopRunningJoyProGuiOnBuild=false -p:DebugType=none -p:DebugSymbols=false -o $publishDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed ($LASTEXITCODE)." }
 
-foreach ($required in @("JoyPro.Gui.exe", "engine\engine.exe", "engine\DB", "engine\LayoutCatalog")) {
+foreach ($required in @("JoyPro.Gui.exe", "JoyPro 2 - Tour.cmd", "engine\engine.exe", "engine\DB", "engine\LayoutCatalog")) {
     if (-not (Test-Path (Join-Path $publishDir $required))) { throw "The package misses $required." }
 }
 

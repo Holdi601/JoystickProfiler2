@@ -28,6 +28,8 @@ namespace JoyPro.Engine
     //   copied over (this keeps lists that older versions refreshed into the program folder), and a program-folder DB
     //   whose source-version.txt is newer than the root's (a newer game version, more modules with the same version)
     //   replaces the root's copy, the old one kept under GameData\Replaced\<time>. Nothing is ever deleted.
+    //   Titles an older JoyPro wrote wrong into a list it built (FixKnownTitles) are corrected in the root's copy, the
+    //   list kept under GameData\Replaced\<time> first.
     internal static class GameDataPaths
     {
         public const string FolderName = "GameData";
@@ -168,6 +170,7 @@ namespace JoyPro.Engine
         {
             public List<string> Copied = new List<string>();
             public List<string> Replaced = new List<string>();
+            public List<string> TitlesFixed = new List<string>();
             public List<string> Warnings = new List<string>();
         }
 
@@ -188,12 +191,11 @@ namespace JoyPro.Engine
         public static MigrationReport Migrate(string programRoot, string userRoot)
         {
             MigrationReport report = new MigrationReport();
-            if (string.IsNullOrWhiteSpace(programRoot) || string.IsNullOrWhiteSpace(userRoot) ||
-                !Directory.Exists(Path.Combine(programRoot, "DB")) || SamePath(programRoot, userRoot))
+            if (string.IsNullOrWhiteSpace(programRoot) || string.IsNullOrWhiteSpace(userRoot) || SamePath(programRoot, userRoot))
                 return report;
 
-            List<string> units = GameUnits(programRoot);
-            if (units.Count == 0)
+            List<string> units = Directory.Exists(Path.Combine(programRoot, "DB")) ? GameUnits(programRoot) : new List<string>();
+            if (units.Count == 0 && !HasTitleFixTargets(userRoot))
                 return report;
 
             // Several engines may start at once (the GUI runs some in parallel): one migrates, the others wait.
@@ -215,7 +217,9 @@ namespace JoyPro.Engine
                         report.Warnings.Add("Game data migration skipped: another JoyPro process holds the lock.");
                         return report;
                     }
-                    MigrateUnits(programRoot, userRoot, units, report);
+                    string stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
+                    MigrateUnits(programRoot, userRoot, units, report, stamp);
+                    FixKnownTitles(userRoot, report, stamp);
                 }
                 catch (Exception ex)
                 {
@@ -232,6 +236,8 @@ namespace JoyPro.Engine
                 JoyPro.Logging.JoyProLog.Info("GameData", "Copied " + copied + " from the program folder to " + userRoot + ".");
             foreach (string replaced in report.Replaced)
                 JoyPro.Logging.JoyProLog.Info("GameData", "Replaced " + replaced + " in " + userRoot + " with the program folder's newer copy.");
+            foreach (string fixedList in report.TitlesFixed)
+                JoyPro.Logging.JoyProLog.Info("GameData", "Corrected " + fixedList + " in " + userRoot + " (the old list is kept under " + ReplacedFolderName + ").");
             foreach (string warning in report.Warnings)
                 JoyPro.Logging.JoyProLog.Warn("GameData", warning);
             return report;
@@ -257,9 +263,8 @@ namespace JoyPro.Engine
             return games.OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
-        private static void MigrateUnits(string programRoot, string userRoot, List<string> games, MigrationReport report)
+        private static void MigrateUnits(string programRoot, string userRoot, List<string> games, MigrationReport report, string stamp)
         {
-            string stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
             foreach (string game in games)
             {
                 List<string> parts = new List<string> { Path.Combine("DB", game) };
@@ -297,6 +302,71 @@ namespace JoyPro.Engine
                     }
                 }
             }
+        }
+
+        // ---- Known title fixes ----
+
+        // FSX / Prepar3D lists built by JoyPro before 2026-11-04 had the elevator's nose up / nose down reversed
+        // (Games\FsxEvents.ReversedTitles), and a refresh keeps the titles a list has. Only a row whose title is still
+        // exactly the old wrong one changes; the rest of the file stays byte for byte, and the list is copied to
+        // GameData\Replaced\<time>\DB\<game> first. Cheap: a few small files read per start, written once.
+        private static bool HasTitleFixTargets(string userRoot)
+        {
+            return JoyPro.Engine.Games.FsxEvents.DbFolders.Any(f => File.Exists(Path.Combine(userRoot, "DB", f, "actions.tsv")));
+        }
+
+        internal static void FixKnownTitles(string userRoot, MigrationReport report, string stamp)
+        {
+            foreach (string folder in JoyPro.Engine.Games.FsxEvents.DbFolders)
+            {
+                string part = Path.Combine("DB", folder);
+                string file = Path.Combine(userRoot, part, "actions.tsv");
+                try
+                {
+                    if (!File.Exists(file))
+                        continue;
+                    string text = File.ReadAllText(file, Encoding.UTF8);
+                    int count;
+                    string corrected = CorrectFsxTitles(text, out count);
+                    if (count == 0)
+                        continue;
+                    CopyFolder(Path.Combine(userRoot, part), Path.Combine(userRoot, ReplacedFolderName, stamp, part), false);
+                    string temp = file + ".joypro-tmp";
+                    File.WriteAllText(temp, corrected, new UTF8Encoding(false));
+                    File.Copy(temp, file, true);
+                    File.Delete(temp);
+                    report.TitlesFixed.Add(Path.Combine(part, "actions.tsv") + " (" + count.ToString(CultureInfo.InvariantCulture) + " elevator title(s))");
+                }
+                catch (Exception ex)
+                {
+                    report.Warnings.Add("Could not correct the titles of " + Path.Combine(part, "actions.tsv") + ": " + ex.Message);
+                }
+            }
+        }
+
+        // The list's text with the known wrong titles corrected (line endings and every other byte kept).
+        internal static string CorrectFsxTitles(string text, out int count)
+        {
+            count = 0;
+            string[] lines = text.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                bool cr = line.EndsWith("\r", StringComparison.Ordinal);
+                string body = cr ? line.Substring(0, line.Length - 1) : line;
+                if (body.StartsWith("#", StringComparison.Ordinal))
+                    continue;
+                string[] cols = body.Split('\t');
+                if (cols.Length < 2)
+                    continue;
+                string fixedTitle = JoyPro.Engine.Games.FsxEvents.CorrectedTitle(cols[0].Trim(), cols[1]);
+                if (fixedTitle == null)
+                    continue;
+                cols[1] = fixedTitle;
+                lines[i] = string.Join("\t", cols) + (cr ? "\r" : string.Empty);
+                count++;
+            }
+            return count == 0 ? text : string.Join("\n", lines);
         }
 
         // True when the program folder's stamp is newer than the game-data root's: a higher game version or Steam build;

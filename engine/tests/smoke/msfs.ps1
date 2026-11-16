@@ -129,6 +129,19 @@ try {
     $mcPreviousFake = $env:JOYPRO_FAKE_DEVICES
     $env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\msfs\devices-override.tsv"
     try { Run-Engine @("--profile", $mc2024Profile, "msfs2024", "export", $mc2024, "--mode", "clean", "--text") | Out-Null } finally { $env:JOYPRO_FAKE_DEVICES = $mcPreviousFake }
+    # A fresh MSFS 2024 (the folder has no device profile yet): the export writes the import files instead of failing
+    # with "No MSFS device profiles" (walk-through 2026-11-14), and nothing goes into the sim's folder.
+    $mcFresh = Join-Path $tempDir "msfs2024-fresh"
+    New-Item -ItemType Directory -Force -Path $mcFresh | Out-Null
+    $mcImportFolder = Join-Path $env:JOYPRO_DATA_DIR "MSFS 2024 import files"
+    $mcImportBefore = @(Get-ChildItem -Path $mcImportFolder -File -ErrorAction SilentlyContinue).Count
+    $env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\msfs\devices-override.tsv"
+    try { $mcFreshExport = Run-Engine @("--profile", $mc2024Profile, "msfs2024", "export", $mcFresh, "--user-profiles", "false", "--text") } finally { $env:JOYPRO_FAKE_DEVICES = $mcPreviousFake }
+    Assert-True ($mcFreshExport.ExitCode -eq 0) ("msfs 2024 export into a fresh sim folder must not fail: " + $mcFreshExport.Output)
+    Assert-Match $mcFreshExport.Output "No MSFS 2024 device profile in .* yet" ("the export should say why it wrote import files: " + $mcFreshExport.Output)
+    Assert-Match $mcFreshExport.Output "MSFS 2024 import files written" ("the export should write the import files for a fresh sim: " + $mcFreshExport.Output)
+    Assert-True (@(Get-ChildItem -Path $mcImportFolder -File -ErrorAction SilentlyContinue).Count -gt 0 -or $mcImportBefore -gt 0) "the import files must be in the data folder's MSFS 2024 import files."
+    Assert-True (@(Get-ChildItem -Path $mcFresh -Recurse -File).Count -eq 0) "the export must not write into the fresh sim folder."
     $mc2024Released = [System.IO.File]::ReadAllText($mc2024)
     Assert-Match $mc2024Released 'ActionName="KEY_AXIS_AILERONS_SET" ValueEvent="0.000000" Delay="2.000000" Flag="2"/>' "msfs 2024 export should turn a released override axis into an empty element."
     Assert-NotMatch $mc2024Released 'AxisSensitivy="-40"' "msfs 2024 export must not leave the released action's <Axis/> behind."

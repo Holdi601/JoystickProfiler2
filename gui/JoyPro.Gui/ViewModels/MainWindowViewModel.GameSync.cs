@@ -170,6 +170,8 @@ public sealed partial class MainWindowViewModel
     {
         GameSyncPost(() =>
         {
+            // The game's binds may be others now: the Start card's look at the games asks again.
+            RequestAutoSetupStatus(true);
             // A game unticked meanwhile: its late event is dropped.
             if (watchedConfigs.ContainsKey(watchKey))
                 QueueGameSyncCheck(watchKey);

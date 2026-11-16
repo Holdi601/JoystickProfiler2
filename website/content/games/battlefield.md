@@ -18,20 +18,24 @@ waits for one confirmed survey of the game's joystick numbering. The older Battl
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  subgraph Real["Your devices"]
-    S["Stick"]
-    T["Throttle"]
-    P["Pedals"]
-  end
-  S & T & P --> F["JoyPro.VJoy forwarder<br/>fixed mapping table"]
-  F --> V["One vJoy device<br/>(no Rx / Ry)"]
-  V --> G["Battlefield 6 / 2042"]
-  H["HidHide"] -.->|hides the real devices<br/>from the game only| G
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>then **Use these buttons**
+2. **Use it**<br>then **Start** before the game
+3. **Bind vJoy in the game**<br>on its joystick page
+:::
+
+1. On the Start page, press **Set it all up for me**. Look at the list. Press **Use these buttons**. JoyPro picks the
+   buttons for jets and helicopters.
+2. Open the [[gui:vjoy|Virtual Joystick]] page. Install **vJoy** and **HidHide** there if they are missing. Press
+   **Use it** next to Battlefield. Press **Start** before you start the game.
+3. In the game, open the joystick page. Click a row's box, then press your button. The game sees one joystick, "vJoy
+   Device".
+
+JoyPro does not write Battlefield's joystick binds yet. So step 3 is yours. Details below.
+
 ## What JoyPro does for Battlefield
 
 - **One device for the game**: in virtual mode your stick, throttle and pedals appear to Battlefield as one vJoy
@@ -71,7 +75,7 @@ the vJoy device. Jet and helicopter are different vehicles, so the same button m
 ## Export
 
 1. **Close the game.**
-2. Open **Export**, keep **Replace on my devices**, press **Export now** on the Battlefield tile. The keyboard keys are
+2. Open **Export**, keep **Replace on my devices**, press **Export now** on the Battlefield card. The keyboard keys are
    written when you ticked the keyboard at the import (the choice is kept per game). Joystick binds are listed as not
    written.
 3. **Start the game once** afterwards and look at the binds: Steam Cloud and EA sync the settings folder, and a cloud
@@ -108,6 +112,17 @@ keyboard bindings.
 :::
 
 :::layer advanced
+## How the virtual joystick works
+
+```mermaid
+%% caption: Solid: your inputs while Start is on. Dotted: HidHide hides the real devices from Battlefield only.
+flowchart LR
+  R["Stick, throttle,<br/>pedals"] --> F["JoyPro copies every input<br/>(fixed mapping table)"]
+  F --> V["One vJoy device<br/>(no Rx / Ry)"]
+  V --> G["Battlefield 6 / 2042"]
+  H["HidHide"] -.-> G
+```
+
 ## Files JoyPro reads and writes
 
 | Game | File | What it is |

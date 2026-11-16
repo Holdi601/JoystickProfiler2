@@ -95,6 +95,25 @@ public partial class GameSetupWindow : Window
         }
     }
 
+    // "Done, and give me binds quickly": the games as with Done, then the quick setup (MainWindowViewModel.QuickSetup).
+    private async void QuickPathClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm)
+            return;
+        // The quick path answers the welcome: it does not open next to the quick setup.
+        vm.BeginFirstStartQuickPath();
+        if (await vm.ApplyGameSetupAsync())
+        {
+            finished = true;
+            Close();
+            await vm.StartQuickSetupAsync(tourAfter: true);
+        }
+        else
+        {
+            vm.CancelFirstStartQuickPath();
+        }
+    }
+
     private void LaterClicked(object? sender, RoutedEventArgs e)
     {
         Close();

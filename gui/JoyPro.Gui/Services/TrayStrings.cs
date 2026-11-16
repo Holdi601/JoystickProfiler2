@@ -28,6 +28,7 @@ internal static class TrayStrings
         ["Watching game configs (JoyPro2 is open: set it there)"] = T("Watching game configs (JoyPro2 is open: set it there)"),
         ["Watching game configs"] = T("Watching game configs"),
         ["Open JoyPro2"] = T("Open JoyPro2"),
+        ["Where is what?"] = T("Where is what?"),
         ["Review"] = T("Review"),
         ["Exit"] = T("Exit")
     };

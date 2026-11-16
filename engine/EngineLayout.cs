@@ -814,16 +814,14 @@ namespace JoyPro.Engine
 
         private sealed class VJoySettingsView
         {
-            private Dictionary<string, string> games = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            private JoyPro.Engine.VJoy.VJoySettings settings;
 
             public static VJoySettingsView Load()
             {
                 VJoySettingsView view = new VJoySettingsView();
                 try
                 {
-                    JoyPro.Engine.VJoy.VJoySettings settings = EngineVJoy.LoadSettings();
-                    if (settings != null && settings.Games != null)
-                        view.games = new Dictionary<string, string>(settings.Games, StringComparer.OrdinalIgnoreCase);
+                    view.settings = EngineVJoy.LoadSettings();
                 }
                 catch (Exception)
                 {
@@ -831,10 +829,10 @@ namespace JoyPro.Engine
                 return view;
             }
 
+            // The mode the game runs with (an Xbox-only game without a choice: "xbox").
             public string Mode(string game)
             {
-                string mode;
-                return games.TryGetValue(game, out mode) && !string.IsNullOrEmpty(mode) ? mode : "native";
+                return settings == null ? (JoyPro.Engine.VJoy.VJoySettings.ReadsOnlyXbox(game) ? "xbox" : "native") : settings.ModeOf(game);
             }
         }
 

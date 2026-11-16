@@ -138,7 +138,8 @@ public sealed partial class MainWindowViewModel
         if (string.IsNullOrWhiteSpace(ProfilePath))
             OverlayStatus = T("The HUD is on: your devices. Load a profile to also see what each button does in the game.");
         StartInputMonitor();
-        _ = Task.Run(() => ListenForDcsAsync(token), CancellationToken.None);
+        // DCS's hook: one listener, shared with the layout window's "Follow the game" (MainWindowViewModel.LayoutWindow.cs).
+        UpdateDcsListener();
         _ = OverlayLoopAsync(token);
         ApplyHudOutputs();
     }
@@ -156,6 +157,7 @@ public sealed partial class MainWindowViewModel
         StopHudOutputs();
         OverlayLines.Clear();
         IsOverlayRunning = false;
+        UpdateDcsListener();
         StopInputMonitorIfIdle();
         OverlayStatus = T("The HUD is off.");
     }
@@ -286,6 +288,10 @@ public sealed partial class MainWindowViewModel
             if (unit == overlayUnit)
                 return;
             overlayUnit = unit;
+            if (LayoutFollows)
+                LayoutWindow!.OnRunningGame("DCS", unit);
+            if (!IsOverlayRunning)
+                return;
             overlayGame = "DCS";
             _ = ReloadOverlayMapAsync();
             _ = RefreshHudAircraftAsync();
@@ -303,9 +309,7 @@ public sealed partial class MainWindowViewModel
         if (string.IsNullOrWhiteSpace(engine) || !File.Exists(engine) || string.IsNullOrWhiteSpace(ProfilePath))
             return;
         List<string> args = ["--profile", ProfilePath, "--status", "false", "overlay", "map"];
-        // Experimental multi-bind: the overlay names the function on each of its inputs.
-        if (MultiBindEnabled)
-            args.InsertRange(4, ["--multi-bind", "on"]);
+        // Multi-bind (on in the engine by default): the overlay names the function on each of its inputs.
         if (overlayGame.Length > 0)
             args.AddRange(["--game", overlayGame]);
         if (overlayGame == "DCS" || overlayGame.Length == 0)

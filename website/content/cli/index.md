@@ -42,7 +42,9 @@ engine dcs export --mode clean --nuke-untouched-devices true --planes "F-16C_50|
 engine backups restore latest --game DCS
 ```
 
-Exit codes: `0` success, `1` failure (the reason on stderr), `3` cancelled.
+Exit codes: `0` success, `1` failure (the reason on stderr), `2` an option without its value (`engine error: Missing
+value for option --on. ...`, no crash report; vJoy's administrator steps also use `2` for a declined prompt), `3`
+cancelled.
 :::
 
 :::layer technical
@@ -51,12 +53,13 @@ Exit codes: `0` success, `1` failure (the reason on stderr), `3` cancelled.
 ```mermaid
 flowchart LR
   B["A button in the GUI"] --> VM["View model command"]
-  VM --> R["RunEngineAsync<br/>(one gate, one command at a time)"]
-  R -->|"quick reads: relations, binds, lists"| S["engine serve<br/>(long-running, cached lists)"]
-  R -->|"import, export, refresh"| P["engine.exe process<br/>--status true (progress, Cancel)"]
+  VM --> R["RunEngineAsync<br/>(one gate,<br/>one command at a time)"]
+  R --> S["quick reads:<br/>engine serve<br/>(long-running, cached lists)"]
+  R --> P["import, export, refresh:<br/>an engine.exe process<br/>--status true<br/>(progress, Cancel)"]
   S --> F[("profile, game data")]
   P --> F
   P --> G[("game files<br/>(backup first)")]
+%% caption: Every GUI button runs an engine command through one gate. Quick reads go to the long-running server, long jobs to their own process.
 ```
 
 - Every GUI action goes through `MainWindowViewModel.RunEngineAsync`: it adds `--profile`, `--status`, the correction

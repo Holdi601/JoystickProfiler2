@@ -42,6 +42,11 @@ try {
     Assert-Match $fsxCatalog "(?m)^AXIS_AILERONS_SET\tAilerons \(roll\) axis\taxis\tFlight controls$" "the FSX catalog should have JoyPro's aileron axis."
     Assert-Match $fsxCatalog "(?m)^SMOKE_TEMPLATE_EVENT\t[^\t]+\tbutton\t" "refresh-db should add the template's events."
     Assert-Match $fsxCatalog "(?m)^AXIS_SMOKE_TEMPLATE_SET\t[^\t]+\taxis\t" "an <AxEvent> of the template is an axis event."
+    # A new list: ELEV_UP and ELEV_TRIM_UP are nose up (versions before 2026-11-04 had the titles reversed).
+    Assert-Match $fsxCatalog "(?m)^ELEV_UP\tElevator up \(nose up\)\tbutton\t" "a new FSX list must call ELEV_UP nose up."
+    Assert-Match $fsxCatalog "(?m)^ELEV_DOWN\tElevator down \(nose down\)\tbutton\t" "a new FSX list must call ELEV_DOWN nose down."
+    Assert-Match $fsxCatalog "(?m)^ELEV_TRIM_UP\tElevator trim up \(nose up\)\tbutton\t" "a new FSX list must call ELEV_TRIM_UP nose up."
+    Assert-Match $fsxCatalog "(?m)^ELEV_TRIM_DN\tElevator trim down \(nose down\)\tbutton\t" "a new FSX list must call ELEV_TRIM_DN nose down."
     $fsxRefreshUser = Run-Engine @("fsx", "refresh-db", "--path", $fsxFile, "--text")
     Assert-True ($fsxRefreshUser.ExitCode -eq 0) ("fsx refresh-db of the user file failed: " + $fsxRefreshUser.Output)
 

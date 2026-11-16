@@ -36,7 +36,7 @@ public static class SerbianScript
         "Sturmovik", "Battle", "Stalingrad", "Great", "Battles", "Cliffs", "Dover", "Plane", "X", "Plane", "XPlane", "Ace", "Combat",
         "Elite:", "Tray", "Spitfire", "VID", "PID", "HID", "USB", "FFB", "DirectInput", "XInput", "AI", "PNG", "PDF", "CSV", "JSON",
         "Lua", "UAC", "IP", "CPU", "MB", "GB", "OK", "PC", "UI", "ID", "Escape", "Esc", "Ctrl", "Alt", "Shift", "Enter", "Tab",
-        "Up", "Down", "Left", "Right", "Home", "Space", "Del",
+        "Up", "Down", "Left", "Right", "Home", "Space", "Del", "Force",
         // The games' own words in file texts and folder paths: "combos = nil", "Config > Input", Falcon BMS "User\Config"
         "combos", "nil", "Config", "Input", "User"
     };

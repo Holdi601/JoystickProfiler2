@@ -130,6 +130,8 @@ public sealed class EngineCliClient : IEngineCliClient
             foreach (KeyValuePair<string, string> variable in options.Environment)
                 startInfo.Environment[variable.Key] = variable.Value;
         }
+        if (options?.LowPriority == true)
+            startInfo.Environment["JOYPRO_LOW_PRIORITY"] = "1";
         Action<string>? onErrorLine = options?.StandardErrorLine;
         JoyProLog.Info("Engine", "Call " + callId + ": engine " + JoyProLog.JoinArguments(arguments ?? Array.Empty<string>()));
 
@@ -172,6 +174,18 @@ public sealed class EngineCliClient : IEngineCliClient
             JoyProLog.Error("Engine", "Call " + callId + ": the engine did not start (" + engineExePath + ")", ex);
             throw;
         }
+        if (options?.LowPriority == true)
+        {
+            try
+            {
+                process.PriorityClass = ProcessPriorityClass.BelowNormal;
+                process.PriorityBoostEnabled = false;
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException)
+            {
+                // Ended already, or not allowed: the engine lowers itself too.
+            }
+        }
         process.StandardInput.Close();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
@@ -182,6 +196,17 @@ public sealed class EngineCliClient : IEngineCliClient
         catch (OperationCanceledException)
         {
             JoyProLog.Warn("Engine", "Call " + callId + " cancelled after " + sw.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture) + " ms");
+            if (options?.KillOnCancel == true)
+            {
+                try
+                {
+                    process.Kill(entireProcessTree: true);
+                }
+                catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException)
+                {
+                    // Ended meanwhile.
+                }
+            }
             throw;
         }
         sw.Stop();

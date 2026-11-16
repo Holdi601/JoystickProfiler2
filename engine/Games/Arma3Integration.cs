@@ -23,7 +23,9 @@ namespace JoyPro.Engine.Games
             // "Thrust (Analog)" / "Speedbrake (Analog)": both halves on the one action (the game's tooltip: "Both + and -
             // axes need to be mapped"), negative half first = lever forward is maximum.
             { "Axis.PlaneThrottle", new Composite("HeliThrottlePos", "HeliThrottlePos", true) },
-            { "Axis.PlaneAirbrake", new Composite("HeliThrottleNeg", "HeliThrottleNeg", true) }
+            { "Axis.PlaneAirbrake", new Composite("HeliThrottleNeg", "HeliThrottleNeg", true) },
+            // (keyZoomContIn / keyZoomContOut: the game's own profile lines, as in Arma 2)
+            { "Axis.Zoom", new Composite("ZoomContIn", "ZoomContOut") }
         };
 
         private static readonly string[] GameOptionKeys = { "RTDEnabled", "RTDFullHUD", "RTDRoughLanding", "RTDWindDynamic", "RTDAutoTrim", "RTDStressDamage", "vibrations" };

@@ -271,6 +271,45 @@ namespace JoyPro.Engine.Games
     {
     }
 
+    // Pad controls a game wants pressed together for one action (ACE COMBAT 8: flares = L3 + R3). On the virtual Xbox pad
+    // JoyPro makes such a chord a macro (steps pressed together) fed by the user's relation of the first function found
+    // (function map ids, "function:direction" allowed). Confirmed = false: what the game does is not checked in game yet.
+    internal sealed class PadChord
+    {
+        public string Name { get; set; }
+        public string[] Functions { get; set; }
+        public string[] Controls { get; set; }
+        public int HoldMs { get; set; }
+        public bool Confirmed { get; set; }
+        // PadHolds: the words of a relation name that ask for it (a regular expression, e.g. "high.?g").
+        public string NamePattern { get; set; }
+        // Actions ("game:id") whose relation's button feeds it (PadHolds: the user's "Cobra button" in DCS; both: the pad
+        // game's own action of it, e.g. AceCombat8:Pad_Flares), before the function map's Functions.
+        public string[] NodeIds { get; set; }
+    }
+
+    // Pad games with chords (PadChord) or a D-pad that gives menu commands (ACE COMBAT: the D-pad orders the wingmen, like
+    // a crew menu): DPadFunctions are the function map ids of the user's relations that feed the D-pad (a comm switch or
+    // an AI-menu hat), best first. Used by the Xbox pad's auto setup (EngineVJoy.PadAutoSetup).
+    // PadHolds: controls a button holds fully while pressed (ACE COMBAT High-G turn: both triggers), made from a relation
+    // the user names after it (PadChord.Name words, e.g. "High-G") and otherwise offered (pad-check, a note).
+    // PadInvertDefault: whether a pad axis action is reversed by default for a HOTAS (null: not known, not reversed):
+    // what the game's own default setting needs, never DCS's invert. A tuning of the game's own scope decides instead.
+    internal interface IGamePadConventions
+    {
+        IReadOnlyList<PadChord> PadChords { get; }
+        IReadOnlyList<string> DPadFunctions { get; }
+        IReadOnlyList<PadChord> PadHolds { get; }
+        bool? PadInvertDefault(string action);
+        // The game's must-have actions on the pad, as { check name, action id } (pitch, roll, gun, missile, target
+        // switch): engine vjoy pad-check reports each one the profile does not reach.
+        IReadOnlyList<string[]> PadEssentials { get; }
+        // The camera look actions on a pad stick (ACE COMBAT 8: Pad_CameraYaw, Pad_CameraPitch on the right stick): with
+        // no axis of the profile on them, the pad's auto setup puts them on a free hat of the user's ("Hat to axes").
+        // Empty: the game's stick is no look camera that a hat may stand in for.
+        IReadOnlyList<string> PadLookActions { get; }
+    }
+
     // For "one-device" games (docs/games/one-device-games.md): games that read only one joystick, or no joystick at all
     // but Xbox pads (XInput). engine vjoy status and the GUI suggest the virtual mode for them, and an export in native
     // mode warns when the binds use more joysticks than the game reads.

@@ -43,4 +43,12 @@ public sealed class EngineRunOptions
 
     // Extra environment variables for the engine process (JOYPRO_CANCEL_FILE).
     public IReadOnlyDictionary<string, string>? Environment { get; init; }
+
+    // A background look nobody waits for (the Start page's setup games): the engine process runs below normal priority
+    // and in Windows' background mode (engine JOYPRO_LOW_PRIORITY), so it never competes with a game or the app.
+    public bool LowPriority { get; init; }
+
+    // Cancelling the token ends the engine process (and its children) instead of only no longer waiting for it. Only for
+    // read-only commands.
+    public bool KillOnCancel { get; init; }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
@@ -28,18 +29,42 @@ public sealed partial class MainWindowViewModel
         SetupWizardRequested?.Invoke();
     }
 
-    public SetupWizardViewModel CreateSetupWizard()
+    public SetupWizardViewModel CreateSetupWizard(IReadOnlyCollection<string>? chosen = null)
     {
         // Installed games; ticked are the watched ones (the Start page's "Watch for changes") that were started once
-        // (their control files exist), not every installed game; the user can change it here.
+        // (their control files exist), not every installed game; the user can change it here. From the Start page's auto
+        // setup: the games it names.
         SetupGameChoice[] games = GameCards.Where(c => c.Installed)
             .Select(c => new SetupGameChoice(c.GameId, c.Name, gameWatchChoices.IsWatched(c.GameId, c.Installed), GameWasStarted(c.GameId)))
             .ToArray();
+        if (chosen != null && chosen.Count > 0)
+        {
+            foreach (SetupGameChoice game in games)
+                game.IsChosen = chosen.Contains(game.GameId, StringComparer.OrdinalIgnoreCase);
+        }
+        SetupWizardViewModel? made = null;
         SetupWizardViewModel wizard = new(RunSetupWizardEngineAsync, games, SetupWizardAppliedAsync, () =>
         {
-            CurrentStage = UiStage.Export;
+            // The quick path writes to the game right away (pad games: the pad steps instead, they get no export); the
+            // full wizard opens the Export page.
+            if (made is { QuickMode: true, PadGamesOnly: true })
+                QuickSetUpPad(made.ChosenGames);
+            else if (made is { QuickMode: true })
+                _ = QuickExportAsync(made.ChosenGames);
+            else
+                CurrentStage = UiStage.Export;
         });
+        made = wizard;
+        wizard.EasyWordsSource = () => EasyWords;
+        // Only an Xbox controller and only pad games: "Close and play" (nothing to set up, no pretend controller).
+        wizard.PlayAsIs = () =>
+        {
+            if (ActiveTour?.Id == JoyPro.Gui.Services.Help.TourCatalog.Pad)
+                EndTourCommand.Execute(null);
+            StatusText = T("Your controller works as it is. Start the game and have fun!");
+        };
         wizard.UseSettings(wizardSettings, WizardSettingsChanged);
+        wizard.OpenPreview = OpenLayoutPreviewFor;
         // "Use this layout" on the Cockpits page before the wizard was made.
         if (TakePendingCockpitLayout() is { } cockpit)
             wizard.UseCockpitLayout(cockpit);
@@ -57,5 +82,6 @@ public sealed partial class MainWindowViewModel
         await RefreshRelationsAsync();
         await RefreshBindsAsync();
         await RefreshModifiersAsync();
+        RequestAutoSetupStatus(true);
     }
 }

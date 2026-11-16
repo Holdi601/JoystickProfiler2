@@ -12,9 +12,13 @@
     <Border CornerRadius="12" Padding="10">
         <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                <TextBlock Text="{l:T 'Virtual joystick (vJoy + HidHide)'}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" VerticalAlignment="Center" />
+                <!-- Only Xbox controller games: the page is the pretend controller's (no vJoy, no HidHide). -->
+                <Panel VerticalAlignment="Center">
+                    <TextBlock Text="{l:T 'Virtual joystick (vJoy + HidHide)'}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" IsVisible="{Binding VirtualJoystickShowsVJoySteps}" />
+                    <TextBlock Text="{l:T 'Pretend controller'}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" IsVisible="{Binding VirtualJoystickPadOnly}" />
+                </Panel>
                 <Border Grid.Column="1" Background="{DynamicResource JP.AccentSoftBrush}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,5" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding VirtualJoystickForwarderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding VirtualJoystickForwarderText}" />
+                    <TextBlock Text="{Binding VirtualJoystickForwarderText, Converter={x:Static l:TConverter.Instance}}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding VirtualJoystickForwarderText, Converter={x:Static l:TConverter.Instance}}" />
                 </Border>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
                     <Button Command="{Binding StartVirtualJoystickCommand}" Content="{l:T 'Start'}" MinWidth="90" IsEnabled="{Binding CanStartVirtualJoystick}"
@@ -25,23 +29,40 @@
                             ToolTip.Tip="{l:T 'Stops forwarding (the virtual joystick goes neutral) and gives HidHide back exactly the setup it had before.'}" />
                 </StackPanel>
             </Grid>
-            <TextBlock Grid.Row="1" Text="{Binding VirtualJoystickMessage}" TextWrapping="Wrap" FontWeight="SemiBold"
-                       IsVisible="{Binding VirtualJoystickMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <TextBlock Text="{Binding VirtualJoystickMessage}" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center"
+                           IsVisible="{Binding VirtualJoystickMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <!-- After a failed start nothing is tried again by itself (no repeated administrator prompts): the user decides. -->
+                <Button Grid.Column="1" Command="{Binding StartVirtualJoystickCommand}" Content="{l:T 'Try again'}" MinWidth="90" VerticalAlignment="Center"
+                        IsVisible="{Binding VirtualJoystickCanRetry}" />
+            </Grid>
             <TabControl Grid.Row="2">
-                <TabItem Header="{l:T 'Overview'}">
+                <TabItem x:Name="VirtualJoystickOverviewTab" Header="{l:T 'Overview'}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Spacing="10" Margin="0,8,8,0">
                             <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="{l:T 'What is this?'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
-                                    <TextBlock TextWrapping="Wrap" Text="{l:T 'Some games only take a few joysticks, pick up the wrong ones or mix up their order. In virtual mode JoyPro puts every axis, button and hat that a game\'s binds use onto one virtual joystick (vJoy; more than one only when one is not enough). The game then sees just that device, and the binds always stay where they are.'}" />
+                                    <TextBlock TextWrapping="Wrap" IsVisible="{Binding VirtualJoystickPadOnly}"
+                                               Text="{l:T 'Your game only knows an Xbox controller. JoyPro makes a pretend Xbox controller and drives it with your stick and throttle. The game sees the controller, not your stick.'}" />
+                                    <TextBlock TextWrapping="Wrap" IsVisible="{Binding VirtualJoystickShowsVJoySteps}" Text="{l:T 'Some games only take a few joysticks, pick up the wrong ones or mix up their order. In virtual mode JoyPro puts every axis, button and hat that a game\'s binds use onto one virtual joystick (vJoy; more than one only when one is not enough). The game then sees just that device, and the binds always stay where they are.'}" />
                                     <TextBlock Text="{l:T 'How to use it'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" Margin="0,6,0,0" />
-                                    <TextBlock TextWrapping="Wrap" Text="{l:T '1. Switch the game to Virtual below.'}" />
-                                    <TextBlock TextWrapping="Wrap" Text="{l:T '2. Export the game again (Export page). JoyPro writes the binds to the virtual joystick; your profile keeps your real devices.'}" />
-                                    <TextBlock TextWrapping="Wrap" Text="{l:T '3. Press Start before you start the game. JoyPro hides your real devices from that game with HidHide (Windows asks once for administrator rights) and copies every input to the virtual joystick in real time.'}" />
-                                    <TextBlock TextWrapping="Wrap" Margin="16,0,0,0" Text="{Binding VirtualXboxPadTimingNote}" IsVisible="{Binding HasVirtualXboxPadTimingNote}" />
-                                    <TextBlock TextWrapping="Wrap" Text="{l:T '4. Press Stop when you are done. HidHide gets back exactly the setup it had before; nothing stays hidden.'}" />
-                                    <TextBlock TextWrapping="Wrap" Opacity="0.8" Text="{l:T 'Only the games set to Virtual stop seeing your real devices. Every other program (JoyPro, SimHub, Discord, other games) keeps seeing them. Curves, dead zones and inversions stay in the game\'s own settings as JoyPro exports them: the virtual joystick passes the raw values on 1:1.'}" />
+                                    <StackPanel Spacing="6" IsVisible="{Binding VirtualJoystickShowsVJoySteps}">
+                                        <TextBlock TextWrapping="Wrap" Text="{l:T 'Xbox controller games (ACE COMBAT): skip steps 1 and 2.'}" IsVisible="{Binding HasXboxGames}" FontStyle="Italic" />
+                                        <TextBlock TextWrapping="Wrap" Text="{l:T '1. Switch the game to Virtual below.'}" />
+                                        <TextBlock TextWrapping="Wrap" Text="{l:T '2. Export the game again (Export page). JoyPro writes the binds to the virtual joystick; your profile keeps your real devices.'}" />
+                                        <TextBlock TextWrapping="Wrap" Text="{l:T '3. Press Start before you start the game. JoyPro hides your real devices from that game with HidHide (Windows asks once for administrator rights) and copies every input to the virtual joystick in real time.'}" />
+                                        <TextBlock TextWrapping="Wrap" Margin="16,0,0,0" Text="{Binding VirtualXboxPadTimingNote}" IsVisible="{Binding HasVirtualXboxPadTimingNote}" />
+                                        <TextBlock TextWrapping="Wrap" Text="{l:T '4. Press Stop when you are done. HidHide gets back exactly the setup it had before; nothing stays hidden.'}" />
+                                    </StackPanel>
+                                    <!-- Only Xbox pad games: they are on the pad by themselves and get no export; Start after the
+                                         title screen, said the same way as in the pad tour and the help. -->
+                                    <StackPanel Spacing="6" IsVisible="{Binding VirtualJoystickPadOnly}">
+                                        <TextBlock TextWrapping="Wrap" Text="{l:T '1. Your game only knows an Xbox controller, so it uses the pretend controller by itself. Nothing to switch, nothing to export.'}" />
+                                        <TextBlock TextWrapping="Wrap" Text="{l:T '2. Start the game and wait for its title screen. Hold Alt and press Tab to come back here. Then press Start: JoyPro sends your stick and throttle to the pretend controller. Alt+Tab takes you back to the game.'}" />
+                                        <TextBlock TextWrapping="Wrap" Text="{l:T '3. Too early? Press Stop, then Start. Press Stop when you are done.'}" />
+                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.8" IsVisible="{Binding VirtualJoystickShowsExpertParts}" Text="{l:T 'Only the games set to Virtual stop seeing your real devices. Every other program (JoyPro, SimHub, Discord, other games) keeps seeing them. Curves, dead zones and inversions stay in the game\'s own settings as JoyPro exports them: vJoy passes the raw values on 1:1. On the virtual Xbox pad JoyPro applies each axis curve itself (Binds page, Axis response), because those games get no export.'}" />
                                 </StackPanel>
                             </Border>
 
@@ -49,19 +70,24 @@
                                 <StackPanel Spacing="6">
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                         <TextBlock Text="{l:T 'Status'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        <!-- JoyPro reads the status by itself; the button is for experts (pad-only players: under Show details). -->
                                         <Button Grid.Column="1" Command="{Binding RefreshVirtualJoystickCommand}" Content="{l:T 'Refresh'}" MinWidth="110"
-                                                ToolTip.Tip="{l:T 'Checks vJoy, HidHide and your devices (read-only: nothing is changed)'}" />
+                                                ToolTip.Tip="{l:T 'Checks vJoy, HidHide and your devices (read-only: nothing is changed)'}" IsVisible="{Binding VirtualJoystickShowsExpertParts}" />
                                     </Grid>
-                                    <TextBlock Text="{Binding VJoyStatusText}" TextWrapping="Wrap" />
-                                    <TextBlock Text="{Binding VJoyDevicesText}" TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
-                                    <TextBlock Text="{Binding HidHideStatusText}" TextWrapping="Wrap" />
-                                    <TextBlock Text="{Binding ViGEmStatusText}" TextWrapping="Wrap" />
-                                    <TextBlock Text="{Binding VirtualJoystickSessionText}" TextWrapping="Wrap" />
-                                    <TextBlock Text="{Binding VirtualJoystickRateText}" TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
-                                    <TextBlock Text="{Binding VirtualJoystickTunnelText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}"
-                                               IsVisible="{Binding VirtualJoystickTunnelText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                    <TextBlock Text="{Binding VirtualJoystickTunnelWarnings}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Foreground="{DynamicResource JP.WarnTextBrush}"
-                                               IsVisible="{Binding VirtualJoystickTunnelWarnings, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                    <!-- vJoy, HidHide, the session, the forwarding rate and the tunnel mean nothing for a player whose
+                                         games are all on the pretend controller: shown only under Show details then. -->
+                                    <TextBlock x:Name="VirtualJoystickViGEmStatus" Text="{Binding ViGEmStatusText}" TextWrapping="Wrap" />
+                                    <StackPanel Spacing="6" IsVisible="{Binding VirtualJoystickShowsExpertParts}">
+                                        <TextBlock Text="{Binding VJoyStatusText, Converter={x:Static l:TConverter.Instance}}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding VJoyDevicesText}" TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
+                                        <TextBlock Text="{Binding HidHideStatusText}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding VirtualJoystickSessionText, Converter={x:Static l:TConverter.Instance}}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding VirtualJoystickRateText}" TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
+                                        <TextBlock Text="{Binding VirtualJoystickTunnelText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}"
+                                                   IsVisible="{Binding VirtualJoystickTunnelText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <TextBlock Text="{Binding VirtualJoystickTunnelWarnings}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Foreground="{DynamicResource JP.WarnTextBrush}"
+                                                   IsVisible="{Binding VirtualJoystickTunnelWarnings, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                    </StackPanel>
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <Button Command="{Binding ConfigureVJoyCommand}" Content="{l:T 'Set up vJoy for the table'}" IsVisible="{Binding VirtualJoystickNeedsConfig}"
                                                 ToolTip.Tip="{l:T 'Runs vJoyConfig once (Windows asks for administrator rights) so the vJoy devices have the axes, buttons and hats the table needs. It never takes anything away from a device.'}" />
@@ -74,10 +100,12 @@
                                                IsVisible="{Binding VJoyMaximumText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                     <TextBlock Text="{Binding VirtualJoystickNeedsText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}"
                                                IsVisible="{Binding VirtualJoystickNeedsText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                    <TextBlock Text="{Binding VirtualJoystickNeedsDetails}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8"
+                                               IsVisible="{Binding VirtualJoystickShowsExpertParts}" />
                                 </StackPanel>
                             </Border>
 
-                            <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
+                            <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10" IsVisible="{Binding VirtualJoystickShowsExpertParts}">
                                 <StackPanel Spacing="6">
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                         <TextBlock Text="{l:T 'What this page needs'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" VerticalAlignment="Center" />
@@ -86,7 +114,7 @@
                                     </Grid>
                                     <TextBlock TextWrapping="Wrap" Opacity="0.8"
                                                Text="{l:T 'Free drivers, not part of JoyPro: vJoy for games set to vJoy, ViGEmBus for games set to Xbox pad, HidHide to hide your real devices from those games. Install the ones you need with one click: JoyPro downloads the official installer, checks it and runs it (Windows asks once for administrator rights; a driver may need a restart). After installing, press Refresh above.'}" />
-                                    <ItemsControl ItemsSource="{Binding VirtualJoystickComponents}">
+                                    <ItemsControl x:Name="VirtualJoystickComponentsList" ItemsSource="{Binding VirtualJoystickComponents}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="models:ComponentItem">
                                                 <controls:ComponentCard />
@@ -99,17 +127,39 @@
                             <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="{l:T 'Games'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
-                                    <TextBlock TextWrapping="Wrap" Opacity="0.8" Text="{l:T 'Native: the game uses your real devices (as before). vJoy: the game uses one virtual joystick. Xbox pad: the game gets one virtual Xbox 360 controller - for games that only read Xbox controllers (XInput) or only one device; your sticks drive its two sticks, two triggers, D-pad and 14 buttons (what does not fit is listed on the Mapping tab). After switching, export the game again.'}" />
-                                    <ItemsControl ItemsSource="{Binding VirtualJoystickGames}">
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.8" IsVisible="{Binding VirtualJoystickShowsExpertParts}" Text="{l:T 'Native: the game uses your real devices (as before). vJoy: the game uses one virtual joystick. Xbox pad: the game gets one virtual Xbox 360 controller - for games that only read Xbox controllers (XInput) or only one device; your sticks drive its two sticks, two triggers, D-pad and 14 buttons (what does not fit is listed on the Mapping tab). After switching, export the game again.'}" />
+                                    <Border x:Name="VirtualJoystickViGEmNeeded" IsVisible="{Binding VirtualJoystickNeedsViGEm}" BorderBrush="{DynamicResource JP.WarnTextBrush}" BorderThickness="1" CornerRadius="6" Padding="8">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="{Binding VirtualJoystickViGEmMissingText}" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" />
+                                            <controls:ComponentCard DataContext="{Binding VirtualJoystickViGEmComponent}" />
+                                        </StackPanel>
+                                    </Border>
+                                    <StackPanel Spacing="4" IsVisible="{Binding HasSeveralXboxGames}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{l:T 'Xbox pad table for Start and Test:'}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                            <ComboBox x:Name="VirtualJoystickXboxPadGamePicker" ItemsSource="{Binding VirtualJoystickXboxGames}" SelectedItem="{Binding VirtualJoystickXboxPadGame}" MinWidth="240">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:VirtualJoystickGameItem">
+                                                        <TextBlock Text="{Binding Name}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <TextBlock TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8"
+                                                   Text="{l:T 'Several games are on the Xbox pad and each keeps its own pad table. One table is live at a time: with auto start the table of the game that runs; Start and Test take the running game\'s table, else the one picked here.'}" />
+                                    </StackPanel>
+                                    <ItemsControl x:Name="VirtualJoystickGamesList" ItemsSource="{Binding VirtualJoystickGames}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="models:VirtualJoystickGameItem">
                                                 <Grid ColumnDefinitions="240,210,*" ColumnSpacing="10" Margin="0,3">
                                                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="SemiBold" />
                                                     <ComboBox Grid.Column="1" ItemsSource="{Binding Modes}" SelectedIndex="{Binding ModeIndex}" MinWidth="190" VerticalAlignment="Center"
+                                                              IsVisible="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).VirtualJoystickShowsExpertParts, FallbackValue=True}"
                                                               ToolTip.Tip="{l:T 'Native: your real devices. vJoy: one virtual DirectInput joystick. Xbox pad: one virtual Xbox 360 controller (for games that only take XInput or one device; needs ViGEmBus).'}" />
                                                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
                                                         <TextBlock Text="{Binding RelationsText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8" />
                                                         <TextBlock Text="{Binding ExesText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{Binding AutoModeText}" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" IsVisible="{Binding ShowAutoMode}" />
                                                         <TextBlock Text="{Binding XboxNote}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" TextWrapping="Wrap" IsVisible="{Binding IsXbox}" />
                                                         <TextBlock Text="{Binding InputLimitText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" TextWrapping="Wrap"
                                                                    IsVisible="{Binding InputLimitText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -132,17 +182,22 @@
                             <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="{l:T 'Options'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
-                                    <CheckBox IsChecked="{Binding VirtualJoystickHideDevices}" Content="{l:T 'Hide the real devices from the games set to Virtual (HidHide)'}"
+                                    <CheckBox IsChecked="{Binding VirtualJoystickHideDevices}" Content="{l:T 'Hide the real devices from the games set to Virtual (HidHide)'}" IsVisible="{Binding VirtualJoystickShowsExpertParts}"
                                               ToolTip.Tip="{l:T 'Off: the games see your real devices and the virtual joystick, which can give double input. Recommended: on.'}" />
                                     <CheckBox IsChecked="{Binding VirtualJoystickAutoStart}" Content="{l:T 'Start and stop by itself when a game set to Virtual starts and ends'}"
-                                              ToolTip.Tip="{Binding VirtualJoystickAutoStartTip}" />
+                                              ToolTip.Tip="{Binding VirtualJoystickAutoStartTip}" IsVisible="{Binding !VirtualJoystickPadOnly}" />
+                                    <CheckBox IsChecked="{Binding VirtualJoystickAutoStart}" Content="{l:T 'Start and stop by itself when the game starts and ends'}"
+                                              ToolTip.Tip="{Binding VirtualJoystickAutoStartTip}" IsVisible="{Binding VirtualJoystickPadOnly}" />
+                                    <!-- Pad-only players: the expert parts of this page (vJoy, HidHide, the modes) on request, kept over a restart. -->
+                                    <CheckBox x:Name="VirtualJoystickShowDetailsBox" IsChecked="{Binding VirtualJoystickShowDetails}" Content="{l:T 'Show details for experts (vJoy, HidHide, modes)'}"
+                                              IsVisible="{Binding VirtualJoystickPadOnly}" />
                                 </StackPanel>
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
 
-                <TabItem Header="{l:T 'Mapping'}">
+                <TabItem x:Name="VirtualJoystickMappingTab" Header="{l:T 'Mapping'}">
                     <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8" Margin="0,8,8,0">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                             <TextBlock Text="{Binding VirtualJoystickSlotsHeader}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" VerticalAlignment="Center" />
@@ -178,7 +233,7 @@
                     </Grid>
                 </TabItem>
 
-                <TabItem Header="{l:T 'Functions'}">
+                <TabItem x:Name="VirtualJoystickFunctionsTab" Header="{l:T 'Functions'}">
                     <Grid ColumnDefinitions="340,*" ColumnSpacing="12" Margin="0,8,8,0">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel Spacing="10">
@@ -360,10 +415,11 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="{l:T 'Live test'}">
+                <TabItem x:Name="VirtualJoystickLiveTestTab" Header="{l:T 'Live test'}">
                     <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8" Margin="0,8,8,0">
                         <StackPanel Orientation="Horizontal" Spacing="12">
-                            <CheckBox IsChecked="{Binding VirtualJoystickLiveView}" Content="{l:T 'Show the virtual joystick live'}" />
+                            <CheckBox IsChecked="{Binding VirtualJoystickLiveView}" Content="{l:T 'Show the virtual joystick live'}" IsVisible="{Binding !VirtualJoystickPadOnly}" />
+                            <CheckBox IsChecked="{Binding VirtualJoystickLiveView}" Content="{l:T 'Show the pretend controller live'}" IsVisible="{Binding VirtualJoystickPadOnly}" />
                             <TextBlock Text="{Binding VirtualJoystickStatsText}" VerticalAlignment="Center" Opacity="0.8" />
                         </StackPanel>
                         <TextBlock Grid.Row="1" TextWrapping="Wrap" Opacity="0.8"
@@ -378,13 +434,31 @@
                                                 <ItemsControl ItemsSource="{Binding Axes}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:VirtualJoystickAxisItem">
-                                                            <Grid ColumnDefinitions="50,*,60" ColumnSpacing="8" Margin="0,1">
+                                                            <Grid ColumnDefinitions="50,*,60,*" ColumnSpacing="8" Margin="0,1">
                                                                 <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
                                                                 <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding Value}" Height="12" />
                                                                 <TextBlock Grid.Column="2" Text="{Binding ValueText}" VerticalAlignment="Center" />
+                                                                <TextBlock Grid.Column="3" Text="{Binding Mapping}" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" IsVisible="{Binding HasMapping}" />
                                                             </Grid>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <ItemsControl ItemsSource="{Binding Controls}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:VirtualJoystickPadControlItem">
+                                                            <TextBlock Text="{Binding Text}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Classes.pressed="{Binding Pressed}" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                    <ItemsControl.Styles>
+                                                        <Style Selector="TextBlock">
+                                                            <Setter Property="Opacity" Value="0.7" />
+                                                        </Style>
+                                                        <Style Selector="TextBlock.pressed">
+                                                            <Setter Property="Opacity" Value="1" />
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource JP.AccentBrush}" />
+                                                        </Style>
+                                                    </ItemsControl.Styles>
                                                 </ItemsControl>
                                                 <TextBlock Text="{l:T 'Buttons pressed: {0}', Arg0={Binding ButtonsText}}" TextWrapping="Wrap" />
                                                 <TextBlock Text="{l:T 'Hats: {0}', Arg0={Binding HatsText}}" />

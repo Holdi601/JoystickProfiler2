@@ -334,6 +334,62 @@ engine relations item move-to-input "Master Caution" --node "DCS:d3001pnilu3001c
 - Related: [[cli:relations item remove]], [[cli:relations show]].
 :::
 
+<!-- entry: relations item copy-to -->
+:::layer beginner
+Copies actions of one relation into another relation of the same kind (axis or button), with their aircraft. The first
+relation keeps them. The relation editor's **Copy** and **Paste** (several actions selected) run this command.
+
+```powershell
+engine relations item copy-to "Weapon Release" --node "DCS:d3001pnilu3001cd2vd1vpnilvunil" --node "WarThunder:ID_BOMBS" --to "Pickle" --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- `--node game:id` (repeatable) names the actions; `--all` takes every action of the relation. Aircraft in a spec are
+  ignored: the whole action goes, with its switched-off aircraft still off.
+- `--to <relation>`: the target (a name or a query that names one relation). An action the target already has gains the
+  aircraft it lacked; when the target has another action of the same game for an aircraft, both stay and a warning says
+  so (one aircraft should have one action per relation: the Check page lists it).
+- The target must be of the same kind; `--force` copies into a relation of the other kind anyway. The relation itself
+  as target is refused.
+- One profile version (one undo step), never merged with the edit just before it.
+:::
+
+:::layer technical
+- Output: JSON (`Action`, `From`, `To`, `Created`, `Actions`, `Moved`, `DeletedRelations`, `Warnings`), or `--text`
+  ("Copied <n> action(s) from '<a>' to '<b>'.", one line per action, `Warning:` lines).
+- Exit code `1` with `relations item copy-to needs --all or at least one --node <game:id>.`, `relations item copy-to needs
+  --to <relation>.`, `Relation '...' does not hold game:id.`, `'<b>' is an axis relation; the actions are button actions
+  (--force adds them anyway).` or `'<a>' is the relation the actions are in: pick another one.`
+- Related: [[cli:relations item move-to]], [[cli:relations item add]].
+:::
+
+<!-- entry: relations item move-to -->
+:::layer beginner
+Moves actions of one relation to another relation of the same kind, or to a new relation. The relation editor's **Move
+to...** (several actions selected, or **Move to another relation...** on an action) runs this command.
+
+```powershell
+engine relations item move-to "Weapon Release" --node "DCS:d3001pnilu3001cd2vd1vpnilvunil" --new "Pickle" --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- `--node game:id` (repeatable) or `--all`: the actions, each with all its aircraft (switched-off ones stay off).
+- Exactly one of `--to <relation>` (an existing relation of the same kind; `--force` for the other kind) and
+  `--new <name>` (a new relation of the source's kind, without a bind and groups; a taken name is refused).
+- `--delete-empty`: the source is deleted with its bind when no action is left (without it an empty relation stays).
+- One profile version (one undo step), never merged with the edit just before it.
+:::
+
+:::layer technical
+- Output: as [[cli:relations item copy-to]] (`Action` = `move-to`, `Created` true for `--new`, `DeletedRelations`), or
+  `--text` ("Moved <n> action(s) from '<a>' to '<b>' (new relation).", "Deleted the relation '<a>' (no action left).").
+- Exit code `1` with `relations item move-to needs either --to <relation> or --new <name>.`, `A relation named '...'
+  already exists: use --to '...' or another name.` or the messages of copy-to.
+- Related: [[cli:relations item move-to-input]] (one action to another button), [[cli:relations mass move-actions]].
+:::
+
 <!-- entry: relations mass delete -->
 :::layer beginner
 Deletes many relations at once, picked by name, by a search text or all of them. Each relation leaves the profile
@@ -525,6 +581,36 @@ engine relations mass remove-part "TEMP_" --query "TEMP_" --profile "C:\Users\Pi
 - Exit code `1` with `relations mass remove-part requires a value via positional <value> or --value.`, `No relation
   names were changed.` or the selection messages.
 - Related: [[cli:relations mass add-prefix]], [[cli:relations mass add-postfix]].
+:::
+
+<!-- entry: relations mass move-actions -->
+:::layer beginner
+Moves every action of several relations into one relation: an existing one or a new one. The Relations list's **Move
+actions to...** (several relations selected) runs it with `--delete-empty`, so the emptied relations go.
+
+```powershell
+engine relations mass move-actions --relations "TMS Up,TMS Down" --to "TMS" --delete-empty --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- The relations: `--relation <name>` / `--relations <csv>`, `--query <text>` or `--all`, as the other mass commands.
+- Exactly one of `--to <relation>` and `--new <name>` (the selected relations' kind, no bind). The selected relations
+  must be all axis or all button, like the target; `--force` moves them anyway. A target that is also selected keeps its
+  actions.
+- Each action keeps its aircraft (switched-off ones stay off); an action the target has gains the aircraft it lacked.
+- `--delete-empty`: the emptied relations are deleted with their binds (without it they stay, without actions).
+- One profile version (one undo step).
+:::
+
+:::layer technical
+- Output: as [[cli:relations item copy-to]] (`Action` = `move-actions`, `From` = the relations whose actions moved), or
+  `--text`.
+- Exit code `1` with `relations mass move-actions needs either --to <relation> or --new <name>.`, `relations mass
+  move-actions needs relations of one kind: all axis or all button (--force moves them anyway).` or the selection
+  errors of the mass commands.
+- Related: [[cli:relations mass merge]] (several relations into one new relation, binds merged only when equal),
+  [[cli:relations item move-to]].
 :::
 
 <!-- entry: relations mass export -->
@@ -1795,6 +1881,122 @@ engine setup render --plan "C:\Users\Pilot\Documents\JoyPro\plan.json" --out-dir
 - Reference: [[doc:setup-wizard]]. Related: [[cli:layout render]], [[cli:setup check]].
 :::
 
+<!-- entry: setup games -->
+:::layer beginner
+For the Start page's auto setup: per game, does the user already have binds there? **empty** = nothing assigned (the
+Start page offers to set up the devices for it), **game** = binds of the user's own in the game's control files (import
+them first, then the setup only fills the gaps), **profile** = the profile already has binds for it. It only reads the
+game's control files; nothing changes.
+
+```powershell
+engine setup games --games DCS,WarThunder,StarCitizen --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- `--games <ids>`: the games to look at (default: every game the Setup wizard knows).
+- `--path <game>=<folder>` (repeatable): read the game's controls from this folder (a copy, a second install).
+- Keyboard and mouse binds do not count: `GameBinds` counts binds on game devices, `GameKeyboardBinds` the rest.
+- `Wizard`: whether the Setup wizard can set this game up.
+:::
+
+:::layer technical
+- Output: JSON `Games` with `Game`, `Status`, `Wizard`, `ConfigFound`, `GameBinds`, `GameKeyboardBinds`,
+  `ProfileBinds`, `Imported`, `Exported`, `Warnings`; or `--text` (one line per game).
+- The game's state comes from [[cli:profile game-state]] (the same reading as the "Import first?" question before an
+  export). Exit code `1` only with `--path expects "<game>=<config folder>".` or an unknown argument.
+- Reference: [[doc:setup-wizard]].
+:::
+
+<!-- entry: setup preview -->
+:::layer beginner
+The data of the **Where is what?** window: which games and aircraft have binds, and for one aircraft every device with
+the function on each control. From a saved Setup wizard plan (before it is applied) or from the profile's binds on the
+connected devices. It changes nothing.
+
+```powershell
+engine setup preview --plan "C:\Users\Pilot\Documents\JoyPro\plan.json" --game DCS --aircraft F-16C_50 --out-dir "C:\Users\Pilot\Documents\JoyPro\preview" --text
+```
+:::
+
+:::layer advanced
+- `--plan <file>` or `--from-profile` (one of them is needed).
+- Without `--aircraft`: only the games and their aircraft (DCS input layers are left out).
+- `--aircraft <key>` and `--out-dir <folder>`: one sheet per device (as [[cli:setup render]] draws them), or with
+  `--live-data` each device's drawing (`.picture.png`), its callout sheet (`.sheet.json`) and what each row shows, so the
+  GUI can draw the sheet itself and light up the pressed control.
+- `--game <id>` limits the list to that game; `--light`, `--width` and the `--drawing-*` options as for setup render.
+:::
+
+:::layer technical
+- Output: JSON `Source`, `Games` (`Game`, `Aircraft`), `Sheets` (`Device`, `Name`, `Role`, `File`), `Devices` (with
+  `--live-data`: `Device`, `Name`, `Role`, `Model`, `Picture`, `Sheet`, `Texts` = input -> [main column, modifier
+  column]), `Warnings`; or `--text`.
+- Exit code `1` with `setup preview needs --plan <plan.json> or --from-profile.`, `The plan was not found: ...`, `The
+  plan could not be read: ...` or an unknown argument.
+- Reference: [[doc:setup-wizard]].
+:::
+
+<!-- entry: setup eval -->
+:::layer beginner
+A test bench for the Setup wizard: it plans 20 popular device setups (Warthog, T.16000M, VKB, Virpil, WinWing, X56,
+X52 Pro, Honeycomb, a gamepad alone, two sticks for space ...) and random ones from the device catalog for every game
+the wizard knows and the main DCS aircraft, and scores each plan: can every major operation be done (flight axes,
+throttle, weapons, gear, flaps, brakes, trim, view, comms, countermeasures, sensor slew, master modes; space: strafe,
+boost, shields, jump), and are the hand rules kept. It writes a report; nothing else changes.
+
+```powershell
+engine setup eval --random 20 --seed 2026 --out-dir "C:\Users\Pilot\Documents\JoyPro\autosetup-eval" --text
+```
+:::
+
+:::layer advanced
+- `--random N` (default 20) random setups, `--seed N` (default 2026): the same seed gives the same setups.
+- `--setups popular|random|<ids>`, `--games <ids>|none`, `--families <aircraft>|none` and `--no-stress` (without the
+  "every DCS module at once" row) choose the rows.
+- `--baseline <results.json>`: an earlier run; the report shows before and after.
+- Thresholds (exit code 1 when one fails): `--min-coverage`, `--min-ergonomics`, `--min-popular-coverage`,
+  `--min-row-coverage`, `--min-flight` (pitch, roll and throttle of the popular setups). The engine smoke test runs a
+  part of it with thresholds.
+- After the plans, per setup one profile goes through **Auto Group** and **Fill all** (Suggest missing, every
+  suggestion of medium confidence and up taken) and is scored again, with one more rule: no wrong-kind matches (a
+  brightness knob in a slew relation, a wheel brake in a throttle relation). `--no-pipeline` skips it;
+  `--min-pipeline-coverage` and `--max-wrong N` are its thresholds.
+- The novice case (IL-2 Great Battles only, a WinWing URSA MINOR stick and throttle, also as devices JoyPro does not
+  know) runs on its own and is reported in `persona.md`; it fails the run when pitch, roll, throttle or fire is missing
+  or the unknown devices are not set up and named. `--no-persona` skips it.
+:::
+
+:::layer technical
+- Files in `--out-dir`: `report.md` (method, summaries, every row with its gaps and rule problems; the Auto Group /
+  Fill all rows with every wrong suggestion and wrong-kind command), `results.json` (`Rows`, `PipelineRows`,
+  `WrongSuggestions`, `OtherSuggestions`, `SubstituteSuggestions`), `rows.csv`, `setups/<setup>.md` (per target what is
+  bound where), `devices-<setup>.tsv` (the fake device files), `persona.md` / `persona.json` (the novice case).
+- The planner runs in the engine process with the wizard's defaults; the devices are fake (as Windows would report the
+  catalog devices). Read-only: the Auto Group / Fill all profiles live in memory and are never saved.
+- Reference: [[doc:auto-setup-eval]].
+:::
+
+<!-- entry: setup eval-pad -->
+:::layer beginner
+The ACE COMBAT 8 player as a test: a T.Flight HOTAS 4, and a VKB Gunfighter with a Virpil throttle and MFG pedals, each
+set up by the Setup wizard alone for ACE COMBAT 8. Every flight control must reach the virtual Xbox pad: pitch and roll,
+the throttle on both triggers, yaw, gun, missile, target, flares, High-G and the wingman D-pad. It writes a report;
+nothing else changes.
+
+```powershell
+engine setup eval-pad --out-dir "C:\Users\Pilot\Documents\JoyPro\pad-persona" --text
+```
+:::
+
+:::layer advanced
+- Exit code 1 when one pad gate fails (no thresholds). `pad-persona.md` lists per setup the gates and where each pad
+  action landed; `pad-persona.json` the same as data.
+- The devices are fake (as Windows would report the catalog devices), the profile lives in memory. The engine smoke
+  test runs it (autosetup part).
+- Reference: [[doc:auto-setup-eval]].
+:::
+
 <!-- entry: setup apply -->
 :::layer beginner
 Writes a plan of the Setup wizard into the profile in one step: it creates or extends the relations, sets their binds
@@ -1955,12 +2157,11 @@ engine cockpits get f-16 f-16c-block-50 --text
 
 <!-- entry: relations join-inputs -->
 :::layer beginner
-Experimental: relations that do exactly the same (the same actions with the same aircraft on) on other inputs become
-one relation with several inputs. An import names them when the setting is on ("keep each as one relation with
-several inputs?").
+Relations that do exactly the same (the same actions with the same aircraft on) on other inputs become one relation
+with several inputs. An import names them ("keep each as one relation with several inputs?").
 
 ```powershell
-engine --multi-bind on relations join-inputs --game DCS --apply --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+engine relations join-inputs --game DCS --apply --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
 ```
 :::
 

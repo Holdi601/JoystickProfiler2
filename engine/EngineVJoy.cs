@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
+using JoyPro.Engine.Axis;
 using JoyPro.Engine.Games;
 using JoyPro.Engine.VJoy;
 using Microsoft.Win32;
@@ -357,6 +358,23 @@ namespace JoyPro.Engine
         public static List<XboxUse> CollectXboxUses(string gameId, Dictionary<string, string> layout)
         {
             Dictionary<string, XboxUse> used = new Dictionary<string, XboxUse>(StringComparer.OrdinalIgnoreCase);
+            // The game's actions JoyPro presses through a function of its own (a chord, a hold: AceCombat8 Pad_Flares):
+            // a hat direction bound to one stays that direction (the function reads it), not the whole hat on the D-pad.
+            HashSet<string> functionActions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            IGameIntegration padGame;
+            IGamePadConventions conventions = GameRegistry.TryResolve(gameId, out padGame) ? padGame as IGamePadConventions : null;
+            if (conventions != null)
+            {
+                foreach (PadChord chord in (conventions.PadChords ?? new PadChord[0]).Concat(conventions.PadHolds ?? new PadChord[0]))
+                {
+                    foreach (string node in chord.NodeIds ?? new string[0])
+                    {
+                        int colon = node.IndexOf(':');
+                        if (colon > 0 && NodeMatches(gameId, node.Substring(0, colon)))
+                            functionActions.Add(node.Substring(colon + 1));
+                    }
+                }
+            }
             foreach (KeyValuePair<string, Relation> entry in InternalDataManagement.AllRelations)
             {
                 Relation relation = entry.Value;
@@ -371,13 +389,20 @@ namespace JoyPro.Engine
                 if (actions.Count == 0)
                     continue;
                 string name = relation.NAME ?? entry.Key;
-                AddXboxUse(used, bind.Joystick, relation.ISAXIS ? bind.JAxis : bind.JButton, name, actions, layout);
+                AddXboxUse(used, bind.Joystick, relation.ISAXIS ? bind.JAxis : bind.JButton, name, actions, layout, actions.Any(functionActions.Contains));
                 XboxUse own;
                 VJoyInput ownInput;
                 int ownDirection;
-                if (relation.ISAXIS && bind.Inverted == true && IsJoystickDevice(bind.Joystick) && VJoyInput.TryFromBindToken(bind.JAxis, out ownInput, out ownDirection) &&
-                    used.TryGetValue(VJoyPlanner.Key(bind.Joystick.Trim(), ownInput.ToSlotToken()), out own))
-                    own.Invert = true;
+                // The invert the game's curve has (its own scope, else the game's pad convention; never DCS's base invert:
+                // BindTuning.Resolve with EngineVJoy.PadBaseInvert).
+                if (relation.ISAXIS && IsJoystickDevice(bind.Joystick) && VJoyInput.TryFromBindToken(bind.JAxis, out ownInput, out ownDirection) &&
+                    used.TryGetValue(VJoyPlanner.Key(bind.Joystick.Trim(), ownInput.ToSlotToken()), out own) && !own.InvertDecided)
+                {
+                    if (bind.Rl == null)
+                        bind.Rl = relation;
+                    own.Invert = BindTuning.Resolve(bind, gameId, null).Tuning.Inverted;
+                    own.InvertDecided = true;
+                }
                 foreach (string reformer in bind.AllReformers ?? new List<string>())
                 {
                     Modifier modifier = Modifier.ReformerToMod(reformer);
@@ -388,7 +413,60 @@ namespace JoyPro.Engine
             return used.Values.OrderBy(u => u.Source, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
-        private static void AddXboxUse(Dictionary<string, XboxUse> used, string device, string token, string relation, List<string> actions, Dictionary<string, string> layout)
+        // Samples of an axis curve on the virtual Xbox pad: stick positions -1..1 in equal steps (AxisModels.Sample).
+        public const int XboxCurvePoints = 1025;
+
+        // Per physical axis an Xbox-target game uses (key VJoyPlanner.Key(source, input)): the axis curve JoyPro applies
+        // itself on the pad, because the game gets no export. It is the curve the Binds page's Axis response shows for
+        // the game (BindTuning.Resolve: the game's own scope, else the base), sampled with the game's model. When several
+        // relations share an axis, the first by name decides. vJoy games get none: the game applies its exported curve.
+        public static Dictionary<string, XboxAxisCurve> XboxAxisCurves(string gameId)
+        {
+            Dictionary<string, XboxAxisCurve> curves = new Dictionary<string, XboxAxisCurve>(StringComparer.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(gameId))
+                return curves;
+            foreach (KeyValuePair<string, Relation> entry in InternalDataManagement.AllRelations.OrderBy(e => e.Value == null ? e.Key : e.Value.NAME ?? e.Key, StringComparer.OrdinalIgnoreCase))
+            {
+                Relation relation = entry.Value;
+                if (relation == null || !relation.ISAXIS || relation.NODES == null)
+                    continue;
+                Bind bind = relation.bind;
+                if (bind == null)
+                    InternalDataManagement.AllBinds.TryGetValue(entry.Key, out bind);
+                if (bind == null || !IsJoystickDevice(bind.Joystick) || IsVJoyName(bind.Joystick))
+                    continue;
+                if (!relation.NODES.Any(n => n != null && NodeMatches(gameId, n.Game) && NodeActive(n)))
+                    continue;
+                VJoyInput input;
+                int direction;
+                if (!VJoyInput.TryFromBindToken(bind.JAxis, out input, out direction) || input.Kind != VJoyInputKind.Axis)
+                    continue;
+                string key = VJoyPlanner.Key(bind.Joystick.Trim(), input.ToSlotToken());
+                if (curves.ContainsKey(key))
+                    continue;
+                ResolvedTuning resolved = BindTuning.Resolve(bind, gameId, null);
+                curves[key] = new XboxAxisCurve
+                {
+                    Relation = relation.NAME ?? entry.Key,
+                    Scope = resolved.Source,
+                    Model = resolved.Model.Id,
+                    Tuning = resolved.Tuning.Format(),
+                    Points = AxisModels.Sample(resolved.Model, resolved.Tuning, XboxCurvePoints).Select(p => Math.Round(p.Value, 6)).ToList()
+                };
+            }
+            return curves;
+        }
+
+        internal sealed class XboxAxisCurve
+        {
+            public string Relation;
+            public string Scope;
+            public string Model;
+            public string Tuning;
+            public List<double> Points;
+        }
+
+        private static void AddXboxUse(Dictionary<string, XboxUse> used, string device, string token, string relation, List<string> actions, Dictionary<string, string> layout, bool keepDirection = false)
         {
             if (!IsJoystickDevice(device) || IsVJoyName(device))
                 return;
@@ -397,6 +475,14 @@ namespace JoyPro.Engine
             if (!VJoyInput.TryFromBindToken(token, out input, out direction))
                 return;
             string slotToken = input.ToSlotToken();
+            // One hat direction whose action the game has on a pad button (not the D-pad): that direction drives the
+            // button; a whole hat goes to the D-pad as before.
+            if (input.Kind == VJoyInputKind.Pov && direction >= 0)
+            {
+                string pinnedHere = actions.Select(a => { string p; return layout.TryGetValue(a, out p) ? p : string.Empty; }).FirstOrDefault(p => p.Length > 0) ?? string.Empty;
+                if (keepDirection || (pinnedHere.Length > 0 && !pinnedHere.StartsWith(XboxControls.DPad, StringComparison.OrdinalIgnoreCase) && XboxControls.Fits(VJoyInputKind.Button, pinnedHere)))
+                    slotToken = input.ToBindToken(direction);
+            }
             string key = VJoyPlanner.Key(device.Trim(), slotToken);
             XboxUse item;
             if (!used.TryGetValue(key, out item))
@@ -431,12 +517,110 @@ namespace JoyPro.Engine
         public static List<XboxPlan> BuildXboxPlans(VJoySettings settings, bool reset, bool prune, List<string> warnings)
         {
             List<XboxPlan> plans = new List<XboxPlan>();
+            // JoyPro's own pad functions (AxisToPadButtons) of games no longer on the pad go.
+            foreach (KeyValuePair<string, List<VirtualFunction>> entry in (settings.Functions ?? new Dictionary<string, List<VirtualFunction>>()).Where(e => !settings.IsXbox(e.Key)))
+                (entry.Value ?? new List<VirtualFunction>()).RemoveAll(f => f != null && (f.Id ?? string.Empty).StartsWith(AutoAxisButtonsPrefix, StringComparison.OrdinalIgnoreCase));
             foreach (string game in settings.XboxGames())
             {
+                // A game on the pad only by itself (it reads only Xbox pads) that the profile does not use is left out: no
+                // plan, no catalog read (a user without HLL: Vietnam gets no "catalog not found"), its own functions go.
+                if (!XboxGameInUse(settings, game))
+                {
+                    List<VirtualFunction> own;
+                    if (settings.Functions != null && settings.Functions.TryGetValue(game, out own) && own != null)
+                        own.RemoveAll(f => f != null && (f.Id ?? string.Empty).StartsWith(AutoAxisButtonsPrefix, StringComparison.OrdinalIgnoreCase));
+                    continue;
+                }
                 Dictionary<string, string> layout = GamepadLayout(game, warnings);
-                plans.Add(XboxPlanner.Plan(game, settings.XboxTable(game), CollectXboxUses(game, layout), reset, prune));
+                List<XboxUse> uses = CollectXboxUses(game, layout);
+                List<string> notes = PadAutoSetup(settings, game, uses, layout);
+                XboxPlan plan = XboxPlanner.Plan(game, settings.XboxTable(game), uses, reset, prune);
+                plan.Warnings.InsertRange(0, notes);
+                plans.Add(plan);
             }
             return plans;
+        }
+
+        public const string AutoAxisButtonsPrefix = "auto-pad-";
+
+        // An Xbox game that matters for this profile: chosen by the user, with a pad table, or with relations of its own
+        // (a game on the pad only by itself that the profile does not use stays out of map, status and pad-check).
+        internal static bool XboxGameInUse(VJoySettings settings, string game)
+        {
+            return !settings.IsAutoXbox(game) || settings.XboxTable(game).Count > 0 ||
+                   InternalDataManagement.AllRelations.Values.Any(r => r != null && r.NODES != null && r.NODES.Any(n => n != null && NodeMatches(game, n.Game)));
+        }
+
+        internal static List<string> XboxGamesInUse(VJoySettings settings)
+        {
+            return settings.XboxGames().Where(g => XboxGameInUse(settings, g)).ToList();
+        }
+
+        // An axis (a rudder, a twist) on actions the game has only on pad buttons (yaw on LB/RB): JoyPro adds an "Axis ends
+        // to buttons" function that presses those buttons at the axis ends, and the axis gets no stick or trigger of its
+        // own. The function is JoyPro's (id auto-pad-...), made again from the relations each time, and goes when the
+        // relation no longer asks for it. A function the user made on the same axis wins (nothing is added then).
+        internal static List<string> AxisToPadButtons(VJoySettings settings, string game, List<XboxUse> uses, Dictionary<string, string> layout, HashSet<string> wanted)
+        {
+            List<string> notes = new List<string>();
+            List<VirtualFunction> functions = settings.FunctionsOf(game);
+            foreach (XboxUse use in uses.ToList())
+            {
+                VJoyInput input;
+                if (!VJoyInput.TryParseSlotToken(use.Input, out input) || input.Kind != VJoyInputKind.Axis || use.Actions.Count == 0)
+                    continue;
+                List<KeyValuePair<string, string>> pinned = use.Actions
+                    .Select(a => { string p; return new KeyValuePair<string, string>(a, layout.TryGetValue(a, out p) ? p : string.Empty); })
+                    .Where(p => p.Value.Length > 0).ToList();
+                if (pinned.Count == 0 || pinned.Any(p => XboxControls.IsAxis(p.Value)) || !pinned.All(p => XboxControls.Fits(VJoyInputKind.Button, p.Value)))
+                    continue;
+                bool userMade = functions.Any(f => !f.Id.StartsWith(AutoAxisButtonsPrefix, StringComparison.OrdinalIgnoreCase) &&
+                                                   f.Inputs.Any(i => string.Equals(i.Device, use.Source, StringComparison.OrdinalIgnoreCase) && string.Equals(VJoyPlanner.Normalize(i.Input), use.Input, StringComparison.OrdinalIgnoreCase)));
+                uses.Remove(use);
+                if (userMade)
+                    continue;
+                // The low end: the action that sounds like left/down/less; the other one the high end.
+                List<KeyValuePair<string, string>> ordered = pinned.GroupBy(p => XboxControls.Control(p.Value), StringComparer.OrdinalIgnoreCase).Select(g => g.First())
+                    .OrderBy(p => Regex.IsMatch(p.Key, "left|down|decrease|less|minus|prev|back", RegexOptions.IgnoreCase) ? 0 : 1).ThenBy(p => p.Key, StringComparer.OrdinalIgnoreCase).ToList();
+                string low = ordered[0].Value;
+                string high = ordered.Count > 1 ? ordered[1].Value : string.Empty;
+                string id = AutoAxisButtonsPrefix + Regex.Replace((use.Source + "-" + use.Input).ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
+                wanted.Add(id);
+                VirtualFunction function = functions.FirstOrDefault(f => string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
+                bool fresh = function == null;
+                if (fresh)
+                {
+                    function = VirtualFunctionCatalog.Create(VirtualFunctionCatalog.AxisButtons, string.Join(" / ", use.Relations) + " on " + XboxControls.Describe(low) + (high.Length > 0 ? " / " + XboxControls.Describe(high) : string.Empty));
+                    function.Id = id;
+                    function.Normalize();
+                    functions.Add(function);
+                }
+                VfInput axis = function.InputOf("in");
+                if (axis != null)
+                {
+                    axis.Device = use.Source;
+                    axis.Input = use.Input;
+                }
+                VfOutput lowOut = function.OutputOf("low");
+                VfOutput highOut = function.OutputOf("high");
+                if (lowOut != null)
+                {
+                    lowOut.Target = low;
+                    lowOut.VJoyDevice = 0;
+                }
+                if (highOut != null)
+                {
+                    highOut.Target = high;
+                    highOut.VJoyDevice = 0;
+                }
+                // Pressed past 35 % from the end (about 30 % deflection), the live test's setting for yaw.
+                function.Params["threshold"] = PadYawEndZone;
+                if (fresh)
+                    notes.Add(string.Join(", ", use.Relations) + ": " + GameName(game) + " has " + string.Join(" and ", ordered.Select(p => p.Key + " on " + XboxControls.Describe(p.Value))) +
+                              ", pad buttons only; JoyPro added the function \"" + function.Name + "\" (" + use.Source + " " + use.Input + ": low end -> " + XboxControls.Describe(low) +
+                              (high.Length > 0 ? ", high end -> " + XboxControls.Describe(high) : string.Empty) + ").");
+            }
+            return notes;
         }
 
         public static void ApplyXboxPlans(VJoySettings settings, List<XboxPlan> plans)
@@ -1104,9 +1288,16 @@ namespace JoyPro.Engine
                     return -5; // never without the elevated step
                 if (OtherInstances().Length > 0)
                     return -6;
+                LastError = string.Empty;
                 TimedResult answer = RunTimed(path, Elevation.Quote(arguments), Math.Max(30000, ReadTimeoutMs() * 3));
-                return answer.TimedOut ? HidHideCli.TimedOut : answer.ExitCode;
+                if (answer.TimedOut)
+                    return HidHideCli.TimedOut;
+                // HidHideCLI refuses a command with a reason on stderr, applies nothing of the call and still exits 0.
+                LastError = (answer.Error ?? string.Empty).Trim();
+                return HidHideCli.ApplyOutcome(answer.ExitCode, LastError);
             }
+
+            public string LastError { get; private set; } = string.Empty;
 
             // A HidHideCLI that still runs (hung) blocks every other call ("Access is denied"); JoyPro does not end
             // one it did not start.
@@ -1172,6 +1363,11 @@ namespace JoyPro.Engine
                 inner.ApplyExitCode = File.Exists(exitPath) && int.TryParse(File.ReadAllText(exitPath).Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out exit) ? exit : 0;
                 File.AppendAllText(Path.Combine(folder, "hidhide-calls.txt"), Elevation.Quote(arguments) + "\r\n");
                 return inner.Apply(arguments);
+            }
+
+            public string LastError
+            {
+                get { return inner.LastError; }
             }
 
             private IEnumerable<string> ReadParts(string file)
@@ -1589,7 +1785,8 @@ namespace JoyPro.Engine
             {
                 GameScope scope = new GameScope();
                 List<string> warnings = new List<string>();
-                XboxPlan plan = BuildXboxPlans(settings, false, false, warnings).First(x => string.Equals(x.Game, gameId, StringComparison.OrdinalIgnoreCase));
+                // A pad game the profile does not use gets no plan (XboxGameInUse): an empty one.
+                XboxPlan plan = BuildXboxPlans(settings, false, false, warnings).FirstOrDefault(x => string.Equals(x.Game, gameId, StringComparison.OrdinalIgnoreCase)) ?? new XboxPlan { Game = gameId };
                 if (plan.Changed)
                 {
                     ApplyXboxPlans(settings, new List<XboxPlan> { plan });
@@ -1598,7 +1795,8 @@ namespace JoyPro.Engine
                 }
                 if (!WritesGamepadBinds(gameId))
                 {
-                    scope.Note = "Virtual Xbox pad: " + GameName(gameId) + " keeps its own gamepad layout; JoyPro writes no gamepad binds for it (" + plan.Slots.Count.ToString(CultureInfo.InvariantCulture) + " slot(s)).";
+                    scope.Note = "Virtual Xbox pad" + (settings.IsAutoXbox(gameId) ? " (by itself: the game reads only Xbox controllers)" : string.Empty) + ": " + GameName(gameId) +
+                                 " keeps its own gamepad layout; JoyPro writes no gamepad binds for it (" + plan.Slots.Count.ToString(CultureInfo.InvariantCulture) + " slot(s)).";
                     return scope;
                 }
                 scope.xboxForward = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1831,7 +2029,8 @@ namespace JoyPro.Engine
             {
                 return GameScope.None();
             }
-            if (string.IsNullOrWhiteSpace(gameId) || string.IsNullOrWhiteSpace(InternalDataManagement.VirtualJoystickConfig))
+            // A game that reads only Xbox controllers is on the virtual Xbox pad even without any virtual joystick settings.
+            if (string.IsNullOrWhiteSpace(gameId) || (string.IsNullOrWhiteSpace(InternalDataManagement.VirtualJoystickConfig) && !VJoySettings.ReadsOnlyXbox(gameId)))
                 return GameScope.None();
             // The tunnel device is left out of imports of native games only (VJoyTunnel.VirtualGame).
             VJoyTunnel.VirtualGame = LoadSettings().IsAnyVirtual(gameId);
@@ -1888,6 +2087,8 @@ namespace JoyPro.Engine
                         return ImportGremlinCommand(args, textOutput, out payload);
                     case "limits":
                         return LimitsCommand(args, textOutput, out payload);
+                    case "pad-check":
+                        return PadCheckCommand(args, textOutput, out payload);
                     case "configure-vjoy":
                         return ConfigureVJoy(args, textOutput, out payload);
                     case "apply-hidhide":
@@ -1905,7 +2106,7 @@ namespace JoyPro.Engine
                         return 1;
                 }
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException ex) when (!Program.IsMissingOptionValue(ex))
             {
                 payload = ex.Message;
                 return 1;
@@ -1918,7 +2119,7 @@ namespace JoyPro.Engine
             if (index < 0)
                 return null;
             if (index + 1 >= args.Count)
-                throw new ArgumentException("Missing value for " + name + ".");
+                throw Program.MissingOptionValue(name);
             string value = args[index + 1];
             args.RemoveRange(index, 2);
             return value;
@@ -2002,7 +2203,10 @@ namespace JoyPro.Engine
                 {
                     { "Id", id },
                     { "Name", GameName(id) },
-                    { "Mode", settings.IsVirtual(id) ? "virtual" : settings.IsXbox(id) ? "xbox" : "native" },
+                    { "Mode", settings.ModeOf(id) },
+                    // No mode chosen: the game reads only Xbox controllers and is on the virtual Xbox pad by itself.
+                    { "AutoMode", settings.IsAutoXbox(id) },
+                    { "ReadsOnlyXbox", VJoySettings.ReadsOnlyXbox(id) },
                     { "Relations", relations },
                     { "ProcessNames", ProcessNames(id) },
                     { "Exes", settings.IsAnyVirtual(id) ? GameExes(id, warnings) : new List<string>() },
@@ -2180,7 +2384,9 @@ namespace JoyPro.Engine
                         { "TunnelDevice", VJoyTunnel.Instance },
                         { "TunnelWarnings", TunnelWarnings(settings, plan.Slots.Select(s => s.Device).Concat(plan.FunctionTargets.Select(f => f.Device))) },
                         { "AutoStart", settings.AutoStart },
-                        { "HideDevices", settings.HideDevices }
+                        { "HideDevices", settings.HideDevices },
+                        // Several Xbox games: the one whose pad table a manual Start uses when none runs.
+                        { "XboxPadGame", settings.DefaultXboxPadGame() }
                     }
                 },
                 { "ViGEm", new Dictionary<string, object>
@@ -2235,8 +2441,8 @@ namespace JoyPro.Engine
             sb.AppendLine("Games:");
             foreach (Dictionary<string, object> game in ((List<object>)status["Games"]).Cast<Dictionary<string, object>>())
             {
-                if ((string)game["Mode"] == "virtual" || (int)game["Relations"] > 0)
-                    sb.AppendLine("  " + game["Id"] + " | " + game["Mode"] + " | " + game["Relations"] + " relation(s)" +
+                if ((string)game["Mode"] != "native" || (int)game["Relations"] > 0)
+                    sb.AppendLine("  " + game["Id"] + " | " + game["Mode"] + ((bool)game["AutoMode"] ? " (by itself: reads only Xbox controllers)" : string.Empty) + " | " + game["Relations"] + " relation(s)" +
                                   ((string)game["Mode"] == "virtual" ? " | exes: " + (((List<string>)game["Exes"]).Count == 0 ? "none found" : string.Join("; ", (List<string>)game["Exes"])) : string.Empty) +
                                   (((string)game["SuggestedMode"]).Length > 0 && (string)game["Mode"] == "native" ? " | one-device game: " + game["SuggestedMode"] + " suggested (" + game["DeviceLimitNote"] + ")" : string.Empty) +
                                   ((int)game["Functions"] > 0 ? " | " + game["Functions"] + " virtual function(s)" : string.Empty));
@@ -2291,10 +2497,8 @@ namespace JoyPro.Engine
             if (mode != "native" && mode != VJoySettings.ModeVJoy && mode != VJoySettings.ModeXbox)
                 return "The mode is native, virtual (vJoy) or xbox.";
             VJoySettings settings = LoadSettings();
-            if (mode == "native")
-                settings.Games.Remove(gameId);
-            else
-                settings.Games[gameId] = mode;
+            settings.SetMode(gameId, mode);
+            warnings.AddRange(RetargetFunctionOutputs(settings, gameId, ReadVJoyDevices()));
             VJoyPlan plan = BuildPlan(settings, ReadVJoyDevices(), false, false);
             List<XboxPlan> xbox = BuildXboxPlans(settings, false, false, warnings);
             warnings.AddRange(plan.Warnings);
@@ -2322,12 +2526,10 @@ namespace JoyPro.Engine
             bool dryRun = PopFlag(args, "--dry-run");
             RefuseLeftovers(args, "mode");
             VJoySettings settings = LoadSettings();
-            if (mode == "native")
-                settings.Games.Remove(gameId);
-            else
-                settings.Games[gameId] = mode;
+            settings.SetMode(gameId, mode);
+            List<string> retargeted = RetargetFunctionOutputs(settings, gameId, ReadVJoyDevices());
             VJoyPlan plan = BuildPlan(settings, ReadVJoyDevices(), false, false);
-            List<string> warnings = new List<string>();
+            List<string> warnings = new List<string>(retargeted);
             List<XboxPlan> xbox = BuildXboxPlans(settings, false, false, warnings);
             plan.Warnings.AddRange(warnings);
             if (plan.Errors.Count == 0)
@@ -2341,7 +2543,12 @@ namespace JoyPro.Engine
             IGameDeviceLimit limit = DeviceLimit(gameId);
             if (limit != null && !string.Equals(mode, limit.SuggestedMode, StringComparison.OrdinalIgnoreCase))
                 plan.Warnings.Add(GameName(gameId) + " is a one-device game: " + limit.DeviceLimitNote + " Suggested: engine vjoy mode " + gameId + " " + limit.SuggestedMode + ".");
-            payload = PlanPayload(plan, xbox, settings, textOutput, (dryRun ? "Dry run: " : string.Empty) + GameName(gameId) + " now uses " + target + ".");
+            // The pad games that matter here: chosen by the user, or with a table (an unused Xbox-only game stays out).
+            List<string> padGames = settings.XboxGames().Where(g => !settings.IsAutoXbox(g) || settings.XboxTable(g).Count > 0).ToList();
+            string several = mode == VJoySettings.ModeXbox && padGames.Count > 1
+                ? " Games on the Xbox pad: " + string.Join(", ", padGames.Select(GameName)) + "; each keeps its own pad table, the running game's table goes live (a manual Start with none running: " + GameName(settings.DefaultXboxPadGame()) + ")."
+                : string.Empty;
+            payload = PlanPayload(plan, xbox, settings, textOutput, (dryRun ? "Dry run: " : string.Empty) + GameName(gameId) + " now uses " + target + "." + several);
             return plan.Errors.Count == 0 ? 0 : 1;
         }
 
@@ -2392,8 +2599,9 @@ namespace JoyPro.Engine
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(headline);
             sb.AppendLine("Virtual games: " + (settings.VirtualGames().Count == 0 ? "none" : string.Join(", ", settings.VirtualGames())));
-            if (settings.XboxGames().Count > 0)
-                sb.AppendLine("Xbox games: " + string.Join(", ", settings.XboxGames()));
+            List<string> xboxInUse = XboxGamesInUse(settings);
+            if (xboxInUse.Count > 0)
+                sb.AppendLine("Xbox games: " + string.Join(", ", xboxInUse));
             foreach (XboxPlan x in xbox)
             {
                 sb.AppendLine("Xbox pad for " + x.Game + ": " + x.Slots.Count + " slot(s) (added " + x.Added.Count + ", removed " + x.Removed.Count + ")");
@@ -2429,8 +2637,23 @@ namespace JoyPro.Engine
             string last = PopValue(args, "--last-device");
             bool? auto = ParseOnOff(PopValue(args, "--auto-start"), "--auto-start");
             bool? hide = ParseOnOff(PopValue(args, "--hide-devices"), "--hide-devices");
+            string padGame = PopValue(args, "--xbox-pad-game");
             bool dryRun = PopFlag(args, "--dry-run");
             RefuseLeftovers(args, "settings");
+            if (padGame != null)
+            {
+                if (string.Equals(padGame.Trim(), "none", StringComparison.OrdinalIgnoreCase) || padGame.Trim().Length == 0)
+                    settings.XboxPadGame = string.Empty;
+                else
+                {
+                    string padId = ResolveGame(padGame);
+                    if (padId.Length == 0)
+                        throw new ArgumentException("Unknown game: " + padGame);
+                    if (!settings.IsXbox(padId))
+                        throw new ArgumentException(GameName(padId) + " is not on the virtual Xbox pad (engine vjoy mode " + padId + " xbox).");
+                    settings.XboxPadGame = padId;
+                }
+            }
             int number;
             if (first != null)
             {
@@ -2453,8 +2676,9 @@ namespace JoyPro.Engine
             settings.Normalize();
             if (!dryRun)
                 SaveSettings(settings);
-            string message = (dryRun ? "Dry run: " : string.Empty) + "vJoy devices " + settings.FirstDevice + "-" + settings.LastDevice + ", auto start " + (settings.AutoStart ? "on" : "off") + ", hide physical devices " + (settings.HideDevices ? "on" : "off") + ".";
-            payload = textOutput ? message : EngineSerialization.ToJson(new { Message = message, settings.FirstDevice, settings.LastDevice, settings.AutoStart, settings.HideDevices });
+            string message = (dryRun ? "Dry run: " : string.Empty) + "vJoy devices " + settings.FirstDevice + "-" + settings.LastDevice + ", auto start " + (settings.AutoStart ? "on" : "off") + ", hide physical devices " + (settings.HideDevices ? "on" : "off") +
+                             (settings.XboxGames().Count > 1 ? ", Xbox pad table of " + GameName(settings.DefaultXboxPadGame()) + " when no Xbox game runs" : string.Empty) + ".";
+            payload = textOutput ? message : EngineSerialization.ToJson(new { Message = message, settings.FirstDevice, settings.LastDevice, settings.AutoStart, settings.HideDevices, XboxPadGame = settings.DefaultXboxPadGame() });
             return 0;
         }
 
@@ -2548,13 +2772,17 @@ namespace JoyPro.Engine
                     return 1;
                 }
             }
-            else if (xboxGames.Count > 0)
-                xboxGame = xboxGames[0];
+            else
+            {
+                // Without a game named: the user's pick (engine vjoy settings --xbox-pad-game), else the first Xbox game
+                // with something to forward, else the first.
+                xboxGame = settings.DefaultXboxPadGame();
+            }
             List<VJoySlot> xboxSlots = new List<VJoySlot>();
             if (xboxGame.Length > 0)
             {
-                XboxPlan xp = BuildXboxPlans(settings, false, false, new List<string>()).First(x => string.Equals(x.Game, xboxGame, StringComparison.OrdinalIgnoreCase));
-                xboxSlots = xp.Slots;
+                XboxPlan xp = BuildXboxPlans(settings, false, false, new List<string>()).FirstOrDefault(x => string.Equals(x.Game, xboxGame, StringComparison.OrdinalIgnoreCase));
+                xboxSlots = xp == null ? new List<VJoySlot>() : xp.Slots;
             }
             // Only the slots a vJoy game uses go to the forwarder (unused ones keep their place in the table).
             List<VJoySlot> vjoySlots = plan.Slots.Where(s => !plan.Unused.Contains(s)).ToList();
@@ -2620,19 +2848,70 @@ namespace JoyPro.Engine
                 });
             }
             List<object> xbox = new List<object>();
+            Dictionary<string, XboxAxisCurve> xboxCurves = XboxAxisCurves(xboxGame);
+            // One input, one job: the directions of a hat that a pad button slot or a function of the pad game reads are
+            // left out of that hat's whole-hat D-pad slot ("skip", bit per direction 0 up .. 7 up-left).
+            Dictionary<string, int> hatSkip = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            Action<string, string> skipDirection = (device, token) =>
+            {
+                int skipHat;
+                int skipDir;
+                if (string.IsNullOrWhiteSpace(device) || !XboxControls.IsHatDirection(token, out skipHat, out skipDir))
+                    return;
+                string skipKey = device.Trim() + "|" + skipHat.ToString(CultureInfo.InvariantCulture);
+                int mask;
+                hatSkip.TryGetValue(skipKey, out mask);
+                hatSkip[skipKey] = mask | (1 << skipDir);
+            };
+            foreach (VJoySlot slot in xboxSlots)
+                skipDirection(slot.Source, slot.Input);
+            foreach (KeyValuePair<string, VirtualFunction> entry in functions.Where(f => string.Equals(f.Key, xboxGame, StringComparison.OrdinalIgnoreCase)))
+            {
+                foreach (VfInput input in entry.Value.Inputs)
+                    skipDirection(input.Device, input.Input);
+            }
             foreach (VJoySlot slot in xboxSlots)
             {
                 VJoyInput input;
-                if (!VJoyInput.TryParseSlotToken(slot.Input, out input))
+                int hatOfSlot;
+                int hatDirection;
+                bool oneDirection = XboxControls.IsHatDirection(slot.Input, out hatOfSlot, out hatDirection);
+                if (!oneDirection && !VJoyInput.TryParseSlotToken(slot.Input, out input))
                     continue;
-                xbox.Add(new Dictionary<string, object>
+                if (oneDirection)
+                    input = new VJoyInput { Kind = VJoyInputKind.Pov, Index = hatOfSlot };
+                else
+                    VJoyInput.TryParseSlotToken(slot.Input, out input);
+                Dictionary<string, object> item = new Dictionary<string, object>
                 {
                     { "source", sources.FindIndex(s => string.Equals(s, slot.Source, StringComparison.OrdinalIgnoreCase)) },
-                    { "kind", VJoyPlanner.KindName(input.Kind) },
+                    // "hatdir": one hat direction (0 up .. 7 up-left) pressing a pad button.
+                    { "kind", oneDirection ? "hatdir" : VJoyPlanner.KindName(input.Kind) },
                     { "index", input.Index },
                     { "target", slot.Target }
-                });
+                };
+                if (oneDirection)
+                    item["direction"] = hatDirection;
+                int skipMask;
+                if (!oneDirection && input.Kind == VJoyInputKind.Pov && hatSkip.TryGetValue(slot.Source.Trim() + "|" + input.Index.ToString(CultureInfo.InvariantCulture), out skipMask))
+                    item["skip"] = skipMask;
+                // The axis curve the forwarder applies (it carries the invert too, so the "~" of the slot goes).
+                XboxAxisCurve curve;
+                if (input.Kind == VJoyInputKind.Axis && xboxCurves.TryGetValue(VJoyPlanner.Key(slot.Source, slot.Input), out curve))
+                {
+                    item["target"] = XboxControls.Control(slot.Target);
+                    item["curve"] = curve.Points;
+                    item["curveScope"] = curve.Scope;
+                    item["curveRelation"] = curve.Relation;
+                }
+                xbox.Add(item);
             }
+            // Several games on the pad: one table is live; the others keep theirs (never dropped) and are named.
+            List<string> waiting = xboxGames.Where(g => !string.Equals(g, xboxGame, StringComparison.OrdinalIgnoreCase) &&
+                                                        (settings.XboxTable(g).Count > 0 || settings.FunctionsOf(g).Any(f => f.Enabled))).ToList();
+            if (waiting.Count > 0)
+                functionWarnings.Add("The Xbox pad runs the table and functions of " + GameName(xboxGame) + "; " + string.Join(", ", waiting.Select(GameName)) +
+                                     " keep" + (waiting.Count == 1 ? "s" : string.Empty) + " " + (waiting.Count == 1 ? "its" : "their") + " own (--xbox-game, or start that game).");
             Dictionary<string, object> config = new Dictionary<string, object>
             {
                 { "version", 1 },
@@ -2641,6 +2920,8 @@ namespace JoyPro.Engine
                 { "slots", slots },
                 { "virtualGames", settings.VirtualGames() },
                 { "xboxGame", xboxGame },
+                // The other games on the pad with a table or functions: they keep theirs, only one pad table is live.
+                { "xboxWaiting", waiting },
                 { "xbox", xbox },
                 { "functions", resolved },
                 // The mode sets of the games whose functions run (Group = game id).
@@ -2657,6 +2938,7 @@ namespace JoyPro.Engine
                 Directory.CreateDirectory(directory);
             File.WriteAllText(outPath, json, new UTF8Encoding(false));
             string message = "Wrote the forwarder table (" + slots.Count + " vJoy slot(s), " + xbox.Count + " Xbox slot(s)" + (xboxGame.Length > 0 ? " for " + xboxGame : string.Empty) + ", " + resolved.Count + " virtual function(s), " + sources.Count + " device(s)): " + outPath;
+
             payload = textOutput ? message + string.Concat(functionWarnings.Select(w => Environment.NewLine + "  - " + w)) : EngineSerialization.ToJson(new { Message = message, Path = outPath, Slots = slots.Count, XboxSlots = xbox.Count, XboxGame = xboxGame, Functions = resolved.Count, Sources = sources.Count, Warnings = functionWarnings });
             return 0;
         }
@@ -2771,6 +3053,23 @@ namespace JoyPro.Engine
                 payload = "No game uses virtual mode (engine vjoy mode <game> virtual); HidHide was not changed.";
                 return 1;
             }
+            // Hiding only matters for games that read joysticks (DirectInput/HID): a game that reads only Xbox
+            // controllers (XInput) never sees the physical sticks, so it needs no HidHide and no administrator prompt.
+            List<string> readsOnlyXbox = games.Where(VJoySettings.ReadsOnlyXbox).ToList();
+            games = games.Where(g => !VJoySettings.ReadsOnlyXbox(g)).ToList();
+            if (games.Count == 0)
+            {
+                HidHideResult skipped = new HidHideResult
+                {
+                    Ok = true,
+                    DryRun = dryRun,
+                    SessionPhase = "none",
+                    Message = "HidHide is not needed: " + string.Join(", ", readsOnlyXbox.Select(g => GameName(g))) + " read" + (readsOnlyXbox.Count == 1 ? "s" : string.Empty) +
+                              " only Xbox controllers and never see the physical devices. HidHide was not changed."
+                };
+                payload = HidHidePayload(skipped, warnings, textOutput, null);
+                return 0;
+            }
             Dictionary<int, VJoyDeviceCaps> caps = ReadVJoyDevices();
             DeviceScan scan = ScanDevices(null, caps);
             warnings.AddRange(scan.Warnings);
@@ -2778,7 +3077,7 @@ namespace JoyPro.Engine
 
             // HID interface paths; the elevated step turns them into HidHide's instance paths (--dev-gaming).
             ElevatedHidHideRequest request = new ElevatedHidHideRequest { Op = "enable", Games = games, JournalPath = JournalPath() };
-            List<XboxPlan> xboxPlans = BuildXboxPlans(settings, false, false, warnings);
+            List<XboxPlan> xboxPlans = BuildXboxPlans(settings, false, false, warnings).Where(x => games.Contains(x.Game, StringComparer.OrdinalIgnoreCase)).ToList();
             foreach (string source in plan.Slots.Select(s => s.Source).Concat(xboxPlans.SelectMany(x => x.Slots).Select(s => s.Source)).Concat(FunctionSources(settings)).Distinct(StringComparer.OrdinalIgnoreCase))
             {
                 GameDevice device = scan.Find(source);
@@ -2835,11 +3134,21 @@ namespace JoyPro.Engine
             }
             else
             {
-                HidHideJournal journal = CreateSession(CreateHidHide(false)).LoadJournal();
-                if (journal != null && CreateSession(CreateHidHide(false)).IsStale(journal))
+                IHidHideCli plain = CreateHidHide(false);
+                HidHideSession local = new HidHideSession(plain, request.JournalPath, IsProcessAlive);
+                HidHideJournal journal = local.LoadJournal();
+                if (journal != null && local.IsStale(journal))
                     result = new HidHideResult { Message = "A previous virtual joystick session did not end cleanly; restore it first (engine vjoy recover)." };
                 else
-                    result = RunElevatedHidHide(request, warnings);
+                {
+                    // No prompt when HidHide (read without administrator rights) already is as needed.
+                    List<string> quickWarnings = new List<string>();
+                    result = local.EnableIfNothingToChange(ResolveRequest(request, plain, quickWarnings));
+                    if (result != null)
+                        warnings.AddRange(quickWarnings);
+                    else
+                        result = RunElevatedHidHide(request, warnings);
+                }
             }
             payload = HidHidePayload(result, warnings, textOutput, resolved);
             return result.Cancelled ? 2 : result.Ok ? 0 : 1;
@@ -2868,7 +3177,13 @@ namespace JoyPro.Engine
                                  (journal.SetCloak ? "; switches cloaking off" : string.Empty) + (journal.SetInverse ? "; sets the inverse mode back" : string.Empty) + ".";
             }
             else
-                result = RunElevatedHidHide(new ElevatedHidHideRequest { Op = recover ? "recover" : "disable", Force = force, JournalPath = JournalPath() }, warnings);
+            {
+                // No prompt when HidHide (read without administrator rights) already has its previous configuration:
+                // only the session record goes.
+                result = local.DisableIfNothingToChange();
+                if (result == null)
+                    result = RunElevatedHidHide(new ElevatedHidHideRequest { Op = recover ? "recover" : "disable", Force = force, JournalPath = JournalPath() }, warnings);
+            }
             payload = HidHidePayload(result, warnings, textOutput, null);
             return result.Cancelled ? 2 : result.Ok ? 0 : 1;
         }
@@ -3056,6 +3371,7 @@ namespace JoyPro.Engine
                     result.DryRun,
                     result.Changed,
                     result.Cancelled,
+                    result.Blocking,
                     result.Message,
                     result.Strategy,
                     result.Commands,

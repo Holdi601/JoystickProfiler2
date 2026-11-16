@@ -50,7 +50,10 @@ internal static class CatalogWalk
             if (s.HasProfile)
                 await s.MeasureAsync("profile load", "catalog session", () => vm.LoadProfileCommand.ExecuteAsync(null));
 
-            // The Start page's games and Settings > Games (installs and the engine's integrations).
+            // The Start page's games and Settings > Games (installs and the engine's integrations), on the Start page as the
+            // user sees them (its card's look at the games starts there in the background and must not be in the way).
+            vm.CurrentStage = UiStage.Start;
+            await s.SettleAsync(() => true);
             await s.MeasureAsync("games list", "games installs + integrations", async () =>
             {
                 await vm.RefreshGameInstallsCommand.ExecuteAsync(null);
@@ -65,6 +68,7 @@ internal static class CatalogWalk
             integrations.Add(("StarCitizen", "starcitizen", true));
             foreach (RegistryGameItem game in AllRegistryGames(vm))
                 integrations.Add((game.GameId, game.CommandName, game.SupportsCatalogRefresh));
+            await StartCardAsync(s);
 
             vm.CurrentStage = UiStage.Relations;
             await s.SettleAsync(() => true);
@@ -87,6 +91,44 @@ internal static class CatalogWalk
             }
         });
         return new Result(overview, entries, gamesList, startPage, integrations, overviewStatus);
+    }
+
+    // The Start card's look at the games (engine setup games --status-only, in the background once the Start page is idle):
+    // how long until the card shows, and its answer against the engine's full read of every game (I3: the card names the
+    // games without binds right).
+    private static async Task StartCardAsync(GateSession s)
+    {
+        MainWindowViewModel vm = s.Vm;
+        int before = s.Engine.Count;
+        System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
+        while (watch.ElapsedMilliseconds < 60000 && (vm.AutoSetupPending || vm.AutoSetupRuns == 0))
+            await Task.Delay(50);
+        watch.Stop();
+        List<GameCardItem> installed = vm.GameCards.Where(c => c.Installed).ToList();
+        if (installed.Count == 0)
+            return;
+        List<AutoSetupGameItem> card = vm.AutoSetupNewGames.Concat(vm.AutoSetupOwnGames).Concat(vm.AutoSetupProfileGames).ToList();
+        Gate.Time("start card look", "games without binds (background, " + installed.Count + " installed games)", watch.Elapsed.TotalMilliseconds, s.Engine.Count - before,
+            vm.AutoSetupNewGames.Count + " without binds, " + vm.AutoSetupOwnGames.Count + " with own binds, " + vm.AutoSetupProfileGames.Count + " in the profile");
+        List<string> args = s.HasProfile ? ["--profile", s.Profile] : [];
+        args.AddRange(["--status", "false", "--load-corrections", "false", "setup", "games", "--games", string.Join(",", installed.Select(c => c.GameId))]);
+        JoyPro.Gui.Models.EngineCommandResult full = await s.Engine.RunAsync(Gate.EnginePath, args);
+        if (full.ExitCode != 0)
+        {
+            Gate.Fail("I3", "the Start card's look at the games failed", string.Empty, "setup games", Gate.Short(full.StandardError, 200));
+            return;
+        }
+        using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(MainWindowViewModel.ExtractJsonPayload(full.StandardOutput));
+        foreach (System.Text.Json.JsonElement game in doc.RootElement.GetProperty("Games").EnumerateArray())
+        {
+            string id = game.GetProperty("Game").GetString() ?? string.Empty;
+            if (game.GetProperty("Wizard").ValueKind != System.Text.Json.JsonValueKind.True)
+                continue;
+            string status = game.GetProperty("Status").GetString() ?? string.Empty;
+            AutoSetupGameItem? shown = card.FirstOrDefault(c => string.Equals(c.GameId, id, StringComparison.OrdinalIgnoreCase));
+            if (shown == null || shown.Status != status)
+                Gate.Fail("I3", "the Start card says another state than the engine's full read of the game", id, shown == null ? "not on the card" : shown.Status, "full read: " + status);
+        }
     }
 
     private static async Task<Entry> OpenAsync(GateSession s, string game, string plane, int overviewCount)

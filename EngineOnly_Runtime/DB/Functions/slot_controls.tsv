@@ -19,17 +19,17 @@ ai_menu_down	throttle	throttle.hat.*.down,throttle.ministick.down,stick.hat.*.do
 ai_menu_left	throttle	throttle.hat.*.left,throttle.ministick.left,stick.hat.*.left,stick.ministick.left,throttle.base.hat.*.left,panel.button.*			frequent	button	ai_menu:left	comms	seconds
 ai_menu_right	throttle	throttle.hat.*.right,throttle.ministick.right,stick.hat.*.right,stick.ministick.right,throttle.base.hat.*.right,panel.button.*			frequent	button	ai_menu:right	comms	seconds
 ai_menu_up	throttle	throttle.hat.*.up,throttle.ministick.up,stick.hat.*.up,stick.ministick.up,throttle.base.hat.*.up,panel.button.*			frequent	button	ai_menu:up	comms	seconds
-airbakeextend	throttle	throttle.speedbrake.aft,throttle.hat.*.aft,yoke.rocker.*.down			frequent	button	speedbrake:aft	pilot|tol	seconds
-airbrake_toggle	throttle	throttle.speedbrake.center,throttle.button.*			frequent	button	speedbrake:center	pilot|tol	seconds
-airbrakeretract	throttle	throttle.speedbrake.fwd,throttle.hat.*.fwd,yoke.rocker.*.up			frequent	button	speedbrake:fwd	pilot|tol	seconds
+airbakeextend	throttle	throttle.speedbrake.aft,throttle.hat.*.aft,yoke.rocker.*.down		SPEED BRAKE;SPD BRK;SPEEDBRAKE;AIRBRAKE;AIR BRAKE;SPEED BRK	frequent	button	speedbrake:aft	pilot|tol	seconds
+airbrake_toggle	throttle	throttle.speedbrake.center,throttle.button.*		SPEED BRAKE;SPD BRK;SPEEDBRAKE;AIRBRAKE;AIR BRAKE;SPEED BRK	frequent	button	speedbrake:center	pilot|tol	seconds
+airbrakeretract	throttle	throttle.speedbrake.fwd,throttle.hat.*.fwd,yoke.rocker.*.up		SPEED BRAKE;SPD BRK;SPEEDBRAKE;AIRBRAKE;AIR BRAKE;SPEED BRK	frequent	button	speedbrake:fwd	pilot|tol	seconds
 ajs_a2	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			frequent	button		a2g	seconds
 ajs_t1	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			frequent	button		a2g	seconds
 antiskidoff	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	antiskid:off	ANTI SKID;ANTISKID;ANTI-SKID	occasional	button		tol	minutes
 antiskidon	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	antiskid:on	ANTI SKID;ANTISKID;ANTI-SKID	occasional	button		tol	minutes
 apu_start	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		APU	frequent	button		systems	idle
 atc_engage	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		ATC	occasional	button		nav	minutes
-autopilot_altitude_hold	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		AP;AUTOPILOT;A/P	occasional	button		nav	minutes
-autopilot_attitude_hold	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		AP;AUTOPILOT;A/P	occasional	button		nav	minutes
+autopilot_altitude_hold	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		=ALT;ALT HOLD;ALTITUDE HOLD	occasional	button		nav	minutes
+autopilot_attitude_hold	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		=ATT;ATT HOLD;ATTITUDE HOLD	occasional	button		nav	minutes
 autopilot_auto_hover	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		AP;AUTOPILOT;A/P	occasional	button		nav	minutes
 autopilot_off	stick	stick.pinky.lever,stick.pinky.button,stick.button.index.*		AP;AUTOPILOT;A/P	occasional	button		pilot	instant
 autopilot_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	autopilot:on	AP;AUTOPILOT;A/P	occasional	button		nav	minutes
@@ -37,24 +37,24 @@ autopilot_pitch_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base
 autopilot_pitch_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	autopilot_pitch:on	AP;AUTOPILOT;A/P	occasional	button		nav	minutes
 autopilot_roll_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	autopilot_roll:off	AP;AUTOPILOT;A/P	occasional	button		nav	minutes
 autopilot_roll_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	autopilot_roll:on	AP;AUTOPILOT;A/P	occasional	button		nav	minutes
-autopilot_route	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		AP;AUTOPILOT;A/P	occasional	button		nav	minutes
+autopilot_route	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		=NAV;=GPSS;NAV HOLD	occasional	button		nav	minutes
 autopilot_yaw_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	autopilot_yaw:off	AP;AUTOPILOT;A/P	occasional	button		nav	minutes
 autopilot_yaw_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	autopilot_yaw:on	AP;AUTOPILOT;A/P	occasional	button		nav	minutes
 canopy_close	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	canopy:close	CANOPY	occasional	button		systems	minutes
 canopy_open	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	canopy:open	CANOPY	occasional	button		systems	minutes
 clearradiation	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			frequent	button		a2a	seconds
-cms_aft_panic_or_just_chaff	stick	stick.hat.cms.down,stick.hat.cms.aft,throttle.button.*,stick.hat.*.down,stick.ministick.down			frequent	button	cms:down	a2a|a2g	instant
-cms_depress_ecm	stick	stick.hat.cms.press,stick.hat.*.press,stick.ministick.press,panel.button.*			occasional	button	cms:press	a2a|a2g	seconds
-cms_fwd_start_program_or_just_flare	stick	stick.hat.cms.up,stick.hat.cms.fwd,throttle.button.*,stick.hat.*.up,stick.ministick.up			frequent	button	cms:up	a2a|a2g	instant
-cms_left	stick	stick.hat.cms.left,stick.hat.*.left,stick.ministick.left,panel.button.*			occasional	button	cms:left	a2a|a2g	seconds
-cms_right	stick	stick.hat.cms.right,stick.hat.*.right,stick.ministick.right,panel.button.*			occasional	button	cms:right	a2a|a2g	seconds
-comm1_up	throttle	throttle.hat.mic.up,throttle.hat.*.up,throttle.ministick.up,collective.hat.*.up,yoke.button.*			frequent	button	comm:up	comms	seconds
-comm2_down	throttle	throttle.hat.mic.down,throttle.hat.*.down,throttle.ministick.down,collective.hat.*.down			frequent	button	comm:down	comms	seconds
-comm3_aft_ics	throttle	throttle.hat.mic.aft,throttle.hat.*.left,throttle.ministick.left,collective.hat.*.left			frequent	button	comm:aft	comms	seconds
-comm4_fwd_iff	throttle	throttle.hat.mic.fwd,throttle.hat.*.right,throttle.ministick.right,collective.hat.*.right			occasional	button	comm:fwd	comms	seconds
+cms_aft_panic_or_just_chaff	stick	stick.hat.cms.down,stick.hat.cms.aft,throttle.hat.cms.down,throttle.hat.*.down,throttle.button.*,stick.hat.*.down,stick.ministick.down			constant	button	cms:down	a2a|a2g	instant
+cms_depress_ecm	stick	stick.hat.cms.press,throttle.hat.cms.press,throttle.hat.*.press,stick.hat.*.press,stick.ministick.press,panel.button.*			occasional	button	cms:press	a2a|a2g	seconds
+cms_fwd_start_program_or_just_flare	stick	stick.hat.cms.up,stick.hat.cms.fwd,throttle.hat.cms.up,throttle.hat.*.up,throttle.button.*,stick.hat.*.up,stick.ministick.up			constant	button	cms:up	a2a|a2g	instant
+cms_left	stick	stick.hat.cms.left,throttle.hat.cms.left,throttle.hat.*.left,stick.hat.*.left,stick.ministick.left,panel.button.*			occasional	button	cms:left	a2a|a2g	seconds
+cms_right	stick	stick.hat.cms.right,throttle.hat.cms.right,throttle.hat.*.right,stick.hat.*.right,stick.ministick.right,panel.button.*			occasional	button	cms:right	a2a|a2g	seconds
+comm1_up	throttle	throttle.hat.mic.up,throttle.hat.*.up,throttle.ministick.up,collective.hat.*.up,yoke.button.*		PTT;MIC	frequent	button	comm:up	comms	instant
+comm2_down	throttle	throttle.hat.mic.down,throttle.hat.*.down,throttle.ministick.down,collective.hat.*.down		PTT;MIC	frequent	button	comm:down	comms	instant
+comm3_aft_ics	throttle	throttle.hat.mic.aft,throttle.hat.*.left,throttle.ministick.left,collective.hat.*.left		PTT;MIC	frequent	button	comm:aft	comms	instant
+comm4_fwd_iff	throttle	throttle.hat.mic.fwd,throttle.hat.*.right,throttle.ministick.right,collective.hat.*.right		PTT;MIC	occasional	button	comm:fwd	comms	instant
 dragchute	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		CHUTE;DRAG CHUTE	occasional	button		tol	seconds
 dummyunbindrelation	any	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			occasional	button		systems	idle
-easycomms	any	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			frequent	button		comms	seconds
+easycomms	any	throttle.hat.mic.*,throttle.button.*,throttle.pinky.button,stick.button.thumb.*,collective.button.*,yoke.button.*		PTT;MIC	frequent	button		comms	instant
 f14_dlc_aft	stick	stick.button.thumb.*,stick.hat.*.press,stick.ministick.press,stick.base.button.*			frequent	button		tol	seconds
 f14_dlc_fwd	stick	stick.button.thumb.*,stick.hat.*.press,stick.ministick.press,stick.base.button.*			frequent	button		tol	seconds
 f14_lantirn_agc_mgc	stick	stick.button.thumb.*,stick.hat.*.press,stick.ministick.press,stick.base.button.*			occasional	button		a2g	seconds
@@ -78,9 +78,9 @@ flir_ccd_boat_center_eo_on_off	throttle	throttle.boat.center,throttle.button.*		
 flir_whot_boat_aft	throttle	throttle.boat.aft,throttle.hat.*.aft			occasional	button	boat:aft	a2g	seconds
 formlightsaxis	panel	panel.axis.*,throttle.axis.rotary.*,throttle.axis.slider.*			rare	axis		systems	minutes
 fov_toggle_china_hat_fwd	throttle	throttle.china.fwd,throttle.hat.*.fwd,throttle.hat.*.up,throttle.ministick.up			frequent	button	china:fwd	a2g|view	seconds
-gear_toggle	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		GEAR;LDG GEAR;LANDING GEAR	frequent	button		tol	seconds
-gearin	panel	panel.lever.gear.up,panel.toggle.*.up,panel.button.*	gear:in	GEAR;LDG GEAR;LANDING GEAR	frequent	button		tol	seconds
-gearout	panel	panel.lever.gear.down,panel.toggle.*.down,panel.button.*	gear:out	GEAR;LDG GEAR;LANDING GEAR	frequent	button		tol	seconds
+gear_toggle	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		GEAR;LDG GEAR;LANDING GEAR	constant	button		tol	seconds
+gearin	panel	panel.lever.gear.up,panel.toggle.*.up,panel.button.*	gear:in	GEAR;LDG GEAR;LANDING GEAR	constant	button		tol	seconds
+gearout	panel	panel.lever.gear.down,panel.toggle.*.down,panel.button.*	gear:out	GEAR;LDG GEAR;LANDING GEAR	constant	button		tol	seconds
 gun_safety_lever_toggle	stick	stick.trigger.flip,stick.base.toggle.*.up,panel.toggle.*.up			frequent	button		a2a|a2g	seconds
 gunarm	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	gun:arm	GUN;GUN/PAC;GUN ARM	frequent	button		a2a|a2g	minutes
 gunsafe	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	gun:safe	GUN;GUN/PAC;GUN SAFE	frequent	button		a2a|a2g	minutes
@@ -106,23 +106,23 @@ kneeboard_toggle	any	panel.button.*,throttle.base.button.*,stick.base.button.*,t
 laser_1nd_detent	stick	stick.trigger.stage1			frequent	button		a2g	instant
 launchbarextend	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	launchbar:extend	LAUNCH BAR;LAUNCH	occasional	button		tol	minutes
 launchbarretract	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	launchbar:retract	LAUNCH BAR;LAUNCH	occasional	button		tol	minutes
-launchweapon	stick	stick.weapon_release,stick.button.thumb.*,yoke.button.*			frequent	button		a2a|a2g	instant
-left_engine_start	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	left_engine:start	ENG L;LEFT ENG;L ENG;ENG CRANK L;L ENG START	frequent	button		systems	idle
-left_engine_stop	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	left_engine:stop	ENG L;LEFT ENG;L ENG;ENG CRANK L	occasional	button		systems	idle
+launchweapon	stick	stick.weapon_release,stick.button.thumb.*,yoke.button.2,yoke.button.*,throttle.button.*			constant	button		a2a|a2g	instant
+left_engine_start	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	left_engine:start	ENG L;LEFT ENG;L ENG;ENG CRANK L;L ENG START;ENG OPER L;ENG 1 MASTER;ENG MASTER 1	frequent	button		systems	idle
+left_engine_stop	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	left_engine:stop	ENG L;LEFT ENG;L ENG;ENG CRANK L;ENG OPER L;ENG 1 MASTER;ENG MASTER 1	occasional	button		systems	idle
 lights_ext_aar	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		AAR LT;AAR LIGHT	rare	button		systems	minutes
 lights_ext_aar_2	panel	panel.rotary.*.cw,panel.encoder.*.cw,throttle.base.rotary.*.cw,panel.button.*		AAR LT;AAR LIGHT	rare	button		systems	minutes
-lights_ext_collision_off	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		ANTI COLL;STROBE;BEACON	occasional	button		systems	minutes
-lights_ext_collision_on	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		ANTI COLL;STROBE;BEACON	occasional	button		systems	minutes
-lights_ext_landing_taxi_off	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		LDG/TAXI;TAXI;LANDING LIGHT;LDG LIGHT;LDG/TAXI LIGHT	frequent	button		tol	minutes
-lights_ext_landing_taxi_off1	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		LDG/TAXI;TAXI;LANDING LIGHT;LDG LIGHT;LDG/TAXI LIGHT	frequent	button		tol	minutes
-lights_ext_landing_taxi_on	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		LDG/TAXI;TAXI;LANDING LIGHT;LDG LIGHT;LDG/TAXI LIGHT	occasional	button		tol	minutes
-lights_ext_landing_taxi_on1	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		LDG/TAXI;TAXI;LANDING LIGHT;LDG LIGHT;LDG/TAXI LIGHT	frequent	button		tol	minutes
-lights_ext_navigation_off	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		NAV LT;NAV LIGHT;NAV LIGHTS;POSITION;POS LT;POSITION LIGHTS	occasional	button		systems	minutes
-lights_ext_navigation_off1	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		NAV LT;NAV LIGHT;NAV LIGHTS;POSITION;POS LT;POSITION LIGHTS	occasional	button		systems	minutes
-lights_ext_navigation_on	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		NAV LT;NAV LIGHT;NAV LIGHTS;POSITION;POS LT;POSITION LIGHTS	occasional	button		systems	minutes
-lights_ext_navigation_on1	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		NAV LT;NAV LIGHT;NAV LIGHTS;POSITION;POS LT;POSITION LIGHTS	occasional	button		systems	minutes
-lights_ext_off	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		LIGHTS;EXT LT	occasional	button		systems	minutes
-lights_ext_on	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		LIGHTS;EXT LT	occasional	button		systems	minutes
+lights_ext_collision_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*	lights_ext_collision:off	ANTI COLL;STROBE;BEACON;BCN	occasional	button	lights_ext_collision_set:down	systems	minutes
+lights_ext_collision_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.rotary.*.cw,panel.encoder.*.cw,throttle.base.rotary.*.cw,panel.button.*	lights_ext_collision:on	ANTI COLL;STROBE;BEACON;BCN	occasional	button	lights_ext_collision_set:up	systems	minutes
+lights_ext_landing_taxi_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*	lights_ext_landing_taxi:off	LDG/TAXI;LANDING LIGHT;LDG LIGHT;LDG/TAXI LIGHT;LAND;LDG LT;LANDING	frequent	button	lights_ext_landing_taxi_set:down	tol	minutes
+lights_ext_landing_taxi_off1	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*	lights_ext_landing_taxi1:off	TAXI;TAXI LIGHT;TAXI LT	frequent	button	lights_ext_landing_taxi1_set:down	tol	minutes
+lights_ext_landing_taxi_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.rotary.*.cw,panel.encoder.*.cw,throttle.base.rotary.*.cw,panel.button.*	lights_ext_landing_taxi:on	LDG/TAXI;LANDING LIGHT;LDG LIGHT;LDG/TAXI LIGHT;LAND;LDG LT;LANDING	occasional	button	lights_ext_landing_taxi_set:up	tol	minutes
+lights_ext_landing_taxi_on1	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.rotary.*.cw,panel.encoder.*.cw,throttle.base.rotary.*.cw,panel.button.*	lights_ext_landing_taxi1:on	TAXI;TAXI LIGHT;TAXI LT	frequent	button	lights_ext_landing_taxi1_set:up	tol	minutes
+lights_ext_navigation_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*	lights_ext_navigation:off	NAV LT;NAV LIGHT;NAV LIGHTS;POSITION;POS LT;POSITION LIGHTS;NAV ON;NAV OFF	occasional	button	lights_ext_navigation_set:down	systems	minutes
+lights_ext_navigation_off1	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*	lights_ext_navigation1:off	NAV LT;NAV LIGHT;NAV LIGHTS;POSITION;POS LT;POSITION LIGHTS	occasional	button	lights_ext_navigation1_set:down	systems	minutes
+lights_ext_navigation_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.rotary.*.cw,panel.encoder.*.cw,throttle.base.rotary.*.cw,panel.button.*	lights_ext_navigation:on	NAV LT;NAV LIGHT;NAV LIGHTS;POSITION;POS LT;POSITION LIGHTS;NAV ON;NAV OFF	occasional	button	lights_ext_navigation_set:up	systems	minutes
+lights_ext_navigation_on1	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.rotary.*.cw,panel.encoder.*.cw,throttle.base.rotary.*.cw,panel.button.*	lights_ext_navigation1:on	NAV LT;NAV LIGHT;NAV LIGHTS;POSITION;POS LT;POSITION LIGHTS	occasional	button	lights_ext_navigation1_set:up	systems	minutes
+lights_ext_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*,throttle.pinky.aft,throttle.pinky.lever.aft	lights_ext:off	LIGHTS;EXT LT	occasional	button	lights_ext_set:down	systems	minutes
+lights_ext_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.rotary.*.cw,panel.encoder.*.cw,throttle.base.rotary.*.cw,panel.button.*,throttle.pinky.fwd,throttle.pinky.lever.fwd	lights_ext:on	LIGHTS;EXT LT	occasional	button	lights_ext_set:up	systems	minutes
 lights_ext_formation	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		FORM;FORMATION	occasional	button		systems	minutes
 lights_ext_formation_2	panel	panel.rotary.*.cw,panel.encoder.*.cw,throttle.base.rotary.*.cw,panel.button.*		FORM;FORMATION	occasional	button		systems	minutes
 lights_in_flashlight	panel	panel.rotary.*.ccw,panel.encoder.*.ccw,throttle.base.rotary.*.ccw,panel.button.*		INST;CONSOLE;FLOOD;PANEL	occasional	button		systems	minutes
@@ -300,13 +300,13 @@ refuel_probe_in	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.tog
 refuel_probe_out	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	refuel_probe:out	REFUEL;PROBE;AAR	occasional	button		systems	minutes
 reset_curser_fov_out_lss_china_aft	throttle	throttle.china.aft,throttle.hat.*.aft,throttle.hat.*.down,throttle.ministick.down			frequent	button	china:aft	a2g|view	seconds
 reverse_thrust	throttle	throttle.detent.cutoff,quadrant.button.*,throttle.button.*			occasional	button		tol	seconds
-right_engine_start	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	right_engine:start	ENG R;RIGHT ENG;R ENG;ENG CRANK R;R ENG START	frequent	button		systems	idle
-right_engine_stop	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	right_engine:stop	ENG R;RIGHT ENG;R ENG;ENG CRANK R	occasional	button		systems	idle
+right_engine_start	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	right_engine:start	ENG R;RIGHT ENG;R ENG;ENG CRANK R;R ENG START;ENG OPER R;ENG 2 MASTER;ENG MASTER 2	frequent	button		systems	idle
+right_engine_stop	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	right_engine:stop	ENG R;RIGHT ENG;R ENG;ENG CRANK R;ENG OPER R;ENG 2 MASTER;ENG MASTER 2	occasional	button		systems	idle
 roll	stick	stick.axis.roll,yoke.axis.roll			constant	axis		pilot	instant
 rpm_control	throttle	quadrant.axis.lever.2,collective.axis.throttle_twist,throttle.axis.slider.1,throttle.axis.rotary.1,throttle.axis.wheel.1			frequent	axis		pilot	instant
 rpm_decrease	throttle	quadrant.button.*,throttle.hat.*.aft,throttle.hat.*.down,throttle.ministick.down,throttle.base.rotary.*.ccw			frequent	button		pilot	seconds
 rpm_increase	throttle	quadrant.button.*,throttle.hat.*.fwd,throttle.hat.*.up,throttle.ministick.up,throttle.base.rotary.*.cw			frequent	button		pilot	seconds
-rudder	pedals	pedals.axis.rudder,stick.axis.twist			constant	axis		pilot	instant
+rudder	pedals	pedals.axis.rudder,stick.axis.twist,throttle.axis.rocker,stick.axis.rocker,throttle.axis.ministick.x			constant	axis		pilot	instant
 salute	any	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			frequent	button		comms	seconds
 select_gun	stick	stick.hat.*.down,stick.ministick.down,throttle.hat.*.down,throttle.ministick.down,stick.button.thumb.*,panel.button.*			frequent	button	weapon_select:down	a2a	instant
 select_heater	stick	stick.hat.*.left,stick.ministick.left,throttle.hat.*.left,throttle.ministick.left,stick.button.thumb.*,panel.button.*			frequent	button	weapon_select:left	a2a	instant
@@ -352,14 +352,14 @@ throttlerightj11	throttle	throttle.axis.right,throttle.axis.main,quadrant.axis.l
 throttlerightnonab	collective	collective.axis.main,throttle.axis.right,throttle.axis.main,quadrant.axis.lever.2,quadrant.axis.lever.1			constant	axis		pilot	instant
 toggle_crew_ai	any	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			frequent	button		comms	seconds
 toggle_units	any	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			rare	button		systems	idle
-trigger1ststage	stick	stick.trigger.stage1			frequent	button		a2a|a2g	instant
-trigger2ndstage	stick	stick.trigger.stage2,stick.trigger.stage1,yoke.button.*			frequent	button		a2a|a2g	instant
-trim_nosedown	stick	stick.hat.trim.up,stick.ministick.up,yoke.hat.1.up,stick.hat.*.up			frequent	button	trim:up	pilot	seconds
-trimleft	stick	stick.hat.trim.left,stick.ministick.left,yoke.hat.1.left,stick.hat.*.left			frequent	button	trim:left	pilot	seconds
+trigger1ststage	stick	stick.trigger.stage1,yoke.trigger.stage1,yoke.button.1,yoke.button.*			frequent	button		a2a|a2g	instant
+trigger2ndstage	stick	stick.trigger.stage2,stick.trigger.stage1,yoke.trigger.stage1,yoke.button.1,yoke.button.*			constant	button		a2a|a2g	instant
+trim_nosedown	stick	stick.hat.trim.up,stick.ministick.up,yoke.hat.1.up,stick.hat.*.up		TRIM;TRIMMER	constant	button	trim:up	pilot	seconds
+trimleft	stick	stick.hat.trim.left,stick.ministick.left,yoke.hat.1.left,stick.hat.*.left		TRIM;TRIMMER	constant	button	trim:left	pilot	seconds
 trimmerset	stick	stick.button.thumb.*,stick.pinky.button,collective.button.*			constant	button		pilot	seconds
-trimnoseup	stick	stick.hat.trim.down,stick.ministick.down,yoke.hat.1.down,stick.hat.*.down			frequent	button	trim:down	pilot	seconds
-trimreset	stick	stick.hat.trim.press,stick.ministick.press,stick.button.thumb.*,stick.base.button.*			occasional	button	trim:press	pilot	seconds
-trimright	stick	stick.hat.trim.right,stick.ministick.right,yoke.hat.1.right,stick.hat.*.right			frequent	button	trim:right	pilot	seconds
+trimnoseup	stick	stick.hat.trim.down,stick.ministick.down,yoke.hat.1.down,stick.hat.*.down		TRIM;TRIMMER	constant	button	trim:down	pilot	seconds
+trimreset	stick	stick.hat.trim.press,stick.ministick.press,stick.button.thumb.*,stick.base.button.*		TRIM;TRIMMER	occasional	button	trim:press	pilot	seconds
+trimright	stick	stick.hat.trim.right,stick.ministick.right,yoke.hat.1.right,stick.hat.*.right		TRIM;TRIMMER	constant	button	trim:right	pilot	seconds
 tws_man	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*			frequent	button		a2a	seconds
 ufc	panel	panel.key.UFC,panel.button.*			occasional	button		nav	minutes
 ufc_2	panel	panel.key.2,panel.button.*		^2	occasional	button		nav	minutes
@@ -531,3 +531,29 @@ tdc_slew_down	throttle	throttle.coolie.down,throttle.ministick.down,throttle.hat
 tdc_slew_left	throttle	throttle.coolie.left,throttle.ministick.left,throttle.hat.*.left			frequent	button	slew:left	a2a|a2g	instant
 tdc_slew_right	throttle	throttle.coolie.right,throttle.ministick.right,throttle.hat.*.right			frequent	button	slew:right	a2a|a2g	instant
 tdc_depress	throttle	throttle.ministick.press,throttle.coolie.press,stick.ministick.press,stick.pinky.button,throttle.pinky.button			frequent	button	slew:press	a2a|a2g	instant
+view_snap_forward	throttle	throttle.hat.*.up,throttle.ministick.up,stick.hat.*.up			frequent	button	snapview:up	view	instant
+view_snap_back	throttle	throttle.hat.*.down,throttle.ministick.down,stick.hat.*.down			frequent	button	snapview:down	view	instant
+view_snap_left	throttle	throttle.hat.*.left,throttle.ministick.left,stick.hat.*.left			frequent	button	snapview:left	view	instant
+view_snap_right	throttle	throttle.hat.*.right,throttle.ministick.right,stick.hat.*.right			frequent	button	snapview:right	view	instant
+view_look_horizontal	throttle	throttle.axis.ministick.x,stick.axis.ministick.x			occasional	axis	look_axes:x	view	seconds
+view_look_vertical	throttle	throttle.axis.ministick.y,stick.axis.ministick.y			occasional	axis	look_axes:y	view	seconds
+wheelbrakes_button	stick	stick.button.pinky.*,stick.button.thumb.*,stick.button.index.*,yoke.button.*,throttle.button.*			constant	button		tol	instant
+eject	panel	panel.button.*,throttle.base.button.*,stick.base.button.*		EJECT;EJECTION	rare	button		systems	idle
+fire_extinguisher	panel	panel.button.*,throttle.base.button.*,stick.base.button.*		ENG FIRE;FIRE FAULT;FIRE EXT;FIRE PULL;EXTINGUISH	rare	button		systems	idle
+autothrottle_toga	throttle	throttle.button.*,quadrant.button.*,panel.button.*,throttle.base.button.*,stick.base.button.*		TOGA	occasional	button		tol	seconds
+electrics_battery_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	electrics_battery:on	MASTER BAT;BATTERY;BATT	occasional	button		systems	idle
+electrics_battery_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	electrics_battery:off	MASTER BAT;BATTERY;BATT	occasional	button		systems	idle
+electrics_alternator_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	electrics_alternator:on	MASTER ALT;ALTERNATOR;GENERATOR;GEN	occasional	button		systems	idle
+electrics_alternator_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	electrics_alternator:off	MASTER ALT;ALTERNATOR;GENERATOR;GEN	occasional	button		systems	idle
+electrics_avionics_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	electrics_avionics:on	AVIONICS BUS 1;AVIONICS MASTER;=AVIONICS ON;=AVIONICS	occasional	button		systems	idle
+electrics_avionics_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	electrics_avionics:off	AVIONICS BUS 1;AVIONICS MASTER;=AVIONICS OFF;=AVIONICS	occasional	button		systems	idle
+electrics_avionics2_on	panel	panel.toggle.*.up,panel.toggle3.*.up,throttle.base.toggle.*.up,stick.base.toggle.*.up,panel.button.*	electrics_avionics2:on	AVIONICS BUS 2	occasional	button		systems	idle
+electrics_avionics2_off	panel	panel.toggle.*.down,panel.toggle3.*.down,throttle.base.toggle.*.down,stick.base.toggle.*.down,panel.button.*	electrics_avionics2:off	AVIONICS BUS 2	occasional	button		systems	idle
+magnetos_off	panel	panel.selector.*,panel.button.*		IGNITION OFF;MAG OFF;MAGNETO OFF;MAGS OFF	occasional	button		systems	idle
+magnetos_r	panel	panel.selector.*,panel.button.*		IGNITION R;MAG R;MAGNETO R;MAGS R	occasional	button		systems	idle
+magnetos_l	panel	panel.selector.*,panel.button.*		IGNITION L;MAG L;MAGNETO L;MAGS L	occasional	button		systems	idle
+magnetos_both	panel	panel.selector.*,panel.button.*		IGNITION BOTH;MAG BOTH;MAGNETO BOTH;MAGS BOTH	occasional	button		systems	idle
+magnetos_start	panel	panel.selector.*,panel.button.*		IGNITION START;MAG START;MAGNETO START;START	occasional	button		systems	idle
+autopilot_heading_hold	panel	panel.button.*,throttle.base.button.*,stick.base.button.*,throttle.button.*		=HDG;HDG HOLD;HEADING HOLD	occasional	button		nav	minutes
+throttle_up_button	throttle	throttle.hat.*.up,throttle.ministick.up,throttle.button.*,stick.hat.*.up			frequent	button	throttle_button:up		seconds
+throttle_down_button	throttle	throttle.hat.*.down,throttle.ministick.down,throttle.button.*,stick.hat.*.down			frequent	button	throttle_button:down		seconds

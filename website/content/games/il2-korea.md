@@ -17,19 +17,29 @@ curve editor and its force feedback settings.
 
 {{game-card}}
 
-```mermaid
-flowchart LR
-  P["Your profile<br/>(relations + binds)"] --> E["engine il2korea export"]
-  E --> A["data / input / general.actions<br/>(binds + devices used)"]
-  E --> N["known.devices.json<br/>(device numbers)"]
-  E --> R["general.pitch<br/>shared.responses"]
-  E --> S["UserSettings.json<br/>(force feedback, filter)"]
-  A --> G["Korea compiles current.map<br/>at start"]
-  R --> G
-  G --> K["Settings > Key mapping"]
-```
-
 :::layer beginner
+## Get it working in 3 steps
+
+:::steps
+1. **Set it all up for me**<br>on the Start page
+2. **Use these buttons**<br>look at the list first
+3. **Write to my game**<br>keep the game closed
+:::
+
+**Before**: save a key mapping once. Open **Settings > Key mapping** and press **ACCEPT**. Close the game.
+
+**Then**: your binds are in **Settings > Key mapping**, in every aircraft.
+
+Did you bind buttons in IL-2 Korea before? Then the Start page offers **Import, then fill the gaps**. Your binds
+stay, and only free buttons get new jobs. See
+[[page:getting-started/quick-start.html|Quick start: make my stick work]].
+
+## Look around without head tracking
+
+No TrackIR, no VR? The setup puts the snap views on one hat of your stick: forward, back, left and right. The look
+axes go on the mini stick of your throttle, when it has one. See
+[[page:how-do-i/head-tracking.html|Head tracking and looking around]].
+
 ## What JoyPro does for IL-2 Korea
 
 - **Import**: every action of the key mapping that sits on a stick, throttle, pedals or panel comes into your profile,
@@ -56,9 +66,9 @@ button that does two things in Korea ([[page:flows/check.html|the Check]]).
 ## Export to IL-2 Korea
 
 1. **Close the game.** JoyPro refuses to write while `IL2Series.exe` runs.
-2. Open **Export**. The IL-2 Series: Korea tile shows how many of its relations are bound.
+2. Open **Export**. The IL-2 Series: Korea card shows how many of its relations are bound.
 3. Keep **Replace on my devices** with **Also clear my other devices** if JoyPro is where you set up your sticks.
-   Press **Export now** on the tile.
+   Press **Export now** on the card.
 
 ![The Export page](shot:export)
 
@@ -143,6 +153,17 @@ curve icon opens the response editor with the values JoyPro wrote. Force feedbac
 
 :::layer technical
 ## Inside the Korea integration
+
+```mermaid
+%% caption: Korea compiles these files (data/input: binds and device numbers, curves; force feedback and filter in UserSettings.json) into its key mapping (current.map) at its next start.
+flowchart LR
+  P["Your profile"] --> E["engine il2korea export"]
+  E --> A["general.actions<br/>known.devices.json"]
+  E --> R["general.pitch<br/>shared.responses"]
+  E --> S["UserSettings.json"]
+  A --> G["Settings ><br/>Key mapping"]
+  R --> G
+```
 
 Code: `engine\Games\Il2KoreaIntegration.cs`, axis model `il2korea` in `engine\AxisModels`.
 

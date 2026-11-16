@@ -15,6 +15,16 @@ public interface IJoystickCaptureService
     // up until cancelled, and (onAxes) the axes of a device whenever they moved; for the overlay and the HUD. Runs in
     // the background, also while a game has the focus.
     Task MonitorAsync(System.Action<JoystickInputEvent> onEvent, System.Action<JoystickAxisSnapshot>? onAxes, CancellationToken cancellationToken);
+
+    // The same, but after 1.5 s without any input the devices are read only every idleDelay (the layout window: next to
+    // nothing while nobody touches the devices, the first press shows within idleDelay). Fakes may ignore it.
+    Task MonitorAsync(System.Action<JoystickInputEvent> onEvent, System.Action<JoystickAxisSnapshot>? onAxes, System.TimeSpan idleDelay, CancellationToken cancellationToken)
+        => MonitorAsync(onEvent, onAxes, cancellationToken);
+
+    // The same, only for the devices include accepts (by their instance name): the others are not even opened, so a
+    // device that reports a thousand times a second (an analog keyboard) costs nothing. Fakes may ignore it.
+    Task MonitorAsync(System.Action<JoystickInputEvent> onEvent, System.Action<JoystickAxisSnapshot>? onAxes, System.TimeSpan idleDelay, System.Func<string, bool>? include, CancellationToken cancellationToken)
+        => MonitorAsync(onEvent, onAxes, idleDelay, cancellationToken);
 }
 
 // A button, hat direction ("JOY_BTN_POV1_U") or keyboard modifier ("LCtrl") of a device going down or up.

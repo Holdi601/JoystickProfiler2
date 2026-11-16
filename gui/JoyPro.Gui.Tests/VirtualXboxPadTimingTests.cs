@@ -15,8 +15,11 @@ namespace JoyPro.Gui.Tests;
 [SupportedOSPlatform("windows")]
 public sealed class VirtualXboxPadTimingTests
 {
-    private const string Both = "Exception, the virtual Xbox pad of Hell Let Loose: Vietnam and ACE COMBAT 8: these games only see a pad created after their title screen shows. Press Start there, or press Stop and Start once the title screen shows.";
-    private const string One = "Exception, the virtual Xbox pad of {0}: the game only sees a pad created after its title screen shows. Press Start there, or press Stop and Start once the title screen shows.";
+    private const string Both = "Xbox controller games: start the game first and wait for its title screen. Then press Start. Too early? Press Stop, then Start.";
+    private const string One = "{0} (Xbox controller): start the game first and wait for its title screen. Then press Start. Too early? Press Stop, then Start.";
+    // The auto start tip names the title-screen games instead of repeating the Start rule ("one Start rule", 2026-11-14):
+    // auto start fires when the game's program starts, before its title screen.
+    private const string NotForAuto = "Not for {0}: auto start comes before the title screen, which is too early. Click Start yourself at the title screen.";
 
     private static VirtualJoystickGameItem Game(string id, string name, string mode) =>
         new(id, name, 3, mode, ["game.exe"], null);
@@ -31,7 +34,7 @@ public sealed class VirtualXboxPadTimingTests
         Assert.True(vm.HasVirtualXboxPadTimingNote);
         Assert.EndsWith(" " + Both, vm.VirtualJoystickStartTip);
         Assert.StartsWith("Hides your physical devices", vm.VirtualJoystickStartTip);
-        Assert.EndsWith(" " + Both, vm.VirtualJoystickAutoStartTip);
+        Assert.EndsWith(" " + string.Format(NotForAuto, "Xbox controller games"), vm.VirtualJoystickAutoStartTip);
 
         // Other games only (DCS virtual, Hell Let Loose: Vietnam native): nothing.
         vm.VirtualJoystickGames.Add(Game("DCS", "DCS World", VirtualJoystickGameItem.ModeVJoy));
@@ -46,7 +49,7 @@ public sealed class VirtualXboxPadTimingTests
         string one = string.Format(One, "ACE COMBAT 8: Wings of Theve");
         Assert.Equal(one, vm.VirtualXboxPadTimingNote);
         Assert.EndsWith(" " + one, vm.VirtualJoystickStartTip);
-        Assert.EndsWith(" " + one, vm.VirtualJoystickAutoStartTip);
+        Assert.EndsWith(" " + string.Format(NotForAuto, "ACE COMBAT 8: Wings of Theve"), vm.VirtualJoystickAutoStartTip);
 
         // Both on the Xbox pad: the note naming both.
         vm.VirtualJoystickGames.Clear();

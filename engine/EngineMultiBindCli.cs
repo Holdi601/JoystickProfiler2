@@ -11,7 +11,7 @@ namespace JoyPro.Engine
     {
         public string Relation { get; set; }
         public bool IsAxis { get; set; }
-        // Is the experimental setting on for this run (--multi-bind on)?
+        // Is it on for this run (the default; --multi-bind off switches it off)?
         public bool Enabled { get; set; }
         public EngineBindDto Main { get; set; }
         public List<EngineBindDto> Extras { get; set; }
@@ -57,7 +57,7 @@ namespace JoyPro.Engine
                 return Fail("Relation not found: " + relationName);
 
             if ((action == "add" || action == "set" || action == "move") && !MultiBind.Enabled)
-                return Fail("Several inputs per relation is an experimental setting and it is off: switch it on in Settings > Experimental, or pass " + MultiBind.Option + " on.");
+                return Fail("Several inputs per relation is switched off for this call (" + MultiBind.Option + " off or JOYPRO_MULTI_BIND=0): leave the option out or pass " + MultiBind.Option + " on.");
 
             EngineExtraBindsResult result;
             string error;
@@ -131,7 +131,7 @@ namespace JoyPro.Engine
             if (merge != "skip" && merge != "add")
                 return Fail("--merge must be skip or add.");
             if (!dryRun && !MultiBind.Enabled)
-                return Fail("Several inputs per relation is an experimental setting and it is off: switch it on in Settings > Experimental, or pass " + MultiBind.Option + " on.");
+                return Fail("Several inputs per relation is switched off for this call (" + MultiBind.Option + " off or JOYPRO_MULTI_BIND=0): leave the option out or pass " + MultiBind.Option + " on.");
 
             List<string> warnings = new List<string>();
             Games.GameDeviceDirectory directory = Games.GameDeviceDirectory.Discover(warnings);
@@ -251,7 +251,7 @@ namespace JoyPro.Engine
             result.Extras = MultiBind.Extras(relation).Select(b => EngineSerialization.ToBindDto(relationName, relation.ISAXIS, b)).ToList();
             result.Message = message ?? string.Empty;
             if (!MultiBind.Enabled && result.Extras.Count > 0)
-                result.Warnings.Add("The experimental setting \"Several inputs per relation\" is off: exports, checks and pages use only the main bind.");
+                result.Warnings.Add("Several inputs per relation is switched off for this call (--multi-bind off): exports, checks and pages use only the main bind.");
             return result;
         }
 
@@ -347,7 +347,7 @@ namespace JoyPro.Engine
                 satYRaw = PopOptionValue(args, "--saturation-y");
                 curvature = PopOptionValues(args, "--curvature");
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException ex) when (!IsMissingOptionValue(ex))
             {
                 error = ex.Message;
                 return false;

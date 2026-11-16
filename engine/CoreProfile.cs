@@ -35,6 +35,12 @@ namespace JoyPro
         [OptionalField]
         public string LayoutPreferences;
 
+        // The Setup wizard's head-tracking answer for this profile (docs/setup-wizard.md#head-tracking): "yes" (head
+        // tracking, face tracking, Tobii or VR, or planned: no look-around buttons, only the recenter; Auto Group and the
+        // suggestions make no look / snap-view relations in those sims), "no", or null (not asked).
+        [OptionalField]
+        public string HeadTracking;
+
         // Actions the user keeps on in several relations on purpose ("Keep both", engine relations duplicates):
         // "game|id|plane|relation<TAB>relation", the check does not warn about them while exactly these relations have it.
         [OptionalField]
