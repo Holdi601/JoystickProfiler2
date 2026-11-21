@@ -332,19 +332,16 @@ namespace JoyPro.Engine.Axis
         }
 
         // The bend of the base's throttle g (0..1) into the aircraft's: piecewise linear through anchors (from -> to), with
-        // (0, 0) and (1, 1) at the ends.
+        // (0, 0) and (1, 1) at the ends. With a cut-off the bend starts at the idle detent (g there -> the aircraft's
+        // idle); the travel behind it is WantedThrottle's cut-off ramp.
         public static List<KeyValuePair<double, double>> Anchors(Func<double, double> baseThrottle, DetentCalibration cal, DetentTarget target, double margin)
         {
             List<KeyValuePair<double, double>> anchors = new List<KeyValuePair<double, double>>();
             double gDet = baseThrottle(cal.Detent);
             double gFull = baseThrottle(cal.FullOrEnd);
+            KeyValuePair<double, double> start = new KeyValuePair<double, double>(0.0, 0.0);
             if (cal.HasCutoff)
-            {
-                double gCut = baseThrottle(cal.Cutoff);
-                if (gCut > 1e-6)
-                    anchors.Add(new KeyValuePair<double, double>(gCut, 0.0));
-                anchors.Add(new KeyValuePair<double, double>(baseThrottle(cal.Idle), Math.Max(0.0, target.IdleGate)));
-            }
+                start = new KeyValuePair<double, double>(baseThrottle(cal.Idle), Math.Max(0.0, target.IdleGate));
             if (target.Kind == DetentTargetKind.FullAtDetent)
                 anchors.Add(new KeyValuePair<double, double>(gDet, 1.0));
             else if (target.Kind == DetentTargetKind.Afterburner)
@@ -353,7 +350,7 @@ namespace JoyPro.Engine.Axis
                 if (gFull < 1.0 - 1e-6)
                     anchors.Add(new KeyValuePair<double, double>(gFull, 1.0));
             }
-            List<KeyValuePair<double, double>> sorted = new List<KeyValuePair<double, double>> { new KeyValuePair<double, double>(0.0, 0.0) };
+            List<KeyValuePair<double, double>> sorted = new List<KeyValuePair<double, double>> { start };
             foreach (KeyValuePair<double, double> a in anchors.OrderBy(a => a.Key))
             {
                 KeyValuePair<double, double> last = sorted[sorted.Count - 1];
@@ -390,6 +387,11 @@ namespace JoyPro.Engine.Axis
         }
 
         // The game throttle 0..1 an aircraft should get along the raw travel u 0..1.
+        // The base's dead zone is part of g (the game applies it to the raw axis at the idle end of the travel, before
+        // the bend): the throttle stays at zero there and the device's detent still gives the afterburner start. With
+        // a cut-off the calibrated idle detent always gives the aircraft's idle: behind it the throttle runs straight
+        // from 0 at the cut-off to idle (a dead zone there changes nothing), and a dead zone reaching past the idle
+        // detent keeps the throttle at idle up to its end (never at the cut-off while resting in the idle detent).
         public static Func<double, double> WantedThrottle(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, DetentTarget target, double margin)
         {
             double sigma;
@@ -397,7 +399,20 @@ namespace JoyPro.Engine.Axis
             if (sigma == 0.0 || target.Kind == DetentTargetKind.Linear)
                 return g;
             List<KeyValuePair<double, double>> anchors = Anchors(g, cal, target, margin);
-            return u => Piecewise(anchors, g(u));
+            if (!cal.HasCutoff)
+                return u => Piecewise(anchors, g(u));
+            double cutTravel = cal.Travel(cal.Cutoff);
+            double idleTravel = cal.Travel(cal.Idle);
+            double idleValue = Piecewise(anchors, g(cal.Idle));
+            return u =>
+            {
+                double travel = cal.Travel(u);
+                if (travel >= idleTravel)
+                    return Piecewise(anchors, g(u));
+                if (travel <= cutTravel || idleTravel - cutTravel <= 1e-9)
+                    return 0.0;
+                return idleValue * (travel - cutTravel) / (idleTravel - cutTravel);
+            };
         }
 
         // The model output (-1..1) an aircraft should get at raw x -1..1.
@@ -410,14 +425,32 @@ namespace JoyPro.Engine.Axis
             return x => s * (2.0 * wanted((Math.Max(-1.0, Math.Min(1.0, x)) + 1.0) / 2.0) - 1.0);
         }
 
-        // Largest difference between a tuning's response and the wanted response, in game throttle units (0..1).
-        public static double MaxError(AxisModel model, AxisTuning tuning, Func<double, double> wantedResponse)
+        // Largest difference between a tuning's response and the wanted response, in game throttle units (0..1). With a
+        // calibrated cut-off the travel between the cut-off and the idle detent only has to stay between zero and idle
+        // (the lever only passes through there; DCS gets a step at the idle detent), the cut-off itself must be zero.
+        public static double MaxError(AxisModel model, AxisTuning tuning, Func<double, double> wantedResponse, DetentCalibration cal = null)
         {
+            bool cutoff = cal != null && cal.HasCutoff;
+            double cutTravel = cutoff ? cal.Travel(cal.Cutoff) : 0.0;
+            double idleTravel = cutoff ? cal.Travel(cal.Idle) : 0.0;
+            double atCut = cutoff ? wantedResponse(2.0 * cal.Cutoff - 1.0) : 0.0;
+            double atIdle = cutoff ? wantedResponse(2.0 * cal.Idle - 1.0) : 0.0;
             double max = 0.0;
             for (int i = 0; i < Samples; i++)
             {
                 double x = -1.0 + 2.0 * i / (Samples - 1);
-                max = Math.Max(max, Math.Abs(model.Evaluate(tuning, x) - wantedResponse(x)) / 2.0);
+                double y = model.Evaluate(tuning, x);
+                double travel = cutoff ? cal.Travel((x + 1.0) / 2.0) : 1.0;
+                double error;
+                if (cutoff && travel > cutTravel + 1e-9 && travel < idleTravel - 1e-9)
+                {
+                    double lo = Math.Min(atCut, atIdle);
+                    double hi = Math.Max(atCut, atIdle);
+                    error = y < lo ? lo - y : y > hi ? y - hi : 0.0;
+                }
+                else
+                    error = Math.Abs(y - wantedResponse(x));
+                max = Math.Max(max, error / 2.0);
             }
             return max;
         }
@@ -435,7 +468,7 @@ namespace JoyPro.Engine.Axis
                 fit = FitControlPoints(model, baseTuning, cal, wanted);
             else
                 fit = FitParameters(model, baseTuning, wanted);
-            fit.MaxError = MaxError(model, fit.Tuning, wanted);
+            fit.MaxError = MaxError(model, fit.Tuning, wanted, cal);
             if (fit.MaxError > Unusable)
             {
                 fit.Fallback = true;
@@ -503,14 +536,59 @@ namespace JoyPro.Engine.Axis
             }
 
             // The 11-point user curve (natural spline through 0, 0.1, .. 1), least squares over the travel, exact at the
-            // device's detent.
+            // device's detent. DCS applies dead zone and saturation X before the user curve, so the flat ends of the
+            // wanted shape (the base's dead zone at the start of the travel, a cut-off, full beyond the detent) go there
+            // and stay exactly flat; the spline only spans the travel between them.
             AxisTuning curve = t.Clone();
-            curve.Deadzone = 0.0;
-            curve.SaturationX = 1.0;
-            curve.SaturationY = 1.0;
-            Func<double, double> shapeAt = u => (((curve.Inverted ? -1.0 : 1.0) * wanted(2.0 * u - 1.0)) + 1.0) / 2.0;
+            double flatStart = 0.0;
+            double flatEnd = 1.0;
+            double top = 1.0;
+            if (lastZero >= 0 && lastZero + 1 < Samples)
+                flatStart = Math.Round(RefineEdge(i => wanted(2.0 * i - 1.0), t.Inverted, us[lastZero], us[lastZero + 1], 0.0, true), 4);
+            if (firstTop > 0 && firstTop < Samples - 1)
+            {
+                flatEnd = Math.Round(RefineEdge(i => wanted(2.0 * i - 1.0), t.Inverted, us[firstTop - 1], us[firstTop], sy, false), 4);
+                top = Math.Round(sy, 4);
+            }
+            // A cut-off: the spline starts just behind the idle detent with the aircraft's idle (a step there, as the real
+            // lever goes over its idle detent into the cut-off); its kink at idle would bend the whole curve otherwise.
+            double clampLow = 0.0;
+            double clampHigh = 1.0;
+            if (cal.HasCutoff)
+            {
+                double step = Math.Min(0.005, Math.Abs(cal.Idle - cal.Cutoff) / 3.0);
+                if (cal.Increasing)
+                {
+                    flatStart = Math.Max(flatStart, Math.Round(cal.Idle - step, 4));
+                    clampLow = cal.Idle;
+                }
+                else
+                {
+                    flatEnd = Math.Min(flatEnd, Math.Round(cal.Idle + step, 4));
+                    top = Math.Round(sy, 4);
+                    clampHigh = cal.Idle;
+                }
+            }
+            if (flatEnd - flatStart < 0.1)
+            {
+                flatStart = 0.0;
+                flatEnd = 1.0;
+                top = 1.0;
+                clampLow = 0.0;
+                clampHigh = 1.0;
+            }
+            curve.Deadzone = flatStart;
+            curve.SaturationX = flatEnd;
+            curve.SaturationY = top;
+            Func<double, double> shapeOnTravel = u => (((curve.Inverted ? -1.0 : 1.0) * wanted(2.0 * u - 1.0)) + 1.0) / 2.0;
+            Func<double, double> shapeAt = v => shapeOnTravel(Math.Max(clampLow, Math.Min(clampHigh, flatStart + Math.Max(0.0, Math.Min(1.0, v)) * (flatEnd - flatStart))));
+            // Exact at the device's detent (resting there = just below the afterburner); with a cut-off the spline's end
+            // at the idle side is the aircraft's idle (exact too), so resting in the idle detent never gives the cut-off.
             // Knots on a flat stretch (full beyond the detent, nothing in a cut-off) stay exactly flat.
-            List<double> exact = new List<double> { cal.Detent };
+            List<double> exact = new List<double>();
+            double detentAt = (cal.Detent - flatStart) / (flatEnd - flatStart);
+            if (detentAt > 0.0 && detentAt < 1.0)
+                exact.Add(detentAt);
             for (int k = 0; k < AxisModels.UserCurvePoints; k++)
             {
                 double u = k / (double)(AxisModels.UserCurvePoints - 1);

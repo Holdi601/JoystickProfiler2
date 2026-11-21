@@ -293,6 +293,61 @@ public sealed class TrayModeTests
         }
     }
 
+    // Many binds would go (a launcher or an update rewrote the game's files, Falcon BMS 4.38.2): the dialog warns with the
+    // count and "Keep my JoyPro binds" (sync accept, the profile stays) is the default; a few removals are a normal change.
+    [Fact]
+    public async Task Review_ManyRemovedBinds_WarnsAndKeepingTheProfileIsTheDefault()
+    {
+        string profile = Path.Combine(TempFolder(), "mass.pr0file");
+        File.WriteAllText(profile, "{}");
+        try
+        {
+            TrayFakeEngine engine = new() { DiffChanges = 1, DiffRemoved = 12, ProfileBinds = 220 };
+            MainWindowViewModel vm = CreateVm(engine);
+            vm.ProfilePath = profile;
+
+            await vm.ReviewGameChangesAsync(["DCS|C:\\Saved Games\\DCS"]);
+            for (int i = 0; i < 50 && !vm.HasGameSyncChanges; i++)
+                await Task.Delay(20);
+            Assert.True(vm.HasGameSyncChanges);
+            Assert.True(vm.GameSyncMassRemoval);
+            Assert.Contains("12 of 220 for DCS World", vm.GameSyncMassRemovalWarning);
+            Assert.Contains("rewritten its files", vm.GameSyncMassRemovalWarning);
+
+            // The default button keeps the profile: the game's state counts as known, nothing is applied.
+            await vm.IgnoreGameChangesCommand.ExecuteAsync(null);
+            Assert.False(vm.HasGameSyncChanges);
+            Assert.False(vm.GameSyncMassRemoval);
+            Assert.Contains(engine.Calls, c => Seq(c, "sync", "accept"));
+            Assert.DoesNotContain(engine.Calls, c => Seq(c, "sync", "apply"));
+
+            // Two of 220: a normal change, no warning.
+            engine.DiffRemoved = 2;
+            await vm.ReviewGameChangesAsync(["DCS|C:\\Saved Games\\DCS"]);
+            for (int i = 0; i < 50 && !vm.HasGameSyncChanges; i++)
+                await Task.Delay(20);
+            Assert.True(vm.HasGameSyncChanges);
+            Assert.False(vm.GameSyncMassRemoval);
+            Assert.Equal(string.Empty, vm.GameSyncMassRemovalWarning);
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(profile)!, true);
+        }
+    }
+
+    [Theory]
+    [InlineData(11, 1000, true)]
+    [InlineData(10, 1000, false)]
+    [InlineData(3, 14, true)]
+    [InlineData(3, 15, false)]
+    [InlineData(2, 4, false)]
+    [InlineData(0, 0, false)]
+    public void MassRemoval_MoreThanTenOrMoreThanAFifth(int removed, int profileBinds, bool expected)
+    {
+        Assert.Equal(expected, MainWindowViewModel.IsMassRemoval(removed, profileBinds));
+    }
+
     // The dialog came up: the window gets one notice (information, "A game changed its controls"; MainWindow shows it and
     // flashes the taskbar button when the window is not active). Nothing to ask: no notice, the state is accepted.
     [Fact]
@@ -516,14 +571,21 @@ public sealed class TrayModeTests
             });
         }
 
-        internal static string DiffJson(int changes) =>
-            "{\"Game\":\"DCS\",\"DisplayName\":\"DCS World\",\"Changes\":[" +
+        internal static string DiffJson(int changes, int removed = 0, int profileBinds = 0) =>
+            "{\"Game\":\"DCS\",\"DisplayName\":\"DCS World\",\"ProfileBinds\":" + profileBinds + ",\"Changes\":[" +
             string.Join(",", Enumerable.Range(1, changes).Select(i =>
-                "{\"Id\":\"c" + i + "\",\"Kind\":\"added\",\"Description\":\"F-16C_50: change " + i + "\",\"Candidates\":[\"Weapon Release\"],\"Suggested\":\"Weapon Release\",\"NewRelationName\":\"Weapon Release 2\"}")) +
+                "{\"Id\":\"c" + i + "\",\"Kind\":\"added\",\"Description\":\"F-16C_50: change " + i + "\",\"Candidates\":[\"Weapon Release\"],\"Suggested\":\"Weapon Release\",\"NewRelationName\":\"Weapon Release 2\"}")
+                .Concat(Enumerable.Range(1, removed).Select(i =>
+                "{\"Id\":\"r" + i + "\",\"Kind\":\"removed\",\"Description\":\"F-16C_50: bind " + i + " no longer on the stick\",\"Candidates\":[\"Relation " + i + "\"],\"Suggested\":\"Relation " + i + "\",\"NewRelationName\":\"\"}"))) +
             "]}";
 
         // What engine sync diff lists (0: only things JoyPro does not manage) and what sync status says for a game.
         public int DiffChanges { get; set; } = 2;
+
+        // Binds the game no longer has, and the game's binds in the profile (engine sync diff ProfileBinds).
+        public int DiffRemoved { get; set; }
+
+        public int ProfileBinds { get; set; }
 
         public string GameState { get; set; } = "changed";
 
@@ -532,7 +594,7 @@ public sealed class TrayModeTests
             if (Seq(args, "sync", "status"))
                 return args.Contains("--game") ? "{\"Games\":[{\"Game\":\"DCS\",\"State\":\"" + GameState + "\"}]}" : "{\"Games\":[]}";
             if (Seq(args, "sync", "diff"))
-                return DiffJson(DiffChanges);
+                return DiffJson(DiffChanges, DiffRemoved, ProfileBinds);
             return "{}";
         }
     }

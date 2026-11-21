@@ -13,12 +13,13 @@ using Microsoft.Win32;
 
 namespace JoyPro.Engine.Games
 {
-    // Falcon BMS 4.36+: the launcher keeps one device file per controller (User\Config\Setup.v100.<product>
+    // Falcon BMS 4.36 to 4.38.1: the launcher keeps one device file per controller (User\Config\Setup.v100.<product>
     // {<DirectInput instance GUID>}.xml) and rebuilds the key file, axismapping.dat, joystick.cal and DeviceSorting.txt
     // from them on every Launch. JoyPro edits only these device files: the press slots of buttons (<dx>), hat directions
     // (<pov>) and the axis names (<axis>) of cataloged callbacks and flight axes. BMS's shift layer is a JoyPro modifier
-    // on the button that holds SimHotasPinkyShift. See docs/games/falcon-bms.md.
-    internal sealed class FalconBmsIntegration : IGameIntegration, IGameOwnershipTracking, IGameSettingsExport, IGameSettingsFile
+    // on the button that holds SimHotasPinkyShift. BMS 4.38.2 (Launcher 3) keeps the binds in User\Config\JSON instead and
+    // rebuilds these device files from there: FalconBmsIntegration.Json.cs. See docs/games/falcon-bms.md.
+    internal sealed partial class FalconBmsIntegration : IGameIntegration, IGameOwnershipTracking, IGameSettingsExport, IGameSettingsFile
     {
         public string GameId { get { return "FalconBMS"; } }
         public string DisplayName { get { return "Falcon BMS"; } }
@@ -26,7 +27,7 @@ namespace JoyPro.Engine.Games
         public string DbFolder { get { return "FalconBMS"; } }
         public bool Experimental { get { return true; } }
         public bool ExclusiveFlightSim { get { return true; } }
-        public string Notes { get { return "Experimental. JoyPro writes the BMS launcher's device files in User\\Config; the launcher builds the key file and the axis setup from them on its next Launch. Close BMS and its launcher before exporting. A connected device without a device file gets one (the launcher's stock file of that model, else an empty one)."; } }
+        public string Notes { get { return "Experimental. BMS 4.38.2 and newer: JoyPro writes the launcher's binding files in User\\Config\\JSON (per device and aircraft; start the launcher once with the devices connected so it creates them). BMS up to 4.38.1: JoyPro writes the launcher's device files in User\\Config (a connected device without one gets one). Either way the launcher builds the key file and the axis setup from them. Close BMS and its launcher before exporting."; } }
         public IReadOnlyList<string> ProcessNames { get { return new[] { "Falcon BMS", "FalconBMS_Alternative_Launcher" }; } }
         public bool SupportsCatalogRefresh { get { return true; } }
         // The key file stays BMS's; modifiers: only the one DX shift layer.
@@ -41,9 +42,11 @@ namespace JoyPro.Engine.Games
         private const int PressSlots = 2;
         private static readonly Regex DeviceFileName = new Regex(@"^Setup\.v100\.(?<name>.*) \{(?<guid>[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})\}\.xml$", RegexOptions.Compiled);
 
-        // Key-file sections with cockpit and flight callbacks; UI, 3rd party, simulation/hardware, Winamp, development,
-        // views (7.x) and radio menus (8.x) stay out.
-        private static readonly Regex FlightSection = new Regex(@"^=+\s*(?<num>[2-5]\.\d\d|6\.0[1-5]|6\.09)\s+(?<title>.+?)\s*=+$", RegexOptions.Compiled);
+        // Key-file headers: sections ("======== 2.04 MANUAL TRIM PANEL ========") and chapters ("2. LEFT CONSOLE"). Flight
+        // callbacks are in the console and miscellaneous chapters, without these sections (FlightCallbacks).
+        private static readonly Regex KeySection = new Regex(@"^=+\s*(?<num>\d+\.\d\d)\s+(?<title>.+?)\s*=+$", RegexOptions.Compiled);
+        private static readonly Regex KeyChapter = new Regex(@"^\d+\.\s+(?<title>.+)$", RegexOptions.Compiled);
+        private static readonly HashSet<string> NonFlightSections = new HashSet<string>(StringComparer.Ordinal) { "SIMULATION & HARDWARE", "WINAMP", "DEVELOPMENT" };
 
         // The launcher's axis functions (AxisName values) except the view axes FOV and Camera_Distance.
         private static readonly string[] AxisNames =
@@ -399,6 +402,8 @@ namespace JoyPro.Engine.Games
 
         public GameScanResult Read(string configPath, GameCatalog catalog, GameDeviceDirectory devices)
         {
+            if (UsesJsonLayout(configPath))
+                return ReadJson(configPath, catalog, devices);
             GameScanResult result = new GameScanResult();
             List<DeviceFile> files = LoadDeviceFiles(configPath, result.Errors);
             ShiftButton shift = FindShiftButton(files);
@@ -414,7 +419,8 @@ namespace JoyPro.Engine.Games
                     GameAction action = catalog.Find(AxisPrefix + Text(axis == null ? null : axis.Element("AxisName")));
                     if (action == null || !action.IsAxis)
                         continue;
-                    AxisTuning tuning = ReadAxisTuning(axis, action.Id.Substring(AxisPrefix.Length), userCfg);
+                    AxisTuning tuning = ReadAxisTuning(string.Equals(Text(axis.Element("Invert")), "true", StringComparison.OrdinalIgnoreCase), Text(axis.Element("Deadzone")),
+                                                       Text(axis.Element("Saturation")), action.Id.Substring(AxisPrefix.Length), userCfg);
                     result.Bindings.Add(new GameInputBinding
                     {
                         ActionId = action.Id,
@@ -475,13 +481,13 @@ namespace JoyPro.Engine.Games
         // An axis entry as the bms model sees it: invert, the launcher steps (also as the base dead zone / saturation),
         // one-sided functions as Slider without a dead zone (the launcher hides it), and for pitch, roll, yaw and the
         // cursor the exponential curve and saturation of Falcon BMS User.cfg.
-        private static AxisTuning ReadAxisTuning(XElement axis, string function, string userCfg)
+        private static AxisTuning ReadAxisTuning(bool inverted, string deadzone, string saturation, string function, string userCfg)
         {
             AxisTuning tuning = new AxisTuning();
-            tuning.Inverted = string.Equals(Text(axis.Element("Invert")), "true", StringComparison.OrdinalIgnoreCase);
+            tuning.Inverted = inverted;
             tuning.Slider = BmsSettings.OneSided.Contains(function);
-            int dz = tuning.Slider ? 0 : StepIndex(Text(axis.Element("Deadzone")));
-            int sat = StepIndex(Text(axis.Element("Saturation")));
+            int dz = tuning.Slider ? 0 : StepIndex((deadzone ?? string.Empty).Trim());
+            int sat = StepIndex((saturation ?? string.Empty).Trim());
             tuning.Deadzone = BmsAxisModel.DeadzoneFraction(dz);
             tuning.SaturationX = BmsAxisModel.SaturationFraction(sat);
             if (dz != 0)
@@ -599,6 +605,8 @@ namespace JoyPro.Engine.Games
 
         public GameIoResult Write(GameExportRequest request)
         {
+            if (UsesJsonLayout(request.ConfigPath))
+                return WriteJson(request);
             GameIoResult result = new GameIoResult();
             List<DeviceFile> files = LoadDeviceFiles(request.ConfigPath, result.Errors, false);
             if (result.Errors.Count > 0)
@@ -777,6 +785,14 @@ namespace JoyPro.Engine.Games
         public GameIoResult WriteSettings(GameExportRequest request)
         {
             GameIoResult result = new GameIoResult();
+            if (UsesJsonLayout(request.ConfigPath))
+            {
+                // BMS 4.38.2: the device files are the launcher's output, and the JSON files' detents are not known yet.
+                if (HasDetentSettings())
+                    result.Warnings.Add("Throttle detents not written: JoyPro does not know yet how BMS 4.38.2's binding files store them. Set the AB and IDLE detents in the BMS launcher.");
+                WriteGameSettings(request.ConfigPath, request.DryRun, false, new List<KeyValuePair<string, AxisTuning>>(), result);
+                return result;
+            }
             List<DeviceFile> files = LoadDeviceFiles(request.ConfigPath, result.Errors, false);
             if (result.Errors.Count > 0)
                 return result;
@@ -1306,6 +1322,11 @@ namespace JoyPro.Engine.Games
 
         public void RecordImport(string configPath, List<GameInputBinding> applied, GameDeviceDirectory devices, GameIoResult result)
         {
+            if (UsesJsonLayout(configPath))
+            {
+                RecordJsonImport(configPath, applied, devices, result);
+                return;
+            }
             List<string> errors = new List<string>();
             List<DeviceFile> files = LoadDeviceFiles(configPath, errors);
             if (errors.Count > 0)
@@ -1325,8 +1346,10 @@ namespace JoyPro.Engine.Games
             result.FilesWritten.Add(ownershipBase + GameOwnershipStore.Suffix);
         }
 
-        // Callbacks of the cockpit and flight sections of "BMS - Full.key" (visible entries only) plus the launcher's
-        // axis functions. The source is the key file or the User\Config folder that holds it.
+        // Callbacks of the cockpit and flight chapters of "BMS - Full.key" (visible entries only) plus the launcher's
+        // axis functions. The source is the key file or the User\Config folder that holds it. BMS 4.38.2 adds a key file
+        // per further aircraft profile (BMS - Full-F15ABCD.key): its callbacks that the F-16 file lacks join the catalog
+        // for that aircraft only (actions.tsv aircraft column), and the profiles go into DB\FalconBMS\aircraft.tsv.
         public GameCatalog RefreshCatalog(string sourcePath, GameCatalog current, GameIoResult result)
         {
             string keyFile = string.IsNullOrWhiteSpace(sourcePath) ? FindFullKeyFile() : sourcePath.Trim().Trim('"');
@@ -1341,8 +1364,47 @@ namespace JoyPro.Engine.Games
             GameCatalog catalog = new GameCatalog { GameId = GameId, SourcePath = keyFile };
             foreach (string axis in AxisNames)
                 catalog.Add(new GameAction { Id = AxisPrefix + axis, Title = axis.Replace('_', ' '), IsAxis = true, Category = "Axes" });
+            foreach (GameAction action in FlightCallbacks(keyFile))
+                catalog.Add(action);
+            result.Steps.Add("Callbacks read from " + keyFile);
 
+            List<string> aircraft = new List<string>();
+            if (System.IO.Path.GetFileName(keyFile).Equals(FullKeyFile, StringComparison.OrdinalIgnoreCase))
+            {
+                List<KeyValuePair<string, string>> others = SiblingAircraftKeyFiles(keyFile);
+                if (others.Count > 0)
+                    aircraft.Add(AxisAircraft);
+                foreach (KeyValuePair<string, string> other in others)
+                {
+                    aircraft.Add(other.Key);
+                    int added = 0;
+                    foreach (GameAction action in FlightCallbacks(other.Value))
+                    {
+                        GameAction known = catalog.Find(action.Id);
+                        if (known == null)
+                        {
+                            action.Aircraft = new List<string> { other.Key };
+                            catalog.Add(action);
+                            added++;
+                        }
+                        else if (known.Aircraft != null && known.Aircraft.Count > 0 && !known.Aircraft.Contains(other.Key, StringComparer.OrdinalIgnoreCase))
+                            known.Aircraft.Add(other.Key);
+                    }
+                    result.Steps.Add("Callbacks of aircraft " + other.Key + " read from " + other.Value + ": " + added.ToString(CultureInfo.InvariantCulture) + " only this aircraft has.");
+                }
+            }
+            pendingAircraft = aircraft.Count > 0 ? aircraft : null;
+            return catalog;
+        }
+
+        // The visible callbacks of a key file's cockpit and flight chapters: the "... CONSOLE" chapters and MISCELLANEOUS
+        // without its SIMULATION & HARDWARE, WINAMP and DEVELOPMENT sections (UI, views and radio menus stay out). The
+        // chapters are numbered differently per aircraft (F-16: 2.-5. consoles, 6. miscellaneous; F-15: 2.-4., 5.).
+        private static List<GameAction> FlightCallbacks(string keyFile)
+        {
+            List<GameAction> actions = new List<GameAction>();
             string section = null;
+            bool flightChapter = false;
             foreach (string line in File.ReadAllLines(keyFile, Encoding.GetEncoding(28591)))
             {
                 string trimmed = line.Trim();
@@ -1356,14 +1418,27 @@ namespace JoyPro.Engine.Games
                     continue;
                 if (tokens[7] == "-1")
                 {
-                    // Headers: "1. UI & 3RD PARTY SOFTWARE" (chapter) and "======== 2.04 MANUAL TRIM PANEL ========".
-                    Match header = FlightSection.Match(description);
-                    section = header.Success ? header.Groups["num"].Value + " " + Regex.Replace(header.Groups["title"].Value, @"\s+", " ").Trim() : null;
+                    // Headers: "2. LEFT CONSOLE" (chapter) and "======== 2.04 MANUAL TRIM PANEL ========" (section).
+                    section = null;
+                    Match header = KeySection.Match(description);
+                    if (header.Success)
+                    {
+                        string title = Regex.Replace(header.Groups["title"].Value, @"\s+", " ").Trim();
+                        if (flightChapter && !NonFlightSections.Contains(title.ToUpperInvariant()))
+                            section = header.Groups["num"].Value + " " + title;
+                        continue;
+                    }
+                    Match chapter = KeyChapter.Match(description);
+                    if (chapter.Success)
+                    {
+                        string title = chapter.Groups["title"].Value.ToUpperInvariant();
+                        flightChapter = title.Contains("CONSOLE") || title.Contains("MISCELLANEOUS");
+                    }
                     continue;
                 }
                 if (section == null || tokens[0] == Nothing || tokens[7] != "1")
                     continue;
-                catalog.Add(new GameAction
+                actions.Add(new GameAction
                 {
                     Id = tokens[0],
                     Title = description.Length > 0 ? description.Replace('\t', ' ') : tokens[0],
@@ -1371,8 +1446,7 @@ namespace JoyPro.Engine.Games
                     Category = section
                 });
             }
-            result.Steps.Add("Callbacks read from " + keyFile);
-            return catalog;
+            return actions;
         }
     }
 }

@@ -81,6 +81,52 @@ public sealed class RelationMultiSelectTests
         vm.StopGameConfigWatcher();
     }
 
+    // 2.7.1 report: "be able to press the button you want them to move to rather than typing them out". The press picks
+    // the relation of the same kind on that input (never the source); typing in the search shows every relation again.
+    [Fact]
+    public async Task MoveTo_PressTheTargetsButton()
+    {
+        RecordingEngine fake = new();
+        MainWindowViewModel vm = await OpenAsync(fake, "Weapon Release");
+        vm.SetRelationNodeSelection(vm.RelationNodes.Take(2).ToList());
+        vm.OpenMoveRelationNodesCommand.Execute(null);
+        Assert.Equal("Press the button they go to", vm.MoveNodesRecordLabel);
+        Assert.False(vm.HasMoveNodesPressText);
+
+        vm.ApplyMoveNodesPress(AxisTuningTests.Stick, "JOY_BTN1");
+        Assert.True(vm.IsMoveNodesToExisting);
+        Assert.Equal(["Gun Trigger"], vm.MoveNodesTargets);
+        Assert.Equal("Gun Trigger", vm.SelectedMoveNodesTarget);
+        Assert.True(vm.CanApplyMoveNodes);
+        Assert.Contains("Gun Trigger", vm.MoveNodesPressText);
+
+        vm.MoveNodesSearch = "g";
+        Assert.False(vm.HasMoveNodesPressText);
+        Assert.True(vm.MoveNodesTargets.Count > 1);
+        vm.MoveNodesSearch = string.Empty;
+
+        // The source's own button and a free button: nothing to pick, the list stays.
+        int all = vm.MoveNodesTargets.Count;
+        vm.ApplyMoveNodesPress(AxisTuningTests.Stick, "JOY_BTN2");
+        Assert.Contains("no relation of this kind", vm.MoveNodesPressText);
+        vm.ApplyMoveNodesPress(AxisTuningTests.Stick, "JOY_BTN31");
+        Assert.Contains("no relation of this kind", vm.MoveNodesPressText);
+        Assert.Equal(all, vm.MoveNodesTargets.Count);
+
+        vm.ApplyMoveNodesPress(AxisTuningTests.Stick, "JOY_BTN1");
+        await vm.ApplyMoveNodesCommand.ExecuteAsync(null);
+        IReadOnlyList<string> moved = fake.Calls.Last(c => AxisTuningTests.Seq(c, "relations", "item", "move-to"));
+        Assert.Equal("Gun Trigger", ValueAfter(moved, "--to"));
+
+        // Opened again: no press left over.
+        await SelectRelationAsync(vm, "Weapon Release");
+        vm.OpenMoveRelationNodesCommand.Execute(vm.RelationNodes.Last());
+        Assert.False(vm.HasMoveNodesPressText);
+        Assert.Contains("Gun Trigger", vm.MoveNodesTargets);
+        Assert.True(vm.MoveNodesTargets.Count > 1);
+        vm.StopGameConfigWatcher();
+    }
+
     [Fact]
     public async Task MoveTo_ANewRelation_OrAnExistingOneOfTheSameKind()
     {
@@ -231,13 +277,51 @@ public sealed class RelationMultiSelectTests
                         UiDesignRenderTests.RenderWindow(vm, width, 1000, Path.Combine(outDir, "relations-selected-" + width + "-" + theme + ".png"), selectRelations, detach: true);
                         Assert.True(vm.HasRelationMultiSelection);
                         vm.OpenMoveRelationNodesCommand.Execute(null);
-                        vm.IsMoveNodesToExisting = true;
-                        vm.SelectedMoveNodesTarget = vm.MoveNodesTargets.FirstOrDefault();
+                        // The target picked by pressing its button (Gun Trigger on the stick's button 1).
+                        vm.ApplyMoveNodesPress(AxisTuningTests.Stick, "JOY_BTN1");
                         AvaloniaRenderThread.Pump();
                         UiDesignRenderTests.RenderWindow(vm, width, 1000, Path.Combine(outDir, "move-dialog-" + width + "-" + theme + ".png"), detach: true);
                         vm.IsMoveNodesOpen = false;
                         vm.SetRelationMassSelection([]);
                     }
+                }
+            }
+            finally
+            {
+                vm.StopGameConfigWatcher();
+                Application.Current!.RequestedThemeVariant = ThemeVariant.Default;
+                File.Delete(Path.Combine(outDir, "warm-up.png"));
+            }
+        });
+    }
+
+    // Opt-in render of Move to... with the target picked by pressing its button (2.7.1 report).
+    [Fact]
+    public void RenderMoveDialogWithPressedTarget()
+    {
+        string? outDir = Environment.GetEnvironmentVariable("JOYPRO_MULTISELECT_RENDER_OUT");
+        if (string.IsNullOrWhiteSpace(outDir))
+            return;
+        Directory.CreateDirectory(outDir);
+        AvaloniaRenderThread.Run(() =>
+        {
+            RecordingEngine fake = new();
+            MainWindowViewModel vm = AvaloniaRenderThread.Wait(OpenAsync(fake, "Weapon Release"));
+            try
+            {
+                vm.StatusText = "Ready.";
+                foreach ((string theme, ThemeVariant variant) in new[] { ("dark", ThemeVariant.Dark), ("light", ThemeVariant.Light) })
+                {
+                    Application.Current!.RequestedThemeVariant = variant;
+                    vm.CurrentStage = UiStage.Relations;
+                    vm.SetRelationNodeSelection(vm.RelationNodes.Take(2).ToList());
+                    vm.OpenMoveRelationNodesCommand.Execute(null);
+                    vm.ApplyMoveNodesPress(AxisTuningTests.Stick, "JOY_BTN1");
+                    AvaloniaRenderThread.Pump();
+                    UiDesignRenderTests.RenderWindow(vm, 1280, 1000, Path.Combine(outDir, "warm-up.png"), detach: true);
+                    UiDesignRenderTests.RenderWindow(vm, 1280, 1000, Path.Combine(outDir, "move-dialog-pressed-1280-" + theme + ".png"), detach: true);
+                    Assert.True(vm.IsMoveNodesOpen);
+                    vm.IsMoveNodesOpen = false;
                 }
             }
             finally

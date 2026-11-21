@@ -251,6 +251,7 @@ function Get-CommandSummaryForDocs {
         "binds detent set" { return "Switches detent mode on or off, sets what aircraft without afterburner get (full power at the detent or the relation's curve), the margin below the afterburner, and an aircraft's own afterburner start (--target <game>:<plane>=ab:0.78|full|linear|default)." }
         "binds detent calibrate" { return "Stores where the bound device axis has its idle, afterburner detent, full and cut-off positions (raw axis 0..1; the GUI's wizard reads them live). Every throttle relation on that axis uses it." }
         "binds detent uncalibrate" { return "Removes the detent calibration of the bound device axis." }
+        "binds detent copy" { return "Copies a relation's detent mode (on/off, the no-afterburner rule, the margin, its own afterburner values per aircraft) to another bound axis relation, e.g. Thrust Left to Thrust Right. The calibration stays per device axis; --calibration lends this axis's calibration to the other one when it has none yet." }
         "binds detent gates" { return "Lists the shipped throttle gate data (DB\Detents\throttle-gates.json): per aircraft where its afterburner and idle cut-off are on the game's throttle axis, with source and confidence." }
         "binds detent merge" { return "Merges per-aircraft throttle relations of one device axis into one relation in detent mode: the device's detent and each aircraft's afterburner start are read from the old curves. Without --apply only the plan; profile history undo takes a merge back." }
         "binds export" { return "Writes every bind to a JSON file (a missing folder is created); a filter word writes only the matching binds. With --text the file is the readable view, which binds import cannot read." }
@@ -1289,6 +1290,7 @@ function Get-ExampleCommand {
         "binds detent set" { return @("engine binds detent set 'Throttle' --on --no-ab full --text", "engine binds detent set 'Throttle' --target DCS:F-16C_50=ab:0.775 --target DCS:A-10C=full --text") }
         "binds detent calibrate" { return @("engine binds detent calibrate 'Throttle' --idle 0.02 --detent 0.79 --full none --cutoff none --source manual --text") }
         "binds detent uncalibrate" { return @("engine binds detent uncalibrate 'Throttle' --text") }
+        "binds detent copy" { return @("engine binds detent copy 'Thrust Right' --to 'Thrust Left' --calibration --text") }
         "binds detent gates" { return @("engine binds detent gates --game DCS --text", "engine binds detent gates --game DCS --plane F-14 --text") }
         "binds detent merge" { return @("engine binds detent merge --text", "engine binds detent merge --relations 'ThrottleLeft,ThrottleLeft29,ThrottleLeftNonAB' --into ThrottleLeft --apply --text") }
         "binds export" { return @("engine binds export 'C:\JoyPro\exports\binds.json'") }

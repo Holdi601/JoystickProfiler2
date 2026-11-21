@@ -166,6 +166,77 @@ public sealed class DetentModeTests
         Assert.True(DcsThrottle(fit.Tuning, 0.0) > 0.995);
     }
 
+    // 2.7.1 report "does detent mode respect the deadzone?": the bend is applied on top of the base curve as the game
+    // evaluates it, so the dead zone stays at the idle end of the travel (exactly zero throttle there, not a spline that
+    // wobbles around it) and the device's detent still gives the afterburner start minus the margin.
+    [Theory]
+    [InlineData(0.08, 0.7, 0.8, true)]
+    [InlineData(0.04, 0.708, 0.71, true)]
+    [InlineData(0.15, 0.75, 0.9, false)]
+    public void DcsFit_DeadZoneStaysFlatAtIdle(double deadzone, double detent, double ab, bool inverted)
+    {
+        AxisTuning baseTuning = Linear(inverted);
+        baseTuning.Deadzone = deadzone;
+        DetentCalibration cal = Calibration(detent: detent);
+        foreach (DetentTarget target in new[] { DetentTarget.Afterburner(ab), DetentTarget.Full })
+        {
+            DetentFit fit = DetentMath.Fit(Dcs, baseTuning, cal, target, 0.01);
+            Assert.True(fit.MaxError < DetentMath.Acceptable, target.Describe() + ": error " + fit.MaxError);
+            AxisTuning t = fit.Tuning;
+            Assert.Equal(deadzone, t.Deadzone, 3);
+            double sigma;
+            Func<double, double> g = DetentMath.BaseThrottle(Dcs, t, cal, out sigma);
+            for (double u = 0; u <= deadzone - 0.002; u += 0.002)
+                Assert.Equal(0.0, g(u), 9);
+            Assert.True(g(deadzone + 0.02) > 0.0, target.Describe() + ": the throttle should move right after the dead zone");
+            double atDetent = target.Kind == DetentTargetKind.Afterburner ? ab - 0.01 : 1.0;
+            Assert.Equal(atDetent, g(detent), 3);
+            Assert.Equal(1.0, g(1.0), 3);
+            for (int i = 1; i <= 200; i++)
+                Assert.True(g(i / 200.0) >= g((i - 1) / 200.0) - 0.002, target.Describe() + ": falls at " + i);
+        }
+    }
+
+    // The tester's VPC throttle (cut-off 0.1 %, idle detent 4.3 %, afterburner detent 70.8 %, full 99.9 %) with a dead
+    // zone of 4 % on the default curve: 2.7.1 dropped the bend for the F/A-18C (DCS "cannot express the detent curve":
+    // the dead zone squeezed the cut-off ramp to 0.3 % of the travel). The calibrated idle detent always gives the
+    // aircraft's idle; a dead zone reaching past it keeps the throttle at idle up to its end, never at the cut-off.
+    [Theory]
+    [InlineData(0.0)]
+    [InlineData(0.04)]
+    [InlineData(0.08)]
+    public void DcsFit_DeadZoneWithCutoff_IdleDetentGivesIdle(double deadzone)
+    {
+        AxisTuning baseTuning = Linear();
+        baseTuning.Deadzone = deadzone;
+        DetentCalibration cal = new() { Cutoff = 0.001, Idle = 0.043, Detent = 0.708, Full = 0.999 };
+        DetentTarget hornet = DetentTarget.Afterburner(0.77, idleGate: 0.1);
+        Func<double, double> wanted = DetentMath.WantedThrottle(Dcs, baseTuning, cal, hornet, 0.01);
+        Assert.Equal(0.0, wanted(0.001), 9);
+        Assert.Equal(0.1, wanted(0.043), 9);
+        Assert.Equal(0.76, wanted(0.708), 9);
+        Assert.Equal(1.0, wanted(0.999), 9);
+        if (deadzone > cal.Idle)
+            Assert.Equal(0.1, wanted(deadzone - 0.005), 9);
+
+        DetentFit fit = DetentMath.Fit(Dcs, baseTuning, cal, hornet, 0.01);
+        Assert.False(fit.Fallback, fit.Warning);
+        Assert.True(fit.MaxError < DetentMath.Acceptable, "error " + fit.MaxError);
+        double sigma;
+        Func<double, double> g = DetentMath.BaseThrottle(Dcs, fit.Tuning, cal, out sigma);
+        // Resting in the idle detent (and a little jitter behind it) gives the aircraft's idle, never the cut-off; over
+        // the idle detent towards the cut-off it is zero.
+        Assert.InRange(g(0.043), 0.1, 0.11);
+        Assert.InRange(g(0.04), 0.1, 0.11);
+        Assert.Equal(0.0, g(0.03), 9);
+        Assert.Equal(0.0, g(0.001), 9);
+        Assert.Equal(0.76, g(0.708), 3);
+        Assert.True(g(0.999) > 0.995);
+        Assert.Equal(1.0, g(1.0), 3);
+        for (int i = 9; i <= 200; i++)
+            Assert.True(g(i / 200.0) >= g((i - 1) / 200.0) - 0.002, "falls at " + i);
+    }
+
     // An idle cut-off behind the device's idle detent: flat zero there; an aircraft with its cut-off on the axis gets
     // its idle point at the device's idle detent.
     [Fact]
@@ -286,6 +357,77 @@ public sealed class DetentModeTests
         await vm.SetDetentGroupAbCommand.ExecuteAsync(group);
         Assert.Equal(calls, fake.Calls.Count);
     });
+
+    // 2.7.1 report: "is it not possible to copy detent mode to another axis? The button is greyed out". The curve's copy
+    // stays off for a curve detent mode makes (its tip says where to go); the detent section copies detent mode itself.
+    [Fact]
+    public Task CopyDetentMode_ToAnotherAxis() => UiThread.RunAsync(async () =>
+    {
+        DetentFakeEngine fake = new();
+        MainWindowViewModel vm = await CreateVmAsync(fake);
+        Assert.True(vm.CanPrepareDetentCopy);
+        vm.PrepareDetentCopyCommand.Execute(null);
+        Assert.Equal(["ThrottleMig29", "ThrottleNoAB"], vm.DetentCopyTargets.Select(t => t.Relation).ToArray());
+        Assert.True(vm.HasDetentCopyTargets);
+        vm.DetentCopyTarget = vm.DetentCopyTargets.Single(t => t.Relation == "ThrottleNoAB");
+        Assert.True(vm.CanCopyDetent);
+        Assert.True(vm.DetentCopyCalibration);
+        await vm.CopyDetentToAxisCommand.ExecuteAsync(null);
+        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "binds", "detent", "copy", "Throttle", "--to", "ThrottleNoAB", "--calibration"));
+        Assert.StartsWith("Detent mode of 'Throttle' is copied to 'ThrottleNoAB'. Ctrl+Z undoes it.", vm.StatusText);
+
+        vm.DetentCopyCalibration = false;
+        Assert.Equal(["binds", "detent", "copy", "Throttle", "--to", "ThrottleNoAB"], vm.BuildDetentCopyArguments("ThrottleNoAB").ToArray());
+
+        // What the other axis still needs: a calibration, and its own curves win there.
+        string uncalibrated = "{\"Relation\":\"ThrottleNoAB\",\"Calibration\":null,\"Groups\":[{\"Games\":[{\"Title\":\"DCS\",\"OwnScope\":\"game:DCS\"}]}]}";
+        string text = vm.DescribeDetentCopy("Throttle", "ThrottleNoAB", uncalibrated);
+        Assert.Contains("select 'ThrottleNoAB' and run Calibrate detent... there", text);
+        Assert.Contains("Its own curves for DCS win over detent mode there.", text);
+        string lent = "{\"Relation\":\"ThrottleNoAB\",\"Calibration\":{\"Source\":\"copy\"},\"Groups\":[]}";
+        Assert.Contains("uses this axis's calibration until you calibrate it", vm.DescribeDetentCopy("Throttle", "ThrottleNoAB", lent));
+
+        // The curve's copy button points at it while detent mode makes the curve.
+        vm.AxisTuningDetentLocked = true;
+        Assert.Contains("Copy detent mode to another axis...", vm.AxisTuningCopyTip);
+        vm.AxisTuningDetentLocked = false;
+        Assert.StartsWith("The same dead zone", vm.AxisTuningCopyTip);
+    });
+
+    // 2.7.1 report: helicopters had no game data and got "no detent" (the tester typed an afterburner start for them).
+    // A group can be marked as without afterburner; a lent calibration says so; an own curve that wins says how to undo it.
+    [Fact]
+    public Task Group_NoAfterburner_CopiedCalibration_OwnCurveHint() => UiThread.RunAsync(async () =>
+    {
+        DetentFakeEngine fake = new();
+        MainWindowViewModel vm = await CreateVmAsync(fake);
+        DetentGroupItem ab = vm.DetentGroups[0];
+        Assert.False(ab.IsFullAtDetent);
+        Assert.True(vm.DetentGroups[1].IsFullAtDetent);
+        await vm.SetDetentGroupNoAfterburnerCommand.ExecuteAsync(ab);
+        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "--target", "DCS:F-16C_50=full") && AxisTuningTests.Seq(c, "--target", "DCS:FA-18C_hornet=full"));
+
+        vm.ApplyDetentShow(DetentFakeEngine.ShowJson.Replace("\"Source\":\"wizard\"", "\"Source\":\"copy\"")
+            .Replace("\"OwnScope\":\"\",\"PlaneCurves\":true,\"Fit\":{\"Method\":\"user curve\"", "\"OwnScope\":\"game:DCS\",\"PlaneCurves\":true,\"Fit\":{\"Method\":\"user curve\""));
+        Assert.Contains("uses the calibration copied from another lever", vm.DetentCalibrationText);
+        Assert.Contains("DCS: own tuning (game:DCS) wins over detent mode. To let detent mode bend it, tick DCS in the curve above and press Use the default curve again.", vm.DetentGroups[0].GamesText);
+    });
+
+    // 2.7.1 report: "make visible in the graph where the afterburner starts": binds tuning show's Resolved.Detent.
+    [Fact]
+    public void CurveMarks_ReadFromTuningShow()
+    {
+        using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(
+            "{\"Source\":\"detent\",\"Detent\":{\"Input\":0.416,\"AfterburnerOutput\":-0.54,\"FullOutput\":-1}}");
+        (double input, double ab, double full) = MainWindowViewModel.ReadAxisTuningDetentMarks(doc.RootElement);
+        Assert.Equal(0.416, input, 9);
+        Assert.Equal(-0.54, ab, 9);
+        Assert.Equal(-1.0, full, 9);
+        using System.Text.Json.JsonDocument noAb = System.Text.Json.JsonDocument.Parse("{\"Detent\":{\"Input\":0.5,\"AfterburnerOutput\":null,\"FullOutput\":1}}");
+        Assert.True(double.IsNaN(MainWindowViewModel.ReadAxisTuningDetentMarks(noAb.RootElement).Afterburner));
+        using System.Text.Json.JsonDocument none = System.Text.Json.JsonDocument.Parse("{\"Source\":\"base\",\"Detent\":null}");
+        Assert.True(double.IsNaN(MainWindowViewModel.ReadAxisTuningDetentMarks(none.RootElement).Input));
+    }
 
     // The wizard reads the bound axis live (JOY_RX = axis 3), refuses impossible steps and sends raw positions.
     [Fact]
@@ -503,6 +645,8 @@ internal sealed class DetentFakeEngine : IEngineCliClient
     }
 
     private const string Throttle51 = "[[0,0],[0.5,0.48],[0.8,0.77],[1,1]]";
+
+    internal static string ShowJson => Show;
 
     private const string Show = "{\"Relation\":\"Throttle\",\"Message\":\"\",\"Device\":\"" + DetentModeTests.Throttle + "\",\"Axis\":\"JOY_RX\",\"DeviceLabel\":\"Test Throttle JOY_RX\"," +
         "\"Settings\":{\"Stored\":true,\"On\":true,\"NoAfterburner\":\"full\",\"Unknown\":\"linear\",\"Margin\":0.01,\"Text\":\"on=1;noab=full\"}," +

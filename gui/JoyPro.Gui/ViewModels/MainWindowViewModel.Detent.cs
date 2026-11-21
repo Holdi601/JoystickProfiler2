@@ -87,6 +87,8 @@ public sealed partial class MainWindowViewModel
     private bool detentMergeUndoAvailable;
 
     private string detentRelation = string.Empty;
+    // The relation has detent settings of its own (binds detent show Settings.Stored): there is something to copy.
+    private bool detentStored;
     private int detentMergeRestoreId;
     private int detentLoadVersion;
     private bool detentApplyingSettings;
@@ -213,6 +215,7 @@ public sealed partial class MainWindowViewModel
         CloseDetentWizard();
         detentLoadVersion++;
         detentRelation = string.Empty;
+        detentStored = false;
         DetentLoaded = false;
         DetentGroups.Clear();
         OnPropertyChanged(nameof(HasDetentGroups));
@@ -258,6 +261,7 @@ public sealed partial class MainWindowViewModel
             JsonElement settings = root.GetProperty("Settings");
             detentApplyingSettings = true;
             DetentOn = settings.TryGetProperty("On", out JsonElement on) && on.ValueKind == JsonValueKind.True;
+            detentStored = settings.TryGetProperty("Stored", out JsonElement stored) && stored.ValueKind == JsonValueKind.True;
             DetentNoAbFull = GetJsonString(settings, "NoAfterburner") != "linear";
             detentApplyingSettings = false;
 
@@ -279,6 +283,8 @@ public sealed partial class MainWindowViewModel
                 string ends = Ends("Full", N(", full at {0}")) + Ends("Cutoff", N(", cut-off at {0}"));
                 DetentCalibrationText = source == "profile"
                     ? T("{0} is calibrated from your old throttle curves: idle at {1}, afterburner detent at {2}{3} of the travel. Run Calibrate detent... to measure it.", deviceLabel, idleText, detentText, ends)
+                    : source == "copy"
+                    ? T("{0} uses the calibration copied from another lever: idle at {1}, afterburner detent at {2}{3} of the travel. Run Calibrate detent... to measure this one.", deviceLabel, idleText, detentText, ends)
                     : source == "wizard"
                         ? T("{0} is calibrated: idle at {1}, afterburner detent at {2}{3} of the travel (measured {4}).", deviceLabel, idleText, detentText, ends, when)
                         : T("{0} is calibrated: idle at {1}, afterburner detent at {2}{3} of the travel ({4}).", deviceLabel, idleText, detentText, ends, source);
@@ -308,6 +314,8 @@ public sealed partial class MainWindowViewModel
             string state = DetentOn ? T("Detent mode is on: {0} aircraft in {1}.", aircraft, groups) : T("Detent mode is off: {0} aircraft in {1}.", aircraft, groups);
             DetentStatus = (message.Length > 0 ? Loc.Translate(message) + " " : string.Empty) + state;
             DetentLoaded = true;
+            OnPropertyChanged(nameof(CanPrepareDetentCopy));
+            OnPropertyChanged(nameof(CanCopyDetent));
         }
         catch (Exception ex) when (ex is JsonException or KeyNotFoundException or InvalidOperationException)
         {
@@ -333,7 +341,8 @@ public sealed partial class MainWindowViewModel
             string own = GetJsonString(game, "OwnScope");
             if (own.Length > 0)
             {
-                lines.Add(T("{0}: own tuning ({1}) wins over detent mode", title, own));
+                // 2.7.1 report: the helicopters' own DCS curve kept detent mode off; say how to hand it back.
+                lines.Add(T("{0}: own tuning ({1}) wins over detent mode. To let detent mode bend it, tick {0} in the curve above and press Use the default curve again.", title, own));
                 continue;
             }
             if (!game.TryGetProperty("Fit", out JsonElement fit) || fit.ValueKind != JsonValueKind.Object)
@@ -400,6 +409,19 @@ public sealed partial class MainWindowViewModel
         foreach ((string game, string plane, _, _, _, _) in group.Aircraft)
             options.AddRange(["--target", game + ":" + plane + "=" + value]);
         await SetDetentAsync(options, value == "default" ? T("{0}: back to the game data.", group.Label) : T("{0}: afterburner at {1} %.", group.Label, text));
+    }
+
+    // A group without afterburner the game data does not know (2.7.1 report: helicopters typed in with an afterburner
+    // start): full power, or full collective, at the device's detent for every aircraft of the group.
+    [RelayCommand]
+    private async Task SetDetentGroupNoAfterburnerAsync(DetentGroupItem? group)
+    {
+        if (group == null || group.Aircraft.Count == 0)
+            return;
+        List<string> options = [];
+        foreach ((string game, string plane, _, _, _, _) in group.Aircraft)
+            options.AddRange(["--target", game + ":" + plane + "=full"]);
+        await SetDetentAsync(options, T("{0}: no afterburner, full power at the detent.", group.Label));
     }
 
     // A group back to what the game data says (its own values removed).

@@ -85,7 +85,33 @@ public sealed class AxisCurveRenderTests
                 Handles = stops.ControlPoints().Select(p => new Point(p.Key, xplane.Evaluate(stops, p.Key))).ToList()
             }, stopsFile);
 
-            foreach (string file in new[] { dcsFile, koreaFile, curveFile, stopsFile })
+            // Detent mode (2.7.1 report): the F/A-18C's bent curve on the tester's VPC throttle with its detent and the
+            // afterburner range marked; DCS thrust is inverted, so full is at the bottom. Then the same not inverted.
+            DetentCalibration vpc = new() { Cutoff = 0.001, Idle = 0.043, Detent = 0.708, Full = 0.999 };
+            DetentTarget hornet = DetentTarget.Afterburner(0.77, idleGate: 0.1);
+            List<string> detentFiles = [];
+            foreach (bool inverted in new[] { true, false })
+            {
+                AxisTuning slider = new() { Slider = true, Inverted = inverted, Deadzone = 0.04 };
+                DetentFit bent = DetentMath.Fit(dcs, slider, vpc, hornet, 0.01);
+                Assert.False(bent.Fallback, bent.Warning);
+                double full = inverted ? -1.0 : 1.0;
+                string file = Path.Combine(outDir, "axis-curve-dcs-detent-marks" + (inverted ? "-inverted" : string.Empty) + ".png");
+                Save(new AxisCurveView
+                {
+                    Curve = MainWindowViewModel.SampleAxisCurve(dcs, bent.Tuning),
+                    ShowsPercent = true,
+                    OneSided = true,
+                    DetentInput = 2 * vpc.Detent - 1,
+                    AfterburnerOutput = full * (2 * hornet.AbStart - 1),
+                    FullOutput = full,
+                    StickInput = 2 * vpc.Detent - 1,
+                    StickOutput = dcs.Evaluate(bent.Tuning, 2 * vpc.Detent - 1)
+                }, file);
+                detentFiles.Add(file);
+            }
+
+            foreach (string file in new[] { dcsFile, koreaFile, curveFile, stopsFile }.Concat(detentFiles))
             {
                 Assert.True(File.Exists(file), file);
                 Assert.True(new FileInfo(file).Length > 1000, file);

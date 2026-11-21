@@ -260,9 +260,10 @@ public sealed partial class MainWindowViewModel
     }
 
     // Not while the Move panel is open: pressing the new button there jumped the editor to the relation on it, and the
-    // panel then named an action the editor did not show (tester report on 2.4.2).
+    // panel then named an action the editor did not show (tester report on 2.4.2). The same for Move to... (2.7.2: the
+    // target is picked there by pressing its button).
     private bool CanFollowInput() =>
-        FollowInputWanted && IsMainWindowActive && !(IsBindsStage && OpenVisualAssignMode) && !IsRecordingInput && !IsMoveActionOpen && !TextHasFocus();
+        FollowInputWanted && IsMainWindowActive && !(IsBindsStage && OpenVisualAssignMode) && !IsRecordingInput && !IsMoveActionOpen && !IsMoveNodesOpen && !TextHasFocus();
 
     private bool TextHasFocus()
     {

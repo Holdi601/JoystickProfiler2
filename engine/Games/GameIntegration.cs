@@ -354,6 +354,9 @@ namespace JoyPro.Engine.Games
         // The export writes relations limited to aircraft per aircraft itself (GameInputBinding.Aircraft; MSFS 2024's
         // direct write into the sim's own profiles), so they are not skipped before.
         bool WritesLimitedPerAircraft { get; }
+        // Export takes --aircraft <key> (the GUI's "Export Aircraft" field). Falcon BMS: false, every relation goes into
+        // the aircraft it is for by itself.
+        bool HasExportAircraftOption { get; }
     }
 
     // For games with a generic process name (Cliffs of Dover's "Launcher" is also Falcon BMS's): a running process with

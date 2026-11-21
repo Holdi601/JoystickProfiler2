@@ -1042,7 +1042,7 @@ public sealed class TesterBatch264cRenderTests
         for (int i = 0; i < 300 && !vm.DetentLoaded; i++)
             AvaloniaRenderThread.Pump();
         bool Anchor(Control c) => c.Name == "DetentExplanation";
-        Shot(theme => Cut(vm, Anchor, Path.Combine(outDir, "detent-calibrated-" + theme + ".png"), above: 40, height: 440, windowWidth: 1500));
+        Shot(theme => Cut(vm, Anchor, Path.Combine(outDir, "detent-calibrated-" + theme + ".png"), above: 40, height: 760, windowWidth: 1500));
         // Without a calibration.
         string noCalibration = "{\"Relation\":\"Throttle\",\"Message\":\"\",\"Device\":\"VPC Throttle\",\"Axis\":\"JOY_Z\",\"DeviceLabel\":\"VPC Throttle JOY_Z\",\"Settings\":{\"Stored\":false,\"On\":false,\"NoAfterburner\":\"full\",\"Unknown\":\"linear\",\"Margin\":0.01,\"Text\":\"\"},\"Calibration\":null,\"GatesFile\":\"\",\"Groups\":[],\"Warnings\":[\"The device axis is not calibrated: run the detent wizard (binds detent calibrate).\"]}";
         vm.ApplyDetentShow(noCalibration);

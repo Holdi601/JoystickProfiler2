@@ -104,6 +104,20 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private string axisTuningLiveText = string.Empty;
 
+    // Detent mode bends the curve shown: the device's detent (curve input) and the afterburner range (from the output
+    // where it starts to the output at full), -1..1; NaN: not shown (binds tuning show's Resolved.Detent).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasAxisTuningDetentMarks))]
+    private double axisTuningDetentInput = double.NaN;
+
+    [ObservableProperty]
+    private double axisTuningAfterburnerOutput = double.NaN;
+
+    [ObservableProperty]
+    private double axisTuningFullOutput = double.NaN;
+
+    public bool HasAxisTuningDetentMarks => !double.IsNaN(AxisTuningDetentInput);
+
     [ObservableProperty]
     private bool axisTuningIsOwn;
 
@@ -273,6 +287,7 @@ public sealed partial class MainWindowViewModel
         ClearAxisTuningControlPoints();
         AxisTuningCurve = [];
         AxisTuningReferenceCurve = null;
+        SetAxisTuningDetentMarks(double.NaN, double.NaN, double.NaN);
         AxisTuningHandles = null;
         AxisTuningValidation = string.Empty;
         AxisTuningModelText = string.Empty;
@@ -472,6 +487,7 @@ public sealed partial class MainWindowViewModel
         string resolvedTuning = string.Empty;
         string resolvedSource = string.Empty;
         bool fitted = false;
+        (double Input, double Afterburner, double Full) detentMarks = (double.NaN, double.NaN, double.NaN);
         try
         {
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
@@ -482,6 +498,7 @@ public sealed partial class MainWindowViewModel
                 resolvedTuning = GetJsonString(resolved, "Tuning");
                 resolvedSource = GetJsonString(resolved, "Source");
                 fitted = resolved.TryGetProperty("Fitted", out JsonElement fit) && fit.ValueKind == JsonValueKind.True;
+                detentMarks = ReadAxisTuningDetentMarks(resolved);
             }
         }
         catch (JsonException)
@@ -519,6 +536,9 @@ public sealed partial class MainWindowViewModel
             source = "base";
             fitted = model.Fit != null;
         }
+        // The marks only on the curve detent mode made (not on an own curve or the default curve shown instead).
+        bool detentShown = source == "detent" && !scope.IsBase && !stored.ContainsKey(scope.Scope);
+        SetAxisTuningDetentMarks(detentShown ? detentMarks.Input : double.NaN, detentShown ? detentMarks.Afterburner : double.NaN, detentShown ? detentMarks.Full : double.NaN);
 
         bool isOwn = scope.IsBase || string.Equals(source, scope.Scope, StringComparison.OrdinalIgnoreCase);
         AxisTuningIsOwn = isOwn;
@@ -533,6 +553,23 @@ public sealed partial class MainWindowViewModel
         AxisTuningLoaded = true;
         // What every row uses now, the line about the ticked ones.
         UpdateAxisTuningRowStatuses();
+    }
+
+    // Resolved.Detent of binds tuning show: Input, AfterburnerOutput (null without afterburner), FullOutput.
+    internal static (double Input, double Afterburner, double Full) ReadAxisTuningDetentMarks(JsonElement resolved)
+    {
+        if (!resolved.TryGetProperty("Detent", out JsonElement detent) || detent.ValueKind != JsonValueKind.Object)
+            return (double.NaN, double.NaN, double.NaN);
+        static double Number(JsonElement e, string name) =>
+            e.TryGetProperty(name, out JsonElement v) && v.ValueKind == JsonValueKind.Number ? v.GetDouble() : double.NaN;
+        return (Number(detent, "Input"), Number(detent, "AfterburnerOutput"), Number(detent, "FullOutput"));
+    }
+
+    private void SetAxisTuningDetentMarks(double input, double afterburner, double full)
+    {
+        AxisTuningDetentInput = input;
+        AxisTuningAfterburnerOutput = afterburner;
+        AxisTuningFullOutput = full;
     }
 
     // The numbers of this model are shown as its game's dialog shows them, not as stored (AxisParameter.DisplayScale).

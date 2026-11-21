@@ -112,6 +112,8 @@ namespace JoyPro.Engine.Games
         // MSFS 2024 with the direct write: every own profile gets the relations valid for all of its aircraft.
         public bool WritesLimitedPerAircraft { get { return sim == 2024 && WriteUserProfiles; } }
 
+        public bool HasExportAircraftOption { get { return true; } }
+
         public string GameId { get { return "MSFS" + sim.ToString(CultureInfo.InvariantCulture); } }
         public string DisplayName { get { return "Microsoft Flight Simulator " + sim.ToString(CultureInfo.InvariantCulture); } }
         // "msfs" (the CLI area of the single MSFS game before 2020 and 2024 were split) stays with MSFS 2024.

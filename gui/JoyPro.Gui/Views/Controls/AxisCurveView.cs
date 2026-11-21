@@ -43,6 +43,18 @@ public sealed class AxisCurveView : Control
     public static readonly StyledProperty<bool> OneSidedProperty =
         AvaloniaProperty.Register<AxisCurveView, bool>(nameof(OneSided));
 
+    // Detent mode (2.7.1 report: "make visible in the graph where the afterburner starts"): the device's detent as a
+    // curve input (a dashed vertical line) and the afterburner range of the game's throttle as a band from the output
+    // where it starts to the output at full; NaN: none.
+    public static readonly StyledProperty<double> DetentInputProperty =
+        AvaloniaProperty.Register<AxisCurveView, double>(nameof(DetentInput), double.NaN);
+
+    public static readonly StyledProperty<double> AfterburnerOutputProperty =
+        AvaloniaProperty.Register<AxisCurveView, double>(nameof(AfterburnerOutput), double.NaN);
+
+    public static readonly StyledProperty<double> FullOutputProperty =
+        AvaloniaProperty.Register<AxisCurveView, double>(nameof(FullOutput), double.NaN);
+
     private const double Pad = 22;
     private const double HandleRadius = 4.5;
     private const double GrabDistance = 9;
@@ -65,10 +77,34 @@ public sealed class AxisCurveView : Control
     private static readonly IBrush HandleBrush = new SolidColorBrush(Color.Parse("#F8FAFC"));
     private static readonly IBrush HandleActiveBrush = new SolidColorBrush(Color.Parse("#FDE68A"));
     private static readonly IPen HandlePen = new Pen(new SolidColorBrush(Color.Parse("#0EA5E9")), 1.6);
+    private static readonly IBrush AfterburnerBrush = new SolidColorBrush(Color.Parse("#33F97316"));
+    private static readonly IPen AfterburnerPen = new Pen(new SolidColorBrush(Color.Parse("#F97316")), 1.2);
+    private static readonly IBrush AfterburnerTextBrush = new SolidColorBrush(Color.Parse("#FDBA74"));
+    private static readonly IPen DetentPen = new Pen(new SolidColorBrush(Color.Parse("#FDE047")), 1.4, new DashStyle([5, 3], 0));
+    private static readonly IBrush DetentTextBrush = new SolidColorBrush(Color.Parse("#FDE047"));
 
     static AxisCurveView()
     {
-        AffectsRender<AxisCurveView>(CurveProperty, ReferenceCurveProperty, StickInputProperty, StickOutputProperty, HandlesProperty, ShowsPercentProperty, OneSidedProperty);
+        AffectsRender<AxisCurveView>(CurveProperty, ReferenceCurveProperty, StickInputProperty, StickOutputProperty, HandlesProperty, ShowsPercentProperty, OneSidedProperty,
+            DetentInputProperty, AfterburnerOutputProperty, FullOutputProperty);
+    }
+
+    public double DetentInput
+    {
+        get => GetValue(DetentInputProperty);
+        set => SetValue(DetentInputProperty, value);
+    }
+
+    public double AfterburnerOutput
+    {
+        get => GetValue(AfterburnerOutputProperty);
+        set => SetValue(AfterburnerOutputProperty, value);
+    }
+
+    public double FullOutput
+    {
+        get => GetValue(FullOutputProperty);
+        set => SetValue(FullOutputProperty, value);
     }
 
     public bool ShowsPercent
@@ -143,6 +179,12 @@ public sealed class AxisCurveView : Control
         Rect plot = PlotRect();
         Point Map(double x, double y) => ToScreen(plot, x, y);
 
+        double afterburner = AfterburnerOutput;
+        double full = FullOutput;
+        bool hasBand = !double.IsNaN(afterburner) && !double.IsNaN(full) && Math.Abs(full - afterburner) > 1e-6;
+        if (hasBand)
+            context.DrawRectangle(AfterburnerBrush, null, new Rect(Map(-1, Math.Max(afterburner, full)), Map(1, Math.Min(afterburner, full))));
+
         for (int i = -4; i <= 4; i++)
         {
             double v = i / 4.0;
@@ -161,6 +203,29 @@ public sealed class AxisCurveView : Control
         DrawLabel(context, high, new Point(plot.Right, plot.Bottom + 3), 0.5);
         DrawLabel(context, high, new Point(plot.Left - 4, plot.Top - 6), 1);
         DrawLabel(context, low, new Point(plot.Left - 4, plot.Bottom - 6), 1);
+
+        if (hasBand)
+        {
+            context.DrawLine(AfterburnerPen, Map(-1, afterburner), Map(1, afterburner));
+            // Inside the band, in the corner away from the curve's full end and the live value's box: top right when full
+            // is up, bottom left when it is down.
+            FormattedText ab = new(T("afterburner"), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Font, 10, AfterburnerTextBrush);
+            Point corner = full > afterburner ? Map(1, full) : Map(-1, full);
+            context.DrawText(ab, full > afterburner
+                ? new Point(corner.X - ab.Width - 4, corner.Y + 2)
+                : new Point(corner.X + 4, corner.Y - ab.Height - 2));
+        }
+        double detent = DetentInput;
+        if (!double.IsNaN(detent))
+        {
+            context.DrawLine(DetentPen, Map(detent, -1), Map(detent, 1));
+            // At the end of the line away from the band (the band's side is busy).
+            FormattedText label = new(T("Detent"), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Font, 10, DetentTextBrush);
+            bool bandBelow = hasBand && full < afterburner;
+            Point end = Map(detent, bandBelow ? 1 : -1);
+            double x = Math.Clamp(end.X - label.Width - 3, plot.Left + 2, plot.Right - label.Width - 2);
+            context.DrawText(label, new Point(x, bandBelow ? end.Y + 22 : end.Y - label.Height - 2));
+        }
 
         using (context.PushClip(plot.Inflate(2)))
         {

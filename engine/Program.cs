@@ -3484,7 +3484,7 @@ namespace JoyPro.Engine
                         g.Notes,
                         g.SupportsCatalogRefresh,
                         SupportsGameProfile = g is Games.IGameProfileSelection,
-                        SupportsAircraft = g is Games.IGameAircraftScope,
+                        SupportsAircraft = g is Games.IGameAircraftScope && ((Games.IGameAircraftScope)g).HasExportAircraftOption,
                         Actions = Games.GameCommands.Actions
                     }).ToList()
                 });
@@ -15044,7 +15044,7 @@ namespace JoyPro.Engine
                             : string.Empty;
                         if (detentAction == "merge")
                             return command.Any(a => string.Equals(a, "--apply", StringComparison.OrdinalIgnoreCase));
-                        return detentAction == "set" || detentAction == "calibrate" || detentAction == "uncalibrate";
+                        return detentAction == "set" || detentAction == "calibrate" || detentAction == "uncalibrate" || detentAction == "copy";
                     }
                     return action == "set" ||
                            action == "clear" ||
@@ -15351,7 +15351,7 @@ namespace JoyPro.Engine
                                   (msfs2024 ? " [--limit-to-profile-aircraft]" : string.Empty) +
                                   "   (--ignore-device(s): the binds of these devices are left out" +
                                   (registryGame is Games.IGameDisconnectedDevices ? "; devices that are not connected only with --include-disconnected" : string.Empty) + ")");
-                string aircraftOption = registryGame is Games.IGameAircraftScope ? " [--aircraft <aircraft-key>]" : string.Empty;
+                string aircraftOption = registryGame is Games.IGameAircraftScope && ((Games.IGameAircraftScope)registryGame).HasExportAircraftOption ? " [--aircraft <aircraft-key>]" : string.Empty;
                 string msfsProfileOptions = msfs2024 ? " [--user-profiles true|false] [--import-files]" : string.Empty;
                 Console.WriteLine("  engine " + gameArea + " export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]" + profileOption + aircraftOption + msfsProfileOptions + archiveOption +
                                   ExportScopeHelpNote(registryGame));
@@ -15366,7 +15366,10 @@ namespace JoyPro.Engine
                     Console.WriteLine("  engine " + gameArea + " mod status|prepare [--accept-license]   (the BYOJoystick mod on this PC: Mod Loader, Workshop item, BYOJoystick.dll with SHA-256 and the targets JoyPro reads; prepare backs up the BYOJ_<seat>.xml files and returns the Steam pages to open (Mod Loader, Workshop item 3276352374); Steam downloads and installs the mod, JoyPro ships none of it; refresh-db then reads the targets from the installed mod)");
                 if (registryGame is Games.MsfsIntegration && ((Games.MsfsIntegration)registryGame).Sim == 2024)
                     Console.WriteLine("      export also writes your own profiles the sim uses (Steam remote folder, Microsoft Store save; backup first, never while the sim runs; --user-profiles false turns it off)   (--import-files: import files for every device and category, else only where your profile could not be written)");
-                if (registryGame is Games.IGameAircraftScope)
+                if (registryGame is Games.FalconBmsIntegration)
+                    Console.WriteLine("      BMS 4.38.2 and newer keep the button binds per aircraft profile (F-16, F-15ABCD) in User\\Config\\JSON: export writes a relation into every aircraft whose key file has its callback, one limited with --node FalconBMS:<action>:<aircraft> only into those; " +
+                                      "axes are shared by all aircraft; refresh-db lists the profiles in DB\\FalconBMS\\aircraft.tsv and adds the callbacks only another aircraft has (--aircraft is not needed)");
+                else if (registryGame is Games.IGameAircraftScope)
                     Console.WriteLine("      refresh-db also lists the installed aircraft in DB\\" + registryGame.DbFolder + "\\aircraft.tsv (engine db planes --game " + registryGame.GameId + "; --node " + registryGame.GameId + ":<action>:<aircraft key> limits a relation to one);" +
                                       " the game's presets apply to every aircraft, so export writes the relations for all aircraft plus, with --aircraft <aircraft-key>, those limited to that aircraft");
             }
@@ -15618,6 +15621,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine binds detent set <bind-or-relation> [--on|--off] [--no-ab full|linear] [--unknown full|linear] [--margin <0..0.1>] [--target <game>:<plane>=ab:<0..1>|full|linear|default]...");
             Console.WriteLine("  engine binds detent calibrate <bind-or-relation> --idle <0..1> --detent <0..1> [--full <0..1>|none] [--cutoff <0..1>|none] [--source wizard|manual]   (raw axis positions of the bound device axis)");
             Console.WriteLine("  engine binds detent uncalibrate <bind-or-relation>");
+            Console.WriteLine("  engine binds detent copy <bind-or-relation> --to <bind-or-relation> [--calibration]   (the same detent mode on another axis relation; --calibration lends this axis's calibration when the other has none)");
             Console.WriteLine("  engine binds detent gates [--game <game>] [--plane <plane>]   (the shipped throttle gate data: afterburner start per aircraft, source, confidence)");
             Console.WriteLine("  engine binds detent merge [--relations <csv>] [--into <relation>] [--ab-source profile|game] [--apply]   (per-aircraft throttle relations of one device axis into one relation in detent mode; without --apply only the plan)");
             Console.WriteLine("  engine binds unbind <device::input|input> [--device <name>] [--input <value>] [--format dcs|il2] [--game <game id>] [--all]   (--game: only relations with an action of that game, any game id (DCS, IL2Game, StarCitizen, MSFS2024, ...); --format: how the input is written, DCS (default) or IL-2 tokens)");

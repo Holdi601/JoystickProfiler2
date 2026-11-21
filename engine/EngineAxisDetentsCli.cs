@@ -13,6 +13,7 @@ namespace JoyPro.Engine
     //                    [--target <game>:<plane>=ab:0.78|full|linear|default]...
     //   binds detent calibrate <relation> --idle u --detent u [--full u|none] [--cutoff u|none] [--source s]
     //   binds detent uncalibrate <relation>
+    //   binds detent copy <relation> --to <other> [--calibration]  the same detent mode on another axis relation
     //   binds detent gates [--game G] [--plane P]              the shipped gate data
     //   binds detent merge [--relations a,b,...] [--into name] [--ab-source profile|game] [--apply]
     internal static partial class Program
@@ -34,9 +35,10 @@ namespace JoyPro.Engine
                     case "set":
                     case "calibrate":
                     case "uncalibrate":
+                    case "copy":
                         break;
                     default:
-                        return Fail("binds detent: unknown action '" + action + "' (show, set, calibrate, uncalibrate, gates, merge).");
+                        return Fail("binds detent: unknown action '" + action + "' (show, set, calibrate, uncalibrate, copy, gates, merge).");
                 }
                 if (args.Count < 1)
                     return Fail("binds detent " + action + " requires a relation or bind name.");
@@ -65,6 +67,8 @@ namespace JoyPro.Engine
                     return DetentSet(relationName, relation, bind, args, outPath, textOutput);
                 if (action == "calibrate")
                     return DetentCalibrate(relationName, relation, bind, args, outPath, textOutput);
+                if (action == "copy")
+                    return DetentCopy(relationName, bind, args, outPath, textOutput);
                 if (args.Count > 0)
                     return Fail("Unknown binds detent uncalibrate argument(s): " + string.Join(" ", args));
                 bool had = EngineAxisDetents.CalibrationFor(bind) != null;
@@ -147,6 +151,55 @@ namespace JoyPro.Engine
             if (settings.On && EngineAxisDetents.CalibrationFor(bind) == null)
                 message += " The device axis is not calibrated yet: run binds detent calibrate (or the GUI's wizard) before it takes effect.";
             return DetentShowAfter(relationName, relation, bind, message, outPath, textOutput);
+        }
+
+        // 2.7.1 report ("copy detent mode to another axis", Thrust Left / Right): the relation's detent settings (on, the
+        // no-afterburner rule, margin, its own afterburner values per aircraft) go to another bound axis relation in one
+        // run (one Ctrl+Z). The calibration belongs to the device axis: --calibration lends this axis's calibration to
+        // the other one only when that has none yet (source "copy": the GUI says to measure it).
+        private static int DetentCopy(string relationName, Bind bind, List<string> args, string outPath, bool textOutput)
+        {
+            string to = PopOptionValue(args, "--to");
+            bool withCalibration = PopFlag(args, "--calibration");
+            if (args.Count > 0)
+                return Fail("Unknown binds detent copy argument(s): " + string.Join(" ", args));
+            if (string.IsNullOrWhiteSpace(to))
+                return Fail("binds detent copy requires --to <relation>: the axis relation that gets this detent mode.");
+            DetentSettings settings = EngineAxisDetents.SettingsOf(bind);
+            if (settings == null)
+                return Fail("'" + relationName + "' has no detent mode to copy.");
+            List<string> candidates;
+            string otherName;
+            if (!TryResolveRelationOrBindName(to, out otherName, out candidates))
+                return FailResolution("relation/bind", to, candidates);
+            if (string.Equals(otherName, relationName, StringComparison.OrdinalIgnoreCase))
+                return Fail("Pick another relation than '" + relationName + "' itself.");
+            Relation other;
+            if (!InternalDataManagement.AllRelations.TryGetValue(otherName, out other) || other == null)
+                return Fail("Relation not found: " + otherName);
+            if (!other.ISAXIS)
+                return Fail("Detent mode is only for axis relations; '" + otherName + "' is a button relation.");
+            Bind otherBind;
+            InternalDataManagement.AllBinds.TryGetValue(otherName, out otherBind);
+            if (otherBind == null || string.IsNullOrWhiteSpace(otherBind.Joystick) || string.IsNullOrWhiteSpace(otherBind.JAxis))
+                return Fail("Relation '" + otherName + "' has no device axis bound; bind it first.");
+            EngineAxisDetents.SetSettings(otherBind, DetentSettings.Parse(settings.Format()));
+            string message = "Detent mode of " + relationName + " copied to " + otherName + ".";
+            if (EngineAxisDetents.CalibrationFor(otherBind) == null)
+            {
+                DetentCalibration own = EngineAxisDetents.CalibrationFor(bind);
+                if (withCalibration && own != null && !string.Equals(EngineAxisDetents.DeviceKey(bind), EngineAxisDetents.DeviceKey(otherBind), StringComparison.OrdinalIgnoreCase))
+                {
+                    DetentCalibration lent = DetentCalibration.Parse(own.Format());
+                    lent.Source = "copy";
+                    lent.When = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    EngineAxisDetents.SetCalibration(otherBind, lent);
+                    message += " " + DetentDeviceLabel(otherBind) + " uses the calibration of " + DetentDeviceLabel(bind) + " until you calibrate it.";
+                }
+                else
+                    message += " " + DetentDeviceLabel(otherBind) + " is not calibrated yet: run binds detent calibrate (or the GUI's wizard) before it takes effect.";
+            }
+            return DetentShowAfter(otherName, other, otherBind, message, outPath, textOutput);
         }
 
         private static int DetentCalibrate(string relationName, Relation relation, Bind bind, List<string> args, string outPath, bool textOutput)

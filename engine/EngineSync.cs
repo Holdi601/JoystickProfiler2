@@ -924,7 +924,13 @@ namespace JoyPro.Engine
                             if (Directory.Exists(path))
                             {
                                 location.Exists = true;
-                                location.Watch.Insert(0, new SyncWatch { Directory = path, Filters = new List<string>(DirectoryPatterns(game.Id)), IncludeSubdirectories = false });
+                                // Falcon BMS 4.38.2: the binds are in User\Config\JSON; the launcher rebuilds the device
+                                // files of User\Config from them on every close, so those are not watched then.
+                                bool bmsJson = game.Id == "FalconBMS" && Games.FalconBmsIntegration.UsesJsonLayout(path);
+                                List<string> patterns = DirectoryPatterns(game.Id).Where(p => !bmsJson || !p.StartsWith("Setup.v100.", StringComparison.OrdinalIgnoreCase)).ToList();
+                                location.Watch.Insert(0, new SyncWatch { Directory = path, Filters = patterns, IncludeSubdirectories = false });
+                                if (bmsJson)
+                                    location.Watch.Insert(1, new SyncWatch { Directory = Games.FalconBmsIntegration.JsonFolder(path), Filters = new List<string> { "DeviceBindings_*.json" }, IncludeSubdirectories = false });
                                 return location;
                             }
                             location.Exists = File.Exists(path) || userProfiles;

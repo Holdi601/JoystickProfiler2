@@ -463,7 +463,21 @@ namespace JoyPro.Engine
                     Scopes = scopes,
                     Game = game,
                     Plane = plane,
-                    Resolved = resolved == null ? null : new { Model = resolved.Model.Id, resolved.Source, resolved.Fitted, Tuning = resolved.Tuning.Format(), resolved.Note },
+                    Resolved = resolved == null ? null : new
+                    {
+                        Model = resolved.Model.Id,
+                        resolved.Source,
+                        resolved.Fitted,
+                        Tuning = resolved.Tuning.Format(),
+                        resolved.Note,
+                        // Detent mode: the device's detent (curve input) and the afterburner start (curve output), -1..1.
+                        Detent = double.IsNaN(resolved.DetentInput) ? null : new
+                        {
+                            Input = Math.Round(resolved.DetentInput, 4),
+                            AfterburnerOutput = double.IsNaN(resolved.AfterburnerOutput) ? (double?)null : Math.Round(resolved.AfterburnerOutput, 4),
+                            FullOutput = Math.Round(resolved.FullOutput, 4)
+                        }
+                    },
                     Uses = uses.Select(u => new { u.Game, u.Plane, u.Source, u.Fitted, u.Detent }).ToList(),
                     XboxPadGames = xboxPadGames
                 }), outPath);

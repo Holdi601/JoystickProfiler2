@@ -519,6 +519,32 @@ engine binds detent uncalibrate "Throttle" --profile "C:\Users\Pilot\Documents\J
 - One undo step with `--profile`. Related: [[cli:binds detent calibrate]].
 :::
 
+<!-- entry: binds detent copy -->
+:::layer beginner
+Gives another throttle axis the same detent mode, for example Thrust Left the settings of Thrust Right. **Copy detent
+mode to another axis...** in the detent section runs it.
+
+```powershell
+engine binds detent copy "Thrust Right" --to "Thrust Left" --calibration --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- Copied: on/off, what aircraft without afterburner get, the margin and your own afterburner values per aircraft. The
+  other relation's curves stay as they are.
+- The calibration belongs to the device axis. `--calibration` lends this axis's calibration to the other axis only when
+  that one has none yet; calibrate it later for the exact detent of that lever.
+- Both relations need a bound device axis. Axis relations only.
+:::
+
+:::layer technical
+- Output: the detent view of [[cli:binds detent show]] for the other relation with `Detent mode of ... copied to
+  ....`; exit code `0`.
+- Failures (exit `1`): `binds detent copy requires --to <relation>: ...`, `'...' has no detent mode to copy.`,
+  `Pick another relation than '...' itself.`, `Relation '...' has no device axis bound; bind it first.`
+- One undo step with `--profile`. Related: [[cli:binds detent set]], [[cli:binds detent calibrate]].
+:::
+
 <!-- entry: binds detent gates -->
 :::layer beginner
 Lists JoyPro's throttle gate data: per aircraft where its afterburner starts (and where idle is) on the game's throttle

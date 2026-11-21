@@ -139,6 +139,44 @@ try {
         Write-Host "SKIP (DCS not installed here): DCS luae load test of the detent export"
     }
 
+    # 2.7.2: the curve preview's marks (tuning show: the device's detent as curve input, the afterburner start as curve
+    # output; the relation is inverted, so full is -1).
+    $dtMarks = Invoke-DtJson @("--profile", $dtProfile, "binds", "tuning", "show", "Throttle", "--game", "DCS", "--plane", "F-16C_50")
+    Assert-True ($null -ne $dtMarks.Resolved.Detent -and [Math]::Abs($dtMarks.Resolved.Detent.Input - 0.5) -lt 1e-6 -and [Math]::Abs($dtMarks.Resolved.Detent.AfterburnerOutput + 0.7) -lt 1e-6 -and $dtMarks.Resolved.Detent.FullOutput -eq -1) ("tuning show should mark the detent (0.5) and the F-16C's afterburner start (-0.7): " + ($dtMarks.Resolved | ConvertTo-Json -Compress))
+    $dtMarks = Invoke-DtJson @("--profile", $dtProfile, "binds", "tuning", "show", "Throttle", "--game", "DCS", "--plane", "A-10C")
+    Assert-True ($null -ne $dtMarks.Resolved.Detent -and $null -eq $dtMarks.Resolved.Detent.AfterburnerOutput) "the A-10C has no afterburner: only the detent is marked."
+
+    # 2.7.2: a dead zone on the relation's curve stays a dead zone at the idle end in the bent curves.
+    Run-Engine @("--profile", $dtProfile, "binds", "set", "Throttle", "--deadzone", "0.05", "--text") | Out-Null
+    $dtDz = Invoke-DtJson @("--profile", $dtProfile, "binds", "tuning", "show", "Throttle", "--game", "DCS", "--plane", "F-16C_50")
+    Assert-True ($dtDz.Resolved.Source -eq "detent" -and $dtDz.Resolved.Tuning -match "dz=0\.05;") ("with a dead zone of 5 % the F-16C's bent curve should keep it: " + $dtDz.Resolved.Tuning)
+    Run-Engine @("--profile", $dtProfile, "binds", "set", "Throttle", "--deadzone", "0", "--text") | Out-Null
+
+    # 2.7.2: helicopters have no afterburner (full collective at the detent), also under their seat names.
+    $dtHeli = Invoke-DtJson @("binds", "detent", "gates", "--game", "DCS", "--plane", "SA342 Pilot")
+    Assert-True (@($dtHeli.Aircraft | Where-Object { $_.NoAfterburner }).Count -eq 1) "gate data: the SA342 (Pilot seat) has no afterburner."
+    $dtHeli = Invoke-DtJson @("binds", "detent", "gates", "--game", "DCS", "--plane", "AH-64D_BLK_II_CPG")
+    Assert-True (@($dtHeli.Aircraft | Where-Object { $_.NoAfterburner }).Count -eq 1) "gate data: the AH-64D (CPG seat) has no afterburner."
+
+    # 2.7.2: copy detent mode to another axis (Thrust Left / Right); the calibration is lent only when asked and only
+    # when the other axis has none.
+    $dtAdd = Run-Engine @("--profile", $dtProfile, "relations", "add", "Throttle Left", "--axis", "--node", "DCS:a2004cdnil:F-16C_50", "--device", $dtDevice, "--input", "JOY_RY", "--text")
+    Assert-True ($dtAdd.ExitCode -eq 0) ("relations add 'Throttle Left' failed: " + $dtAdd.Output)
+    $dtNoMode = Run-Engine @("--profile", $dtProfile, "binds", "detent", "copy", "Throttle Left", "--to", "Throttle", "--text")
+    Assert-True ($dtNoMode.ExitCode -ne 0 -and $dtNoMode.Output -match "no detent mode to copy") "copying from a relation without detent mode must be refused."
+    $dtSelf = Run-Engine @("--profile", $dtProfile, "binds", "detent", "copy", "Throttle", "--to", "Throttle", "--text")
+    Assert-True ($dtSelf.ExitCode -ne 0) "copying detent mode onto the relation itself must be refused."
+    $dtSource = Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "show", "Throttle")
+    $dtCopy = Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "copy", "Throttle", "--to", "Throttle Left")
+    Assert-True ($dtCopy.Relation -eq "Throttle Left" -and $dtCopy.Settings.Text -eq $dtSource.Settings.Text) ("the copy should carry the settings: " + $dtCopy.Settings.Text + " vs " + $dtSource.Settings.Text)
+    Assert-True ($null -eq $dtCopy.Calibration) "without --calibration the other axis stays uncalibrated."
+    $dtCopy = Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "copy", "Throttle", "--to", "Throttle Left", "--calibration")
+    Assert-True ($dtCopy.Calibration.Source -eq "copy" -and [Math]::Abs($dtCopy.Calibration.Detent - 0.75) -lt 1e-9 -and $dtCopy.Axis -eq "JOY_RY") ("--calibration should lend JOY_RX's calibration to JOY_RY: " + ($dtCopy.Calibration | ConvertTo-Json -Compress))
+    Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "calibrate", "Throttle Left", "--idle", "0.03", "--detent", "0.7", "--source", "wizard") | Out-Null
+    $dtCopy = Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "copy", "Throttle", "--to", "Throttle Left", "--calibration")
+    Assert-True ($dtCopy.Calibration.Source -eq "wizard" -and [Math]::Abs($dtCopy.Calibration.Detent - 0.7) -lt 1e-9) "a measured calibration of the other axis must stay."
+    Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "set", "Throttle Left", "--off") | Out-Null
+
     # Off: every game is back on the relation's curve.
     Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "set", "Throttle", "--off") | Out-Null
     $dtOff = Invoke-DtJson @("--profile", $dtProfile, "binds", "tuning", "show", "Throttle", "--game", "DCS", "--plane", "F-16C_50")

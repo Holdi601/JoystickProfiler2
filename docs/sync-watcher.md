@@ -43,6 +43,10 @@ over (Settings > Run in the background): **Start with Windows (in the tray)** an
    another program), its taskbar button flashes until the user switches to it. The focus is never taken. **Take over** runs `engine sync apply` (the profile is saved), **Not now** keeps
    the changes for later (JoyPro asks again after the next change or start), **Ignore these** runs `engine sync accept`
    (the profile stays; the next export writes it over the game's changes).
+   When taking over would remove more than 10 binds, or at least 3 and more than 20 % of the game's binds in the profile
+   (`ProfileBinds` of `engine sync diff`), the dialog warns with the count that the game may have rewritten its files
+   itself (a launcher or an update) and offers **Keep my JoyPro binds** (`engine sync accept`, the default button),
+   **Not now** and **Take over anyway**.
 6. Changes made while JoyPro was closed are offered at the next start (once the game is not running).
 7. With the GUI closed, the tray host checks the same way and shows a notification ("A game changed its controls");
    clicking it (or the tray menu's Review entry) opens JoyPro2 with this dialog. See [Tray host](#tray-host).

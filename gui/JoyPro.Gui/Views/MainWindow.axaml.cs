@@ -1268,6 +1268,9 @@ public partial class MainWindow : Window
     // Copy to another axis was pressed: its flyout closes.
     private void AxisTuningCopyClicked(object? sender, RoutedEventArgs e) => HideFlyoutAfterCommand("AxisTuningCopyButton");
 
+    // Copy detent mode to another axis was pressed: its flyout closes.
+    private void DetentCopyClicked(object? sender, RoutedEventArgs e) => HideFlyoutAfterCommand("DetentCopyButton");
+
     // A button runs its command after its Click event, and a closed flyout's content has lost its DataContext (and with
     // it the command): the flyout closes only after the click is through.
     private void HideFlyoutAfterCommand(string owner) =>

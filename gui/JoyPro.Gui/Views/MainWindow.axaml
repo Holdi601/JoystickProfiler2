@@ -3930,11 +3930,21 @@
                                                                         Handles="{Binding AxisTuningHandles}"
                                                                         HandleMovedCommand="{Binding DragAxisTuningHandleCommand}"
                                                                         ShowsPercent="{Binding AxisTuningShowsPercent}"
-                                                                        OneSided="{Binding AxisTuningOneSided}" />
+                                                                        OneSided="{Binding AxisTuningOneSided}"
+                                                                        DetentInput="{Binding AxisTuningDetentInput}"
+                                                                        AfterburnerOutput="{Binding AxisTuningAfterburnerOutput}"
+                                                                        FullOutput="{Binding AxisTuningFullOutput}" />
                                                 <TextBlock Text="{l:T 'Blue: the curve shown. Dashed orange: the default curve, while the shown one is not its own. Drag the white points (user curve or curve points) to shape the curve.'}"
                                                            FontSize="{DynamicResource JP.FontSize.11}"
                                                            Opacity="0.8"
                                                            TextWrapping="Wrap" />
+                                                <!-- Detent mode bends the curve shown: where the device's detent is and where the afterburner burns -->
+                                                <TextBlock x:Name="AxisTuningDetentLegend"
+                                                           Text="{l:T 'Orange band: the afterburner range of the game\'s throttle; dashed line: your device\'s detent. Resting in the detent stays just below the afterburner, pushing over it lights it.'}"
+                                                           FontSize="{DynamicResource JP.FontSize.11}"
+                                                           Opacity="0.8"
+                                                           TextWrapping="Wrap"
+                                                           IsVisible="{Binding HasAxisTuningDetentMarks}" />
                                                 <TextBlock Text="{Binding AxisTuningLiveText}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" />
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" Spacing="6">
@@ -4053,7 +4063,8 @@
                                                             Content="{l:T 'Copy to another axis...'}"
                                                             Command="{Binding PrepareAxisTuningCopyCommand}"
                                                             IsEnabled="{Binding CanSaveAxisTuning}"
-                                                            ToolTip.Tip="{l:T 'The same dead zone, saturation, curve and slider on another bound axis (e.g. Thrust Left to Thrust Right), in one step'}">
+                                                            ToolTip.ShowOnDisabled="True"
+                                                            ToolTip.Tip="{Binding AxisTuningCopyTip}">
                                                         <Button.Flyout>
                                                             <Flyout Placement="TopEdgeAlignedLeft">
                                                                 <StackPanel x:Name="AxisTuningCopyPanel" Width="360" Spacing="8">
@@ -4109,6 +4120,33 @@
                                                     ToolTip.Tip="{l:T 'Move the throttle to idle, to the detent and to full; JoyPro reads the device live. Stored for this device axis, for every throttle relation on it.'}" />
                                             <Button Command="{Binding OpenDetentMergeCommand}" Content="{l:T 'Merge my throttle relations...'}" Margin="0,0,8,0"
                                                     ToolTip.Tip="{l:T 'Your per-aircraft throttle relations on one device axis become one relation in detent mode (preview first, undo afterwards).'}" />
+                                            <!-- The same detent mode on another axis (Thrust Right -> Thrust Left; 2.7.1 report), one step -->
+                                            <Button x:Name="DetentCopyButton" Classes="icon" Tag="{StaticResource Icon.Copy}" Content="{l:T 'Copy detent mode to another axis...'}"
+                                                    Command="{Binding PrepareDetentCopyCommand}" IsEnabled="{Binding CanPrepareDetentCopy}" Margin="0,0,8,0"
+                                                    ToolTip.Tip="{l:T 'Another bound throttle axis gets the same detent mode: on/off, the rule for aircraft without afterburner and your own afterburner values (e.g. Thrust Right to Thrust Left), in one step.'}">
+                                                <Button.Flyout>
+                                                    <Flyout Placement="TopEdgeAlignedLeft">
+                                                        <StackPanel x:Name="DetentCopyPanel" Width="380" Spacing="8">
+                                                            <TextBlock Classes="h3" Text="{l:T 'Copy detent mode to another axis'}" />
+                                                            <ComboBox x:Name="DetentCopyTargetBox" HorizontalAlignment="Stretch" ItemsSource="{Binding DetentCopyTargets}" SelectedItem="{Binding DetentCopyTarget}"
+                                                                      PlaceholderText="{l:T 'Pick the other axis'}" IsVisible="{Binding HasDetentCopyTargets}">
+                                                                <ComboBox.ItemTemplate>
+                                                                    <DataTemplate x:DataType="models:AxisTuningCopyTarget">
+                                                                        <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                                                                    </DataTemplate>
+                                                                </ComboBox.ItemTemplate>
+                                                            </ComboBox>
+                                                            <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding !HasDetentCopyTargets}"
+                                                                       Text="{l:T 'No other bound axis yet: bind another axis first.'}" />
+                                                            <CheckBox Content="{l:T 'Use this axis\'s calibration there until you calibrate it'}" IsChecked="{Binding DetentCopyCalibration}"
+                                                                      ToolTip.Tip="{l:T 'Only when the other axis has no calibration yet. A left and a right lever rarely have their detents at exactly the same place: calibrate the other one later for the exact detent.'}" />
+                                                            <Button x:Name="DetentCopyConfirm" Classes="icon accent" Tag="{StaticResource Icon.Copy}" Content="{l:T 'Copy'}"
+                                                                    Command="{Binding CopyDetentToAxisCommand}" IsEnabled="{Binding CanCopyDetent}" Click="DetentCopyClicked"
+                                                                    ToolTip.Tip="{l:T 'One step: Ctrl+Z undoes it'}" />
+                                                        </StackPanel>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
                                             <Button Command="{Binding ReloadDetentCommand}" Content="{l:T 'Reload'}" />
                                         </WrapPanel>
                                         <TextBlock x:Name="DetentNoAfterburnerExplanation" Text="{l:T 'Full power at the detent is on by default: an aircraft without afterburner has nothing behind the detent, so it reaches full power there; otherwise you would have to push through the detent for the last part. Off: its curve runs over the whole travel.'}"
@@ -4197,8 +4235,12 @@
                                                                     <TextBlock Text="{l:T '% of the game\'s throttle'}" VerticalAlignment="Center" FontSize="{DynamicResource JP.FontSize.11.5}" Margin="0,0,6,0" />
                                                                     <Button Content="{l:T 'Set'}" Command="{Binding #RootWindow.DataContext.SetDetentGroupAbCommand}" CommandParameter="{Binding}" Margin="0,0,6,0"
                                                                             ToolTip.Tip="{l:T 'Every aircraft of this group gets this afterburner start; empty = the game data.'}" />
-                                                                    <Button Content="{l:T 'Game data'}" Command="{Binding #RootWindow.DataContext.ResetDetentGroupCommand}" CommandParameter="{Binding}"
+                                                                    <Button Content="{l:T 'Game data'}" Command="{Binding #RootWindow.DataContext.ResetDetentGroupCommand}" CommandParameter="{Binding}" Margin="0,0,6,0"
                                                                             ToolTip.Tip="{l:T 'Back to the afterburner start JoyPro\'s game data has for these aircraft.'}" />
+                                                                    <!-- An aircraft without afterburner the game data does not know (a helicopter, a prop): full power at the detent -->
+                                                                    <Button x:Name="DetentGroupNoAbButton" Content="{l:T 'No afterburner'}" Command="{Binding #RootWindow.DataContext.SetDetentGroupNoAfterburnerCommand}" CommandParameter="{Binding}"
+                                                                            IsVisible="{Binding !IsFullAtDetent}"
+                                                                            ToolTip.Tip="{l:T 'These aircraft have no afterburner (a helicopter, a prop, a jet without one): full power, or full collective, at your device\'s detent.'}" />
                                                                 </WrapPanel>
                                                             </StackPanel>
                                                         </Grid>
@@ -8359,8 +8401,14 @@
                         Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BoxShadow="0 8 32 0 #80000000">
                     <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="8">
                         <TextBlock Text="{Binding GameSyncTitle}" FontSize="{DynamicResource JP.FontSize.18}" FontWeight="Bold" TextWrapping="Wrap" />
-                        <TextBlock Grid.Row="1" TextWrapping="Wrap" Opacity="0.85"
-                                   Text="{l:T 'Take these changes into your profile? Untick what you do not want. Where several relations use the button, pick the one the change belongs to, or a new relation.'}" />
+                        <StackPanel Grid.Row="1" Spacing="8">
+                            <TextBlock TextWrapping="Wrap" Opacity="0.85"
+                                       Text="{l:T 'Take these changes into your profile? Untick what you do not want. Where several relations use the button, pick the one the change belongs to, or a new relation.'}" />
+                            <!-- Many binds would go (GameSyncMassRemoval): a warning with the count; keeping the profile is the default. -->
+                            <Border IsVisible="{Binding GameSyncMassRemoval}" BorderBrush="{DynamicResource JP.DangerTextBrush}" BorderThickness="2" CornerRadius="8" Padding="10">
+                                <TextBlock Text="{Binding GameSyncMassRemovalWarning}" TextWrapping="Wrap" FontWeight="SemiBold" Foreground="{DynamicResource JP.DangerTextBrush}" />
+                            </Border>
+                        </StackPanel>
                         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{Binding GameSyncChanges}">
                                 <ItemsControl.ItemTemplate>
@@ -8384,7 +8432,15 @@
                             </ItemsControl>
                         </ScrollViewer>
                         <TextBlock Grid.Row="3" Text="{Binding GameSyncStatus}" TextWrapping="Wrap" Foreground="{DynamicResource JP.DangerTextBrush}" IsVisible="{Binding GameSyncStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                        <WrapPanel Grid.Row="4">
+                        <WrapPanel Grid.Row="4" IsVisible="{Binding GameSyncMassRemoval}">
+                            <Button Command="{Binding IgnoreGameChangesCommand}" Content="{l:T 'Keep my JoyPro binds'}" Classes="accent" IsDefault="{Binding GameSyncMassRemoval}" Margin="0,0,8,0" IsEnabled="{Binding CanRun}"
+                                    ToolTip.Tip="{l:T 'The profile stays as it is; the next export writes it over the game\'s changes'}" />
+                            <Button Command="{Binding PostponeGameChangesCommand}" Content="{l:T 'Not now'}" Margin="0,0,8,0"
+                                    ToolTip.Tip="{l:T 'Keep the changes for later; JoyPro asks again'}" />
+                            <Button Command="{Binding TakeOverGameChangesCommand}" Content="{l:T 'Take over anyway'}" IsEnabled="{Binding CanRun}"
+                                    ToolTip.Tip="{l:T 'The ticked changes go into the chosen relations'}" />
+                        </WrapPanel>
+                        <WrapPanel Grid.Row="4" IsVisible="{Binding !GameSyncMassRemoval}">
                             <Button Command="{Binding TakeOverGameChangesCommand}" Content="{l:T 'Take over'}" Classes="accent" Margin="0,0,8,0" IsEnabled="{Binding CanRun}"
                                     ToolTip.Tip="{l:T 'The ticked changes go into the chosen relations'}" />
                             <Button Command="{Binding PostponeGameChangesCommand}" Content="{l:T 'Not now'}" Margin="0,0,8,0"
@@ -8410,7 +8466,17 @@
                             <RadioButton x:Name="MoveNodesToNewRadio" IsChecked="{Binding IsMoveNodesToNew}" Content="{l:T 'New relation'}" />
                             <TextBox x:Name="MoveNodesNewNameBox" Text="{Binding MoveNodesNewName}" Watermark="{l:T 'Name of the new relation'}" IsEnabled="{Binding IsMoveNodesToNew}" Margin="26,0,0,0" />
                         </StackPanel>
-                        <RadioButton Grid.Row="3" x:Name="MoveNodesToExistingRadio" IsChecked="{Binding IsMoveNodesToExisting}" Content="{l:T 'Existing relation (same kind)'}" />
+                        <!-- The target by pressing its button (or moving its axis) on the device (2.7.1 report) -->
+                        <StackPanel Grid.Row="3" Spacing="4">
+                            <WrapPanel ItemSpacing="12" LineSpacing="6">
+                                <RadioButton x:Name="MoveNodesToExistingRadio" IsChecked="{Binding IsMoveNodesToExisting}" Content="{l:T 'Existing relation (same kind)'}" VerticalAlignment="Center" />
+                                <Button x:Name="MoveNodesRecordButton" Classes="icon" Tag="{StaticResource Icon.Record}" Content="{Binding MoveNodesRecordLabel}"
+                                        Command="{Binding RecordMoveNodesTargetCommand}"
+                                        ToolTip.Tip="{l:T 'Press it, then press the button (or move the axis) on your device'}" />
+                            </WrapPanel>
+                            <TextBlock x:Name="MoveNodesPressLine" Classes="caption" Text="{Binding MoveNodesPressText}" TextWrapping="Wrap" Margin="26,0,0,0"
+                                       IsVisible="{Binding HasMoveNodesPressText}" />
+                        </StackPanel>
                         <Grid Grid.Row="4" RowDefinitions="Auto,*,Auto" RowSpacing="6" Margin="26,0,0,0" IsEnabled="{Binding IsMoveNodesToExisting}">
                             <TextBox x:Name="MoveNodesSearchBox" Text="{Binding MoveNodesSearch}" Watermark="{l:T 'Search relations'}" />
                             <ListBox Grid.Row="1" x:Name="MoveNodesTargetList" ItemsSource="{Binding MoveNodesTargets}" SelectedItem="{Binding SelectedMoveNodesTarget}"

@@ -55,6 +55,8 @@ public sealed partial class DetentGroupItem : ObservableObject
 
     public bool IsAfterburner => Kind == "Afterburner";
 
+    public bool IsFullAtDetent => Kind == "FullAtDetent";
+
     public bool HasCurve => Throttle.Count > 1;
 
     public bool HasWarnings => Warnings.Count > 0;

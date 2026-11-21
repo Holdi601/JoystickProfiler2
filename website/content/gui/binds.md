@@ -706,6 +706,27 @@ the afterburner starts at your detent for these aircraft.
 Detent mode, an aircraft group: **Game data** removes your own afterburner values of these aircraft; they use the
 start JoyPro's game data has. Engine: [[cli:binds detent set]].
 
+<!-- entry: SetDetentGroupNoAfterburnerCommand -->
+Detent mode, an aircraft group: **No afterburner** marks these aircraft as having none (a helicopter, a prop, a jet
+without afterburner): they get full power, or full collective, at your device's detent. Engine: [[cli:binds detent set]]
+`--target <game>:<plane>=full`; **Game data** takes it back. JoyPro's game data already knows the DCS helicopters.
+
+<!-- entry: PrepareDetentCopyCommand -->
+**Copy detent mode to another axis...** opens a small panel to pick another bound axis (Thrust Right offers Thrust Left
+first). It copies detent mode itself: on/off, what aircraft without afterburner get, the margin and your own
+afterburner values per aircraft. The other relation's curves stay as they are; its own curves for a game still win over
+detent mode there. Use this rather than **Copy to another axis...** of the curve, which is off while detent mode makes
+the curve shown.
+
+<!-- entry: bind:DetentCopyCalibration -->
+**Use this axis's calibration there until you calibrate it** (Copy detent mode): the calibration belongs to the device
+axis, so a second lever needs its own. Ticked, the other axis borrows this one's while it has none; run **Calibrate
+detent...** on it later for its exact detent. A calibration it already has stays.
+
+<!-- entry: CopyDetentToAxisCommand -->
+**Copy** in Copy detent mode to another axis: one step that one Ctrl+Z takes back. Engine: [[cli:binds detent copy]].
+The status line says what the other axis still needs (a calibration, or an own curve that wins there).
+
 <!-- entry: CloseBindModifiersCommand -->
 The **x** of **Modifiers on this bind**: closes the panel down to its title line, so the axis response and the rest
 of the page move up. JoyPro remembers it (also after a restart); **Show** opens it again.

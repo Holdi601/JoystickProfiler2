@@ -151,6 +151,12 @@ that is taken is refused with a note.
 relations of the same kind are listed, without the ones the actions come from; an action the target already has gains
 the aircraft it lacked.
 
+<!-- entry: RecordMoveNodesTargetCommand -->
+**Press the button they go to** (Move to...): press it, then press the button (or move the axis, for axis actions)
+the actions should go to. The relation of the same kind bound there is picked under **Existing relation**; with several
+(e.g. one with a modifier) the list shows just those. Typing in the search shows every relation again. Press again to
+stop waiting.
+
 <!-- entry: bind:MoveNodesNewName -->
 The name of the new relation (Move to... > New relation).
 

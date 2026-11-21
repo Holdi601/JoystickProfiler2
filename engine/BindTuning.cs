@@ -18,6 +18,12 @@ namespace JoyPro.Engine.Axis
         public bool Fitted;
         // Detent mode (Source "detent"): what the aircraft gets and how well the game expresses it.
         public string Note = string.Empty;
+        // Detent mode: the device's detent as the curve's input (-1..1) and, for an aircraft with an afterburner, the model
+        // output (-1..1) where the afterburner starts; NaN otherwise (the curve preview marks them).
+        public double DetentInput = double.NaN;
+        public double AfterburnerOutput = double.NaN;
+        // The model output at full throttle (-1 or 1): the side of the afterburner range.
+        public double FullOutput = double.NaN;
     }
 
     public static class BindTuning

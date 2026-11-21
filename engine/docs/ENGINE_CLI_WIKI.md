@@ -565,6 +565,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine binds detent set <bind-or-relation> [--on|--off] [--no-ab full|linear] [--unknown full|linear] [--margin <0..0.1>] [--target <game>:<plane>=ab:<0..1>|full|linear|default]...
   engine binds detent calibrate <bind-or-relation> --idle <0..1> --detent <0..1> [--full <0..1>|none] [--cutoff <0..1>|none] [--source wizard|manual]   (raw axis positions of the bound device axis)
   engine binds detent uncalibrate <bind-or-relation>
+  engine binds detent copy <bind-or-relation> --to <bind-or-relation> [--calibration]   (the same detent mode on another axis relation; --calibration lends this axis's calibration when the other has none)
   engine binds detent gates [--game <game>] [--plane <plane>]   (the shipped throttle gate data: afterburner start per aircraft, source, confidence)
   engine binds detent merge [--relations <csv>] [--into <relation>] [--ab-source profile|game] [--apply]   (per-aircraft throttle relations of one device axis into one relation in detent mode; without --apply only the plan)
   engine binds unbind <device::input|input> [--device <name>] [--input <value>] [--format dcs|il2] [--game <game id>] [--all]   (--game: only relations with an action of that game, any game id (DCS, IL2Game, StarCitizen, MSFS2024, ...); --format: how the input is written, DCS (default) or IL-2 tokens)
@@ -8558,6 +8559,19 @@ Arguments and example values:
 Examples:
 ```powershell
 engine binds detent uncalibrate 'Throttle' --text
+```
+
+### `engine binds detent copy <bind-or-relation> --to <bind-or-relation> [--calibration]   (the same detent mode on another axis relation; --calibration lends this axis's calibration when the other has none)`
+What it does: Copies a relation's detent mode (on/off, the no-afterburner rule, the margin, its own afterburner values per aircraft) to another bound axis relation, e.g. Thrust Left to Thrust Right. The calibration stays per device axis; --calibration lends this axis's calibration to the other one when it has none yet.
+
+Arguments and example values:
+- `<bind-or-relation>`: Relation name or bind selector. Example: Trim Pitch.
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
+- `--calibration`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine binds detent copy 'Thrust Right' --to 'Thrust Left' --calibration --text
 ```
 
 ### `engine binds detent gates [--game <game>] [--plane <plane>]   (the shipped throttle gate data: afterburner start per aircraft, source, confidence)`

@@ -322,13 +322,21 @@ namespace JoyPro.Engine
                 Warnings.Add("Detent mode, " + game + (string.IsNullOrWhiteSpace(plane) ? string.Empty : " / " + plane) + ": " + fit.Warning);
             if (fit.Fallback || fit.Tuning == null)
                 return null;
+            // Where the curve preview marks the detent and the afterburner range: the model output rises (+1) or falls
+            // (-1) towards full, as the bend was made.
+            double sigma;
+            DetentMath.BaseThrottle(normal.Model, normal.Tuning, calibration, out sigma);
+            double side = sigma == 0.0 ? 1.0 : sigma;
             return new ResolvedTuning
             {
                 Tuning = fit.Tuning.Clone(),
                 Model = normal.Model,
                 Source = BindTuning.DetentSource,
                 Fitted = true,
-                Note = note + "; " + fit.Method + ", off by up to " + Pct(fit.MaxError)
+                Note = note + "; " + fit.Method + ", off by up to " + Pct(fit.MaxError),
+                DetentInput = 2.0 * calibration.Detent - 1.0,
+                AfterburnerOutput = target.Kind == DetentTargetKind.Afterburner ? side * (2.0 * target.AbStart - 1.0) : double.NaN,
+                FullOutput = side
             };
         }
 

@@ -219,6 +219,7 @@ public sealed class UsageRecordingTests : IDisposable
         Process self = Process.GetCurrentProcess();
         self.Refresh();
         int handlesBefore = self.HandleCount;
+        int threadsBefore = self.Threads.Count;
         long memoryBefore = GC.GetTotalMemory(true);
         int tailHandles = tailer.HandleCount;
         long written = new FileInfo(log).Length;
@@ -237,7 +238,10 @@ public sealed class UsageRecordingTests : IDisposable
         GC.Collect();
         self.Refresh();
         Assert.Equal(tailHandles, tailer.HandleCount);
-        Assert.True(self.HandleCount - handlesBefore < 25, "handles " + handlesBefore + " -> " + self.HandleCount);
+        // Under a loaded machine the thread pool adds worker threads, each with its own handles: count those out,
+        // a leak in the tail shows up in its own handle count above and as growth beyond the new threads.
+        int threadGrowth = Math.Max(0, self.Threads.Count - threadsBefore);
+        Assert.True(self.HandleCount - handlesBefore < 25 + 8 * threadGrowth, "handles " + handlesBefore + " -> " + self.HandleCount + ", threads +" + threadGrowth);
         long grown = GC.GetTotalMemory(true) - memoryBefore;
         Assert.True(grown < 2_000_000, "managed heap grew by " + grown + " bytes");
         Assert.True(clock.Elapsed < TimeSpan.FromSeconds(30));

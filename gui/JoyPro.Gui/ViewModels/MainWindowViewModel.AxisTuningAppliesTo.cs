@@ -62,7 +62,14 @@ public sealed partial class MainWindowViewModel
     // here; a curve saved for them would win over detent mode and switch it off for them.
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AxisTuningEditable))]
+    [NotifyPropertyChangedFor(nameof(AxisTuningCopyTip))]
     private bool axisTuningDetentLocked;
+
+    // Copy to another axis copies a curve; a curve detent mode makes goes with detent mode itself (2.7.1 report: "the
+    // button is greyed out").
+    public string AxisTuningCopyTip => AxisTuningDetentLocked
+        ? T("Detent mode makes this curve: to give another axis the same, use Copy detent mode to another axis... in the detent section below.")
+        : T("The same dead zone, saturation, curve and slider on another bound axis (e.g. Thrust Left to Thrust Right), in one step");
 
     public bool AxisTuningEditable => !AxisTuningDetentLocked;
 

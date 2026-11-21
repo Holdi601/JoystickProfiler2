@@ -34,6 +34,20 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private string gameSyncStatus = string.Empty;
 
+    // The changes would take many binds out of the profile (MassRemovalThreshold): a game or its launcher may have
+    // rewritten its files (Falcon BMS 4.38.2's launcher rebuilt them from its own store, a game update reset them), so the
+    // dialog warns with the count and "Keep my JoyPro binds" is the default button instead of "Take over".
+    [ObservableProperty]
+    private bool gameSyncMassRemoval;
+
+    [ObservableProperty]
+    private string gameSyncMassRemovalWarning = string.Empty;
+
+    // More than 10 binds, or more than 20 % of the game's binds in the profile (at least 3, so one bind of a small
+    // profile is a normal change).
+    internal static bool IsMassRemoval(int removed, int profileBinds) =>
+        removed > 10 || (removed >= 3 && profileBinds > 0 && removed * 5 > profileBinds);
+
     [ObservableProperty]
     private string gameWatchStatus = "Not started.";
 
@@ -336,10 +350,13 @@ public sealed partial class MainWindowViewModel
 
         List<GameSyncChangeItem> items = [];
         string displayName = gameId;
+        int profileBinds = 0;
         try
         {
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(diff.StandardOutput));
             displayName = ReadJsonString(doc.RootElement, "DisplayName") is { Length: > 0 } name ? name : gameId;
+            if (doc.RootElement.TryGetProperty("ProfileBinds", out JsonElement binds) && binds.ValueKind == JsonValueKind.Number && binds.TryGetInt32(out int count))
+                profileBinds = count;
             if (doc.RootElement.TryGetProperty("Changes", out JsonElement changes) && changes.ValueKind == JsonValueKind.Array)
             {
                 foreach (JsonElement change in changes.EnumerateArray())
@@ -370,6 +387,14 @@ public sealed partial class MainWindowViewModel
         gameSyncWatchKey = watchKey;
         GameSyncTitle = T("{0}: {1}{2} made in the game", displayName, items.Count, (items.Count == 1 ? " change" : " changes"));
         GameSyncStatus = string.Empty;
+        int removed = items.Count(i => i.Kind == "removed");
+        GameSyncMassRemoval = IsMassRemoval(removed, profileBinds);
+        GameSyncMassRemovalWarning = GameSyncMassRemoval
+            ? T("Taking over would remove binds from JoyPro: {0} of {1} for {2}. The game may have rewritten its files itself (for example its launcher or an update). Keep your JoyPro binds unless you removed them in the game on purpose.",
+                removed, Math.Max(profileBinds, removed), displayName)
+            : string.Empty;
+        if (GameSyncMassRemoval)
+            JoyPro.Logging.JoyProLog.Warn("Watcher", gameId + ": the changes would remove " + removed + " of " + profileBinds + " bind(s); warned, keeping the profile is the default");
         HasGameSyncChanges = true;
         JoyPro.Logging.JoyProLog.Info("Watcher", gameId + ": offering " + items.Count + " change(s) in the dialog: " +
                                                  string.Join(" | ", items.Select(i => i.Kind + " " + i.Description)));
@@ -460,6 +485,8 @@ public sealed partial class MainWindowViewModel
     private void CloseGameSyncPanel()
     {
         HasGameSyncChanges = false;
+        GameSyncMassRemoval = false;
+        GameSyncMassRemovalWarning = string.Empty;
         GameSyncChanges.Clear();
         gameSyncWatchKey = string.Empty;
     }

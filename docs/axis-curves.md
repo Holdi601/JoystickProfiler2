@@ -239,7 +239,9 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
   F-5E 0.80 and JF-17 0.833 are the MIL marks of their Controls Indicator scripts (medium: assumes the lever follows the
   axis 1:1; if DCS stretches the axis over idle..max instead, 0.75 / 0.744 / 0.612, see the notes). FC3 jets, AJS 37
   and MiG-21 have no number in their files (their old curves in the profile give one). MiG-19P / F-100D switch the
-  afterburner by a button. IL-2 (both) has no afterburner. Falcon BMS calibrates its own AB and idle detents in its
+  afterburner by a button. IL-2 (both) has no afterburner. DCS helicopters (AH-64D, Ka-50, Mi-8, Mi-24, UH-1H, SA342,
+  CH-47F, OH-58D, also under their seat names) and the A-4E, L-39ZA, C-130J and Yak-52 have none either (2.7.2:
+  before, helicopters had no entry and kept the relation's curve). Falcon BMS calibrates its own AB and idle detents in its
   setup (stored in `joystick.cal`), X-Plane per aircraft in the .acf (`acf/_go_to_burner_50_above_thro`); MSFS's
   aircraft files are not read.
   DCS also has hidden filter fields `hardwareDetent`, `hardwareDetentAB`, `hardwareDetentMax` (`Scripts\Input\
@@ -256,13 +258,23 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
   or the relation's curve (`linear`).
 - **The curve**: the base curve gives the game throttle g(u) along the raw travel; a piecewise linear bend W maps
   g(detent) to the afterburner start minus the margin (resting in the detent stays just below the afterburner, 1 % by
-  default), g(full) to 1, and with a calibrated cut-off g(idle) to the aircraft's idle gate (else flat zero in the
-  cut-off). The relation's own curve shape is kept inside each segment. Game conventions (DCS thrust: -1 = full) and the
+  default), g(full) to 1, and with a calibrated cut-off g(idle) to the aircraft's idle gate; behind the idle detent the
+  throttle runs straight in travel from 0 at the cut-off to that idle (2.7.2; before it was bent through g, so a dead
+  zone squeezed that ramp).
+  **Dead zone** (2.7.2): the base's dead zone is part of g, applied to the raw axis at the idle end of the travel as the
+  game applies it, before the bend: the throttle stays exactly 0 there and the device's detent still gives the
+  afterburner start. With a cut-off the calibrated idle detent always gives the aircraft's idle: a dead zone inside the
+  cut-off region changes nothing, one reaching past the idle detent keeps the throttle at idle up to its end. The relation's own curve shape is kept inside each segment. Game conventions (DCS thrust: -1 = full) and the
   relation's invert need not be known: the base's output at idle and full tells which way the game throttle rises.
 - **Order**: an aircraft's or game's own tuning scope wins, then detent mode, then the base (`BindTuning.Resolve`).
 - **Per game** (`DetentMath.Fit`, max. difference to the wanted curve in game throttle reported): DCS (per aircraft)
   dead zone + saturation when the curve is one straight line (full at the detent: exact), else the 11-point user curve
-  (least squares, exact at the detent and on flat stretches; typically below 1.5 %). X-Plane: curve points (exact).
+  (least squares, exact at the detent and on flat stretches; typically below 1.5 %). Since 2.7.2 the flat ends (the
+  dead zone, a cut-off, full beyond the detent) go into DCS's own dead zone / saturation X, which DCS applies before the
+  user curve, so they stay exactly flat and the spline only spans the travel between them; with a cut-off the spline
+  starts just behind the idle detent at the aircraft's idle (a step, as the lever goes over its idle detent), so resting
+  in the idle detent never gives the cut-off. Between the cut-off and the idle detent the error measure only asks for a
+  throttle between 0 and idle (2.7.1 fell back to the normal curve there with a 4 % dead zone). X-Plane: curve points (exact).
   Any other model: its own parameters searched on their grid (IL-2 full at the detent = a high dead zone: exact; an
   afterburner bend cannot be expressed there). Games with one curve for all aircraft get what most of the relation's
   aircraft of that game need (others listed). Above 2 % difference a warning, above 6 % the game keeps its normal curve
@@ -281,7 +293,11 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
   at the detent is the default, on/off, no-afterburner rule, "Calibrate detent..." (idle, detent,
   full and cut-off with Confirm/Skip/Back on the live axis), "Merge my throttle relations..." (plan, Merge, Undo merge),
   and the aircraft groups ("F-16C, F/A-18C: afterburner at 77 %") with a travel/throttle preview (detent line, afterburner
-  band), the source, per game the method and error, and the afterburner start editable per group.
+  band), the source, per game the method and error, and the afterburner start editable per group; **No afterburner**
+  per group (`--target ...=full`); **Copy detent mode to another axis...** (`binds detent copy <relation> --to <other>
+  [--calibration]`: settings and own values, the calibration lent only to an axis without one, source `copy`). The
+  axis response graph marks the device's detent and the afterburner range on a curve detent mode makes (`binds tuning
+  show` `Resolved.Detent`: Input, AfterburnerOutput, FullOutput, -1..1).
 - Verified: unit tests `gui\JoyPro.Gui.Tests\DetentModeTests.cs` (math per model, panel, wizard, merge), smoke
   `engine\tests\smoke\detent.ps1` (gate data, merge/undo/redo, calibration checks, own values, DCS/X-Plane/IL-2 fits,
   DCS export and DCS's own Lua loading it), the user's March 2025 profile merged on a copy and exported into a copy of

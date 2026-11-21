@@ -220,7 +220,11 @@ public sealed partial class MainWindowViewModel
     private readonly List<string> moveNodesSourceRelations = [];
     private bool moveNodesAreAxis;
 
-    partial void OnMoveNodesSearchChanged(string value) => RebuildMoveNodesTargets();
+    partial void OnMoveNodesSearchChanged(string value)
+    {
+        ForgetMoveNodesPressOnSearch();
+        RebuildMoveNodesTargets();
+    }
 
     partial void OnMoveNodesStatusChanged(string value) => OnPropertyChanged(nameof(HasMoveNodesStatus));
 
@@ -275,6 +279,7 @@ public sealed partial class MainWindowViewModel
     private void OpenMoveNodesPanel(string baseName)
     {
         MoveNodesStatus = string.Empty;
+        ResetMoveNodesPress();
         MoveNodesSearch = string.Empty;
         SelectedMoveNodesTarget = null;
         string name = baseName + " (2)";
@@ -293,6 +298,7 @@ public sealed partial class MainWindowViewModel
         string[] words = (MoveNodesSearch ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         List<string> names = allRelations
             .Where(r => r.IsAxis == moveNodesAreAxis && !moveNodesSourceRelations.Contains(r.Name, StringComparer.OrdinalIgnoreCase))
+            .Where(r => moveNodesPressed == null || moveNodesPressed.Contains(r.Name, StringComparer.OrdinalIgnoreCase))
             .Select(r => r.Name)
             .Where(n => words.All(w => n.Contains(w, StringComparison.CurrentCultureIgnoreCase)))
             .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase)
