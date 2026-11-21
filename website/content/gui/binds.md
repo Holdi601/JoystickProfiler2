@@ -211,7 +211,15 @@ below the afterburner; pushing over it lights it.
    takes it back.
 
 The aircraft groups below show where each group's afterburner starts and where that number comes from; type your
-own value and **Set**, or **Game data** to go back.
+own value and **Set**, or **Game data** to go back. **No afterburner** on a group gives those aircraft full power (or
+full collective) at your detent. **Copy detent mode to another axis...** gives the other lever (Thrust Left from Thrust
+Right) the same detent mode in one step.
+
+- **Where the afterburner starts in the graph:** when detent mode bends the curve shown, the graph marks your device's
+  detent as a dashed line and the afterburner range of the game's throttle as an orange band.
+- **Dead zone:** a dead zone on the default curve works at the idle end of the travel, before the bend. The first part
+  of the travel stays at zero, resting in the idle detent always gives the aircraft's idle (never the cut-off), and the
+  detent still lights the afterburner at the right point.
 
 :::ingame Detent mode in the game
 In every exported aircraft the throttle reaches the afterburner exactly at your device's detent. DCS gets a per

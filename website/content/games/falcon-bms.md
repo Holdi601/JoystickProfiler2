@@ -12,6 +12,13 @@ file and the axis setup from them every time you press **Launch**. JoyPro writes
 so the launcher stays in charge: it turns JoyPro's binds into the files BMS reads, as if you had made them in the
 launcher yourself. Falcon 4.0 and Allied Force are not supported; use Falcon BMS.
 
+**Falcon BMS 4.38.2 and newer** (launcher 3.x): the launcher keeps your binds in `User\Config\JSON`, one file per
+device and aircraft (F-16 and F-15ABCD each have their own), and rebuilds the older XML and key files from them every
+time it closes or launches. JoyPro reads and writes these JSON files: a button goes into each aircraft whose key file
+has the command (an F-15 command only into the F-15), an axis into every aircraft of the device. Hat binds, the shifted
+layer and throttle detents are not written into the JSON files yet; the export lists them so you can set them in the
+launcher. Older BMS versions keep working with the XML files as below.
+
 :::video game-falcon-bms "Falcon BMS: import, relations, export"
 :::
 
@@ -100,7 +107,8 @@ dead zone and saturation steps JoyPro set, and your buttons and hats do what you
 
 | File | What it is |
 |---|---|
-| `<BMS>\User\Config\Setup.v100.<device> {<GUID>}.xml` | the launcher's file per device: axes, hats, buttons, throttle detents |
+| `<BMS>\User\Config\JSON\DeviceBindings_<aircraft>_<device>.json` | 4.38.2 and newer: the launcher's file per device and aircraft (buttons, axes) |
+| `<BMS>\User\Config\Setup.v100.<device> {<GUID>}.xml` | before 4.38.2: the launcher's file per device: axes, hats, buttons, throttle detents |
 | `<BMS>\User\Config\Falcon BMS User.cfg` | curve values and game settings, only above the launcher's marker line |
 | `<BMS>\User\Config\Feedback.ini` | force feedback effect gains and the centring spring |
 | `<BMS>\User\Config\<callsign>.pop` | the pilot file: only the Enable Force Feedback byte |
