@@ -13,6 +13,8 @@ into your profile and writes your binds as the preset **JoyPro_FotG**, then tell
 portable Knossos folders on any drive (a `kn_portable` folder next to `Knossos.NET.exe`) and the library of an installed
 Knossos.NET.
 
+**Experimental:** support for Fate of the Galaxy is new and built from the game's own file formats; if something looks wrong in the game, send JoyPro's support file. The game has no joystick modifiers, so JoyPro never puts its binds behind a JoyPro shift button, and each control takes up to two inputs.
+
 {{game-card}}
 
 :::layer beginner
