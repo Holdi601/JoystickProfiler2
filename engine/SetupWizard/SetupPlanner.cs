@@ -135,6 +135,9 @@ namespace JoyPro.Setup
             public string DirKey = string.Empty;               // a directional set (tms, dms, cms, trim ...): its key
             public string DirRole = string.Empty;              // and its direction (up, down, left, right, press)
             public bool Lone;                                  // the only member of its set its aircraft have (ACE COMBAT's target switch = TMS right): any free button
+            public bool AnyDirection;                          // RescueGripEssentials only: a set member may take any grip hat direction
+            public bool IgnorePanelLabels;                     // RescueSurvivalAnywhere's last try only: a printed panel label, a replica key or a
+                                                               // dedicated control (trim rocker) does not veto
             public bool CameraDetent;                          // trigger1ststage that is a detent before the gun (F-16, A-10C ...)
             public bool ReleaseStage;                          // trigger2ndstage that drops bombs / fires rockets (FW 190, MiG-21)
             public string ThrottleRole = string.Empty;         // twin-engine throttles: L, R or C (both / all engines); empty otherwise
@@ -1046,7 +1049,9 @@ namespace JoyPro.Setup
                     // essential, a non-essential pair or group too - the F-14's wing sweep, the parking brake - which then
                     // leaves whole; a 20-module hangar on a T.Flight or a gamepad had no other slot left)
                     bool recenter = gear.FunctionId == "view_center";
-                    if (others.Any(o => o.Kept || (o.Fixed && (o.StyleDevice.Length > 0 || (!(recenter && slot.Layer > 0) && (o.Function.PairGroup.Length > 0 || o.Function.Group.Length > 0)))) || HasWish(o) || (o.DirKey.Length > 0 && GroupRoles.Contains(LastSegment(slot.RuleControl))) || EssentialRank(o.FunctionId) < 99 || (!recenter && o.Importance >= gear.Importance) || o.FunctionId.StartsWith("gear", StringComparison.Ordinal)))
+                    if (others.Any(o => o.Kept || (o.Fixed && (o.StyleDevice.Length > 0 || (!(recenter && slot.Layer > 0) && (o.Function.PairGroup.Length > 0 || o.Function.Group.Length > 0)))) || HasWish(o) || (o.DirKey.Length > 0 && GroupRoles.Contains(LastSegment(slot.RuleControl))) || EssentialRank(o.FunctionId) < 99 || (!recenter && o.Importance >= gear.Importance) || o.FunctionId.StartsWith("gear", StringComparison.Ordinal) ||
+                                        // (a spaceship's nearest hostile the grip rescue placed is survival-critical: no recenter or lone member takes it)
+                                        (NearestHostile(o) && o.Fixed)))
                         continue;
                     double c = others.Sum(o => o.Importance) - 0.01 * S(run, gear, slot) + (recenter && slot.Layer == 0 ? 1000 : 0);
                     if (c < cost)
@@ -1094,12 +1099,19 @@ namespace JoyPro.Setup
             if (!run.Slots.Any(s => s.Grip && !s.Input.IsAxis && s.Layer == 0))
                 return false;
             foreach (Demand essential in run.Demands.Where(d => !d.Kept && !d.Redundant && !d.IsAxis && d.StyleDevice.Length == 0 && IsTop(run, d) &&
-                                                                (GripEssentials.Contains(d.FunctionId) || d.FunctionId == FlareFunction || GunDemand(run, d)))
-                                                       .OrderBy(d => EssentialRank(d.FunctionId)).ThenByDescending(d => d.Importance).ToList())
+                                                                (GripEssentials.Contains(d.FunctionId) || d.FunctionId == FlareFunction || GunDemand(run, d) || NearestHostile(d)))
+                                                       .OrderBy(d => NearestHostile(d) ? 50 : EssentialRank(d.FunctionId)).ThenByDescending(d => d.Importance).ToList())
             {
                 Slot now;
                 if (run.Placed.TryGetValue(essential, out now) && now.Grip && now.Layer == 0 && now.Phase.Length == 0)
                     continue;
+                // (owner 2026-11-22: a spaceship's nearest hostile target is survival-critical with the guns, the missiles and
+                // the countermeasures - an unplaced one takes any grip hat direction or button from what is no earlier
+                // essential: the target cycle set, energy, views; a CH GameStick's only hat had secondary fire up and the
+                // next / previous / attacker cycle on the rest)
+                if (NearestHostile(essential) && run.Placed.ContainsKey(essential))
+                    continue;
+                bool nearest = NearestHostile(essential);
                 // (the flares: judged now, not when the list was made - a weapon release of the same pass may just have
                 // taken their grip button)
                 if (essential.FunctionId == FlareFunction && DispenseOnGrip(run, essential))
@@ -1124,7 +1136,8 @@ namespace JoyPro.Setup
                 // (review 7 M14: the flares also take a momentary button of the throttle hand - the TCA quadrant's lever-end buttons -
                 // before they go behind a shift)
                 foreach (Slot slot in run.Slots.Where(s => (s.Grip || (flare && s.Role == SetupRoles.Throttle && string.Equals(s.Input.Type, "momentary", StringComparison.OrdinalIgnoreCase) && !HatControl.IsMatch(s.Control))) &&
-                                                          !s.Input.IsAxis && s.Layer == 0 && s.Phase.Length == 0 && (flare || GripEssentials.Contains(essential.FunctionId) || !HatControl.IsMatch(s.Control)) && S(run, essential, s) > Forbidden))
+                                                          !s.Input.IsAxis && s.Layer == 0 && s.Phase.Length == 0 && (flare || nearest || GripEssentials.Contains(essential.FunctionId) || !HatControl.IsMatch(s.Control)) &&
+                                                          RescueScore(run, essential, s, nearest) > Forbidden))
                 {
                     string reserved;
                     if ((run.ReservedFor.TryGetValue(slot.Index, out reserved) && essential.Nodes.Any(n => string.Equals(n.Game, reserved, StringComparison.OrdinalIgnoreCase))) ||
@@ -1142,10 +1155,16 @@ namespace JoyPro.Setup
                                         // (a civil sim's wheel brake takes its grip button back from that sim's incidental weapons only)
                                         (civilBrake && !(CivilOnly(run, o) && Regex.IsMatch(o.FunctionId, "^(launchweapon|cms_)")) && (EssentialRank(o.FunctionId) < rank || GripEssentials.Contains(o.FunctionId) || EssentialRank(o.FunctionId) == rank)) ||
                                         (flare && EssentialRank(o.FunctionId) == rank && !(essential.DirKey.Length > 0 && o.DirKey == essential.DirKey)) ||
-                                        (EssentialRank(o.FunctionId) == 99 && o.Fixed && (o.Function.PairGroup.Length > 0 || o.Function.Group.Length > 0))))
+                                        // (looking around keeps its hat: the nearest hostile never takes the snap views or the recenter)
+                                        (nearest && (o.DirKey == "snapview" || o.FunctionId == "view_center")) ||
+                                        // (and never the countermeasures: they come before it in the survival order)
+                                        (nearest && EssentialRank(o.FunctionId) <= rank) ||
+                                        // (the nearest hostile moves a hat set of no essential - energy, target cycle - whole; never a pair)
+                                        (EssentialRank(o.FunctionId) == 99 && o.Fixed && (o.Function.PairGroup.Length > 0 || o.Function.Group.Length > 0) &&
+                                         !(nearest && o.DirKey.Length > 0 && o.Function.PairGroup.Length == 0))))
                         continue;
                     // (a hat direction costs a little more than a free push button: the set it breaks is placed again)
-                    double c = others.Sum(o => o.Importance * (EssentialRank(o.FunctionId) < 99 ? 4 : 1)) - 0.01 * S(run, essential, slot) + (HatControl.IsMatch(slot.Control) ? 0.5 : 0);
+                    double c = others.Sum(o => o.Importance * (EssentialRank(o.FunctionId) < 99 ? 4 : 1)) - 0.01 * RescueScore(run, essential, slot, nearest) + (HatControl.IsMatch(slot.Control) ? 0.5 : 0);
                     if (c < cost)
                     {
                         cost = c;
@@ -1260,7 +1279,8 @@ namespace JoyPro.Setup
                     // (on a hat only its up direction - CMS forward - or a push button)
                     if (HatControl.IsMatch(slot.Control) && HatWord(LastSegment(slot.Control)) != "up")
                         continue;
-                    if (LabelTaken(run, flare, slot) || run.NotHere.Contains(flare.Index.ToString(CultureInfo.InvariantCulture) + "|" + slot.Index.ToString(CultureInfo.InvariantCulture)))
+                    // (never for a game without modifier binds: the export could not write the shifted bind)
+                    if (!flare.ShiftOk || LabelTaken(run, flare, slot) || run.NotHere.Contains(flare.Index.ToString(CultureInfo.InvariantCulture) + "|" + slot.Index.ToString(CultureInfo.InvariantCulture)))
                         continue;
                     List<Demand> others = run.Occupants[slot.Index].Where(o => Conflict(o, flare)).ToList();
                     if (others.Any(o => o.Kept || HasWish(o) || EssentialRank(o.FunctionId) < 99 || o.DirKey.Length > 0 || (o.Fixed && (o.Function.PairGroup.Length > 0 || o.Function.Group.Length > 0))))
@@ -1346,6 +1366,118 @@ namespace JoyPro.Setup
         }
 
         // A demand that fires an aircraft's gun (a trigger stage that is no camera / laser detent and drops no bombs).
+        // The survival order of the last pass: gun (primary fire), weapon release (secondary fire), a spaceship's nearest
+        // hostile; 99 = none of them.
+        private static int SurvivalOrder(Run run, Demand d)
+        {
+            if (d.FunctionId == "trigger1ststage" && !d.CameraDetent && !d.ReleaseStage)
+                return 0;
+            if (d.FunctionId == "launchweapon")
+                return 1;
+            return NearestHostile(d) ? 2 : 99;
+        }
+
+        // (owner 2026-11-22) Primary fire, secondary fire and the nearest hostile that found no input take, in this order, any
+        // unshifted button or hat direction the hands reach (grips first, then bases, throttles and panels): a free one, else
+        // one whose functions are no survival function before them (a set or group there leaves whole). Never a printed
+        // label of another function, a kept bind or a wish; the nearest hostile also never takes the countermeasures or
+        // looking around. Returns whether anything moved.
+        private static bool RescueSurvivalAnywhere(Run run)
+        {
+            bool any = false;
+            foreach (Demand essential in run.Demands.Where(d => !d.Kept && !d.Redundant && !d.IsAxis && d.StyleDevice.Length == 0 && IsTop(run, d) && SurvivalOrder(run, d) < 99 && !run.Placed.ContainsKey(d))
+                                                       .OrderBy(d => SurvivalOrder(run, d)).ThenByDescending(d => d.Importance).ToList())
+            {
+                if (run.Placed.ContainsKey(essential))
+                    continue;
+                int order = SurvivalOrder(run, essential);
+                bool nearest = order == 2;
+                Slot best = null;
+                double cost = double.MaxValue;
+                // (first the inputs the normal rules allow; only when none is left a momentary input the rules keep for
+                // something else: a panel key whose printed label names another function, a replica's key, a dedicated
+                // control the game has no function for (the YOKO's trim rocker in a space game) - never a labelled grip
+                // button (a PTT keeps its comms) and never a latched switch)
+                for (int attempt = 0; attempt < 2 && best == null; attempt++)
+                foreach (Slot slot in run.Slots.Where(s => !s.Input.IsAxis && s.Layer == 0 && s.Phase.Length == 0 && (attempt == 0 || !string.Equals(s.Input.Type, "latched", StringComparison.OrdinalIgnoreCase))))
+                {
+                    double score = RescueScore(run, essential, slot, nearest, attempt == 1);
+                    if (score <= Forbidden)
+                        continue;
+                    string reserved;
+                    if ((run.ReservedFor.TryGetValue(slot.Index, out reserved) && essential.Nodes.Any(n => string.Equals(n.Game, reserved, StringComparison.OrdinalIgnoreCase))) ||
+                        run.NotHere.Contains(essential.Index.ToString(CultureInfo.InvariantCulture) + "|" + slot.Index.ToString(CultureInfo.InvariantCulture)) ||
+                        LabelTakenFor(run, essential, slot, attempt == 1))
+                        continue;
+                    List<Demand> others = GivingWay(run, slot, essential);
+                    if (others.Any(o => o.Kept || HasWish(o) || (o.Fixed && o.StyleDevice.Length > 0) || o.Function.PairGroup.Length > 0 ||
+                                        SurvivalOrder(run, o) <= order || EssentialRank(o.FunctionId) == 0 ||
+                                        (nearest && (EssentialRank(o.FunctionId) <= EssentialRank("cms_") || o.DirKey == "snapview" || o.FunctionId == "view_center"))))
+                        continue;
+                    double c = others.Sum(o => o.Importance * (EssentialRank(o.FunctionId) < 99 ? 4 : 1)) + (slot.Grip ? 0 : 2) - 0.01 * score;
+                    if (c < cost)
+                    {
+                        cost = c;
+                        best = slot;
+                    }
+                }
+                if (best == null)
+                    continue;
+                foreach (Demand other in GivingWay(run, best, essential))
+                {
+                    Slot was;
+                    if (run.Placed.TryGetValue(other, out was))
+                        run.NotHere.Add(other.Index.ToString(CultureInfo.InvariantCulture) + "|" + was.Index.ToString(CultureInfo.InvariantCulture));
+                    Unplace(run, other);
+                }
+                if (Free(run, best, essential, null))
+                {
+                    Place(run, essential, best, "survival-critical: the gun, the release and the nearest hostile get an input before anything else");
+                    essential.Fixed = true;
+                    any = true;
+                }
+            }
+            return any;
+        }
+
+        private static bool LabelTakenFor(Run run, Demand essential, Slot slot, bool lastTry)
+        {
+            essential.IgnorePanelLabels = lastTry;
+            try
+            {
+                return LabelTaken(run, essential, slot);
+            }
+            finally
+            {
+                essential.IgnorePanelLabels = false;
+            }
+        }
+
+        // A spaceship's "target the nearest hostile" (Star Citizen, Elite, X4, Fate of the Galaxy): survival-critical.
+        private static bool NearestHostile(Demand d)
+        {
+            return d.FunctionId == "space_target_closest_hostile" && d.Classes.Contains(SetupClasses.Space);
+        }
+
+        // The rescue's score: the nearest hostile may take any grip hat direction there (its set's direction is held by an
+        // earlier essential on a one-hat stick); computed without the score cache, which holds the normal rule.
+        private static double RescueScore(Run run, Demand essential, Slot slot, bool anyDirection, bool ignorePanelLabels = false)
+        {
+            if (!anyDirection && !ignorePanelLabels)
+                return S(run, essential, slot);
+            essential.AnyDirection = anyDirection;
+            essential.IgnorePanelLabels = ignorePanelLabels;
+            try
+            {
+                return Score(run, essential, slot);
+            }
+            finally
+            {
+                essential.AnyDirection = false;
+                essential.IgnorePanelLabels = false;
+            }
+        }
+
         private static bool GunDemand(Run run, Demand d)
         {
             return (d.FunctionId == "trigger2ndstage" || d.FunctionId == "trigger1ststage") && !d.CameraDetent && !d.ReleaseStage && d.Aircraft.Any(run.GunAircraft.Contains);
@@ -1398,7 +1530,8 @@ namespace JoyPro.Setup
                     foreach (Demand member in set)
                     {
                         Slot slot = hat.FirstOrDefault(s => LastSegment(s.RuleControl) == member.DirRole);
-                        if (slot == null || (slot.Layer == 0 ? S(run, member, slot) <= Forbidden : LabelTaken(run, member, slot)))
+                        // (a shifted hat never for a game without modifier binds: FotG, X-Plane, Arma could not write it)
+                        if (slot == null || (slot.Layer == 0 ? S(run, member, slot) <= Forbidden : (!member.ShiftOk || LabelTaken(run, member, slot))))
                         {
                             ok = false;
                             break;
@@ -1585,6 +1718,14 @@ namespace JoyPro.Setup
             {
                 List<Demand> rest = open.Where(d => !d.Redundant && !run.Placed.ContainsKey(d)).ToList();
                 AssignGroups(run, rest, 0);
+                AssignSingles(run, rest, 0);
+            }
+
+            // (owner 2026-11-22) The last word: while the devices have any button or hat direction the hands reach, the gun,
+            // then the weapon release, then a spaceship's nearest hostile get one - before views, comms, PTT or anything else.
+            if (RescueSurvivalAnywhere(run))
+            {
+                List<Demand> rest = open.Where(d => !d.Redundant && !run.Placed.ContainsKey(d)).ToList();
                 AssignSingles(run, rest, 0);
             }
 
@@ -2760,7 +2901,8 @@ namespace JoyPro.Setup
             // A directional set's member only on the matching direction of a hat or thumb stick (never on another hat's press
             // or a plain button as a last resort).
             if (demand.DirRole.Length > 0 && !style && !SetupPhases.MatchesDirection(demand.DirRole, slot.RuleControl) && !SetupPhases.MatchesDirection(demand.DirRole, slot.Control) &&
-                !((NoLayer.Contains(demand.FunctionId) || demand.Lone) && slot.Grip && !slot.Input.IsAxis && !HatControl.IsMatch(control) && Regex.IsMatch(control, @"\.button\.")))
+                !((NoLayer.Contains(demand.FunctionId) || demand.Lone) && slot.Grip && !slot.Input.IsAxis && !HatControl.IsMatch(control) && Regex.IsMatch(control, @"\.button\.")) &&
+                !(demand.AnyDirection && slot.Grip && !slot.Input.IsAxis))
                 return Forbidden;
 
             if (!style && Veto(run, demand, slot))
@@ -2797,7 +2939,7 @@ namespace JoyPro.Setup
                 // LDG GEAR WARN SILENCE).
                 if (OtherBaseLabel(function, slot, control, exactPref, mfdFunction))
                     return Forbidden;
-                if (!grip && (family == "panel" || family == "mfd") && !mfdFunction)
+                if (!grip && (family == "panel" || family == "mfd") && !mfdFunction && !demand.IgnorePanelLabels)
                 {
                     bool printed = SetupPhases.IsFunctionLabel(slot.Input.Label);
                     if (printed && !exactPref && !LabelMatches(function, slot))
@@ -2814,7 +2956,7 @@ namespace JoyPro.Setup
                 if (SetupPhases.SlewTmsClash(demand.FunctionId, function.Group, control))
                     return Forbidden;
                 // Dedicated controls only for their functions, MFD keys only on MFD keys, cockpit panel functions off the grips.
-                if (Dedicated.IsMatch(control) || (demand.IsAxis && DedicatedAxis.IsMatch(control)))
+                if ((Dedicated.IsMatch(control) && !demand.IgnorePanelLabels) || (demand.IsAxis && DedicatedAxis.IsMatch(control)))
                     return Forbidden;
                 // Pitch, roll and yaw spring back to the middle: never on a lever, slider, wheel or knob that stays where
                 // it is left (rudder on a quadrant lever or the flaps lever).
@@ -3247,7 +3389,9 @@ namespace JoyPro.Setup
         private static readonly HashSet<string> HeadTrackingGames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "DCS", "IL2Game", "IL2Korea", "IL2CoD", "IL2CoDBlitz", "IL21946", "FalconBMS", "MSFS2020", "MSFS2024", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6",
-            "XPlane11", "XPlane12", "WarThunder", "Arma2", "Arma2OA", "Arma3", "ArmaReforger", "StarCitizen", "EliteDangerous", "VTOLVR", "VTOLVRNative"
+            "XPlane11", "XPlane12", "WarThunder", "Arma2", "Arma2OA", "Arma3", "ArmaReforger", "StarCitizen", "EliteDangerous", "VTOLVR", "VTOLVRNative",
+            // FreeSpace Open reads TrackIR and runs in VR (Knossos' "Play in VR").
+            "FateOfTheGalaxy"
         };
 
         internal static bool HeadTrackingGame(string game)
@@ -3287,6 +3431,10 @@ namespace JoyPro.Setup
             bool looseGroup = other.Fixed && other.DirKey.Length == 0 && other.Function.Group.Length > 0 && other.StyleDevice.Length == 0 && EssentialRank(other.FunctionId) == 99 &&
                               EssentialRank(member.FunctionId) < 99 && !(at != null && RealHeld(run, other, at));
             if (other.Kept || HasWish(other) || (other.Function.PairGroup.Length > 0 && !laterPair) || (other.Fixed && other.DirKey.Length == 0 && !looseGroup))
+                return false;
+            // (a nearest hostile the grip rescue placed stays: only the snap views and the survival functions before it - gun,
+            // release, countermeasures - may move it; the target cycle and energy sets do not take that hat back)
+            if (NearestHostile(other) && other.Fixed && member.DirKey != "snapview" && EssentialRank(member.FunctionId) > EssentialRank("cms_"))
                 return false;
             // From the middle of "Where should functions go?" on, a function on its real aircraft's HOTAS position (the
             // Warthog's DMS in the F-16 / A-10C) keeps it: the snap views find a free hat or a shift layer instead.
@@ -3645,7 +3793,13 @@ namespace JoyPro.Setup
             HashSet<string> owners;
             if (!run.LabelOwners.TryGetValue(label, out owners))
                 run.LabelOwners[label] = owners = new HashSet<string>(run.Request.Functions.Values.Where(f => f.Labels.Count > 0 && SetupPhases.LabelNames(f, label)).Select(f => f.Id), StringComparer.OrdinalIgnoreCase);
-            return owners.Count > 0 && !owners.Contains(demand.FunctionId) && !SetupPhases.LabelNames(demand.Function, label);
+            if (owners.Count == 0 || owners.Contains(demand.FunctionId) || SetupPhases.LabelNames(demand.Function, label))
+                return false;
+            // (RescueSurvivalAnywhere's last try, owner 2026-11-22: a label holds its button only in a plan whose games have
+            // its function - the YOKO's "Electric trim" or "AP disconnect" in a space game; a PTT keeps a game's comms)
+            if (demand.IgnorePanelLabels)
+                return run.Demands.Any(d => d != demand && !d.Redundant && owners.Contains(d.FunctionId));
+            return true;
         }
 
         // The position word of a printed label against the position the function asks for (LAUNCH BAR EXTEND, HOOK UP).

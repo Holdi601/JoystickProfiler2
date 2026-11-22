@@ -37,7 +37,7 @@ public static class HeadTrackingChoice
     public static readonly IReadOnlyList<string> Games =
     [
         "DCS", "IL2Game", "IL2Korea", "IL2CoD", "IL2CoDBlitz", "IL21946", "FalconBMS", "MSFS2020", "MSFS2024", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6",
-        "XPlane11", "XPlane12", "WarThunder", "Arma2", "Arma2OA", "Arma3", "ArmaReforger", "StarCitizen", "EliteDangerous", "VTOLVR", "VTOLVRNative"
+        "XPlane11", "XPlane12", "WarThunder", "Arma2", "Arma2OA", "Arma3", "ArmaReforger", "StarCitizen", "EliteDangerous", "VTOLVR", "VTOLVRNative", "FateOfTheGalaxy"
     ];
 
     public static bool Concerns(string? game) => Games.Contains(game ?? string.Empty, System.StringComparer.OrdinalIgnoreCase);

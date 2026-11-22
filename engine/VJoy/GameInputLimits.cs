@@ -102,6 +102,8 @@ namespace JoyPro.Engine.VJoy
                 "Arma 2 reads only the first 32 buttons and one hat of a joystick.", "engine/Games/ArmaProfileIntegration.cs, docs/games/arma2.md (reverse engineering)");
             Add(table, "X4", 64, 8, 1, false, "DirectInput", Verified,
                 "X4 reads 64 buttons and one hat per joystick.", "engine/Games/X4Integration.cs, docs/games/x4.md (from the game binary)");
+            Add(table, "FateOfTheGalaxy", 128, 8, 1, true, "SDL3 (FreeSpace Open 26)", Documented,
+                "FreeSpace Open reads 128 buttons, 8 axes and only the first hat (four directions) of each of its four devices.", "engine/Games/FreeSpaceOpenIntegration.cs, docs/games/fate-of-the-galaxy.md (FSO 26.0.1 source: io/joy.h, joy-sdl.cpp)");
             Add(table, "GRebels", 96, 24, 0, false, "Raw Input (UE EnhancedRawInput)", Documented,
                 "G-Rebels (Unreal's Raw Input plugin) reads 96 buttons and 24 axes and no hats.", "docs/games/g-rebels.md; research 2026-10-12 (UE 5.1+ RawInput plugin)");
             Add(table, "VTOLVR", 128, 8, 4, true, "DirectInput (DIJOYSTATE2, BYOJoystick)", Verified,

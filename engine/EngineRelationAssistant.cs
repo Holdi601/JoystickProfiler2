@@ -1519,7 +1519,8 @@ namespace JoyPro.Engine
             { "IL2Game", "IL-2" }, { "IL2Korea", "IL-2 Korea" }, { "IL21946", "IL-2 1946" }, { "IL2CoD", "IL-2 Cliffs of Dover" }, { "IL2CoDBlitz", "IL-2 CoD Blitz" },
             { "StarCitizen", "Star Citizen" }, { "WarThunder", "War Thunder" }, { "FalconBMS", "Falcon BMS" }, { "EliteDangerous", "Elite Dangerous" },
             { "MSFS2020", "MSFS 2020" }, { "MSFS2024", "MSFS 2024" }, { "XPlane11", "X-Plane 11" }, { "XPlane12", "X-Plane 12" }, { "NuclearOption", "Nuclear Option" },
-            { "VTOLVR", "VTOL VR" }, { "VTOLVRNative", "VTOL VR" }, { "ArmaReforger", "Arma Reforger" }, { "TinyCombatArena", "Tiny Combat Arena" }, { "GRebels", "G-Rebels" }
+            { "VTOLVR", "VTOL VR" }, { "VTOLVRNative", "VTOL VR" }, { "ArmaReforger", "Arma Reforger" }, { "TinyCombatArena", "Tiny Combat Arena" }, { "GRebels", "G-Rebels" },
+            { "FateOfTheGalaxy", "Fate of the Galaxy" }
         };
 
         // The readable name of every game (EngineGameWords: language.json, then the game integrations).

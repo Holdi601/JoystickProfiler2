@@ -22,6 +22,28 @@ public sealed class AxisTuningTests
 
     // The MSFS model (engine\AxisModels\Msfs.cs) reaches the GUI preview through [GameAxisModel]; its preview is the
     // curve measured in the game, and the base fit of a linear curve is a neutral Sensitivity page.
+    // FSO's dead zone / sensitivity are game settings, not part of a bind: the engine sends them with "binds tuning show"
+    // (GameSettings) and the GUI's preview draws with them, the game's defaults (10 / 9) when nothing is stored.
+    [Fact]
+    public void FsoModel_PreviewUsesGameSettingsFromEngine()
+    {
+        AxisModel model = AxisModels.ForGame("FateOfTheGalaxy");
+        Assert.Equal("fso", model.Id);
+        AxisTuning tuning = new AxisTuning();
+        using (System.Text.Json.JsonDocument none = System.Text.Json.JsonDocument.Parse("{\"GameSettings\":{\"FateOfTheGalaxy\":{}}}"))
+            MainWindowViewModel.ReadAxisGameSettings(none.RootElement);
+        Assert.Equal(0.0, model.Evaluate(tuning, 0.19), 6);            // default dead zone 10 = 20 % of the half travel
+        Assert.True(model.Evaluate(tuning, 0.25) > 0.0);
+        using (System.Text.Json.JsonDocument set = System.Text.Json.JsonDocument.Parse("{\"GameSettings\":{\"FateOfTheGalaxy\":{\"deadZone\":20,\"sensitivity\":0}}}"))
+            MainWindowViewModel.ReadAxisGameSettings(set.RootElement);
+        Assert.Equal(0.0, model.Evaluate(tuning, 0.35), 6);            // dead zone 20 = 40 %
+        double p = (0.7 - 0.4) / 0.6;
+        Assert.Equal(Math.Pow(p, 5), model.Evaluate(tuning, 0.7), 6);  // sensitivity 0: p^5
+        using (System.Text.Json.JsonDocument cleared = System.Text.Json.JsonDocument.Parse("{\"GameSettings\":{\"FateOfTheGalaxy\":{}}}"))
+            MainWindowViewModel.ReadAxisGameSettings(cleared.RootElement);
+        Assert.True(model.Evaluate(tuning, 0.35) > 0.0);
+    }
+
     [Fact]
     public void MsfsModel_LinkedForPreview()
     {

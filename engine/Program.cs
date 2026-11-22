@@ -60,6 +60,13 @@ namespace JoyPro.Engine
             // The engine uses the static Regex methods with many patterns (lua field lookups, cockpit guide templates):
             // the default cache of 15 made them build most patterns again on every call.
             System.Text.RegularExpressions.Regex.CacheSize = 512;
+            // Game-wide response settings for the axis models (FSO's dead zone / sensitivity): the profile's game settings.
+            JoyPro.Engine.Axis.AxisModels.GameSetting = (game, key) =>
+            {
+                Dictionary<string, double> values = JoyPro.Engine.Axis.FfbSettings.Resolve(InternalDataManagement.FfbOverrides, JoyPro.Engine.Axis.FfbSettings.AnyDevice, game, null);
+                double value;
+                return values != null && values.TryGetValue(key, out value) ? value : (double?)null;
+            };
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {
                 JoyPro.Logging.JoyProLog.Error("Crash", "Unhandled exception (terminating: " + e.IsTerminating + ")", e.ExceptionObject as Exception);
@@ -15640,7 +15647,8 @@ namespace JoyPro.Engine
                        "only JoyPro's own list, added to the catalog; writes it only when it changes)";
             bool rebuilds = game is Games.XPlaneIntegration || game is Games.FalconBmsIntegration || game is Games.NuclearOptionIntegration ||
                             game is Games.TinyCombatArenaIntegration || game is Games.AceCombat7Integration || game is Games.AceCombat8Integration ||
-                            game is Games.BattlefieldIntegration || game is Games.HllVietnamIntegration || game is Games.ProjectWingmanIntegration;
+                            game is Games.BattlefieldIntegration || game is Games.HllVietnamIntegration || game is Games.ProjectWingmanIntegration ||
+                            game is Games.FreeSpaceOpenIntegration;
             return rebuilds
                 ? "   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)"
                 : "   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)";
@@ -15658,6 +15666,9 @@ namespace JoyPro.Engine
             if (game is Games.HllVietnamIntegration)
                 return "   (writes only the keyboard pilot keys, with --include-keyboard; the gamepad binds reach the game through the virtual Xbox pad (engine vjoy mode " +
                        game.GameId + " xbox), nothing is written for them)";
+            if (game is Games.FreeSpaceOpenIntegration)
+                return "   (writes the controls preset " + ((Games.FreeSpaceOpenIntegration)game).Mod.Preset + " and selects it for the pilot and its campaign saves: clean takes over the devices it writes, nuke clears " +
+                       "unused devices of the game's four, keys only with --include-keyboard; " + never + ")";
             if (game is Games.EliteDangerousIntegration || game is Games.X4Integration)
                 return "   (only ship flight actions: clean and nuke release those on the written / unused devices; " + never + ")";
             return game.ExclusiveFlightSim

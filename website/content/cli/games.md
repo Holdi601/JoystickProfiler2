@@ -5761,6 +5761,196 @@ engine pw refresh-db --text
 - Related: [[cli:pw catalog]], [[cli:pw export]]; game page [[game:project-wingman]].
 :::
 
+<!-- entry: fotg import -->
+:::layer beginner
+Reads the controls your Fate of the Galaxy pilot uses into your JoyPro profile: the joystick binds of Device 1-4 with
+invert, and the keys when you ask for them. Nothing in the game changes. The GUI runs it with **Import** on the Fate of
+the Galaxy card of the Start page.
+
+```powershell
+engine fotg import --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+It reads the preset the last pilot names (`data\players\<callsign>.json`, `sections.controls.preset`): a preset file
+in `data\players\presets\`, a preset of the mod's control table or the mod's defaults. The user data is
+`kn_portable\HardLightProductions\FreeSpaceOpen` (portable Knossos) or `%APPDATA%\HardLightProductions\FreeSpaceOpen`.
+
+- Default: adds to the open profile (`--merge` means the same); `--replace` replaces every relation of the profile by
+  what the game has.
+- `--include-keyboard` also reads the keys (with Alt / Shift). Mouse binds are not read.
+- Devices: Joy-0..3 are the four slots of the mod settings (`data\FotG_2_settings.ini`, `[Input] Joystick`,
+  `Joystick1..3`, SDL GUID); JoyPro matches them by vendor and product id. A slot without a connected device is named in
+  a warning and its binds are left out.
+- Controls the mod switched off are not read.
+- Safety: reads only, not refused while the game runs; the profile is kept as "Before import from Fate of the Galaxy
+  (experimental)" first.
+- `--ignore-device <name>` / `--ignore-devices <a;b>` leave the binds of those devices out (a name without
+  `{GUID}` means every device of that name); a step line says how many binds were left out.
+:::
+
+:::layer technical
+- Output: JSON of the import result or a text report with `--text`; exit code `1` on an error (the game is not
+  installed, no pilot or preset found).
+- A path (positional or `--path`) may be a pilot `.json`, a preset file, the user data folder, the mod folder or the
+  Knossos folder; without one it reads the file [[cli:fotg paths]] lists first.
+- With `--profile` the profile is saved afterwards; a game JoyPro never exported to is watched from now on.
+- Related: [[cli:fotg scan]], [[cli:fotg export]]; game page [[game:fate-of-the-galaxy]].
+:::
+
+<!-- entry: fotg export -->
+:::layer beginner
+Writes your binds as the controls preset **JoyPro_FotG** and tells your pilot and its campaign saves to use it. Close
+the game first: it saves the pilot when it exits. The GUI's **Export now** on the Fate of the Galaxy card runs it.
+
+```powershell
+engine fotg export --mode clean --nuke-untouched-devices --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
+```
+:::
+
+:::layer advanced
+The preset `data\players\presets\JoyPro_FotG.json` lists all 140 FreeSpace Open controls (the game's own format). Every
+control has two places; keys and mouse binds stay, a joystick bind takes a free place or the place of the same device.
+
+| `--mode` | In the preset |
+|---|---|
+| `add` | a bind on a place the game uses for another control gets a mark "Not written to the game" |
+| `merge` | also removes the game's bind on an input the profile gives another control |
+| `merge-overwrite` (engine default) | also removes the other joystick binds of every control the profile binds |
+| `clean` (GUI default) | the exported devices lose their other joystick binds (all FreeSpace Open controls are flight controls) |
+
+- `--nuke-untouched-devices`: the same on the other connected devices of the four slots (not with `add`).
+- Keys are written only with `--include-keyboard`.
+- A device the profile uses that has no slot gets a free one in the mod settings; with all four slots taken its binds
+  are skipped with a hint to pick the device in the game's options.
+- The game drops a preset whose binds equal an earlier one; the export then names that preset in the pilot instead.
+- Without a pilot only the preset is written, with the hint to pick `JoyPro_FotG` in the game's controls menu.
+- One dead zone and one sensitivity for all axes: [[cli:ffb set]] with `--game FateOfTheGalaxy --param deadZone=<0..45>`
+  or `sensitivity=<0..9>`; the export writes them into the pilot and the mod settings. Relation dead zones are not
+  written.
+- Never touched: devices that are not connected, `--ignore-device(s)`, the `--vjoy-tunnel` device, the other presets
+  and every other part of the pilot and campaign saves.
+- Safety: refused while FreeSpace Open runs; backed up first (`.jpbak`, undo: [[cli:backups list]]); the profile is
+  kept as "Before export to Fate of the Galaxy (experimental)". `--dry-run` writes nothing.
+:::
+
+:::layer technical
+- Output: JSON of the export result or a text report with `--text`; exit code `1` on an error (the game runs, an
+  invalid `--mode`, no user data found).
+- Campaign saves: section `0x0004` of `<callsign>.<campaign>.csg` holds the preset name.
+- After a real run: the watcher's fingerprint of the pilot and the mod settings, the export marks
+  ([[cli:export-marks list]]).
+- Related: [[cli:fotg import]]; game page [[game:fate-of-the-galaxy]].
+:::
+
+<!-- entry: fotg paths -->
+:::layer beginner
+Shows where JoyPro finds Fate of the Galaxy's controls on this PC: the pilots of the FreeSpace Open user data next to
+the Knossos install. **Detect** in the import wizard's **Expert import** section runs it.
+
+```powershell
+engine fotg paths --text
+```
+:::
+
+:::layer advanced
+- No options. JoyPro looks for portable `kn_portable` folders on every fixed drive (two folder levels) and in
+  Desktop, Documents, Downloads and Games, and for the Knossos.NET library of `%APPDATA%\KnossosNET\settings.json`;
+  your own installation folder of [[cli:games install set]] comes first.
+- Listed: every pilot `.json` of the user data; without a pilot the preset JoyPro writes.
+- Read-only; also works when the game is not installed or switched off.
+:::
+
+:::layer technical
+- Output: JSON (`Game`, `DisplayName`, `ConfigPaths`, `Warnings`), or with `--text` `Fate of the Galaxy (experimental)
+  Config Paths`, `Paths: <n>` and the files. Exit code `0`; an unknown option fails with `Unknown FateOfTheGalaxy paths
+  argument(s): ...`.
+- Related: [[cli:fotg scan]], [[cli:games paths]]; game page [[game:fate-of-the-galaxy]].
+:::
+
+<!-- entry: fotg catalog -->
+:::layer beginner
+Lists the Fate of the Galaxy controls JoyPro knows: the game's targeting, ship, weapon and computer controls, with axis
+or button.
+
+```powershell
+engine fotg catalog --text
+```
+:::
+
+:::layer advanced
+- No options; read-only, also when the game is not installed.
+- Categories: `Targeting`, `Ship`, `Weapons` and `Computer` (the tabs of the game's controls menu). Controls the mod
+  switched off (the afterburner, countermeasures, autopilot and others) are not in the list.
+- The shipped list comes from Fate of the Galaxy 2.0.2; [[cli:fotg refresh-db]] rebuilds it from your installed version.
+:::
+
+:::layer technical
+- Output: JSON (`Game`, `Source`, `Actions` with `Id`, `Title`, `IsAxis`, `Category`, `Warnings`), or with `--text`
+  one line per action `<id> | axis|button | <category> | <title>`. The ids are FreeSpace Open's control names
+  (`FIRE_PRIMARY`, `JOY_PITCH_AXIS` ...). Exit code `0`.
+- File: `%LOCALAPPDATA%\JoyPro2\GameData\DB\FateOfTheGalaxy\actions.tsv` once refreshed, else the shipped list.
+- Related: [[cli:fotg refresh-db]]; game page [[game:fate-of-the-galaxy]].
+:::
+
+<!-- entry: fotg scan -->
+:::layer beginner
+Shows the binds your Fate of the Galaxy pilot uses, without changing your profile or the game. **Look first** in the
+import wizard runs it.
+
+```powershell
+engine fotg scan --text
+```
+:::
+
+:::layer advanced
+- Reads the preset the pilot of the file [[cli:fotg paths]] lists names, or of the path given (positional or
+  `--path`: a pilot, a preset, the user data, the mod or the Knossos folder).
+- Lists joystick binds and keys; mouse binds are not shown. A step line names the preset read and which device sits in
+  which slot (Device 1-4), and whether the SDL GUID JoyPro builds is the game's.
+- `--ignore-device <name>` / `--ignore-devices <a;b>` leave the binds of those devices out.
+- Safety: reads only, also while the game runs. Refused when the game is not installed or switched off in Settings >
+  Games.
+:::
+
+:::layer technical
+- Output: JSON (`Game`, `Action` `scan`, `ConfigPath`, `BindingsRead`, `Bindings`, `Steps`, `Warnings`, `Errors`), or
+  a text report with `--text`.
+- Exit code `0`; `1` on an error (not installed, no user data, an unreadable file). Unknown options fail with
+  `Unknown FateOfTheGalaxy scan argument(s): ...`.
+- Related: [[cli:fotg import]], [[cli:fotg catalog]]; game page [[game:fate-of-the-galaxy]].
+:::
+
+<!-- entry: fotg refresh-db -->
+:::layer beginner
+Builds JoyPro's Fate of the Galaxy command list from your installed mod: its control table, menu texts and which
+controls it switched off. **Update** on the Fate of the Galaxy card of the Start page runs it.
+
+```powershell
+engine fotg refresh-db --text
+```
+:::
+
+:::layer advanced
+- Reads `data\tables\controlconfigdefaults.tbl` of the mod's packages (loose files or `.vp` archives) on top of
+  FreeSpace Open's own control list, and the texts of `strings.tbl` / `*-lcl.tbm`. A path (positional or `--path`) may be
+  the Knossos folder (with `Knossos.NET.exe` or `kn_portable`) or the mod folder (`FotG_2-<version>` with `mod.json`).
+- Switched-off controls are left out. The list is rebuilt from these sources.
+- `--dry-run` writes nothing; otherwise the list is written only when it changed.
+- Refused when the game is not installed or switched off in Settings > Games; the game may run.
+:::
+
+:::layer technical
+- Output: JSON of the refresh (`DryRun`, `FilesWritten`, `Steps` such as `Read the controls of <mod folder> (version
+  <v>): <n> controls in the menu, <m> switched off by the mod (...)` and `Actions: <old> -> <new>`, `Warnings`, `Errors`),
+  or a text report with `--text`.
+- Exit code `0`; `1` when the mod was not found (`Fate of the Galaxy was not found. Pass --path with its Knossos folder
+  ...`); the list stays unchanged.
+- Writes `%LOCALAPPDATA%\JoyPro2\GameData\DB\FateOfTheGalaxy\actions.tsv`.
+- Related: [[cli:fotg catalog]], [[cli:fotg export]]; game page [[game:fate-of-the-galaxy]].
+:::
+
 <!-- entry: hllv import -->
 :::layer beginner
 Reads the keyboard pilot keys of Hell Let Loose: Vietnam into your JoyPro profile, when you ask for the keyboard. The

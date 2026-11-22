@@ -457,6 +457,33 @@ namespace JoyPro.Engine.Games
             return result;
         }
 
+        // The HID manufacturer string of one interface (\\?\hid#...), "" when it cannot be read. SDL builds its joystick
+        // GUID's name CRC from "<manufacturer> <product>" (FreeSpace Open's device slots).
+        public static string Manufacturer(string hidPath)
+        {
+            if (string.IsNullOrEmpty(hidPath))
+                return string.Empty;
+            IntPtr handle = CreateFile(hidPath, 0, FileShareRead | FileShareWrite, IntPtr.Zero, OpenExisting, 0, IntPtr.Zero);
+            if (handle == InvalidHandleValue)
+                return string.Empty;
+            try
+            {
+                StringBuilder name = new StringBuilder(256);
+                return HidD_GetManufacturerString(handle, name, name.Capacity * 2) ? name.ToString() : string.Empty;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+            finally
+            {
+                CloseHandle(handle);
+            }
+        }
+
+        [DllImport("hid.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool HidD_GetManufacturerString(IntPtr hidDeviceObject, StringBuilder buffer, int bufferLength);
+
         private static string GetInterfacePath(IntPtr deviceInfoSet, ref SpDeviceInterfaceData interfaceData)
         {
             int requiredSize;

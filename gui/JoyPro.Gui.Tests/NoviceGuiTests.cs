@@ -373,7 +373,7 @@ public sealed class NoviceGuiTests
     {
         string[] games = ["DCS", "IL2Game", "IL2Korea", "MSFS", "XPlane", "FalconBMS", "WarThunder", "VTOLVR", "VTOLVRNative", "NuclearOption", "Wardogs",
             "Arma2", "Arma2OA", "Arma3", "ArmaReforger", "HLLVietnam", "Battlefield6", "Battlefield2042", "AceCombat7", "AceCombat8", "ProjectWingman", "X4", "EliteDangerous", "StarCitizen",
-            "IL21946", "IL2CoD", "IL2CoDBlitz", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6"];
+            "IL21946", "IL2CoD", "IL2CoDBlitz", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6", "FateOfTheGalaxy"];
         foreach (string game in games)
         {
             (string text, Avalonia.Media.Color _, string motif) = JoyPro.Gui.Views.Controls.GameBadge.StyleOf(game, string.Empty);

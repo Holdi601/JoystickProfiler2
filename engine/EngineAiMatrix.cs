@@ -37,6 +37,7 @@ namespace JoyPro.Engine
             { "StarCitizen", new[] { "Star Citizen", "sc" } },
             { "EliteDangerous", new[] { "Elite Dangerous", "elite" } },
             { "X4", new[] { "X4 Foundations", "x4" } },
+            { "FateOfTheGalaxy", new[] { "Fate of the Galaxy", "fotg" } },
             { "MSFS2020", new[] { "Microsoft Flight Simulator 2020", "msfs 2020" } },
             { "MSFS2024", new[] { "MSFS 2024", "fs2024" } },
             { "XPlane11", new[] { "X-Plane 11", "xp11" } },
@@ -66,7 +67,7 @@ namespace JoyPro.Engine
             { "P3D6", new[] { "Prepar3D v6", "p3d6" } }
         };
 
-        private static readonly HashSet<string> SpaceGames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "StarCitizen", "EliteDangerous", "X4" };
+        private static readonly HashSet<string> SpaceGames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "StarCitizen", "EliteDangerous", "X4", "FateOfTheGalaxy" };
 
         // Function words per game kind: [0] a button function to create, [1] landing gear, [2] an axis, [3] a light
         // or a ship's jump drive.
@@ -74,6 +75,10 @@ namespace JoyPro.Engine
         {
             if (!game.Space)
                 return new[] { "flaps", "landing gear", "pitch", "landing lights" };
+            // Fate of the Galaxy has no boost (the mod switches the afterburner off) and no landing gear: its own fighter
+            // controls instead, so the cells find actions of the game, not "the game has none".
+            if (game.Game == "FateOfTheGalaxy")
+                return new[] { "match speed", "equalize shields", "pitch", "hyperspace jump" };
             string jump = game.Game == "EliteDangerous" ? "FSD jump" : game.Game == "StarCitizen" ? "quantum jump" : "travel drive";
             return new[] { "boost", "landing gear", "strafe up", jump };
         }

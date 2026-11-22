@@ -338,6 +338,7 @@ namespace JoyPro.Engine
             { "StarCitizen", new[] { "star citizen", "sc" } },
             { "EliteDangerous", new[] { "elite", "elite dangerous" } },
             { "X4", new[] { "x4" } },
+            { "FateOfTheGalaxy", new[] { "fate of the galaxy", "fotg" } },
             { "IL2Game", new[] { "il-2", "il2", "great battles" } },
             { "IL2Korea", new[] { "il-2 korea", "korea" } },
             { "MSFS2024", new[] { "msfs", "msfs 2024", "flight simulator" } },

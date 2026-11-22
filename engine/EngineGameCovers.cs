@@ -34,6 +34,7 @@ namespace JoyPro.Engine
         private const string StarCitizenSite = "https://starcitizen.com/en/";
         private const string FalconBms = "https://www.falcon-bms.com/";
         private const string Prepar3D = "https://www.prepar3d.com/";
+        private const string FateOfTheGalaxySite = "https://www.fateofthegalaxy.net/";
 
         private static readonly Dictionary<string, List<EngineCoverSource>> BuiltIn = Build();
 
@@ -88,7 +89,14 @@ namespace JoyPro.Engine
                 new EngineCoverSource("https://www.falcon-bms.com/images/webapp/web_logo_icon.png", "logo", FalconBms)
             };
             // Prepar3D (Lockheed Martin, not on Steam): the product marks of each version on prepar3d.com (store tiles).
-            map["P3D4"] = new List<EngineCoverSource> { new EngineCoverSource("https://www.prepar3d.com/wp-content/uploads/2023/04/v4_pro.png", "logo", Prepar3D) };
+            // Fate of the Galaxy (FreeSpace Open mod through Knossos, not on Steam): the logo and a screenshot of the mod's own site.
+            map["FateOfTheGalaxy"] = new List<EngineCoverSource>
+            {
+                new EngineCoverSource("https://www.fateofthegalaxy.net/common_files/LogoOnly.png", "logo", FateOfTheGalaxySite),
+                new EngineCoverSource("https://www.fateofthegalaxy.net/screenshots/screen_1.png", "cover", FateOfTheGalaxySite),
+                new EngineCoverSource("https://www.fateofthegalaxy.net/favicon_io/android-chrome-512x512.png", "logo", FateOfTheGalaxySite)
+            };
+            map["P3D4"] =new List<EngineCoverSource> { new EngineCoverSource("https://www.prepar3d.com/wp-content/uploads/2023/04/v4_pro.png", "logo", Prepar3D) };
             map["P3D5"] = new List<EngineCoverSource> { new EngineCoverSource("https://www.prepar3d.com/wp-content/uploads/2023/04/v5_pro.png", "logo", Prepar3D) };
             map["P3D6"] = new List<EngineCoverSource>
             {

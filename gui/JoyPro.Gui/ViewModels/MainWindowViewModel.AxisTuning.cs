@@ -54,7 +54,8 @@ public sealed partial class MainWindowViewModel
         ["MSFS2024"] = "MSFS 2024",
         ["MSFS2020"] = "MSFS 2020",
         ["AceCombat8"] = "ACE COMBAT 8",
-        ["HLLVietnam"] = "Hell Let Loose: Vietnam"
+        ["HLLVietnam"] = "Hell Let Loose: Vietnam",
+        ["FateOfTheGalaxy"] = "Fate of the Galaxy"
     };
 
     public ObservableCollection<AxisTuningScopeItem> AxisTuningScopes { get; } = [];
@@ -454,6 +455,35 @@ public sealed partial class MainWindowViewModel
     }
 
     // binds tuning show: every stored scope, and (for a game / aircraft) what that game uses.
+    // The game-wide response settings the engine sent with "binds tuning show" (GameSettings: game -> key -> value, FSO's
+    // dead zone / sensitivity): the axis models draw with them (AxisModels.GameSetting), as the game does.
+    private static readonly Dictionary<string, Dictionary<string, double>> axisGameSettings = new(StringComparer.OrdinalIgnoreCase);
+
+    internal static double? AxisGameSetting(string game, string key)
+    {
+        lock (axisGameSettings)
+            return axisGameSettings.TryGetValue(game ?? string.Empty, out Dictionary<string, double>? values) && values.TryGetValue(key ?? string.Empty, out double value) ? value : null;
+    }
+
+    internal static void ReadAxisGameSettings(JsonElement root)
+    {
+        if (!root.TryGetProperty("GameSettings", out JsonElement games) || games.ValueKind != JsonValueKind.Object)
+            return;
+        lock (axisGameSettings)
+        {
+            foreach (JsonProperty game in games.EnumerateObject())
+            {
+                Dictionary<string, double> values = new(StringComparer.OrdinalIgnoreCase);
+                if (game.Value.ValueKind == JsonValueKind.Object)
+                    foreach (JsonProperty p in game.Value.EnumerateObject())
+                        if (p.Value.ValueKind == JsonValueKind.Number)
+                            values[p.Name] = p.Value.GetDouble();
+                axisGameSettings[game.Name] = values;
+            }
+        }
+        AxisModels.GameSetting = AxisGameSetting;
+    }
+
     private async Task LoadAxisTuningScopeAsync()
     {
         AxisTuningScopeItem? scope = SelectedAxisTuningScope;
@@ -493,6 +523,7 @@ public sealed partial class MainWindowViewModel
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
             JsonElement root = doc.RootElement;
             ReadAxisTuningShow(root);
+            ReadAxisGameSettings(root);
             if (root.TryGetProperty("Resolved", out JsonElement resolved) && resolved.ValueKind == JsonValueKind.Object)
             {
                 resolvedTuning = GetJsonString(resolved, "Tuning");

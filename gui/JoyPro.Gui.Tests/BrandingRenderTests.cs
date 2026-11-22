@@ -103,7 +103,7 @@ public sealed class BrandingRenderTests
             WrapPanel badges = new() { Margin = new Thickness(12), Width = 900 };
             foreach (string game in new[] { "DCS", "IL2Game", "IL2Korea", "MSFS", "XPlane", "FalconBMS", "WarThunder", "VTOLVR", "NuclearOption", "Wardogs",
                          "Arma2", "Arma2OA", "Arma3", "ArmaReforger", "HLLVietnam", "X4", "EliteDangerous", "StarCitizen",
-                         "IL21946", "IL2CoD", "IL2CoDBlitz", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6", "SomeNewGame" })
+                         "IL21946", "IL2CoD", "IL2CoDBlitz", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6", "FateOfTheGalaxy", "SomeNewGame" })
             {
                 badges.Children.Add(new Border
                 {

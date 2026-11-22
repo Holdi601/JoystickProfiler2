@@ -79,13 +79,13 @@ public sealed class AiAllGamesTests
         (string folder, string profile) = await Profile(engine);
         try
         {
-            string games = "DCS|MSFS2024|XPlane12|StarCitizen|EliteDangerous|X4|ProjectWingman|IL21946|AceCombat7";
+            string games = "DCS|MSFS2024|XPlane12|StarCitizen|EliteDangerous|X4|ProjectWingman|IL21946|AceCombat7|FateOfTheGalaxy";
             (int exit, string output) = await Run(engine, folder, ["--profile", profile, "relations", "ai-matrix", "--games", games]);
             Assert.True(exit == 0, output);
             using JsonDocument doc = JsonDocument.Parse(Json(output));
             List<JsonElement> cells = doc.RootElement.GetProperty("Cells").EnumerateArray().ToList();
             // 17 requests per game plus the two "every game" requests.
-            Assert.True(cells.Count >= 9 * 17, "cells: " + cells.Count);
+            Assert.True(cells.Count >= 10 * 17, "cells: " + cells.Count);
             List<string> failed = cells.Where(c => !c.GetProperty("Pass").GetBoolean())
                 .Select(c => c.GetProperty("Game").GetString() + " | " + c.GetProperty("Path").GetString() + " | " + c.GetProperty("Request").GetString() + " -> " +
                              c.GetProperty("Verdict").GetString() + " | " + c.GetProperty("Answer").GetString()).ToList();

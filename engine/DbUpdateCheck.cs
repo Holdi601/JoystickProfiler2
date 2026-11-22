@@ -283,6 +283,14 @@ namespace JoyPro.Engine
                     continue;
                 }
 
+                // A Knossos mod: its version (mod.json) and its controls table decide whether the catalog is current.
+                if (game is FreeSpaceOpenIntegration)
+                {
+                    string fsoGame = game.GameId;
+                    probes.Add(new Probe { Game = game.GameId, DisplayName = game.DisplayName, DbFolder = game.DbFolder, RefreshCommand = command, Read = w => KnossosModBuild(fsoGame, w) });
+                    continue;
+                }
+
                 string[] dirs;
                 if (!steamDirs.TryGetValue(game.GameId, out dirs))
                     continue;
@@ -410,6 +418,19 @@ namespace JoyPro.Engine
                 fields["version"] = version;
             using (SHA256 sha = SHA256.Create())
                 fields["callbacks"] = BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(keyFile))).Replace("-", string.Empty).Substring(0, 16);
+            return fields;
+        }
+
+        private static Dictionary<string, string> KnossosModBuild(string gameId, List<string> warnings)
+        {
+            GameInstall install = GameInstalls.Find(gameId, warnings ?? new List<string>());
+            if (install == null || !install.Installed || !File.Exists(Path.Combine(install.InstallPath ?? string.Empty, "mod.json")))
+                return null;
+            Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal) { { "mod-version", Games.FreeSpaceOpen.FsoInstall.VersionOf(install.InstallPath) } };
+            Games.FreeSpaceOpen.FsoModControls controls = Games.FreeSpaceOpen.FsoModControls.Load(install.InstallPath, new List<string>());
+            if (controls.TableSource.Length > 0 && File.Exists(controls.TableSource))
+                fields["controls-table"] = new FileInfo(controls.TableSource).Length.ToString(System.Globalization.CultureInfo.InvariantCulture) + "@" +
+                                           File.GetLastWriteTimeUtc(controls.TableSource).ToString("yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture);
             return fields;
         }
 

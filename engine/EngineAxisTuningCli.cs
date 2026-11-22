@@ -479,7 +479,13 @@ namespace JoyPro.Engine
                         }
                     },
                     Uses = uses.Select(u => new { u.Game, u.Plane, u.Source, u.Fitted, u.Detent }).ToList(),
-                    XboxPadGames = xboxPadGames
+                    XboxPadGames = xboxPadGames,
+                    // The game-wide response settings of the relation's games (FSO's dead zone / sensitivity), so the GUI's
+                    // preview draws what the game does (AxisModels.GameSetting).
+                    GameSettings = uses.Select(u => u.Game).Concat(string.IsNullOrWhiteSpace(game) ? new string[0] : new[] { game })
+                        .Where(g => !string.IsNullOrWhiteSpace(g)).Distinct(StringComparer.OrdinalIgnoreCase)
+                        // (an empty set too: a setting cleared since goes back to the game's default in the GUI)
+                        .ToDictionary(g => g, g => FfbSettings.Resolve(InternalDataManagement.FfbOverrides, FfbSettings.AnyDevice, g, null) ?? new Dictionary<string, double>(), StringComparer.OrdinalIgnoreCase)
                 }), outPath);
                 return 0;
             }

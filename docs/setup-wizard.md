@@ -163,7 +163,9 @@ The hands per aircraft class:
    - Category (from the function map's categories, `relations functions`): flight controls 8 (flight, engine axes),
      weapons / countermeasures / HOTAS switches / sensors 4, systems (nav, lights, aircraft systems, engine buttons) 2,
      views and comms 1, display keys 0.5.
-   - Frequency (catalog per aircraft): constant 5, frequent 3, occasional 2, rare 1.
+   - Frequency (catalog per aircraft): constant 5, frequent 3, occasional 2, rare 1, last 0.1. A row's `occasional`
+     (or none) takes the function's own frequency; `last` stays: a control that only joins the shared relations (Fate
+     of the Galaxy's S-foils and forward / reverse thrust) and gets an input only when nothing else wants it.
    - Priority: row 1 weighs 1, each row below 0.6 of the one above, unlisted aircraft half of the last row; without a
      list every aircraft weighs 1. A relation counts its highest aircraft plus a little (0.15 each, up to 5) for the
      others. DCS input layers (Default, NS430, voice) count like the average aircraft.

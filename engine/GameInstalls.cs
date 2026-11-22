@@ -40,6 +40,9 @@ namespace JoyPro.Engine
             // Uninstall key names (e.g. an Inno Setup AppId "{...}_is1"), matched whatever name the entry shows.
             public string[] UninstallKeys = new string[0];
             public Func<List<string>, IEnumerable<string>> Places;
+            // The installation for a picked path when the markers alone cannot find it (a Knossos mod three folders below
+            // the Knossos folder the user picked); null = not found.
+            public Func<string, string> Resolve;
         }
 
         private static readonly List<Spec> Specs = new List<Spec>
@@ -94,6 +97,10 @@ namespace JoyPro.Engine
                 UninstallNames = new[] { "Project Wingman" } },
             new Spec { GameId = "X4", Name = "X4: Foundations", SteamApps = new[] { 392160 }, Markers = new[] { "X4.exe" },
                 UninstallNames = new[] { "X4: Foundations", "X4 Foundations" } },
+            // A Knossos (FreeSpace Open) mod: the installation is the mod folder <library>\FotG_2\FotG_2-<version> with its mod.json,
+            // in a portable kn_portable\Library on any drive or the library of the installed launcher (FsoInstall).
+            new Spec { GameId = "FateOfTheGalaxy", Name = "Fate of the Galaxy", Markers = new[] { "mod.json" },
+                Places = w => Games.FreeSpaceOpen.FsoInstall.ModFolders(FsoMod.FateOfTheGalaxy.ModId, w), Resolve = p => Games.FreeSpaceOpen.FsoInstall.ResolveModFolder(p, FsoMod.FateOfTheGalaxy.ModId) },
             new Spec { GameId = "EliteDangerous", Name = "Elite Dangerous", SteamApps = new[] { 359320 }, Markers = new[] { "EDLaunch.exe", @"Products\elite-dangerous-odyssey-64\EliteDangerous64.exe", @"Products\elite-dangerous-64\EliteDangerous64.exe" },
                 UninstallNames = new[] { "Elite Dangerous" }, Places = w => Existing(Path.Combine(ProgramFilesX86(), "Frontier", "EDLaunch"), Path.Combine(ProgramFiles(), "Frontier", "EDLaunch")) },
             new Spec { GameId = "FalconBMS", Name = "Falcon BMS", Markers = new[] { @"Bin\x64\Falcon BMS.exe", "Launcher.exe" },
@@ -234,7 +241,7 @@ namespace JoyPro.Engine
             {
                 // The user may have picked the game's executable, its launcher or a folder inside it (older versions
                 // saved such a path as it was): the installation is the folder with the marker.
-                string folder = ResolveInstallFolder(spec.Markers, overridden);
+                string folder = (spec.Resolve != null ? spec.Resolve(overridden) : null) ?? ResolveInstallFolder(spec.Markers, overridden);
                 install.Overridden = true;
                 install.InstallPath = folder;
                 install.Source = "override";
@@ -302,7 +309,7 @@ namespace JoyPro.Engine
                 return null;
             Spec spec = Specs.FirstOrDefault(s => s.GameId == gameId);
             if (spec != null)
-                folder = ResolveInstallFolder(spec.Markers, folder);
+                folder = (spec.Resolve != null ? spec.Resolve(folder) : null) ?? ResolveInstallFolder(spec.Markers, folder);
             return Directory.Exists(folder) ? folder : null;
         }
 

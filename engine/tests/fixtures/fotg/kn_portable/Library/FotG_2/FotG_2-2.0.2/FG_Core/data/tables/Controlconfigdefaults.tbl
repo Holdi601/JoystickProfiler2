@@ -1,0 +1,62 @@
+;; JoyPro smoke fixture: a made-up control table in the format of FreeSpace Open's controlconfigdefaults.tbl
+;; (#ControlConfigOverride named "default" as a mod writes it; no game data copied).
+
+#ControlConfigOverride
+$Name: default ;; overrides the default preset
+
+    $Bind: AFTERBURNER
+        $Primary:
+            $Controller: CID_NONE
+        $Secondary:
+            $Controller: CID_NONE
+        +Disable
+    $Bind: LAUNCH_COUNTERMEASURE
+        +Disable
+    $Bind: JOY_BANK_AXIS
+        $Primary:
+            $Controller: CID_NONE
+        $Secondary:
+            $Controller: CID_NONE
+    $Bind: TOGGLE_GLIDING
+        $Primary:
+            $Controller: CID_KEYBOARD
+            $Flags: NONE
+            $Input: KEY_P
+        $Category: SHIP_TAB
+        $Has XStr: 1775 ; "Toggle Active Pause"
+    $Bind: CUSTOM_CONTROL_3 ;used with On Action in script
+        $Primary:
+            $Controller: CID_KEYBOARD
+            $Flags: NONE
+            $Input: KEY_SEMICOL
+        $Category: SHIP_TAB
+        $Has XStr: 1786
+        $Disable: false
+    $Bind: FIRE_PRIMARY
+        $Primary:
+            $Controller: CID_JOY0
+            $Flags: NONE
+            $Input: 0
+        $Secondary:
+            $Controller: CID_MOUSE
+            $Flags: NONE
+            $Input: LEFT_BUTTON
+    $Bind: FIRE_SECONDARY
+        $Primary:
+            $Controller: CID_KEYBOARD
+            $Flags: NONE
+            $Input: KEY_TAB
+        $Secondary:
+            $Controller: CID_NONE
+    $Bind: TARGET_NEXT_CLOSEST_HOSTILE
+        $Secondary:
+            $Controller: CID_JOY0
+            $Flags: NONE
+            $Input: 3
+    $Bind: 	VIEW_SLEW
+        $Primary:
+            $Controller: CID_KEYBOARD
+            $Flags: NONE
+            $Input: ALT-SHIFT-KEY_L
+;;
+#End

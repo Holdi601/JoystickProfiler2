@@ -57,7 +57,7 @@ namespace JoyPro.Engine
         // The games besides DCS the sweep plans alone at every position (review 7 M12 / L41: X4 lost roll and Elite put the
         // hardpoints on labelled base buttons at "where the real aircraft has it", and no sweep saw it). Arma 3 is scored as
         // helicopter and plane.
-        internal static readonly string[] SweepGames = { "X4", "EliteDangerous", "StarCitizen", "IL2Game", "MSFS2024", "FalconBMS", "WarThunder", "Arma3" };
+        internal static readonly string[] SweepGames = { "X4", "EliteDangerous", "StarCitizen", "FateOfTheGalaxy", "IL2Game", "MSFS2024", "FalconBMS", "WarThunder", "Arma3" };
 
         // The gates of those rows that must hold at every position where they hold at one: the flight axes, the weapons,
         // the flares and no function on a switch labelled for another one.

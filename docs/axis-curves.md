@@ -203,6 +203,10 @@ working; it has none of the new parameters, so it writes no curve. The GUI no lo
   StarCitizen`. Details: `docs/games/starcitizen.md`.
 - Elite Dangerous: `game:EliteDangerous` -> base; `<Inverted>`/`<Deadzone>` per axis element, `<ThrottleRange>` from the
   throttle's Slider, game-wide options with `engine ffb set --device * --game EliteDangerous`.
+- Fate of the Galaxy (FreeSpace Open): per bind only `INVERTED` (XOR the throttle's HOTAS default); dead zone 0..45 and
+  sensitivity 0..9 are game-wide (`engine ffb set --device * --game FateOfTheGalaxy --param deadZone=.. sensitivity=..`,
+  written into the pilot and the mod's settings). Model `fso`: dead zone x 2 % of the half travel, then
+  `p * s + p^5 * (1 - s)`; Slider = the absolute throttle, -10..110 % clipped (docs/games/fate-of-the-galaxy.md).
 - X4: no per-axis values in the game; the relations' invert (XOR X4's HOTAS default) and the throttle's Slider become
   the game-wide `invert_*` / `bidirectionalthrottle` params, dead zone and the rest via `engine ffb set --device * --game X4`
   (docs/games/x4.md "Axis settings").

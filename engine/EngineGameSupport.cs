@@ -327,6 +327,10 @@ namespace JoyPro.Engine
             IGameIntegration game;
             if (!GameRegistry.TryResolve(gameId, out game) || game == null)
                 return "yes";
+            // FreeSpace Open's "partial" is Alt / Shift on keys: a joystick bind behind a JoyPro shift layer cannot be
+            // written (the export skips it: "FreeSpace Open has no joystick modifiers"), so the planners get no layer.
+            if (game is Games.FreeSpaceOpenIntegration)
+                return "no";
             return game.ModifierBinds == GameFeature.Yes ? "yes" : game.ModifierBinds == GameFeature.Partial ? "partial" : "no";
         }
 

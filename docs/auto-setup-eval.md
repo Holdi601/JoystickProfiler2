@@ -55,8 +55,17 @@ for (for the scored aircraft) is n/a. Time-critical = everything except the four
 | Prop (DCS warbirds, IL-2 Great Battles) | pitch, roll, throttle, gun, yaw, wheel brakes, weapon release, trim, look, gear, flaps, PTT |
 | Helicopter (DCS helicopters, Arma rotary) | pitch, roll, throttle (collective), gun, yaw, wheel brakes, weapon release, countermeasures, trim, target, look, gear, PTT |
 | Airliner / GA (MSFS 2020 / 2024, X-Plane 11 / 12) | pitch, roll, throttle, yaw, wheel brakes, trim, look, gear, flaps, airbrake (spoilers) |
-| Space (Star Citizen, Elite Dangerous, X4) | pitch, roll, throttle, gun, yaw, secondary weapon, countermeasures, target, look |
+| Space (Star Citizen, Elite Dangerous, X4, Fate of the Galaxy) | pitch, roll, throttle, gun, yaw, secondary weapon, countermeasures, target, look |
 | ACE COMBAT 8 (virtual Xbox pad) | pitch, roll, throttle, gun, yaw, missile, flares, target |
+
+Fate of the Galaxy (FreeSpace Open) has the space class's essentials; its mod switches countermeasures and the
+afterburner off, so countermeasures is n/a there. Its function table (`DB/Functions/FateOfTheGalaxy.tsv`) also places the
+fighter functions a space sim needs in flight: weapon bank cycling (lasers, missiles), the target in the reticle, next
+closest hostile, next / previous target and the closest attacker on the stick's hat, match speed and throttle zero on the
+throttle, energy (lasers, shields, engines, equalize) on a throttle hat, equalize shields, the wingman menu and the views.
+FreeSpace Open has no joystick modifiers: a relation with a FotG action never goes behind a JoyPro shift layer. The
+`modifiers` gate fails a row that has a shifted bind in a game without modifier binds (ModifierSupport "no": FotG,
+X-Plane, Arma); until 2026-11-22 the snap views' and flares' shifted-hat fallbacks ignored that and the gate let it pass.
 
 Looking around ranks right after the fight essentials and the trim (without head tracking it is a
 fairly high priority on the HOTAS). With the wizard's head-tracking answer *yes* (`--head-tracking yes`) looking around
@@ -114,7 +123,18 @@ them). Real positions never push the time-critical essentials off the grips (rou
 weapon release or wheel brake button left on a base or behind a shift takes a grip button back from a function that is
 no in-flight essential or from a later one (countermeasures and after: the grip order gun, wheel brakes, release,
 countermeasures), and a stick with three grip push buttons or fewer besides the trigger (TCA sidestick, T.16000M)
-gives none of them to a JoyPro shift.
+gives none of them to a JoyPro shift. A spaceship's nearest hostile target (`space_target_closest_hostile`, owner
+2026-11-22: survival-critical with the guns, the missiles and the countermeasures) that found no input takes any grip
+hat direction or button there from what is no earlier essential (a target cycle or energy set leaves whole), never the
+countermeasures, the snap views or the recenter, and keeps it (CH GameStick 3D: secondary fire up, nearest hostile down).
+The last pass (`RescueSurvivalAnywhere`, all games) is the invariant: while the devices have any
+unshifted button or hat direction the hands reach, primary fire, then secondary fire, then the nearest hostile get one,
+before views, comms or anything else (grips first, then bases, throttles and panels). Its last try also takes a momentary
+input the rules keep for something else - a panel key with another function's label, a replica key, a dedicated control
+(trim rocker) - and a printed grip label holds its button only when the plan's games have that function: the YOKO Neo's
+"Electric trim" rocker takes the nearest hostile in a space game, its PTT keeps Fate of the Galaxy's comms menu. A device
+whose catalog entry lists no buttons at all (RealSimulator FUSBA: numbering not published) has nothing to give in the
+eval; on a PC Windows reports its buttons and the pass uses them.
 
 The real-position match uses the device catalog's **HOTAS equivalence** (`"hotas"` on a control in `DB/Devices`: which
 real F-16C / A-10C II HOTAS position a generic control stands in for, taken from DCS World's own default profile of

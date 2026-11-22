@@ -235,7 +235,7 @@ namespace JoyPro.Engine
             }
             if (Starts(id, "EliteDangerous") || Starts(id, "MSFS") || Starts(id, "IL21946") || Starts(id, "IL2CoD") || Starts(id, "WarThunder") ||
                 Starts(id, "FalconBMS") || Starts(id, "XPlane") || Starts(id, "AceCombat7") || Starts(id, "NuclearOption") || Starts(id, "TinyCombatArena") ||
-                Starts(id, "ProjectWingman") || Starts(id, "IL2Game"))
+                Starts(id, "ProjectWingman") || Starts(id, "IL2Game") || Starts(id, "FateOfTheGalaxy"))
                 return ExportSupport.Limited;
             return ExportSupport.All;
         }

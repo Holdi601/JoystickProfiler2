@@ -29,11 +29,14 @@ public sealed class GameCoverTests
         "DCS", "IL2Game", "StarCitizen", "IL2Korea", "MSFS2024", "MSFS2020", "XPlane12", "XPlane11", "WarThunder", "Arma3",
         "Arma2", "Arma2OA", "ArmaReforger", "Wardogs", "HLLVietnam", "Battlefield6", "Battlefield2042", "AceCombat8",
         "AceCombat7", "ProjectWingman", "X4", "EliteDangerous", "FalconBMS", "VTOLVR", "VTOLVRNative", "NuclearOption", "IL21946", "IL2CoD",
-        "IL2CoDBlitz", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6"
+        "IL2CoDBlitz", "FSX", "FSXSE", "P3D4", "P3D5", "P3D6", "FateOfTheGalaxy"
     ];
 
     // Not on Steam: the engine's web source is the publisher's mark (prepar3d.com, falcon-bms.com).
     private static readonly HashSet<string> LogoGames = new(StringComparer.OrdinalIgnoreCase) { "FalconBMS", "P3D4", "P3D5", "P3D6" };
+
+    // Neither on Steam nor with a publisher mark (Fate of the Galaxy comes through Knossos): the badge alone.
+    private static readonly HashSet<string> BadgeOnlyGames = new(StringComparer.OrdinalIgnoreCase) { "FateOfTheGalaxy" };
 
     // A 1x1 PNG.
     private static readonly byte[] Png = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
@@ -56,14 +59,18 @@ public sealed class GameCoverTests
 
             // The covers load in the background.
             Stopwatch wait = Stopwatch.StartNew();
-            while (wait.Elapsed < TimeSpan.FromSeconds(20) && vm.GameCards.Any(c => c.GameId != CoverFakeEngine.NewGame && c.Cover == null && c.Logo == null))
+            while (wait.Elapsed < TimeSpan.FromSeconds(20) && vm.GameCards.Any(c => c.GameId != CoverFakeEngine.NewGame && !BadgeOnlyGames.Contains(c.GameId) && c.Cover == null && c.Logo == null))
                 await Task.Delay(50);
 
             Assert.Equal(KnownGames.Length + 1, vm.GameCards.Count);
             foreach (string id in KnownGames)
             {
                 GameCardItem card = vm.GameCards.Single(c => c.GameId == id);
-                if (LogoGames.Contains(id))
+                if (BadgeOnlyGames.Contains(id))
+                {
+                    Assert.True(card.Cover == null && card.Logo == null, id + ": no picture source, the badge alone.");
+                }
+                else if (LogoGames.Contains(id))
                 {
                     Assert.True(card.Cover == null, id + ": a logo must not fill the tile.");
                     Assert.True(card.Logo != null, id + ": no logo on the badge.");
@@ -163,7 +170,7 @@ public sealed class GameCoverTests
             if (args.Contains("media"))
             {
                 StringBuilder games = new();
-                foreach (string id in KnownGames)
+                foreach (string id in KnownGames.Where(g => !BadgeOnlyGames.Contains(g)))
                 {
                     bool logo = LogoGames.Contains(id);
                     bool steam = !logo && id is not ("StarCitizen" or "FSX" or "P3D4" or "P3D5" or "P3D6");

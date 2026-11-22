@@ -210,7 +210,7 @@ namespace JoyPro.Engine
         internal static readonly string[] WizardGames =
         {
             "MSFS2024", "MSFS2020", "XPlane12", "XPlane11", "IL2Game", "IL2Korea", "FalconBMS", "WarThunder", "VTOLVR", "VTOLVRNative",
-            "NuclearOption", "Wardogs", "StarCitizen", "EliteDangerous", "X4", "Arma3", "Arma2", "Arma2OA", "ArmaReforger",
+            "NuclearOption", "Wardogs", "StarCitizen", "EliteDangerous", "X4", "FateOfTheGalaxy", "Arma3", "Arma2", "Arma2OA", "ArmaReforger",
             "FSX", "FSXSE", "P3D4", "P3D5", "P3D6", "IL21946", "IL2CoD", "IL2CoDBlitz", "TinyCombatArena", "GRebels", "ProjectWingman",
             "AceCombat7", "Battlefield6", "Battlefield2042", "HLLVietnam"
         };

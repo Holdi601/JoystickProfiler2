@@ -237,6 +237,11 @@ namespace JoyPro.Engine.Axis
         public const string Il2 = "il2";
         public const string Generic = "generic";
 
+        // A game-wide response setting a model draws with (FSO's dead zone and sensitivity: one value for all axes, not part
+        // of a bind): (game id, key) -> value, null = not set (the model uses the game's default). The engine answers from
+        // the profile's game settings (Program.Main), the GUI from the settings it loaded (ffb show), so both draw the same.
+        public static Func<string, string, double?> GameSetting = (game, key) => null;
+
         // Game id -> response model. Games without a researched model use "generic" (invert, dead zone, saturation).
         // Declared before Models: Build adds the models of engine\AxisModels\*.cs ([GameAxisModel]) to it.
         private static readonly Dictionary<string, string> GameModels = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

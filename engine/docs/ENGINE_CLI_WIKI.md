@@ -297,6 +297,12 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine elite import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
   engine elite export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only ship flight actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
   engine elite refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
+  engine fotg paths
+  engine fotg catalog
+  engine fotg scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine fotg import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine fotg export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (writes the controls preset JoyPro_FotG and selects it for the pilot and its campaign saves: clean takes over the devices it writes, nuke clears unused devices of the game's four, keys only with --include-keyboard; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine fotg refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine vtolvr paths
   engine vtolvr catalog
   engine vtolvr scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
@@ -3880,6 +3886,102 @@ Arguments and example values:
 Examples:
 ```powershell
 engine elite refresh-db --text
+```
+
+### `engine fotg paths`
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
+
+Arguments and example values:
+- No command-specific arguments.
+
+Examples:
+```powershell
+engine fotg paths --text
+```
+
+### `engine fotg catalog`
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
+
+Arguments and example values:
+- No command-specific arguments.
+
+Examples:
+```powershell
+engine fotg catalog --text
+```
+
+### `engine fotg scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
+
+Arguments and example values:
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fotg paths lists first.
+- `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
+
+Examples:
+```powershell
+engine fotg scan --text
+```
+
+### `engine fotg import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
+
+Arguments and example values:
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fotg paths lists first.
+- `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
+- `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
+
+Examples:
+```powershell
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fotg import --text
+```
+
+### `engine fotg export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (writes the controls preset JoyPro_FotG and selects it for the pilot and its campaign saves: clean takes over the devices it writes, nuke clears unused devices of the game's four, keys only with --include-keyboard; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
+
+Arguments and example values:
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fotg paths lists first.
+- `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
+- `--include-keyboard`: Command argument. See examples for typical values.
+- `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
+
+Examples:
+```powershell
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fotg export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fotg export --mode merge-overwrite --text
+```
+
+### `engine fotg refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
+
+Arguments and example values:
+- `<source-path>`: Path to read actions from (game install or control file); optional.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
+
+Examples:
+```powershell
+engine fotg refresh-db --text
 ```
 
 ### `engine vtolvr paths`

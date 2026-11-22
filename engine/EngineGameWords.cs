@@ -243,6 +243,6 @@ namespace JoyPro.Engine
             return "aircraft";
         }
 
-        internal static readonly HashSet<string> SpaceGames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "StarCitizen", "EliteDangerous", "X4" };
+        internal static readonly HashSet<string> SpaceGames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "StarCitizen", "EliteDangerous", "X4", "FateOfTheGalaxy" };
     }
 }

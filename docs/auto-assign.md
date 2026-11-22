@@ -121,7 +121,7 @@ A modifier layer only takes relations whose games read modifier binds (`engine g
 
 - **Yes**: DCS, IL-2, Star Citizen, War Thunder, Elite ...
 - **Partial**: BMS, MSFS ... These take shift layers, but no phase layers.
-- **No**: X-Plane, Arma ... These never go behind a modifier. A relation that has a command of such a game stays on the
+- **No**: X-Plane, Arma, Fate of the Galaxy (keys take Alt / Shift there, joysticks no modifier) ... These never go behind a modifier. A relation that has a command of such a game stays on the
   normal layer.
 
 Rules that always hold:

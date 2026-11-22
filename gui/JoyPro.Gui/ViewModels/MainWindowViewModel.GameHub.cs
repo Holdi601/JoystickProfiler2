@@ -156,6 +156,16 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task RefreshGameCardsAsync()
     {
+        // Look again also searches the drives for portable Knossos folders again (the engine keeps them a week otherwise).
+        try
+        {
+            string saved = System.IO.Path.Combine(JoyPro.Logging.JoyProDataFolder.Root(), "fso-portable-roots.txt");
+            if (System.IO.File.Exists(saved))
+                System.IO.File.Delete(saved);
+        }
+        catch (Exception)
+        {
+        }
         await RefreshGameInstallsAsync();
         await RefreshRegistryGamesAsync();
     }

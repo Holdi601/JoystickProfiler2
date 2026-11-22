@@ -26,6 +26,7 @@ namespace JoyPro.Engine.Games
             new Il2KoreaIntegration(),
             new X4Integration(),
             new EliteDangerousIntegration(),
+            new FreeSpaceOpenIntegration(FsoMod.FateOfTheGalaxy),
             new VtolVrIntegration(),
             new VtolVrNativeIntegration(),
             new NuclearOptionIntegration(),

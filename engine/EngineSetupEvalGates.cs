@@ -34,7 +34,7 @@ namespace JoyPro.Engine
         // Games the gates treat as combat games (a gun / weapon release must be there, the catalog notwithstanding).
         private static readonly HashSet<string> CombatGames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "DCS", "IL2Game", "IL2Korea", "FalconBMS", "WarThunder", "VTOLVR", "NuclearOption", "Wardogs", "StarCitizen", "EliteDangerous", "X4", "Arma3", "Arma2", "Arma2OA",
+            "DCS", "IL2Game", "IL2Korea", "FalconBMS", "WarThunder", "VTOLVR", "NuclearOption", "Wardogs", "StarCitizen", "EliteDangerous", "X4", "FateOfTheGalaxy", "Arma3", "Arma2", "Arma2OA",
             "IL21946", "IL2CoD", "IL2CoDBlitz", "TinyCombatArena", "GRebels", "ProjectWingman", "AceCombat7", "Battlefield6", "Battlefield2042"
         };
         // Games where wheel brakes matter (fixed wing on wheels).
@@ -615,6 +615,10 @@ namespace JoyPro.Engine
                              plan.Devices.Any(d => SetupRoles.Binds(d.Role) && (d.Role == SetupRoles.Throttle || d.Role == SetupRoles.Collective || d.Role == SetupRoles.LeftStick)))
                         wrongModifier.Add(at + " (on the stick's base while the left hand holds the throttle)");
                 }
+                // (a game without modifier binds - FotG, X-Plane, Arma - cannot take a shifted bind: its export drops it)
+                if (EngineGameSupport.ModifierSupport(game) == "no")
+                    foreach (SetupPlanRelation r in mine.Where(r => !string.IsNullOrEmpty(r.Modifier)))
+                        wrongModifier.Add(r.Name + " = " + DeviceShort(plan, r.Device) + " " + r.Input + " + " + r.Modifier + " (" + game + " has no modifier binds)");
                 Gate(row, "modifiers", wrongModifier.Count == 0 ? "ok" : "fail", string.Join("; ", wrongModifier.Distinct().Take(4)));
             }
 

@@ -35,6 +35,7 @@ public sealed class GuiGameNamesTests
     [InlineData("ProjectWingman", "Project Wingman")]
     [InlineData("FalconBMS", "Falcon BMS")]
     [InlineData("X4", "X4: Foundations")]
+    [InlineData("FateOfTheGalaxy", "Fate of the Galaxy")]
     public void KnownNames(string id, string name)
     {
         Assert.Equal(name, DisplayText.Game(id));

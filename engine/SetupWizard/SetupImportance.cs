@@ -100,6 +100,8 @@ namespace JoyPro.Setup
                 case "constant": return 5;
                 case "frequent": return 3;
                 case "occasional": return 2;
+                // (a row that only joins the shared relations: an input only when nothing else wants it, docs/setup-wizard.md)
+                case "last": return 0.1;
                 default: return 1;
             }
         }
