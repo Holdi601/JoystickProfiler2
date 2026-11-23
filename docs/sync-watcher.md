@@ -227,7 +227,7 @@ next to `inputbindings.cfg` (settings of game `VTOLVR`, watched with `VTOLVRNati
 | MSFS 2020 / 2024 | JoyPro's package (2024) or the Steam remote folder, `inputprofile_*` of the Steam remote folders, the Store save folder's `containers.index` with subfolders (10 s settle) | `FlightSimulator2024` / `FlightSimulator`, or any exe in the Store install folders |
 | Nuclear Option | `HKCU\Software\Shockfront\NuclearOption` (registry notification); the fingerprint covers Player0's Rewired controller maps only | `NuclearOption` |
 
-JoyPro's own files next to the game's (`.jp`, `.joypro-meta.json`, `.joypro.json`, `.jpbak`) are never part of the
+JoyPro's own files next to the game's (`.jp`, `.joypro-meta.json` / `.joypro-meta`, `.joypro.json`, `.jpbak`) are never part of the
 fingerprint. Status uses the config path discovery the export uses (with your config location from `engine games config
 set` first) and adds every other config JoyPro recorded for the game (an export to a custom `--path`); the GUI watches
 each of them. A disabled game shows `State: disabled` and has nothing to watch.

@@ -474,6 +474,8 @@ namespace JoyPro.Engine
                         Detent = double.IsNaN(resolved.DetentInput) ? null : new
                         {
                             Input = Math.Round(resolved.DetentInput, 4),
+                            // The detent band's front edge (from Input up to there the throttle stays below the afterburner).
+                            BandEnd = double.IsNaN(resolved.DetentBandEnd) ? (double?)null : Math.Round(resolved.DetentBandEnd, 4),
                             AfterburnerOutput = double.IsNaN(resolved.AfterburnerOutput) ? (double?)null : Math.Round(resolved.AfterburnerOutput, 4),
                             FullOutput = Math.Round(resolved.FullOutput, 4)
                         }

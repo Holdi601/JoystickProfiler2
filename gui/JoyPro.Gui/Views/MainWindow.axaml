@@ -3933,14 +3933,15 @@
                                                                         OneSided="{Binding AxisTuningOneSided}"
                                                                         DetentInput="{Binding AxisTuningDetentInput}"
                                                                         AfterburnerOutput="{Binding AxisTuningAfterburnerOutput}"
-                                                                        FullOutput="{Binding AxisTuningFullOutput}" />
+                                                                        FullOutput="{Binding AxisTuningFullOutput}"
+                                                                        DetentBandEnd="{Binding AxisTuningDetentBandEnd}" />
                                                 <TextBlock Text="{l:T 'Blue: the curve shown. Dashed orange: the default curve, while the shown one is not its own. Drag the white points (user curve or curve points) to shape the curve.'}"
                                                            FontSize="{DynamicResource JP.FontSize.11}"
                                                            Opacity="0.8"
                                                            TextWrapping="Wrap" />
                                                 <!-- Detent mode bends the curve shown: where the device's detent is and where the afterburner burns -->
                                                 <TextBlock x:Name="AxisTuningDetentLegend"
-                                                           Text="{l:T 'Orange band: the afterburner range of the game\'s throttle; dashed line: your device\'s detent. Resting in the detent stays just below the afterburner, pushing over it lights it.'}"
+                                                           Text="{l:T 'Orange band: the afterburner range of the game\'s throttle; dashed line: your device\'s detent; yellow strip: the detent band. Resting in the detent, or a little past it inside the strip, stays below the afterburner; pushing further lights it.'}"
                                                            FontSize="{DynamicResource JP.FontSize.11}"
                                                            Opacity="0.8"
                                                            TextWrapping="Wrap"
@@ -4248,7 +4249,7 @@
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
-                                        <TextBlock Text="{l:T 'Orange band: the afterburner range of the game\'s throttle; dashed line: your device\'s detent. Resting in the detent stays just below the afterburner, pushing over it lights it.'}"
+                                        <TextBlock Text="{l:T 'Orange band: the afterburner range of the game\'s throttle; dashed line: your device\'s detent; yellow strip: the detent band. Resting in the detent, or a little past it inside the strip, stays below the afterburner; pushing further lights it.'}"
                                                    FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.8" TextWrapping="Wrap" IsVisible="{Binding HasDetentGroups}" />
                                     </StackPanel>
                                 </Expander>

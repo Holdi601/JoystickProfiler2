@@ -103,6 +103,7 @@ public sealed class AxisCurveRenderTests
                     ShowsPercent = true,
                     OneSided = true,
                     DetentInput = 2 * vpc.Detent - 1,
+                    DetentBandEnd = 2 * vpc.RawAt(vpc.Travel(vpc.Detent) + DetentMath.EffectiveBand(vpc, hornet, DetentSettings.DefaultBand)) - 1,
                     AfterburnerOutput = full * (2 * hornet.AbStart - 1),
                     FullOutput = full,
                     StickInput = 2 * vpc.Detent - 1,
@@ -110,6 +111,25 @@ public sealed class AxisCurveRenderTests
                 }, file);
                 detentFiles.Add(file);
             }
+
+            // 2.7.4 report: the tester's MiG-21 relation curve dips (92 % at 70 %, 91 % at 80 %); the bent curve rises.
+            DetentCalibration mig = DetentCalibration.Parse("idle=0.0416;det=0.7193;full=0.9999;cut=0.0009")!;
+            AxisTuning migBase = AxisTuning.Parse("inv=1;sl=1;dz=0.04;sx=1;sy=1;cv=0|0.13|0.26|0.4|0.53|0.66|0.79|0.92|0.91|0.97|1");
+            DetentTarget mig21 = DetentTarget.Afterburner(0.91);
+            DetentFit migFit = DetentMath.Fit(dcs, migBase, mig, mig21, DetentSettings.DefaultMargin, DetentSettings.DefaultBand);
+            string migFile = Path.Combine(outDir, "axis-curve-dcs-detent-mig21.png");
+            Save(new AxisCurveView
+            {
+                Curve = MainWindowViewModel.SampleAxisCurve(dcs, migFit.Tuning),
+                ReferenceCurve = MainWindowViewModel.SampleAxisCurve(dcs, migBase),
+                ShowsPercent = true,
+                OneSided = true,
+                DetentInput = 2 * mig.Detent - 1,
+                DetentBandEnd = 2 * mig.RawAt(mig.Travel(mig.Detent) + DetentMath.EffectiveBand(mig, mig21, DetentSettings.DefaultBand)) - 1,
+                AfterburnerOutput = -(2 * mig21.AbStart - 1),
+                FullOutput = -1
+            }, migFile);
+            detentFiles.Add(migFile);
 
             foreach (string file in new[] { dcsFile, koreaFile, curveFile, stopsFile }.Concat(detentFiles))
             {

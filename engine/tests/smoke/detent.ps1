@@ -71,10 +71,10 @@ try {
     $dtCal = Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "calibrate", "Throttle", "--idle", "0.02", "--detent", "0.75", "--source", "wizard")
     Assert-True ($dtCal.Calibration.Source -eq "wizard" -and [Math]::Abs($dtCal.Calibration.DetentTravel - 0.75) -lt 1e-9) "calibrate did not store the wizard's detent."
 
-    # Groups: the merge kept what the old curve gave the F-16C at the detent (0.8 + margin) as its own value; back to
-    # the game data's 0.775.
+    # Groups: the merge kept what the old curve gave the F-16C at the detent (0.8 + margin 0.02) as its own value; back
+    # to the game data's 0.775.
     $dtF16Group = @($dtCal.Groups | Where-Object { @($_.Aircraft | Where-Object { $_.Plane -eq "F-16C_50" }).Count -gt 0 })
-    Assert-True ($dtF16Group.Count -eq 1 -and [Math]::Abs($dtF16Group[0].AbStart - 0.81) -lt 1e-6 -and $dtF16Group[0].Aircraft[0].Source -eq "relation") ("the merge should keep the F-16C's old afterburner start 0.81: " + ($dtF16Group | ConvertTo-Json -Depth 3 -Compress))
+    Assert-True ($dtF16Group.Count -eq 1 -and [Math]::Abs($dtF16Group[0].AbStart - 0.82) -lt 1e-6 -and $dtF16Group[0].Aircraft[0].Source -eq "relation") ("the merge should keep the F-16C's old afterburner start 0.82: " + ($dtF16Group | ConvertTo-Json -Depth 3 -Compress))
     $dtCal = Invoke-DtJson @("--profile", $dtProfile, "binds", "detent", "set", "Throttle", "--target", "DCS:F-16C_50=default", "--target", "DCS:M-2000C=default")
     $dtF16Group = @($dtCal.Groups | Where-Object { @($_.Aircraft | Where-Object { $_.Plane -eq "F-16C_50" }).Count -gt 0 })
     Assert-True ($dtF16Group.Count -eq 1 -and [Math]::Abs($dtF16Group[0].AbStart - 0.775) -lt 1e-9) "the F-16C group should use the game data's 0.775."
@@ -94,7 +94,12 @@ try {
     Assert-True ($dtPreview.Source -eq "detent") ("DCS / F-16C should resolve to detent mode, got " + $dtPreview.Source)
     # DCS thrust: -1 is full; the relation is inverted, so the game throttle is (1 - y) / 2. Raw 0.75 = the detent.
     $dtY = @($dtPreview.Points | Where-Object { [Math]::Abs($_[0] - 0.5) -lt 1e-6 })[0][1]
-    Assert-True ([Math]::Abs((1 - $dtY) / 2 - 0.84) -lt 0.003) ("the F-16C's throttle at the detent should be 0.85 - margin 0.01, got " + ((1 - $dtY) / 2))
+    Assert-True ([Math]::Abs((1 - $dtY) / 2 - 0.83) -lt 0.003) ("the F-16C's throttle at the detent should be 0.85 - margin 0.02, got " + ((1 - $dtY) / 2))
+    # 2.7.4: the detent band (2 % of the travel past the detent) stays below the afterburner (0.85 - margin / 4).
+    $dtBand = @($dtPreview.Points | Where-Object { $_[0] -ge 0.5 - 1e-6 -and $_[0] -le 0.54 + 1e-6 } | ForEach-Object { (1 - $_[1]) / 2 })
+    Assert-True ($dtBand.Count -ge 2 -and ($dtBand | Measure-Object -Maximum).Maximum -le 0.8451) ("in the detent band the F-16C must stay below its afterburner: " + ($dtBand -join ", "))
+    $dtRise = @($dtPreview.Points | ForEach-Object { (1 - $_[1]) / 2 })
+    for ($i = 1; $i -lt $dtRise.Count; $i++) { Assert-True ($dtRise[$i] -ge $dtRise[$i - 1] - 1e-4) ("the F-16C's throttle falls at preview point " + $i) }
     $dtA10Preview = Invoke-DtJson @("--profile", $dtProfile, "binds", "tuning", "show", "Throttle", "--game", "DCS", "--plane", "A-10C")
     Assert-True ($dtA10Preview.Resolved.Source -eq "detent" -and $dtA10Preview.Resolved.Tuning -match "sx=0\.75") ("the A-10C should get full power at the detent with saturation X 0.75: " + $dtA10Preview.Resolved.Tuning)
     Assert-True (-not ($dtA10Preview.Scopes.PSObject.Properties.Name -contains "detent")) "tuning show must not list the detent settings as a scope."
@@ -142,7 +147,7 @@ try {
     # 2.7.2: the curve preview's marks (tuning show: the device's detent as curve input, the afterburner start as curve
     # output; the relation is inverted, so full is -1).
     $dtMarks = Invoke-DtJson @("--profile", $dtProfile, "binds", "tuning", "show", "Throttle", "--game", "DCS", "--plane", "F-16C_50")
-    Assert-True ($null -ne $dtMarks.Resolved.Detent -and [Math]::Abs($dtMarks.Resolved.Detent.Input - 0.5) -lt 1e-6 -and [Math]::Abs($dtMarks.Resolved.Detent.AfterburnerOutput + 0.7) -lt 1e-6 -and $dtMarks.Resolved.Detent.FullOutput -eq -1) ("tuning show should mark the detent (0.5) and the F-16C's afterburner start (-0.7): " + ($dtMarks.Resolved | ConvertTo-Json -Compress))
+    Assert-True ($null -ne $dtMarks.Resolved.Detent -and [Math]::Abs($dtMarks.Resolved.Detent.Input - 0.5) -lt 1e-6 -and [Math]::Abs($dtMarks.Resolved.Detent.AfterburnerOutput + 0.7) -lt 1e-6 -and $dtMarks.Resolved.Detent.FullOutput -eq -1 -and [Math]::Abs($dtMarks.Resolved.Detent.BandEnd - 0.54) -lt 1e-6) ("tuning show should mark the detent (0.5) and the F-16C's afterburner start (-0.7): " + ($dtMarks.Resolved | ConvertTo-Json -Compress))
     $dtMarks = Invoke-DtJson @("--profile", $dtProfile, "binds", "tuning", "show", "Throttle", "--game", "DCS", "--plane", "A-10C")
     Assert-True ($null -ne $dtMarks.Resolved.Detent -and $null -eq $dtMarks.Resolved.Detent.AfterburnerOutput) "the A-10C has no afterburner: only the detent is marked."
 

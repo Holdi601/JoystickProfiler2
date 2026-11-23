@@ -317,7 +317,7 @@ namespace JoyPro.Engine
             }
             if (target.Kind == DetentTargetKind.Linear)
                 return null;
-            DetentFit fit = FitFor(normal.Model, normal.Tuning, calibration, target, settings.Margin);
+            DetentFit fit = FitFor(normal.Model, normal.Tuning, calibration, target, settings.Margin, settings.Band);
             if (fit.Warning.Length > 0)
                 Warnings.Add("Detent mode, " + game + (string.IsNullOrWhiteSpace(plane) ? string.Empty : " / " + plane) + ": " + fit.Warning);
             if (fit.Fallback || fit.Tuning == null)
@@ -327,6 +327,7 @@ namespace JoyPro.Engine
             double sigma;
             DetentMath.BaseThrottle(normal.Model, normal.Tuning, calibration, out sigma);
             double side = sigma == 0.0 ? 1.0 : sigma;
+            double band = DetentMath.EffectiveBand(calibration, target, settings.Band);
             return new ResolvedTuning
             {
                 Tuning = fit.Tuning.Clone(),
@@ -335,18 +336,20 @@ namespace JoyPro.Engine
                 Fitted = true,
                 Note = note + "; " + fit.Method + ", off by up to " + Pct(fit.MaxError),
                 DetentInput = 2.0 * calibration.Detent - 1.0,
+                DetentBandEnd = band <= 0 ? double.NaN : 2.0 * calibration.RawAt(calibration.Travel(calibration.Detent) + band) - 1.0,
                 AfterburnerOutput = target.Kind == DetentTargetKind.Afterburner ? side * (2.0 * target.AbStart - 1.0) : double.NaN,
                 FullOutput = side
             };
         }
 
-        public static DetentFit FitFor(AxisModel model, AxisTuning baseTuning, DetentCalibration calibration, DetentTarget target, double margin)
+        public static DetentFit FitFor(AxisModel model, AxisTuning baseTuning, DetentCalibration calibration, DetentTarget target, double margin, double band)
         {
-            string key = model.Id + "\n" + baseTuning.Format() + "\n" + calibration.Format() + "\n" + target.Format() + "\n" + margin.ToString("R", CultureInfo.InvariantCulture);
+            string key = model.Id + "\n" + baseTuning.Format() + "\n" + calibration.Format() + "\n" + target.Format() + "\n" + margin.ToString("R", CultureInfo.InvariantCulture) +
+                         "\n" + band.ToString("R", CultureInfo.InvariantCulture);
             DetentFit fit;
             if (FitCache.TryGetValue(key, out fit))
                 return fit;
-            fit = DetentMath.Fit(model, baseTuning, calibration, target, margin);
+            fit = DetentMath.Fit(model, baseTuning, calibration, target, margin, band);
             if (FitCache.Count > 2000)
                 FitCache.Clear();
             FitCache[key] = fit;

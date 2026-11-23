@@ -39,7 +39,7 @@ namespace JoyPro.Engine.Games
     // ([Input] Joystick / Joystick1..3 = SDL GUID + device index) pick them. Joysticks: 128 buttons, the first hat in four
     // directions (buttons 128..131), 8 axes counted over the axes the device has. See docs/games/fate-of-the-galaxy.md.
     internal sealed class FreeSpaceOpenIntegration : IGameIntegration, IGameConfigPathResolver, IGameSettingsReader, IGameSettingsSource,
-        IGameSettingsExport, IGameBuiltInCatalog, IGameDeviceLimit
+        IGameSettingsExport, IGameBuiltInCatalog, IGameDeviceLimit, IGameScansConfigFolder
     {
         private readonly FsoMod mod;
 
@@ -478,13 +478,30 @@ namespace JoyPro.Engine.Games
             return GameInputTokens.PovToken(0, direction);
         }
 
-        // The direction FSO's file needs for a HOTAS axis to work as JoyPro's (DCS's) direction: FSO reads the absolute
-        // throttle 0..100 % from the low to the high end of the raw axis (controlsconfig.cpp joy_get_unscaled_reading,
-        // playercontrol.cpp), so a lever that reads low when pushed forward - as most throttles do in DirectInput - needs
-        // INVERTED; the relative throttle likewise. Stick axes work as they are. Unverified in game (docs).
+        // The direction FSO's file needs for an axis to work as JoyPro's (DCS's) direction. The absolute throttle needs
+        // none: FSO 26 takes the raw axis 0..1 (controlsconfig.cpp joy_get_unscaled_reading, INVERTED = 1 - value) and
+        // sets the speed to (1 - (value * 1.2 - 0.1)) * 100 % (playercontrol.cpp), so the low end of the raw axis is full
+        // throttle - as in DCS, where a lever that reads low when pushed forward (most HOTAS throttles in DirectInput)
+        // works without invert. Checked with a tester's own preset (VPC throttle, "AXIS") and JoyPro's export ("INVERTED,
+        // AXIS" ran backwards in the game, 2.7.3). The relative throttle adds the centred reading, so the low end (pushed
+        // forward) would slow down: it gets INVERTED. Stick axes work as they are.
         internal static bool HotasInvert(string control)
         {
-            return control == "JOY_ABS_THROTTLE_AXIS" || control == "JOY_REL_THROTTLE_AXIS";
+            return control == "JOY_REL_THROTTLE_AXIS";
+        }
+
+        // JoyPro up to 2.7.3 read and wrote the absolute throttle with INVERTED flipped; the stored "how the file read
+        // back" of such a bind is flipped likewise, so a file still as exported keeps the relation's own direction.
+        public void UpgradeLegacyMetadata(string key, BindMetadata meta)
+        {
+            if (meta == null || string.IsNullOrEmpty(meta.FileTuning) || key == null ||
+                !key.StartsWith("joy_abs_throttle_axis\u001E", StringComparison.OrdinalIgnoreCase))
+                return;
+            AxisTuning tuning = AxisTuning.Parse(meta.FileTuning);
+            if (tuning == null)
+                return;
+            tuning.Inverted = !tuning.Inverted;
+            meta.FileTuning = tuning.Format();
         }
 
         // ---- write ----

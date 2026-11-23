@@ -203,7 +203,7 @@ working; it has none of the new parameters, so it writes no curve. The GUI no lo
   StarCitizen`. Details: `docs/games/starcitizen.md`.
 - Elite Dangerous: `game:EliteDangerous` -> base; `<Inverted>`/`<Deadzone>` per axis element, `<ThrottleRange>` from the
   throttle's Slider, game-wide options with `engine ffb set --device * --game EliteDangerous`.
-- Fate of the Galaxy (FreeSpace Open): per bind only `INVERTED` (XOR the throttle's HOTAS default); dead zone 0..45 and
+- Fate of the Galaxy (FreeSpace Open): per bind only `INVERTED` (XOR the relative throttle's default; the absolute throttle as it is); dead zone 0..45 and
   sensitivity 0..9 are game-wide (`engine ffb set --device * --game FateOfTheGalaxy --param deadZone=.. sensitivity=..`,
   written into the pilot and the mod's settings). Model `fso`: dead zone x 2 % of the half travel, then
   `p * s + p^5 * (1 - s)`; Slider = the absolute throttle, -10..110 % clipped (docs/games/fate-of-the-galaxy.md).
@@ -255,16 +255,28 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
   has one), the afterburner detent, optionally full and the cut-off behind the idle detent. The direction (value rising
   or falling towards full) comes from idle vs. detent. The Binds page's wizard reads the axis live (capture service);
   `binds detent calibrate` stores it; every throttle relation on that axis uses it.
-- **Settings** of a relation: `Bind.TuningOverrides["detent"]` (`on=1;noab=full;unknown=linear;margin=0.01;
+- **Settings** of a relation: `Bind.TuningOverrides["detent"]` (`on=1;noab=full;unknown=linear;margin=0.02;band=0.02;
   t.<game>:<plane>=ab:0.78|ab:0.78/idle:0.1|full|linear`), so copies, re-import metadata and the history carry it like the
   tuning scopes (`binds tuning show` does not list it as a scope). Per aircraft: its own value (`t.`), else the gate data,
   else `unknown` (default: the relation's curve). Aircraft without afterburner get full power at the detent (`noab=full`)
-  or the relation's curve (`linear`).
-- **The curve**: the base curve gives the game throttle g(u) along the raw travel; a piecewise linear bend W maps
-  g(detent) to the afterburner start minus the margin (resting in the detent stays just below the afterburner, 1 % by
-  default), g(full) to 1, and with a calibrated cut-off g(idle) to the aircraft's idle gate; behind the idle detent the
-  throttle runs straight in travel from 0 at the cut-off to that idle (2.7.2; before it was bent through g, so a dead
-  zone squeezed that ramp).
+  or the relation's curve (`linear`). Margin 2 % and band 2 % since 2.7.4 (`binds detent set --margin/--band`; texts
+  written before 2.7.4 have no `band=` and always carried `margin=0.01`, the old default the GUI never changed: read as
+  the new default).
+- **The curve**: the base curve gives the game throttle g(u) along the raw travel; g is made non-decreasing first
+  (running maximum from the back end: a relation's own curve that dips, e.g. 92 % at 70 % and 91 % at 80 %, can no
+  longer make a throttle that falls; 2.7.4 report, MiG-21). The bend W runs through anchors in travel: the detent gives
+  the afterburner start minus the margin, full gives 1, and with a calibrated cut-off the idle detent gives the
+  aircraft's idle gate; between two anchors g is scaled into their range (straight in travel where g is flat there).
+  Behind the idle detent the throttle runs straight in travel from 0 at the cut-off to that idle (2.7.2; before it was
+  bent through g, so a dead zone squeezed that ramp).
+  **Detent band** (2.7.4 report: two levers resting in their detents, one engine in afterburner): from the detent up to
+  the band (2 % of the travel past it) the throttle stays at most the afterburner start minus a quarter of the margin
+  (`DetentMath.BandCeiling`, 0.5 % below it by default). Where the way from the detent to full is so steep that the
+  band's front edge would pass that, the detent gets a little less than start minus margin (`RestAtDetent`: rest +
+  (1 - rest) f = ceiling, f the share of g's way to full inside the band) instead of an extra corner (an 11-point DCS
+  curve cannot follow a corner 2 % from the detent: that cost up to 3 % of fit error). Both levers of a twin give the
+  same throttle at the same position relative to their own detent (to 0.1 %); the afterburner starts about 2.5 % of
+  the travel past the detent on both (2.7.3 could light it 1.1 % past the detent, on one lever only).
   **Dead zone** (2.7.2): the base's dead zone is part of g, applied to the raw axis at the idle end of the travel as the
   game applies it, before the bend: the throttle stays exactly 0 there and the device's detent still gives the
   afterburner start. With a cut-off the calibrated idle detent always gives the aircraft's idle: a dead zone inside the
@@ -273,7 +285,12 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
 - **Order**: an aircraft's or game's own tuning scope wins, then detent mode, then the base (`BindTuning.Resolve`).
 - **Per game** (`DetentMath.Fit`, max. difference to the wanted curve in game throttle reported): DCS (per aircraft)
   dead zone + saturation when the curve is one straight line (full at the detent: exact), else the 11-point user curve
-  (least squares, exact at the detent and on flat stretches; typically below 1.5 %). Since 2.7.2 the flat ends (the
+  (least squares, exact at the detent and on flat stretches; typically below 1.5 %). Since 2.7.4 the fit is a
+  constrained least squares (`FitRisingUserCurve`, active set on the KKT system): the spline rises on 401 points, stays
+  below the band's ceiling at the band's front edge and is exact at the detent; 2.7.3's free fit let 81 of 504 tested
+  aircraft x calibration x curve cases fall somewhere (the MiG-21 report: the 80 % point below the 70 % point). A DCS fit
+  never falls back to the normal curve any more (it is always closer); `DetentMath.LargestDrop` checks every model's fit
+  and a fit that would let the throttle fall by more than 0.05 % keeps the normal curve. Since 2.7.2 the flat ends (the
   dead zone, a cut-off, full beyond the detent) go into DCS's own dead zone / saturation X, which DCS applies before the
   user curve, so they stay exactly flat and the spline only spans the travel between them; with a cut-off the spline
   starts just behind the idle detent at the aircraft's idle (a step, as the lever goes over its idle detent), so resting
@@ -281,8 +298,11 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
   throttle between 0 and idle (2.7.1 fell back to the normal curve there with a 4 % dead zone). X-Plane: curve points (exact).
   Any other model: its own parameters searched on their grid (IL-2 full at the detent = a high dead zone: exact; an
   afterburner bend cannot be expressed there). Games with one curve for all aircraft get what most of the relation's
-  aircraft of that game need (others listed). Above 2 % difference a warning, above 6 % the game keeps its normal curve
-  (warning in `binds detent show`, the GUI and the export output).
+  aircraft of that game need (others listed). Above 2 % difference a warning, above 6 % a game other than DCS keeps its
+  normal curve (warning in `binds detent show`, the GUI and the export output).
+  Test: `DetentMonotoneTests` sweeps every aircraft of the gate data x 7 calibrations (with and without cut-off,
+  reversed, two real levers) x 6 curves (dead zone 0/4/10 %, user curves, a dipping one): never falling, DCS points
+  in order, band below the afterburner, detent at its value.
 - **Merge** (`binds detent merge`): finds per device axis the throttle relations (name or DCS thrust axes 2004-2006),
   reads the device's detent from a relation that gives full power there and stays full (else from the gate data), keeps
   the relation with most aircraft that does not end at the detent (its bind and curve), adds the others' aircraft and
@@ -297,7 +317,7 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
   at the detent is the default, on/off, no-afterburner rule, "Calibrate detent..." (idle, detent,
   full and cut-off with Confirm/Skip/Back on the live axis), "Merge my throttle relations..." (plan, Merge, Undo merge),
   and the aircraft groups ("F-16C, F/A-18C: afterburner at 77 %") with a travel/throttle preview (detent line, afterburner
-  band), the source, per game the method and error, and the afterburner start editable per group; **No afterburner**
+  band; the curve graph also shows the detent band as a yellow strip, `Resolved.Detent.BandEnd` of `binds tuning show`), the source, per game the method and error, and the afterburner start editable per group; **No afterburner**
   per group (`--target ...=full`); **Copy detent mode to another axis...** (`binds detent copy <relation> --to <other>
   [--calibration]`: settings and own values, the calibration lent only to an axis without one, source `copy`). The
   axis response graph marks the device's detent and the afterburner range on a curve detent mode makes (`binds tuning

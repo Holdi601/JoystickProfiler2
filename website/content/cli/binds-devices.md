@@ -456,7 +456,11 @@ engine binds detent set "Throttle" --on --no-ab full --profile "C:\Users\Pilot\D
 - `--on` / `--off` (not both).
 - `--no-ab full|linear`: aircraft without afterburner get full power at the detent, or the relation's curve.
 - `--unknown full|linear`: the same for aircraft without gate data.
-- `--margin <0..0.1>`: share of the game's throttle.
+- `--margin <0..0.1>`: how far below the afterburner start resting in the detent stays, share of the game's throttle
+  (default 0.02).
+- `--band <0..0.05>`: the detent band, share of the travel past the detent where the throttle still stays below the
+  afterburner (default 0.02), so a lever resting a little into its detent, or two levers calibrated a little
+  differently, never light it on one engine only.
 - `--target <game>:<plane>=ab:<0..1>[/idle:<0..1>]|full|linear|default` (repeatable): your own afterburner start
   for an aircraft; `default` goes back to the gate data.
 - It needs a bound device axis. Without a calibration it says so: it takes effect after
@@ -466,7 +470,7 @@ engine binds detent set "Throttle" --on --no-ab full --profile "C:\Users\Pilot\D
 :::layer technical
 - Output: the detent view of [[cli:binds detent show]] with a `Message`; exit code `0`.
 - Failures (exit `1`): `Relation '...' has no device axis bound; bind the throttle axis first.`, `Use --on or --off,
-  not both.`, `--margin must be 0..0.1 (share of the game's throttle).`, `--target takes <game>:<plane>=...`
+  not both.`, `--margin must be 0..0.1 (share of the game's throttle).`, `--band must be 0..0.05 (...)`, `--target takes <game>:<plane>=...`
 - Stored on the bind. One undo step with `--profile`.
 :::
 

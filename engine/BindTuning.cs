@@ -21,6 +21,9 @@ namespace JoyPro.Engine.Axis
         // Detent mode: the device's detent as the curve's input (-1..1) and, for an aircraft with an afterburner, the model
         // output (-1..1) where the afterburner starts; NaN otherwise (the curve preview marks them).
         public double DetentInput = double.NaN;
+        // Detent mode, an aircraft with an afterburner: the front edge of the detent band as the curve's input (-1..1);
+        // from DetentInput up to there the throttle stays below the afterburner. NaN without a band.
+        public double DetentBandEnd = double.NaN;
         public double AfterburnerOutput = double.NaN;
         // The model output at full throttle (-1 or 1): the side of the afterburner range.
         public double FullOutput = double.NaN;

@@ -541,7 +541,7 @@ namespace JoyPro.Engine.Games
                 {
                     result.Warnings.Add("Could not read the exported file back for JoyPro's metadata: " + ex.Message);
                 }
-                GameMetadataStore.Save(path, game.GameId, request.Bindings, readBack, result.Warnings);
+                GameMetadataStore.Save(game, path, request.Bindings, readBack, result.Warnings);
             }
             RecordSync(game, path, dryRun, result);
             if (!string.IsNullOrWhiteSpace(game.Notes))

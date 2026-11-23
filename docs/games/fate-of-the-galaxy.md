@@ -71,8 +71,11 @@ four slots taken the bind is skipped with a hint to pick the device in the game'
 - Response (`joy_get_scaled_reading`): dead zone = size x 2 % of the half travel (10 = 20 %), the rest rescaled, then
   `p * s + p^5 * (1 - s)` with `s = sensitivity / 9`. The absolute throttle skips both: its raw travel 0..1 becomes -10..110 %
   and is clipped. Axis model `fso` (`engine/AxisModels/FreeSpaceOpen.cs`).
-- Invert is JoyPro's direction: the throttle axes get `INVERTED` for a lever that reads low when pushed forward, as most HOTAS
-  throttles do in DirectInput; stick axes are written as they are [INF from the source, UNVERIFIED in the game].
+- Invert is JoyPro's (DCS's) direction. The absolute throttle is written as it is: FSO's speed is
+  `(1 - (raw 0..1 x 1.2 - 0.1)) x 100 %` (`playercontrol.cpp`), so the low end of the raw axis is full throttle, as in DCS
+  (a lever that reads low when pushed forward, as most HOTAS throttles do, needs no invert) [SRC; checked with a user's
+  own preset, VPC throttle `AXIS`: JoyPro 2.7.3 wrote `INVERTED` and the throttle ran backwards]. Only the relative throttle
+  gets `INVERTED` (the centred reading is added, pushed forward would slow down); stick axes are written as they are.
 
 ## Export, import, watcher
 
@@ -83,6 +86,10 @@ four slots taken the bind is skipped with a hint to pick the device in the game'
 - No pilot yet: the export writes the preset and says to pick `JoyPro_FotG` in the game's controls menu (or to export again
   after creating a pilot).
 - Import / scan read the preset the pilot names (a preset file, a table preset or the mod's defaults).
+- JoyPro's re-import data goes next to the pilot as `<callsign>.json.joypro-meta` - never as `*.json`: FSO lists every
+  `players\*.json` as a pilot and stops at start ("JSON element signature must be an integer") on one that is not, and
+  loads every `presets\*.json` as a preset. The `<callsign>.json.joypro-meta.json` of JoyPro 2.7.x is read once and removed
+  by the next export.
 - The config watcher watches the pilot and the mod's settings; when you change binds in the game, FSO saves them as a new
   preset you name, and the pilot names it.
 - `engine fotg refresh-db [<Knossos or mod folder>]` rebuilds the catalog from the installed mod (the update check notices a

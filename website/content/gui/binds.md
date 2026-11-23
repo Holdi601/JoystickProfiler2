@@ -189,8 +189,11 @@ games or aircraft of the other axis (the ticked ones); one Ctrl+Z takes it back.
 
 A throttle with an afterburner detent used to need one throttle relation per afterburner position. In detent mode
 **one** throttle relation serves every aircraft: JoyPro bends the curve per aircraft so your throttle's detent is
-exactly where that aircraft's afterburner starts (F-16C at 77 %, F-14 at 70 %, ...). Resting in the detent stays just
-below the afterburner; pushing over it lights it.
+exactly where that aircraft's afterburner starts (F-16C at 77 %, F-14 at 70 %, ...). Resting in the detent stays below
+the afterburner, also a little past it (the detent band, 2 % of the travel: the yellow strip in the curve); pushing
+further lights it. A left and a right lever give the same throttle at the same place relative to their own detent, so
+both engines stay out of the afterburner together. The curve never falls while the lever goes forward, even where the
+relation's own curve dips.
 
 - **The calibration belongs to the device axis.** Every throttle relation on that axis shares it; a left and a right
   lever are separate axes, each with its own. The line under the buttons says whether this axis is calibrated, and its

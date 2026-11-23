@@ -454,6 +454,17 @@ namespace JoyPro.Engine.Games
         GameCatalog BuiltInCatalog();
     }
 
+    // A game that loads every file of its config's folder with the config's extension: FreeSpace Open lists each
+    // data\players\*.json as a pilot (one without an integer "signature" stops the game at start, JSONFileHandler.cpp
+    // readInteger) and each presets\*.json as a preset. JoyPro's metadata next to such a file must not end in that
+    // extension: it is "<config>.joypro-meta" there (GameMetadataStore.PlainSuffix), not "<config>.joypro-meta.json".
+    internal interface IGameScansConfigFolder
+    {
+        // An entry of the metadata an older JoyPro kept under the old name, made to match what Read returns now (the
+        // old file is read once, then removed by the next export).
+        void UpgradeLegacyMetadata(string key, BindMetadata meta);
+    }
+
     // A game supported through the registry. Implementations only deal with their file format;
     // profile access, CLI parsing, catalogs and safety checks are shared.
     // A game whose config file may also be given as a folder (its installation, launcher folder or input folder) or as

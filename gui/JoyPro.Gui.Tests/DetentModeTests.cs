@@ -72,20 +72,21 @@ public sealed class DetentModeTests
         s.Targets[DetentSettings.TargetKey("DCS", "F-16C_50")] = "ab:0.79";
         s.Targets[DetentSettings.TargetKey("DCS", "OH-58D Copilot")] = "full";
         string text = s.Format();
-        Assert.Equal("on=1;noab=linear;unknown=linear;margin=0.02;t.DCS:F-16C_50=ab:0.79;t.DCS:OH-58D Copilot=full", text);
+        Assert.Equal("on=1;noab=linear;unknown=linear;margin=0.02;band=0.02;t.DCS:F-16C_50=ab:0.79;t.DCS:OH-58D Copilot=full", text);
         DetentSettings back = DetentSettings.Parse(text)!;
         Assert.Equal(0.79, back.OwnTarget("DCS", "F-16C_50")!.AbStart);
         Assert.Equal(DetentTargetKind.FullAtDetent, back.OwnTarget("dcs", "oh-58d copilot")!.Kind);
         Assert.Equal(text, back.Format());
     }
 
-    // The bend: the device's detent gives the afterburner start minus the margin, full stays full, idle stays idle.
+    // The bend: the device's detent gives the afterburner start minus the margin, full stays full, idle stays idle (the
+    // classic bend without a detent band; the band: DetentMonotoneTests).
     [Fact]
     public void WantedThrottle_PutsTheDetentOnTheAfterburnerStart()
     {
         AxisTuning baseTuning = Linear();
         DetentCalibration cal = Calibration(detent: 0.7);
-        Func<double, double> g = DetentMath.WantedThrottle(Dcs, baseTuning, cal, DetentTarget.Afterburner(0.8), 0.01);
+        Func<double, double> g = DetentMath.WantedThrottle(Dcs, baseTuning, cal, DetentTarget.Afterburner(0.8), 0.01, 0.0);
         Assert.Equal(0.0, g(0.0), 9);
         Assert.Equal(0.79, g(0.7), 9);
         Assert.Equal(1.0, g(1.0), 9);
@@ -93,7 +94,7 @@ public sealed class DetentModeTests
         Assert.Equal(0.79 + 0.21 * 0.5, g(0.85), 9);
 
         // Full at the detent: everything beyond it stays full.
-        Func<double, double> full = DetentMath.WantedThrottle(Dcs, baseTuning, cal, DetentTarget.Full, 0.01);
+        Func<double, double> full = DetentMath.WantedThrottle(Dcs, baseTuning, cal, DetentTarget.Full, 0.01, 0.0);
         Assert.Equal(1.0, full(0.7), 9);
         Assert.Equal(1.0, full(0.9), 9);
         Assert.Equal(0.5, full(0.35), 9);
@@ -105,7 +106,7 @@ public sealed class DetentModeTests
     {
         AxisTuning baseTuning = UserLinear();
         DetentCalibration cal = Calibration(detent: 0.8);
-        Func<double, double> g = DetentMath.WantedThrottle(Dcs, baseTuning, cal, DetentTarget.Afterburner(0.61), 0.01);
+        Func<double, double> g = DetentMath.WantedThrottle(Dcs, baseTuning, cal, DetentTarget.Afterburner(0.61), 0.01, 0.0);
         double baseAtDetent = DcsThrottle(baseTuning, 0.8);
         Assert.Equal(0.78, baseAtDetent, 6);
         Assert.Equal(0.60, g(0.8), 9);
@@ -117,7 +118,7 @@ public sealed class DetentModeTests
     [Fact]
     public void DcsFit_FullAtDetent_IsDeadZoneAndSaturation()
     {
-        DetentFit fit = DetentMath.Fit(Dcs, Linear(), Calibration(detent: 0.78), DetentTarget.Full, 0.01);
+        DetentFit fit = DetentMath.Fit(Dcs, Linear(), Calibration(detent: 0.78), DetentTarget.Full, 0.01, 0.0);
         Assert.Equal("dead zone + saturation", fit.Method);
         Assert.True(fit.MaxError < DetentMath.Exact, "error " + fit.MaxError);
         Assert.True(fit.Tuning.Slider);
@@ -137,7 +138,7 @@ public sealed class DetentModeTests
     public void DcsFit_Afterburner_UserCurveExactAtTheDetent(double detent, double ab, bool inverted)
     {
         DetentCalibration cal = Calibration(detent: detent);
-        DetentFit fit = DetentMath.Fit(Dcs, Linear(inverted), cal, DetentTarget.Afterburner(ab), 0.01);
+        DetentFit fit = DetentMath.Fit(Dcs, Linear(inverted), cal, DetentTarget.Afterburner(ab), 0.01, 0.0);
         Assert.Equal("user curve", fit.Method);
         Assert.Equal(11, fit.Tuning.Curvature.Count);
         Assert.True(fit.MaxError < DetentMath.Acceptable, "error " + fit.MaxError);
@@ -158,7 +159,7 @@ public sealed class DetentModeTests
     {
         DetentCalibration cal = new() { Idle = 1.0, Detent = 0.2 };
         AxisTuning baseTuning = Linear(inverted: false);
-        DetentFit fit = DetentMath.Fit(Dcs, baseTuning, cal, DetentTarget.Afterburner(0.85), 0.01);
+        DetentFit fit = DetentMath.Fit(Dcs, baseTuning, cal, DetentTarget.Afterburner(0.85), 0.01, 0.0);
         Assert.True(fit.MaxError < DetentMath.Acceptable, "error " + fit.MaxError);
         double travelAtDetent = DcsThrottle(fit.Tuning, 0.2);
         Assert.Equal(0.84, travelAtDetent, 3);
@@ -180,7 +181,7 @@ public sealed class DetentModeTests
         DetentCalibration cal = Calibration(detent: detent);
         foreach (DetentTarget target in new[] { DetentTarget.Afterburner(ab), DetentTarget.Full })
         {
-            DetentFit fit = DetentMath.Fit(Dcs, baseTuning, cal, target, 0.01);
+            DetentFit fit = DetentMath.Fit(Dcs, baseTuning, cal, target, 0.01, 0.0);
             Assert.True(fit.MaxError < DetentMath.Acceptable, target.Describe() + ": error " + fit.MaxError);
             AxisTuning t = fit.Tuning;
             Assert.Equal(deadzone, t.Deadzone, 3);
@@ -211,7 +212,7 @@ public sealed class DetentModeTests
         baseTuning.Deadzone = deadzone;
         DetentCalibration cal = new() { Cutoff = 0.001, Idle = 0.043, Detent = 0.708, Full = 0.999 };
         DetentTarget hornet = DetentTarget.Afterburner(0.77, idleGate: 0.1);
-        Func<double, double> wanted = DetentMath.WantedThrottle(Dcs, baseTuning, cal, hornet, 0.01);
+        Func<double, double> wanted = DetentMath.WantedThrottle(Dcs, baseTuning, cal, hornet, 0.01, 0.0);
         Assert.Equal(0.0, wanted(0.001), 9);
         Assert.Equal(0.1, wanted(0.043), 9);
         Assert.Equal(0.76, wanted(0.708), 9);
@@ -219,7 +220,7 @@ public sealed class DetentModeTests
         if (deadzone > cal.Idle)
             Assert.Equal(0.1, wanted(deadzone - 0.005), 9);
 
-        DetentFit fit = DetentMath.Fit(Dcs, baseTuning, cal, hornet, 0.01);
+        DetentFit fit = DetentMath.Fit(Dcs, baseTuning, cal, hornet, 0.01, 0.0);
         Assert.False(fit.Fallback, fit.Warning);
         Assert.True(fit.MaxError < DetentMath.Acceptable, "error " + fit.MaxError);
         double sigma;
@@ -243,11 +244,11 @@ public sealed class DetentModeTests
     public void Cutoff_FlatBelowIdleDetent_IdleGateAtTheIdleDetent()
     {
         DetentCalibration cal = new() { Cutoff = 0.0, Idle = 0.12, Detent = 0.8 };
-        Func<double, double> g = DetentMath.WantedThrottle(Dcs, Linear(), cal, DetentTarget.Afterburner(0.8), 0.0);
+        Func<double, double> g = DetentMath.WantedThrottle(Dcs, Linear(), cal, DetentTarget.Afterburner(0.8), 0.0, 0.0);
         Assert.Equal(0.0, g(0.06), 9);
         Assert.Equal(0.0, g(0.12), 9);
         Assert.Equal(0.8, g(0.8), 9);
-        Func<double, double> gated = DetentMath.WantedThrottle(Dcs, Linear(), cal, DetentTarget.Afterburner(0.8, idleGate: 0.1), 0.0);
+        Func<double, double> gated = DetentMath.WantedThrottle(Dcs, Linear(), cal, DetentTarget.Afterburner(0.8, idleGate: 0.1), 0.0, 0.0);
         Assert.Equal(0.1, gated(0.12), 9);
         Assert.Equal(0.05, gated(0.06), 9);
     }
@@ -258,7 +259,7 @@ public sealed class DetentModeTests
     {
         AxisModel xp = AxisModels.ForGame("XPlane12");
         AxisTuning baseTuning = AxisModels.Inherit(Linear(), xp);
-        DetentFit fit = DetentMath.Fit(xp, baseTuning, Calibration(detent: 0.75), DetentTarget.Afterburner(0.85), 0.01);
+        DetentFit fit = DetentMath.Fit(xp, baseTuning, Calibration(detent: 0.75), DetentTarget.Afterburner(0.85), 0.01, 0.0);
         Assert.Equal("curve points", fit.Method);
         Assert.True(fit.MaxError < DetentMath.Exact, "error " + fit.MaxError);
         Assert.True(fit.Tuning.HasControlPoints);
@@ -272,12 +273,12 @@ public sealed class DetentModeTests
     {
         AxisModel il2 = AxisModels.ForGame("IL2Game");
         AxisTuning baseTuning = AxisModels.Inherit(Linear(inverted: false), il2);
-        DetentFit full = DetentMath.Fit(il2, baseTuning, Calibration(detent: 0.8), DetentTarget.Full, 0.01);
+        DetentFit full = DetentMath.Fit(il2, baseTuning, Calibration(detent: 0.8), DetentTarget.Full, 0.01, 0.0);
         Assert.False(full.Fallback);
         Assert.True(full.MaxError < 0.011, "error " + full.MaxError);
         Assert.Equal(0.2, full.Tuning.NativeOr("highValuesDeadZone", 0), 2);
 
-        DetentFit ab = DetentMath.Fit(il2, baseTuning, Calibration(detent: 0.6), DetentTarget.Afterburner(0.95), 0.01);
+        DetentFit ab = DetentMath.Fit(il2, baseTuning, Calibration(detent: 0.6), DetentTarget.Afterburner(0.95), 0.01, 0.0);
         Assert.True(ab.Fallback || ab.MaxError > DetentMath.Acceptable);
         Assert.NotEqual(string.Empty, ab.Warning);
     }

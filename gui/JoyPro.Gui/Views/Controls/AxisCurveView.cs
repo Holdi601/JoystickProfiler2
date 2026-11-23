@@ -55,6 +55,11 @@ public sealed class AxisCurveView : Control
     public static readonly StyledProperty<double> FullOutputProperty =
         AvaloniaProperty.Register<AxisCurveView, double>(nameof(FullOutput), double.NaN);
 
+    // 2.7.4: the detent band from the detent line to this curve input (resting there keeps the afterburner off), a
+    // faint yellow strip; NaN: none.
+    public static readonly StyledProperty<double> DetentBandEndProperty =
+        AvaloniaProperty.Register<AxisCurveView, double>(nameof(DetentBandEnd), double.NaN);
+
     private const double Pad = 22;
     private const double HandleRadius = 4.5;
     private const double GrabDistance = 9;
@@ -82,11 +87,12 @@ public sealed class AxisCurveView : Control
     private static readonly IBrush AfterburnerTextBrush = new SolidColorBrush(Color.Parse("#FDBA74"));
     private static readonly IPen DetentPen = new Pen(new SolidColorBrush(Color.Parse("#FDE047")), 1.4, new DashStyle([5, 3], 0));
     private static readonly IBrush DetentTextBrush = new SolidColorBrush(Color.Parse("#FDE047"));
+    private static readonly IBrush DetentBandBrush = new SolidColorBrush(Color.Parse("#33FDE047"));
 
     static AxisCurveView()
     {
         AffectsRender<AxisCurveView>(CurveProperty, ReferenceCurveProperty, StickInputProperty, StickOutputProperty, HandlesProperty, ShowsPercentProperty, OneSidedProperty,
-            DetentInputProperty, AfterburnerOutputProperty, FullOutputProperty);
+            DetentInputProperty, AfterburnerOutputProperty, FullOutputProperty, DetentBandEndProperty);
     }
 
     public double DetentInput
@@ -105,6 +111,12 @@ public sealed class AxisCurveView : Control
     {
         get => GetValue(FullOutputProperty);
         set => SetValue(FullOutputProperty, value);
+    }
+
+    public double DetentBandEnd
+    {
+        get => GetValue(DetentBandEndProperty);
+        set => SetValue(DetentBandEndProperty, value);
     }
 
     public bool ShowsPercent
@@ -218,6 +230,9 @@ public sealed class AxisCurveView : Control
         double detent = DetentInput;
         if (!double.IsNaN(detent))
         {
+            double bandEnd = DetentBandEnd;
+            if (!double.IsNaN(bandEnd) && Math.Abs(bandEnd - detent) > 1e-6)
+                context.DrawRectangle(DetentBandBrush, null, new Rect(Map(detent, 1), Map(bandEnd, -1)).Normalize());
             context.DrawLine(DetentPen, Map(detent, -1), Map(detent, 1));
             // At the end of the line away from the band (the band's side is busy).
             FormattedText label = new(T("Detent"), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Font, 10, DetentTextBrush);

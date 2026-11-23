@@ -56,6 +56,13 @@ namespace JoyPro.Engine.Axis
             return Math.Max(0.0, Math.Min(1.0, (raw - back) / span));
         }
 
+        // The raw position of a share of the travel (Travel's inverse).
+        public double RawAt(double travel)
+        {
+            double t = Math.Max(0.0, Math.Min(1.0, travel));
+            return Increasing ? t : 1.0 - t;
+        }
+
         public string Validate()
         {
             foreach (double v in new[] { Idle, Detent })
@@ -214,11 +221,16 @@ namespace JoyPro.Engine.Axis
     }
 
     // A relation's detent mode, kept in Bind.TuningOverrides["detent"]:
-    // "on=1;noab=full;unknown=linear;margin=0.01;t.DCS:F-16C_50=ab:0.78;t.IL2Game:IL2Game=linear".
+    // "on=1;noab=full;unknown=linear;margin=0.02;band=0.02;t.DCS:F-16C_50=ab:0.78;t.IL2Game:IL2Game=linear".
     public sealed class DetentSettings
     {
         public const string Key = "detent";
-        public const double DefaultMargin = 0.01;
+        public const double DefaultMargin = 0.02;
+        // Up to 2.7.3 every setting was written with margin=0.01 (the default then; the GUI never offered another). Texts
+        // without a band (written before 2.7.4) read that as the new default.
+        public const double LegacyMargin = 0.01;
+        public const double DefaultBand = 0.02;
+        public const double MaxBand = 0.05;
 
         public bool On = true;
         // Aircraft known to have no afterburner.
@@ -226,8 +238,13 @@ namespace JoyPro.Engine.Axis
         // Aircraft JoyPro has no gate data for.
         public DetentTargetKind Unknown = DetentTargetKind.Linear;
         // The device's detent gives the afterburner start minus this (game throttle units), so resting in the detent
-        // stays just below the afterburner and pushing over it lights it.
+        // stays below the afterburner and pushing over it lights it.
         public double Margin = DefaultMargin;
+        // The detent band (share of the travel): up to this far past the calibrated detent the throttle stays below the
+        // afterburner start (at most the start minus a quarter of the margin), whatever the curve or the game's curve
+        // resolution, so a lever resting a little into its detent, sensor noise or two levers calibrated a little
+        // differently never light the afterburner on one engine only (2.7.4).
+        public double Band = DefaultBand;
         // "<game>:<plane>" -> DetentTarget text: the relation's own value for an aircraft (from the profile or the user).
         public Dictionary<string, string> Targets = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -249,6 +266,7 @@ namespace JoyPro.Engine.Axis
             sb.Append(";noab=").Append(KindText(NoAfterburner));
             sb.Append(";unknown=").Append(KindText(Unknown));
             sb.Append(";margin=").Append(DetentText.Num(Margin));
+            sb.Append(";band=").Append(DetentText.Num(Band));
             foreach (KeyValuePair<string, string> t in Targets.OrderBy(t => t.Key, StringComparer.OrdinalIgnoreCase))
                 sb.Append(";t.").Append(t.Key).Append('=').Append(t.Value);
             return sb.ToString();
@@ -259,11 +277,17 @@ namespace JoyPro.Engine.Axis
             if (string.IsNullOrWhiteSpace(text))
                 return null;
             DetentSettings s = new DetentSettings();
+            bool hasBand = false;
             foreach (KeyValuePair<string, string> part in DetentText.Pairs(text))
             {
                 double v;
                 DetentTargetKind kind;
-                if (part.Key == "on")
+                if (part.Key == "band" && DetentText.TryNum(part.Value, out v) && v >= 0 && v <= MaxBand)
+                {
+                    s.Band = v;
+                    hasBand = true;
+                }
+                else if (part.Key == "on")
                     s.On = part.Value == "1" || string.Equals(part.Value, "true", StringComparison.OrdinalIgnoreCase);
                 else if (part.Key == "noab" && TryKind(part.Value, out kind))
                     s.NoAfterburner = kind;
@@ -274,6 +298,8 @@ namespace JoyPro.Engine.Axis
                 else if (part.Key.StartsWith("t.", StringComparison.Ordinal) && part.Key.Length > 2 && DetentTarget.Parse(part.Value) != null)
                     s.Targets[part.Key.Substring(2)] = DetentTarget.Parse(part.Value).Format();
             }
+            if (!hasBand && Math.Abs(s.Margin - LegacyMargin) < 1e-9)
+                s.Margin = DefaultMargin;
             return s;
         }
 
@@ -331,32 +357,83 @@ namespace JoyPro.Engine.Axis
             return u => (1.0 + s * model.Evaluate(baseTuning, 2.0 * u - 1.0)) / 2.0;
         }
 
-        // The bend of the base's throttle g (0..1) into the aircraft's: piecewise linear through anchors (from -> to), with
-        // (0, 0) and (1, 1) at the ends. With a cut-off the bend starts at the idle detent (g there -> the aircraft's
-        // idle); the travel behind it is WantedThrottle's cut-off ramp.
-        public static List<KeyValuePair<double, double>> Anchors(Func<double, double> baseThrottle, DetentCalibration cal, DetentTarget target, double margin)
+        // The base's game throttle made non-decreasing along the travel from the back end to the front end: a throttle
+        // never falls while the lever goes forward, even where the relation's own curve dips (2.7.4 report: a MiG-21 user
+        // curve with 92 % at 70 % and 91 % at 80 % of the travel gave a bent curve whose 80 % point was below its 70 %
+        // point). A base that never falls is returned as it is.
+        public static Func<double, double> MonotoneThrottle(Func<double, double> g, DetentCalibration cal)
+        {
+            const int n = 2000;
+            double[] prefix = new double[n + 1];
+            double max = double.NegativeInfinity;
+            bool falls = false;
+            for (int i = 0; i <= n; i++)
+            {
+                double v = g(cal.RawAt(i / (double)n));
+                if (v < max - 1e-9)
+                    falls = true;
+                max = Math.Max(max, v);
+                prefix[i] = max;
+            }
+            if (!falls)
+                return g;
+            return u =>
+            {
+                int k = Math.Max(0, Math.Min(n, (int)Math.Floor(cal.Travel(u) * n + 1e-9)));
+                return Math.Max(g(u), prefix[k]);
+            };
+        }
+
+        // The detent band actually used (share of the travel past the detent): the setting, at most a quarter of the
+        // travel between idle and the detent and between the detent and full. 0 for aircraft without afterburner (beyond
+        // their detent it is full power anyway).
+        public static double EffectiveBand(DetentCalibration cal, DetentTarget target, double band)
+        {
+            if (cal == null || target == null || target.Kind != DetentTargetKind.Afterburner || !(band > 0))
+                return 0.0;
+            double idle = cal.Travel(cal.Idle);
+            double detent = cal.Travel(cal.Detent);
+            double full = cal.Travel(cal.FullOrEnd);
+            return Math.Max(0.0, Math.Min(band, Math.Min((detent - idle) / 4.0, (full - detent) / 4.0)));
+        }
+
+        // The most the throttle may give up to the front edge of the detent band: the afterburner start minus a quarter of
+        // the margin (with the default margin 2 %: 0.5 % below the afterburner).
+        public static double BandCeiling(DetentTarget target, double margin)
+        {
+            return Math.Max(0.0, Math.Min(1.0, target.AbStart - Math.Max(0.0, margin) / 4.0));
+        }
+
+        // The bend along the travel (share 0..1 from the back end): anchors (travel -> game throttle), rising. Afterburner:
+        // the detent gives the afterburner start minus the margin, full gives 1; where the way from the detent to full
+        // would pass the band's ceiling inside the detent band (a steep afterburner range), the detent gets less, just so
+        // much that the band's front edge gives the ceiling (no extra bend: an 11-point DCS curve could not follow a
+        // corner that close to the detent). No afterburner: full at the detent. With a cut-off the bend starts at the idle detent with the
+        // aircraft's idle (behind it WantedThrottle's cut-off ramp), else at the back end with 0. g: the base's throttle
+        // along the raw travel (for the band check; null: straight in travel).
+        public static List<KeyValuePair<double, double>> Anchors(DetentCalibration cal, DetentTarget target, double margin, double band,
+            Func<double, double> g = null)
         {
             List<KeyValuePair<double, double>> anchors = new List<KeyValuePair<double, double>>();
-            double gDet = baseThrottle(cal.Detent);
-            double gFull = baseThrottle(cal.FullOrEnd);
-            KeyValuePair<double, double> start = new KeyValuePair<double, double>(0.0, 0.0);
-            if (cal.HasCutoff)
-                start = new KeyValuePair<double, double>(baseThrottle(cal.Idle), Math.Max(0.0, target.IdleGate));
+            double detent = cal.Travel(cal.Detent);
+            double full = cal.Travel(cal.FullOrEnd);
+            anchors.Add(cal.HasCutoff
+                ? new KeyValuePair<double, double>(cal.Travel(cal.Idle), Math.Max(0.0, target.IdleGate))
+                : new KeyValuePair<double, double>(0.0, 0.0));
             if (target.Kind == DetentTargetKind.FullAtDetent)
-                anchors.Add(new KeyValuePair<double, double>(gDet, 1.0));
+                anchors.Add(new KeyValuePair<double, double>(detent, 1.0));
             else if (target.Kind == DetentTargetKind.Afterburner)
             {
-                anchors.Add(new KeyValuePair<double, double>(gDet, Math.Max(0.0, Math.Min(1.0, target.AbStart - margin))));
-                if (gFull < 1.0 - 1e-6)
-                    anchors.Add(new KeyValuePair<double, double>(gFull, 1.0));
+                anchors.Add(new KeyValuePair<double, double>(detent, RestAtDetent(cal, target, margin, band, g)));
+                anchors.Add(new KeyValuePair<double, double>(full, 1.0));
             }
-            List<KeyValuePair<double, double>> sorted = new List<KeyValuePair<double, double>> { start };
-            foreach (KeyValuePair<double, double> a in anchors.OrderBy(a => a.Key))
+            List<KeyValuePair<double, double>> sorted = new List<KeyValuePair<double, double>> { anchors[0] };
+            foreach (KeyValuePair<double, double> a in anchors.Skip(1))
             {
                 KeyValuePair<double, double> last = sorted[sorted.Count - 1];
-                if (a.Key <= last.Key + 1e-6)
+                if (a.Key <= last.Key + 1e-9)
                 {
-                    // Same base value twice (e.g. a flat base): the later anchor wins, never falling.
+                    // The same travel twice (a calibration at the end of the travel): the later anchor wins, never falling.
                     if (sorted.Count > 1)
                         sorted[sorted.Count - 1] = new KeyValuePair<double, double>(last.Key, Math.Max(sorted[sorted.Count - 2].Value, a.Value));
                     continue;
@@ -364,63 +441,96 @@ namespace JoyPro.Engine.Axis
                 sorted.Add(new KeyValuePair<double, double>(a.Key, Math.Max(last.Value, a.Value)));
             }
             KeyValuePair<double, double> end = sorted[sorted.Count - 1];
-            if (end.Key < 1.0 - 1e-6)
+            if (end.Key < 1.0 - 1e-9)
                 sorted.Add(new KeyValuePair<double, double>(1.0, Math.Max(end.Value, 1.0)));
             return sorted;
         }
 
-        public static double Piecewise(List<KeyValuePair<double, double>> points, double v)
-        {
-            if (points == null || points.Count == 0)
-                return v;
-            if (v <= points[0].Key)
-                return points[0].Value;
-            for (int i = 1; i < points.Count; i++)
-            {
-                if (v <= points[i].Key)
-                {
-                    double span = points[i].Key - points[i - 1].Key;
-                    return span <= 1e-12 ? points[i].Value : points[i - 1].Value + (points[i].Value - points[i - 1].Value) * (v - points[i - 1].Key) / span;
-                }
-            }
-            return points[points.Count - 1].Value;
-        }
-
-        // The game throttle 0..1 an aircraft should get along the raw travel u 0..1.
+        // The game throttle 0..1 an aircraft should get along the raw travel u 0..1: between two anchors the base's own
+        // throttle g scaled into the anchors' range (the relation's curve shape is kept inside each segment; where g is
+        // flat there, straight in travel). The first segment without a cut-off scales g from 0, as before 2.7.4.
         // The base's dead zone is part of g (the game applies it to the raw axis at the idle end of the travel, before
         // the bend): the throttle stays at zero there and the device's detent still gives the afterburner start. With
         // a cut-off the calibrated idle detent always gives the aircraft's idle: behind it the throttle runs straight
         // from 0 at the cut-off to idle (a dead zone there changes nothing), and a dead zone reaching past the idle
         // detent keeps the throttle at idle up to its end (never at the cut-off while resting in the idle detent).
-        public static Func<double, double> WantedThrottle(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, DetentTarget target, double margin)
+        // The game throttle resting in the detent gives: the afterburner start minus the margin, or less where the way to
+        // full is so steep that the front edge of the detent band would pass the band's ceiling (rest + (1 - rest) f =
+        // ceiling, f: the share of the way from the detent to full the base covers inside the band).
+        public static double RestAtDetent(DetentCalibration cal, DetentTarget target, double margin, double band, Func<double, double> g = null)
+        {
+            double rest = Math.Max(0.0, Math.Min(1.0, target.AbStart - margin));
+            double b = EffectiveBand(cal, target, band);
+            double detent = cal.Travel(cal.Detent);
+            double full = cal.Travel(cal.FullOrEnd);
+            if (b <= 0 || full <= detent + 1e-6)
+                return rest;
+            double f = Math.Min(1.0, b / (full - detent));
+            if (g != null)
+            {
+                double gDetent = g(cal.RawAt(detent));
+                double gFull = g(cal.RawAt(full));
+                if (gFull - gDetent > 1e-9)
+                    f = Math.Max(0.0, Math.Min(1.0, (g(cal.RawAt(detent + b)) - gDetent) / (gFull - gDetent)));
+            }
+            // A hair below the ceiling: games that sample the curve (X-Plane's stops) stay below it too.
+            double ceiling = BandCeiling(target, margin) - 0.001;
+            if (f >= 1.0 - 1e-9 || rest + (1.0 - rest) * f <= ceiling)
+                return rest;
+            return Math.Max(0.0, Math.Min(rest, (ceiling - f) / (1.0 - f)));
+        }
+
+        public static Func<double, double> WantedThrottle(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, DetentTarget target, double margin,
+            double band = DetentSettings.DefaultBand)
         {
             double sigma;
-            Func<double, double> g = BaseThrottle(model, baseTuning, cal, out sigma);
+            Func<double, double> raw = BaseThrottle(model, baseTuning, cal, out sigma);
             if (sigma == 0.0 || target.Kind == DetentTargetKind.Linear)
-                return g;
-            List<KeyValuePair<double, double>> anchors = Anchors(g, cal, target, margin);
+                return raw;
+            Func<double, double> g = MonotoneThrottle(raw, cal);
+            List<KeyValuePair<double, double>> anchors = Anchors(cal, target, margin, band, g);
+            double[] at = new double[anchors.Count];
+            for (int i = 0; i < anchors.Count; i++)
+                at[i] = i == 0 && !cal.HasCutoff ? 0.0 : g(cal.RawAt(anchors[i].Key));
+            Func<double, double> bent = u => Bend(anchors, at, cal.Travel(u), g(u));
             if (!cal.HasCutoff)
-                return u => Piecewise(anchors, g(u));
+                return bent;
             double cutTravel = cal.Travel(cal.Cutoff);
             double idleTravel = cal.Travel(cal.Idle);
-            double idleValue = Piecewise(anchors, g(cal.Idle));
+            double idleValue = anchors[0].Value;
             return u =>
             {
                 double travel = cal.Travel(u);
                 if (travel >= idleTravel)
-                    return Piecewise(anchors, g(u));
+                    return bent(u);
                 if (travel <= cutTravel || idleTravel - cutTravel <= 1e-9)
                     return 0.0;
                 return idleValue * (travel - cutTravel) / (idleTravel - cutTravel);
             };
         }
 
+        private static double Bend(List<KeyValuePair<double, double>> anchors, double[] at, double travel, double g)
+        {
+            int i = 1;
+            while (i < anchors.Count - 1 && travel > anchors[i].Key)
+                i++;
+            KeyValuePair<double, double> a = anchors[i - 1];
+            KeyValuePair<double, double> b = anchors[i];
+            double frac;
+            if (at[i] - at[i - 1] > 1e-9)
+                frac = (g - at[i - 1]) / (at[i] - at[i - 1]);
+            else
+                frac = b.Key - a.Key > 1e-12 ? (travel - a.Key) / (b.Key - a.Key) : 1.0;
+            return a.Value + (b.Value - a.Value) * Math.Max(0.0, Math.Min(1.0, frac));
+        }
+
         // The model output (-1..1) an aircraft should get at raw x -1..1.
-        public static Func<double, double> WantedResponse(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, DetentTarget target, double margin)
+        public static Func<double, double> WantedResponse(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, DetentTarget target, double margin,
+            double band = DetentSettings.DefaultBand)
         {
             double sigma;
             BaseThrottle(model, baseTuning, cal, out sigma);
-            Func<double, double> wanted = WantedThrottle(model, baseTuning, cal, target, margin);
+            Func<double, double> wanted = WantedThrottle(model, baseTuning, cal, target, margin, band);
             double s = sigma == 0.0 ? 1.0 : sigma;
             return x => s * (2.0 * wanted((Math.Max(-1.0, Math.Min(1.0, x)) + 1.0) / 2.0) - 1.0);
         }
@@ -458,19 +568,30 @@ namespace JoyPro.Engine.Axis
         // The tuning of a game's model that gives the detent curve: DCS dead zone + saturation (exact for a straight
         // line) or its 11-point user curve; free curve points (X-Plane) exactly; any other model by searching its own
         // parameters on their grid. baseTuning: what the game uses without detent mode (in its own model).
-        public static DetentFit Fit(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, DetentTarget target, double margin)
+        public static DetentFit Fit(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, DetentTarget target, double margin,
+            double band = DetentSettings.DefaultBand)
         {
-            Func<double, double> wanted = WantedResponse(model, baseTuning, cal, target, margin);
+            Func<double, double> wanted = WantedResponse(model, baseTuning, cal, target, margin, band);
             DetentFit fit;
             if (model.Id == AxisModels.Dcs)
-                fit = FitDcs(model, baseTuning, cal, wanted);
+                fit = FitDcs(model, baseTuning, cal, wanted, RestLimits(model, baseTuning, cal, target, margin, band));
             else if (model.CurveStops != null)
                 fit = FitControlPoints(model, baseTuning, cal, wanted);
             else
                 fit = FitParameters(model, baseTuning, wanted);
             fit.MaxError = MaxError(model, fit.Tuning, wanted, cal);
-            if (fit.MaxError > Unusable)
+            double drop = LargestDrop(model, fit.Tuning, baseTuning, cal);
+            if (drop > MaxDrop)
             {
+                fit.Fallback = true;
+                fit.Warning = model.Title + " cannot express the detent curve without the throttle falling somewhere (by " + DetentText.Percent(drop) +
+                              "): it keeps the normal curve.";
+                fit.Tuning = null;
+            }
+            else if (fit.MaxError > Unusable && model.Id != AxisModels.Dcs)
+            {
+                // DCS's fit is always exact at the detent, below the afterburner in the band and rising: closer than its
+                // normal curve however far it is off elsewhere (2.7.4; it fell back to the normal curve before).
                 fit.Fallback = true;
                 fit.Warning = model.Title + " cannot express the detent curve (off by up to " + DetentText.Percent(fit.MaxError) +
                               " of the throttle): it keeps the normal curve.";
@@ -481,8 +602,54 @@ namespace JoyPro.Engine.Axis
             return fit;
         }
 
+        // A fitted curve may not let the throttle fall while the lever goes forward by more than this (game throttle).
+        public const double MaxDrop = 0.0005;
+
+        // The largest fall of the game throttle along the travel from the back end to the front end (0 = never falls).
+        // The direction (sigma) comes from the base, as the bend was made.
+        public static double LargestDrop(AxisModel model, AxisTuning tuning, AxisTuning baseTuning, DetentCalibration cal)
+        {
+            if (tuning == null)
+                return 0.0;
+            double sigma;
+            BaseThrottle(model, baseTuning, cal, out sigma);
+            double s = sigma == 0.0 ? 1.0 : sigma;
+            double max = double.NegativeInfinity;
+            double drop = 0.0;
+            for (int i = 0; i <= 2000; i++)
+            {
+                double v = (1.0 + s * model.Evaluate(tuning, 2.0 * cal.RawAt(i / 2000.0) - 1.0)) / 2.0;
+                max = Math.Max(max, v);
+                drop = Math.Max(drop, max - v);
+            }
+            return drop;
+        }
+
+        // The detent band's ceiling for a fit (an aircraft with an afterburner and a band): the throttle stays at most
+        // Ceiling up to the band's front edge (FrontRaw, a raw position); null otherwise.
+        private sealed class RestLimit
+        {
+            public double FrontRaw;
+            public double Ceiling;
+            // The base's direction (BaseThrottle's sigma).
+            public double Sigma;
+        }
+
+        private static RestLimit RestLimits(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, DetentTarget target, double margin, double band)
+        {
+            double b = EffectiveBand(cal, target, band);
+            if (b <= 0)
+                return null;
+            double sigma;
+            BaseThrottle(model, baseTuning, cal, out sigma);
+            if (sigma == 0.0)
+                return null;
+            double detent = cal.Travel(cal.Detent);
+            return new RestLimit { FrontRaw = cal.RawAt(detent + b), Ceiling = BandCeiling(target, margin), Sigma = sigma };
+        }
+
         // DCS: Slider on; the shape s(u) the filter applies to the raw travel (output = +-(2 s - 1), invert flips it).
-        private static DetentFit FitDcs(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, Func<double, double> wanted)
+        private static DetentFit FitDcs(AxisModel model, AxisTuning baseTuning, DetentCalibration cal, Func<double, double> wanted, RestLimit rest)
         {
             AxisTuning t = baseTuning.Clone();
             t.Slider = true;
@@ -523,6 +690,14 @@ namespace JoyPro.Engine.Axis
                         double line = us[i] <= dz ? 0.0 : us[i] >= sx ? sy : sy * (us[i] - dz) / (sx - dz);
                         straight = Math.Abs(line - shape[i]) <= 0.002;
                     }
+                    if (straight && rest != null)
+                    {
+                        // The line may not pass the detent band's ceiling (it is only within 0.2 % of the wanted curve).
+                        double u = rest.FrontRaw;
+                        double line = u <= dz ? 0.0 : u >= sx ? sy : sy * (u - dz) / (sx - dz);
+                        double throttle = rest.Sigma * (t.Inverted ? -1.0 : 1.0) > 0 ? line : 1.0 - line;
+                        straight = throttle <= rest.Ceiling - 0.0005;
+                    }
                     if (straight)
                     {
                         AxisTuning line = t.Clone();
@@ -535,10 +710,11 @@ namespace JoyPro.Engine.Axis
                 }
             }
 
-            // The 11-point user curve (natural spline through 0, 0.1, .. 1), least squares over the travel, exact at the
-            // device's detent. DCS applies dead zone and saturation X before the user curve, so the flat ends of the
-            // wanted shape (the base's dead zone at the start of the travel, a cut-off, full beyond the detent) go there
-            // and stay exactly flat; the spline only spans the travel between them.
+            // The 11-point user curve (natural spline through 0, 0.1, .. 1), least squares over the travel. DCS applies dead
+            // zone and saturation X before the user curve, so the flat ends of the wanted shape (the base's dead zone at the
+            // start of the travel, a cut-off, full beyond the detent) go there and stay exactly flat; the spline only spans
+            // the travel between them. It never falls (2.7.4: a spline through a bend could dip) and, with a detent band,
+            // passes exactly through the detent and stays below the afterburner over the whole detent band.
             AxisTuning curve = t.Clone();
             double flatStart = 0.0;
             double flatEnd = 1.0;
@@ -582,13 +758,26 @@ namespace JoyPro.Engine.Axis
             curve.SaturationY = top;
             Func<double, double> shapeOnTravel = u => (((curve.Inverted ? -1.0 : 1.0) * wanted(2.0 * u - 1.0)) + 1.0) / 2.0;
             Func<double, double> shapeAt = v => shapeOnTravel(Math.Max(clampLow, Math.Min(clampHigh, flatStart + Math.Max(0.0, Math.Min(1.0, v)) * (flatEnd - flatStart))));
-            // Exact at the device's detent (resting there = just below the afterburner); with a cut-off the spline's end
-            // at the idle side is the aircraft's idle (exact too), so resting in the idle detent never gives the cut-off.
-            // Knots on a flat stretch (full beyond the detent, nothing in a cut-off) stay exactly flat.
+            Func<double, double> vOf = raw => (raw - flatStart) / (flatEnd - flatStart);
+            // With a cut-off the spline's end at the idle side is the aircraft's idle (exact), so resting in the idle detent
+            // never gives the cut-off. Knots on a flat stretch (full beyond the detent, nothing in a cut-off) stay exactly
+            // flat.
             List<double> exact = new List<double>();
-            double detentAt = (cal.Detent - flatStart) / (flatEnd - flatStart);
+            List<ShapeBound> bounds = new List<ShapeBound>();
+            double detentAt = vOf(cal.Detent);
             if (detentAt > 0.0 && detentAt < 1.0)
                 exact.Add(detentAt);
+            if (rest != null)
+            {
+                // The game throttle is the shape (kappa +1) or 1 - the shape (-1). Up to the band's front edge (the spline
+                // rises, so its front edge is enough) at most the ceiling, a hair below it so rounding the points to 4
+                // decimals cannot cross it.
+                double kappa = rest.Sigma * (curve.Inverted ? -1.0 : 1.0);
+                double front = vOf(rest.FrontRaw);
+                double ceiling = rest.Ceiling - 0.0005;
+                if (front > 0.0 && front < 1.0)
+                    bounds.Add(kappa > 0 ? new ShapeBound(front, 1.0, ceiling) : new ShapeBound(front, -1.0, -(1.0 - ceiling)));
+            }
             for (int k = 0; k < AxisModels.UserCurvePoints; k++)
             {
                 double u = k / (double)(AxisModels.UserCurvePoints - 1);
@@ -596,7 +785,8 @@ namespace JoyPro.Engine.Axis
                 if (Math.Abs(shapeAt(Math.Max(0.0, u - 0.05)) - here) < 1e-6 && Math.Abs(shapeAt(Math.Min(1.0, u + 0.05)) - here) < 1e-6)
                     exact.Add(u);
             }
-            curve.Curvature = FitUserCurve(shapeAt, exact);
+            List<double> points = FitRisingUserCurve(shapeAt, exact, bounds);
+            curve.Curvature = points ?? FitUserCurve(shapeAt, exact);
             return new DetentFit { Tuning = curve, Method = "user curve" };
         }
 
@@ -679,6 +869,174 @@ namespace JoyPro.Engine.Axis
                 curve.Add(Math.Round(Math.Max(0.0, Math.Min(1.0, v)), 4));
             }
             return curve;
+        }
+
+        // sign * spline(At) <= Bound.
+        public struct ShapeBound
+        {
+            public double At;
+            public double Sign;
+            public double Bound;
+
+            public ShapeBound(double at, double sign, double bound)
+            {
+                At = at;
+                Sign = sign;
+                Bound = bound;
+            }
+        }
+
+        // FitUserCurve that never falls: least squares on 201 points, exact at the given positions (and the ends), the
+        // spline non-decreasing on 401 points and within the bounds. Active-set method on the KKT system: start without
+        // inequalities, add the most violated one, drop one whose multiplier turns negative. null when it finds no
+        // solution (the caller falls back); points rounded to 4 decimals (rounding keeps their order).
+        public static List<double> FitRisingUserCurve(Func<double, double> shape, IEnumerable<double> exactAt, IEnumerable<ShapeBound> bounds)
+        {
+            int n = AxisModels.UserCurvePoints;
+            const int m = 201;
+            const int grid = 401;
+            double[,] h = new double[n, n];
+            double[] r = new double[n];
+            for (int k = 0; k < m; k++)
+            {
+                double u = k / (double)(m - 1);
+                double[] row = BasisRow(u);
+                double target = shape(u);
+                for (int i = 0; i < n; i++)
+                {
+                    r[i] += 2.0 * row[i] * target;
+                    for (int j = 0; j < n; j++)
+                        h[i, j] += 2.0 * row[i] * row[j];
+                }
+            }
+            List<double[]> eqRows = new List<double[]>();
+            List<double> eqValues = new List<double>();
+            List<double> eqAt = new List<double>();
+            foreach (double at in (exactAt ?? Enumerable.Empty<double>()).Concat(new[] { 0.0, 1.0 }))
+            {
+                double u = Math.Max(0.0, Math.Min(1.0, at));
+                if (eqAt.Any(e => Math.Abs(e - u) < 1e-6))
+                    continue;
+                eqAt.Add(u);
+                eqRows.Add(BasisRow(u));
+                eqValues.Add(shape(u));
+            }
+            // Inequalities G c <= g: the spline rises between neighbouring grid points, then the bounds.
+            List<double[]> inRows = new List<double[]>();
+            List<double> inValues = new List<double>();
+            double[] previous = BasisRow(0.0);
+            for (int k = 1; k < grid; k++)
+            {
+                double[] next = BasisRow(k / (double)(grid - 1));
+                double[] row = new double[n];
+                for (int j = 0; j < n; j++)
+                    row[j] = previous[j] - next[j];
+                inRows.Add(row);
+                inValues.Add(0.0);
+                previous = next;
+            }
+            foreach (ShapeBound b in bounds ?? Enumerable.Empty<ShapeBound>())
+            {
+                double[] row = BasisRow(Math.Max(0.0, Math.Min(1.0, b.At)));
+                inRows.Add(row.Select(v => v * b.Sign).ToArray());
+                inValues.Add(b.Bound);
+            }
+
+            List<int> active = new List<int>();
+            HashSet<int> blocked = new HashSet<int>();
+            for (int iteration = 0; iteration < 400; iteration++)
+            {
+                int rows = eqRows.Count + active.Count;
+                int size = n + rows;
+                double[,] a = new double[size, size + 1];
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < n; j++)
+                        a[i, j] = h[i, j];
+                    a[i, size] = r[i];
+                }
+                for (int c = 0; c < rows; c++)
+                {
+                    double[] row = c < eqRows.Count ? eqRows[c] : inRows[active[c - eqRows.Count]];
+                    for (int j = 0; j < n; j++)
+                    {
+                        a[n + c, j] = row[j];
+                        a[j, n + c] = row[j];
+                    }
+                    a[n + c, size] = c < eqRows.Count ? eqValues[c] : inValues[active[c - eqRows.Count]];
+                }
+                double[] solution = Solve(a, size);
+                if (solution == null)
+                {
+                    // The last added constraint depends on the others: leave it out.
+                    if (active.Count == 0)
+                        return null;
+                    blocked.Add(active[active.Count - 1]);
+                    active.RemoveAt(active.Count - 1);
+                    continue;
+                }
+                // An active inequality whose multiplier is negative pulls the wrong way: drop the worst.
+                int drop = -1;
+                double worst = -1e-10;
+                for (int i = 0; i < active.Count; i++)
+                {
+                    double lambda = solution[n + eqRows.Count + i];
+                    if (lambda < worst)
+                    {
+                        worst = lambda;
+                        drop = i;
+                    }
+                }
+                if (drop >= 0)
+                {
+                    active.RemoveAt(drop);
+                    blocked.Clear();
+                    continue;
+                }
+                int add = -1;
+                double most = 1e-10;
+                bool blockedViolated = false;
+                for (int c = 0; c < inRows.Count; c++)
+                {
+                    if (active.Contains(c))
+                        continue;
+                    double value = -inValues[c];
+                    for (int j = 0; j < n; j++)
+                        value += inRows[c][j] * solution[j];
+                    if (value <= most)
+                        continue;
+                    if (blocked.Contains(c))
+                    {
+                        blockedViolated |= value > 1e-7;
+                        continue;
+                    }
+                    most = value;
+                    add = c;
+                }
+                if (add >= 0)
+                {
+                    active.Add(add);
+                    continue;
+                }
+                if (blockedViolated)
+                    return null;
+                List<double> curve = new List<double>();
+                for (int j = 0; j < n; j++)
+                {
+                    double v = Math.Round(Math.Max(0.0, Math.Min(1.0, solution[j])), 4);
+                    curve.Add(j > 0 ? Math.Max(curve[j - 1], v) : v);
+                }
+                return curve;
+            }
+            return null;
+        }
+
+        private static double[] BasisRow(double u)
+        {
+            double[] row = new double[AxisModels.UserCurvePoints];
+            for (int j = 0; j < row.Length; j++)
+                row[j] = SplineBasis(j, u);
+            return row;
         }
 
         private static double SplineBasis(int index, double u)

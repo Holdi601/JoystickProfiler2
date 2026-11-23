@@ -671,7 +671,7 @@ namespace JoyPro.Engine
         }
 
         // The game's current bind files as the watcher reads them (the files JoyPro imports from and exports to) plus
-        // JoyPro's own files next to them (.jp, .joypro-meta.json, .joypro.json: the re-import metadata), for the support
+        // JoyPro's own files next to them (.jp, .joypro-meta.json / .joypro-meta, .joypro.json: the re-import metadata), for the support
         // bundle. Read only. registryKey: the HKCU key of a game that keeps its binds in the registry (no files then).
         public static List<string> StateFilesOf(string gameId, out string registryKey)
         {
@@ -692,7 +692,7 @@ namespace JoyPro.Engine
                 if (string.IsNullOrWhiteSpace(watch.Directory) || !Directory.Exists(watch.Directory))
                     continue;
                 SearchOption option = watch.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                foreach (string filter in new[] { "*.jp", "*" + GameMetadataStore.Suffix, "*.joypro.json" })
+                foreach (string filter in new[] { "*.jp", "*" + GameMetadataStore.Suffix, "*" + GameMetadataStore.PlainSuffix, "*.joypro.json" })
                 {
                     foreach (string file in Directory.EnumerateFiles(watch.Directory, filter, option))
                     {
@@ -1104,6 +1104,7 @@ namespace JoyPro.Engine
             string name = Path.GetFileName(file) ?? string.Empty;
             return name.EndsWith(".jpbak", StringComparison.OrdinalIgnoreCase) ||
                    name.EndsWith(GameMetadataStore.Suffix, StringComparison.OrdinalIgnoreCase) ||
+                   name.EndsWith(GameMetadataStore.PlainSuffix, StringComparison.OrdinalIgnoreCase) ||
                    name.EndsWith(".joypro.json", StringComparison.OrdinalIgnoreCase) ||
                    name.EndsWith(".jp", StringComparison.OrdinalIgnoreCase) ||
                    name.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase);

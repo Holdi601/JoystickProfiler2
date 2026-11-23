@@ -11,7 +11,7 @@ namespace JoyPro.Engine.Axis
     // dead zone is size x 2 % of the half travel (10 = 20 %), the rest is rescaled to 0..1 and shaped as
     // p * s + p^5 * (1 - s) with s = sensitivity / 9. The absolute throttle (Slider) skips both: the raw travel 0..1 becomes
     // -10 .. 110 % and is clipped, so the last 1/12 at each end is a stop. Invert is JoyPro's (DCS) direction; the export
-    // writes INVERTED XOR the direction FSO needs for a HOTAS throttle (FreeSpaceOpenIntegration.HotasInvert).
+    // writes INVERTED XOR the direction FSO needs (FreeSpaceOpenIntegration.HotasInvert: the relative throttle only).
     internal static class FsoAxisModel
     {
         public const string Id = "fso";

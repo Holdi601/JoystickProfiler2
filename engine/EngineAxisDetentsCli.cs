@@ -97,6 +97,7 @@ namespace JoyPro.Engine
             string noAb = PopOptionValue(args, "--no-ab");
             string unknown = PopOptionValue(args, "--unknown");
             string marginRaw = PopOptionValue(args, "--margin");
+            string bandRaw = PopOptionValue(args, "--band");
             List<string> targets = PopOptionValues(args, "--target");
             if (args.Count > 0)
                 return Fail("Unknown binds detent set argument(s): " + string.Join(" ", args));
@@ -127,6 +128,13 @@ namespace JoyPro.Engine
                 if (!double.TryParse(marginRaw, NumberStyles.Float, CultureInfo.InvariantCulture, out margin) || margin < 0 || margin > 0.1)
                     return Fail("--margin must be 0..0.1 (share of the game's throttle).");
                 settings.Margin = margin;
+            }
+            if (bandRaw != null)
+            {
+                double band;
+                if (!double.TryParse(bandRaw, NumberStyles.Float, CultureInfo.InvariantCulture, out band) || band < 0 || band > DetentSettings.MaxBand)
+                    return Fail("--band must be 0..0.05 (how far past the detent the throttle stays below the afterburner, share of the travel).");
+                settings.Band = band;
             }
             foreach (string raw in targets)
             {
@@ -345,7 +353,7 @@ namespace JoyPro.Engine
                         List<string> differing = new List<string>();
                         if (!EngineAxisDetents.HasPlaneCurves(game))
                             used = EngineAxisDetents.GameTarget(effective, relation, game, out differing);
-                        DetentFit fit = EngineAxisDetents.FitFor(normal.Model, normal.Tuning, calibration, used, effective.Margin);
+                        DetentFit fit = EngineAxisDetents.FitFor(normal.Model, normal.Tuning, calibration, used, effective.Margin, effective.Band);
                         AxisTuning curve = fit.Fallback || fit.Tuning == null ? normal.Tuning : fit.Tuning;
                         string warning = fit.Warning;
                         if (differing.Count > 0 && !used.SameAs(group.Target))
@@ -396,6 +404,7 @@ namespace JoyPro.Engine
                     NoAfterburner = DetentSettings.KindText(effective.NoAfterburner),
                     Unknown = DetentSettings.KindText(effective.Unknown),
                     effective.Margin,
+                    effective.Band,
                     Text = settings == null ? string.Empty : settings.Format()
                 },
                 Calibration = calibration == null ? null : new
@@ -456,7 +465,7 @@ namespace JoyPro.Engine
                 EngineAxisDetents.Pct(calibration.Travel(calibration.Detent)) + " of the travel (" + calibration.Format() + ")");
             DetentSettings effective = settings ?? new DetentSettings { On = false };
             sb.AppendLine("No afterburner: " + (effective.NoAfterburner == DetentTargetKind.FullAtDetent ? "full power at the detent" : "linear") +
-                "; unknown aircraft: " + (effective.Unknown == DetentTargetKind.FullAtDetent ? "full power at the detent" : "linear") + "; margin " + DetentText.Num(effective.Margin));
+                "; unknown aircraft: " + (effective.Unknown == DetentTargetKind.FullAtDetent ? "full power at the detent" : "linear") + "; margin " + DetentText.Num(effective.Margin) + "; detent band " + DetentText.Percent(effective.Band) + " of the travel past the detent");
             foreach (KeyValuePair<string, string> t in EngineAxisDetents.RelationTargets(relation)
                 .GroupBy(t => { string s; ThrottleGate g; return EngineAxisDetents.TargetFor(effective, t.Key, t.Value, out s, out g).Format(); })
                 .SelectMany(g => g.Select(x => x)).ToList())

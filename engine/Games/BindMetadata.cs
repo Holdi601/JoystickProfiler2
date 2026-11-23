@@ -213,10 +213,12 @@ namespace JoyPro.Engine.Games
     }
 
     // "<config file>.joypro-meta.json" next to a registry game's file: BindMetadata per exported bind, keyed by the
-    // action and the physical input (GameProfileBridge.BuildSignature).
+    // action and the physical input (GameProfileBridge.BuildSignature). A game that loads every file of the config's
+    // folder with the config's extension (IGameScansConfigFolder, FreeSpace Open) gets "<config file>.joypro-meta".
     internal static class GameMetadataStore
     {
         public const string Suffix = ".joypro-meta.json";
+        public const string PlainSuffix = ".joypro-meta";
         private const string KeySeparator = "\u001E";
 
         private sealed class Document
@@ -255,11 +257,34 @@ namespace JoyPro.Engine.Games
             return (actionId ?? string.Empty).Trim().ToLowerInvariant() + KeySeparator + GameProfileBridge.BuildSignature(device, isAxis, input, reformers);
         }
 
-        public static Dictionary<string, BindMetadata> Load(string configPath, List<string> warnings)
+        // The metadata file of a game's config file.
+        public static string PathOf(IGameIntegration game, string configPath)
+        {
+            return GameConfigLocation.SidecarPath(configPath ?? string.Empty, game is IGameScansConfigFolder ? PlainSuffix : Suffix);
+        }
+
+        // The file an older JoyPro wrote for a game that scans its config folder ("<config>.joypro-meta.json"), or null.
+        private static string LegacyPathOf(IGameIntegration game, string configPath)
+        {
+            if (!(game is IGameScansConfigFolder) || string.IsNullOrWhiteSpace(configPath) || GameConfigLocation.IsRegistryKey(configPath))
+                return null;
+            return GameConfigLocation.SidecarPath(configPath, Suffix);
+        }
+
+        public static Dictionary<string, BindMetadata> Load(IGameIntegration game, string configPath, List<string> warnings)
         {
             Dictionary<string, BindMetadata> binds = new Dictionary<string, BindMetadata>(StringComparer.OrdinalIgnoreCase);
-            string path = GameConfigLocation.SidecarPath(configPath ?? string.Empty, Suffix);
-            if (string.IsNullOrWhiteSpace(configPath) || !File.Exists(path))
+            if (string.IsNullOrWhiteSpace(configPath))
+                return binds;
+            string path = PathOf(game, configPath);
+            string legacy = LegacyPathOf(game, configPath);
+            bool fromLegacy = false;
+            if (!File.Exists(path) && legacy != null && File.Exists(legacy))
+            {
+                path = legacy;
+                fromLegacy = true;
+            }
+            if (!File.Exists(path))
                 return binds;
             try
             {
@@ -273,6 +298,8 @@ namespace JoyPro.Engine.Games
                             int input;
                             if (document.Inputs != null && document.Inputs.TryGetValue(entry.Key, out input))
                                 entry.Value.Input = input;
+                            if (fromLegacy)
+                                ((IGameScansConfigFolder)game).UpgradeLegacyMetadata(entry.Key, entry.Value);
                             binds[entry.Key] = entry.Value;
                         }
                     }
@@ -287,17 +314,37 @@ namespace JoyPro.Engine.Games
 
         // The exported binds' metadata replaces their entries; entries of other binds stay (an earlier export's bind
         // the game file may still have).
-        public static void Save(string configPath, string game, IEnumerable<GameInputBinding> exported, IEnumerable<GameInputBinding> readBack, List<string> warnings)
+        public static void Save(IGameIntegration game, string configPath, IEnumerable<GameInputBinding> exported, IEnumerable<GameInputBinding> readBack, List<string> warnings)
         {
             if (string.IsNullOrWhiteSpace(configPath))
                 return;
+            SaveFile(game, configPath, exported, readBack, warnings);
+            // The old file of a game that scans its config folder: its entries are in the new file now (none were left
+            // when there is no new file), and the game would load it as one of its own (FreeSpace Open stopped at start
+            // on players\<pilot>.json.joypro-meta.json).
+            string legacy = LegacyPathOf(game, configPath);
+            if (legacy != null && File.Exists(legacy))
+            {
+                try
+                {
+                    File.Delete(legacy);
+                }
+                catch (Exception ex)
+                {
+                    warnings?.Add("Could not remove JoyPro's old metadata file '" + legacy + "' (delete it by hand, the game reads it as its own file): " + ex.Message);
+                }
+            }
+        }
+
+        private static void SaveFile(IGameIntegration game, string configPath, IEnumerable<GameInputBinding> exported, IEnumerable<GameInputBinding> readBack, List<string> warnings)
+        {
             Dictionary<string, string> fileTuning = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (GameInputBinding read in readBack ?? Enumerable.Empty<GameInputBinding>())
             {
                 if (read != null && read.IsAxis)
                     fileTuning[Key(read.ActionId, read.Device, true, read.Input, read.Reformers)] = BindMetadata.FileTuningOf(read);
             }
-            Dictionary<string, BindMetadata> binds = Load(configPath, warnings);
+            Dictionary<string, BindMetadata> binds = Load(game, configPath, warnings);
             int before = binds.Count;
             foreach (GameInputBinding binding in exported ?? Enumerable.Empty<GameInputBinding>())
             {
@@ -320,9 +367,9 @@ namespace JoyPro.Engine.Games
             if (binds.Count == 0 && before == 0)
                 return;
             string updatedUtc = DateTime.UtcNow.ToString("o");
-            string path = GameConfigLocation.SidecarPath(configPath, Suffix);
+            string path = PathOf(game, configPath);
             Directory.CreateDirectory(Path.GetDirectoryName(path) ?? string.Empty);
-            string json = Serialize(game, updatedUtc, binds);
+            string json = Serialize(game.GameId, updatedUtc, binds);
             // Same content but the timestamp: no rewrite.
             if (File.Exists(path))
             {

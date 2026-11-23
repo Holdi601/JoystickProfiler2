@@ -15625,7 +15625,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine binds tuning clear <bind-or-relation> [--bind <n>] --scope game:<game>|plane:<game>:<plane>|family:<family> [--scope <another>]...   (several scopes: one change, one undo step)");
             Console.WriteLine("  engine binds tuning preview <bind-or-relation> --game <game> [--plane <plane>] [--points <n>]");
             Console.WriteLine("  engine binds detent show <bind-or-relation>   (detent mode: settings, the device axis calibration, the aircraft grouped by afterburner start, per game the curve it gets and how exactly)");
-            Console.WriteLine("  engine binds detent set <bind-or-relation> [--on|--off] [--no-ab full|linear] [--unknown full|linear] [--margin <0..0.1>] [--target <game>:<plane>=ab:<0..1>|full|linear|default]...");
+            Console.WriteLine("  engine binds detent set <bind-or-relation> [--on|--off] [--no-ab full|linear] [--unknown full|linear] [--margin <0..0.1>] [--band <0..0.05>] [--target <game>:<plane>=ab:<0..1>|full|linear|default]...");
             Console.WriteLine("  engine binds detent calibrate <bind-or-relation> --idle <0..1> --detent <0..1> [--full <0..1>|none] [--cutoff <0..1>|none] [--source wizard|manual]   (raw axis positions of the bound device axis)");
             Console.WriteLine("  engine binds detent uncalibrate <bind-or-relation>");
             Console.WriteLine("  engine binds detent copy <bind-or-relation> --to <bind-or-relation> [--calibration]   (the same detent mode on another axis relation; --calibration lends this axis's calibration when the other has none)");

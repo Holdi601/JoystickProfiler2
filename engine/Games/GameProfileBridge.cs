@@ -180,7 +180,7 @@ namespace JoyPro.Engine.Games
                 : new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase);
 
             // JoyPro's own data of the binds it exported to this file (relation names, groups, modifiers, tuning).
-            Dictionary<string, BindMetadata> stored = GameMetadataStore.Load(result.ConfigPath, result.Warnings);
+            Dictionary<string, BindMetadata> stored = GameMetadataStore.Load(game, result.ConfigPath, result.Warnings);
             // Relations this import made from an extra input JoyPro exported (multi-bind): their main input may still come.
             HashSet<string> extrasFirst = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, string> relationBySignature = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
