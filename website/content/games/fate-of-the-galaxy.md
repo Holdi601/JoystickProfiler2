@@ -98,8 +98,11 @@ Every file gets a `.jpbak` copy and a versioned backup before the first write.
 
 ## Curves and game settings
 
-- **Invert** per bind. The game counts the throttle the other way round than most HOTAS throttles report it, so JoyPro
-  writes the throttle inverted for you; your relation keeps JoyPro's direction.
+- **Invert** per bind. A throttle lever pushed forward gives more thrust without an invert (the game reads the axis
+  the same way as DCS); JoyPro writes the game's invert flag only when you invert the axis yourself.
+- **JoyPro's notes** for a re-import sit next to your pilot as `<pilot>.json.joypro-meta`, a name the game ignores.
+  JoyPro 2.7.3 used `<pilot>.json.joypro-meta.json`, which the game tried to load as a pilot and then stopped at start;
+  the next export removes that old file (or delete it in `data\players` yourself).
 - **Dead zone** (0-45) and **sensitivity** (0-9) are one setting for every axis: set them in **Settings > Force feedback
   settings of the games** (pick Fate of the Galaxy) or with [[cli:ffb set]]. The axis curve preview shows the game's
   response with them.
